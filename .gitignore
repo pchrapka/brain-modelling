@@ -1,0 +1,8 @@
+*~
+*.mat
+*.dat
+*.nii
+*.png
+*.eps
+**/output
+**/auto
