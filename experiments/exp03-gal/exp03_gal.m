@@ -1,4 +1,4 @@
-%% exp02_burg_window
+%% exp03_gal
 close all;
 
 nsamples = 1000;
@@ -12,16 +12,14 @@ M = 2;
 %% Estimate the Reflection coefficients from the AR coefficients
 [~,~,k_est] = rlevinson(a_est,e)
 
-%% Estimate the Reflection coefficients using a windowed Burg's algorithm
+%% Estimate the Reflection coefficients using the Gradient Adaptive Lattice algorithm
 i=1;
 lattice = [];
 
 M = 2;
-nwindow = 50;
-lambda = 0;
-lattice(i).alg = BurgWindow(M, nwindow, lambda);
+lattice(i).alg = GAL(M);
 lattice(i).scale = 1;
-lattice(i).name = sprintf('BurgWindow M%d W%d lambda=%0.2f',M,nwindow,lambda);
+lattice(i).name = sprintf('GAL M%d beta=%0.2f lambda=%0.2f',M,lattice(i).alg.beta,lattice(i).alg.lambda);
 i = i+1;
 
 % estimate the reflection coefficients
