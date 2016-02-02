@@ -17,9 +17,19 @@ classdef GAL < handle
     
     methods
         function obj = GAL(M, beta, lambda, d_init, offset)
+            %GAL constructor for QRDLSL
+            %   GAL(M, [BETA, LAMBDA, D_INIT, OFFSET]) creates a GAL object
             %
-            %   d0
+            %   order (integer)
+            %       filter order
+            %   lambda (scalar)
+            %       exponential weighting factor between 0 and 1
+            %   beta (scalar)
+            %       TODO
+            %   d_init (scalar)
             %       initial prediction error power
+            %   offset (scalar)
+            %       TODO
             
             obj.M = M;
             obj.F = zeros(M+1,1);
@@ -51,6 +61,12 @@ classdef GAL < handle
         end
         
         function update(obj, x)
+            %UPDATE updates reflection coefficients
+            %   UPDATE(OBJ,X) updates the reflection coefficients using the
+            %   measurement X
+            %
+            %   x (scalar)
+            %       new measurement
             
             F = obj.F;
             B = obj.B;

@@ -24,6 +24,13 @@ classdef QRDLSL < handle
     
     methods
         function obj = QRDLSL(order, lambda)
+            %QRDLSL constructor for QRDLSL
+            %   QRDLSL(ORDER, LAMBDA) creates a QRDLSL object
+            %
+            %   order (integer)
+            %       filter order
+            %   lambda (scalar)
+            %       exponential weighting factor between 0 and 1
             
             obj.M = order;
             obj.lambda = lambda;
@@ -41,7 +48,11 @@ classdef QRDLSL < handle
         end
         
         function obj = update(obj, x)
-            %   x
+            %UPDATE updates reflection coefficients
+            %   UPDATE(OBJ,X) updates the reflection coefficients using the
+            %   measurement X
+            %
+            %   x (scalar)
             %       new measurement
             
             % Mem allocation

@@ -17,6 +17,16 @@ classdef BurgWindow < handle
     
     methods
         function obj = BurgWindow(order, nwindow, lambda)
+            %BurgWindow constructor for BurgWindow
+            %   BurgWindow(ORDER, NWINDOW, [LAMBDA]) creates a BurgWindow object
+            %
+            %   order (integer)
+            %       filter order
+            %   nwindow (integer)
+            %       length of dataa window to use for Burg's algorithm
+            %   lambda (scalar)
+            %       exponential weighting factor between 0 and 1
+            
             if nargin < 3
                 lambda = 0;
             end
@@ -30,6 +40,12 @@ classdef BurgWindow < handle
         end
         
         function obj = update(obj,x)
+            %UPDATE updates reflection coefficients
+            %   UPDATE(OBJ,X) updates the reflection coefficients using the
+            %   measurement X
+            %
+            %   x (scalar)
+            %       new measurement
             
             % add the new measurement
             obj.buffer(1) = [];
