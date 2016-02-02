@@ -1,4 +1,4 @@
-%% exp01_qrd_lsl
+%% exp02_burg_window
 close all;
 
 nsamples = 1000;
@@ -23,16 +23,15 @@ M = 2;
 %% Estimate the Reflection coefficients from the AR coefficients
 [~,~,k_est] = rlevinson(a_est,e)
 
-%% Estimate the Reflection coefficients using the QRD-LSL algorithm
+%% Estimate the Reflection coefficients using a windowed Burg's algorithm
 M = 2;
-lambda = 0.99;
-lf = QRDLSL(M,lambda);
-Kb = zeros(M,nsamples);
-Kf = zeros(M,nsamples);
+nwindow = 50;
+lambda = 0;
+lf = BurgWindow(M, nwindow, lambda);
+K = zeros(M,nsamples);
 for i=1:nsamples
     lf.update(x(i));
-    Kb(:,i) = lf.Kb;
-    Kf(:,i) = lf.Kf;
+    K(:,i) = lf.K;
 end
 
 %% Compare true and estimated
@@ -48,7 +47,6 @@ for k=1:M
         'Spacing', 0, 'SpacingVert', 0, 'Padding', 0, 'Margin', 0.05);
     plot(1:nsamples, k_true(k,1:nsamples));
     hold on;
-    plot(1:nsamples, scale*Kb(k,1:nsamples));
-    plot(1:nsamples, scale*Kf(k,1:nsamples));
+    plot(1:nsamples, scale*K(k,1:nsamples));
 end
-legend('true','Kb','Kf');
+legend('true','K');

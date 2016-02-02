@@ -6,11 +6,10 @@
 
 % add the current directory
 addpath(pwd);
-% addpath(fullfile(pwd,'util'));
-% addpath(fullfile(pwd,'external'));
 
 % add external packages
-% addpath(fullfile(pwd,'external','subaxis'));
+addpath(fullfile(pwd,'external'));
+addpath(fullfile(pwd,'external','subaxis'));
 
 % add methods directory
 addpath(fullfile(pwd,'methods'));
