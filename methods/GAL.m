@@ -1,6 +1,5 @@
 classdef GAL < handle
     %GAL Gradient Adaptive Lattice algorithm
-    %   Detailed explanation goes here
     
     properties
         % Lattice filter vars

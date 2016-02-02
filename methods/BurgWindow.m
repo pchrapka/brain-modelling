@@ -1,6 +1,5 @@
 classdef BurgWindow < handle
-    %UNTITLED6 Summary of this class goes here
-    %   Detailed explanation goes here
+    %BurgWindow windowed version of Burg's algorithm
     
     properties
         % filter order
