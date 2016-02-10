@@ -28,6 +28,7 @@ i = i+1;
 lattice = estimate_reflection_coefs(lattice, x);
 
 %% Compare true and estimated
+k_true = repmat(k_est,1,nsamples);
 
 figure;
 plot_reflection_coefs(lattice, k_true);
