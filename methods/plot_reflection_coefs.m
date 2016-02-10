@@ -63,9 +63,13 @@ for k=1:M
         else
             plot(1:nsamples, k_est(j).scale*k_est(j).K(k,1:nsamples));
             if k==1
-                legend_str = [legend_str [k_est(j).name ' K']];
+                legend_str = [legend_str k_est(j).name];
             end
         end
+    end
+    
+    if k ~= M
+        set(gca,'XTickLabel',[]);
     end
 end
 legend(legend_str, 'Location','Best');
