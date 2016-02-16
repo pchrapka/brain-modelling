@@ -1,7 +1,7 @@
-function plot_reflection_coefs(k_est, k_true, nsamples)
+function plot_reflection_coefs(k_est, k_true, nsamples, varargin)
 %PLOT_REFLECTION_COEFS plots estimated and true reflection coefficients
-%   PLOT_REFLECTION_COEFS(K_EST, K_TRUE, NSAMPLES) plots both estimated and
-%   true reflection coefficients
+%   PLOT_REFLECTION_COEFS(K_EST, K_TRUE, NSAMPLES, [CH1 CH2]) plots both
+%   estimated and true reflection coefficients
 %
 %   k_est (struct array)
 %       estimated reflection coefficients, specified as a struct array
@@ -24,12 +24,32 @@ function plot_reflection_coefs(k_est, k_true, nsamples)
 %
 %   nsamples (integer)
 %       number of samples to plot, default all
+%
+%   Optional arguments for multichannel data
+%   ch1 (integer)
+%       index of first channel
+%   ch2 (integer)
+%       index of second channel
+%
 
 % number of coefs
 M = size(k_true,1);
 % number of samples
 if nargin < 3
     nsamples = size(k_true,2);
+end
+
+if nargin > 3
+    if ~isequal(length(varargin),2)
+        error('missing a channel index');
+    end
+    idx1 = varargin{1};
+    idx2 = varargin{2};
+    multichannel = true;
+else
+    idx1 = 1;
+    idx2 = 1;
+    multichannel = false;
 end
 
 nfilters = length(k_est);
@@ -46,27 +66,32 @@ for k=1:M
     
     if k==1
         legend_str = [legend_str 'true'];
-        title('Reflection Coefficient Estimate');
+        if multichannel
+            title(sprintf('Reflection Coefficient Estimate C%d-%d',idx1,idx2));
+        else
+            title('Reflection Coefficient Estimate');
+        end
     end
     
     hold on;
     for j=1:nfilters
         if isempty(k_est(j).K)
-            plot(1:nsamples, k_est(j).scale*k_est(j).Kf(k,1:nsamples));
+            plot(1:nsamples, k_est(j).scale*k_est(j).Kf(1:nsamples,k,idx1,idx2));
             if k==1
                 legend_str = [legend_str [k_est(j).name ' Kf']];
             end
-            plot(1:nsamples, k_est(j).scale*k_est(j).Kb(k,1:nsamples));
+            plot(1:nsamples, k_est(j).scale*k_est(j).Kb(1:nsamples,k,idx1,idx2));
             if k==1
                 legend_str = [legend_str [k_est(j).name ' Kb']];
             end
         else
-            plot(1:nsamples, k_est(j).scale*k_est(j).K(k,1:nsamples));
+            plot(1:nsamples, k_est(j).scale*k_est(j).K(1:nsamples,k,idx1,idx2));
             if k==1
                 legend_str = [legend_str k_est(j).name];
             end
         end
     end
+    ylim([-2 2]);
     
     if k ~= M
         set(gca,'XTickLabel',[]);

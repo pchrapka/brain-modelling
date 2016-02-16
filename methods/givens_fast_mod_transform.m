@@ -33,7 +33,7 @@ function [ M, d, varargout ] = givens_fast_mod_transform(x, d)
 %
 %   Golub and van Loan, p221 Algorithm 5.1.4  
 
-if x(1) ~= 0
+if abs(x(1)) > eps
     beta = -x(2)/x(1);
     alpha = -beta*d(1)/d(2);
     gamma = -alpha*beta;

@@ -3,22 +3,27 @@ classdef GAL < handle
     
     properties
         % Lattice filter vars
-        M;  % M lattice order
-        F;  % forward prediction error
-        B;  % backward prediction error
-        K;  % reflection coefficients
+        F;          % forward prediction error
+        B;          % backward prediction error
+        K;          % reflection coefficients
         
         beta;
         lambda;
         normB;
         normF;
         offset; % avoids a divde by 0
+        
+        % filter order
+        order;
+        
+        % number of channels
+        nchannels = 1;
     end
     
     methods
-        function obj = GAL(M, beta, lambda, d_init, offset)
+        function obj = GAL(order, beta, lambda, d_init, offset)
             %GAL constructor for QRDLSL
-            %   GAL(M, [BETA, LAMBDA, D_INIT, OFFSET]) creates a GAL object
+            %   GAL(order, [BETA, LAMBDA, D_INIT, OFFSET]) creates a GAL object
             %
             %   order (integer)
             %       filter order
@@ -31,10 +36,10 @@ classdef GAL < handle
             %   offset (scalar)
             %       TODO
             
-            obj.M = M;
-            obj.F = zeros(M+1,1);
-            obj.B = zeros(M+1,1);
-            obj.K = zeros(M,1);
+            obj.order = order;
+            obj.F = zeros(order+1,1);
+            obj.B = zeros(order+1,1);
+            obj.K = zeros(order,1);
             
             if nargin < 2
                 obj.beta = 0.1;
@@ -47,11 +52,11 @@ classdef GAL < handle
                 obj.lambda = lambda;
             end
             if nargin < 4
-                obj.normB = 0.1*ones(M+1,1);
-                obj.normF = 0.1*ones(M+1,1);
+                obj.normB = 0.1*ones(order+1,1);
+                obj.normF = 0.1*ones(order+1,1);
             else
-                obj.normB = d_init*ones(M+1,1);
-                obj.normF = d_init*ones(M+1,1);
+                obj.normB = d_init*ones(order+1,1);
+                obj.normF = d_init*ones(order+1,1);
             end
             if nargin < 5
                 obj.offset = 1;
@@ -80,7 +85,7 @@ classdef GAL < handle
             
             Knew = zeros(size(obj.K));
             lambda = obj.lambda;
-            for j=1:obj.M
+            for j=1:obj.order
                 % Hayes p. 528
                 
 %                 % update Dj

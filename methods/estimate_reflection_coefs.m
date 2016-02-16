@@ -9,8 +9,8 @@ function lattice = estimate_reflection_coefs(lattice, x)
 %       lattice.alg (object)
 %           algorithm object initialized, see QRDLSL, GAL, BurgWindow
 %
-%   x (vector)
-%       measurements
+%   x (matrix)
+%       measurements, [channels nsamples]
 %
 %   Output
 %   ------
@@ -29,8 +29,10 @@ function lattice = estimate_reflection_coefs(lattice, x)
 %           backward reflection coefficients [Order x Samples], depending
 %           on algorithm, empty if not used
 
+verbose = true;
+
 % get sizes
-nsamples = length(x);
+nsamples = size(x,2);
 nfilters = length(lattice);
 
 % init reflection coef matrices
@@ -41,29 +43,38 @@ for j=1:nfilters
     lattice(j).Kf = [];
     lattice(j).Kb = [];
     
-    M = lattice(j).alg.M;
+    P = lattice(j).alg.order;
     
     if isprop(lattice(j).alg, 'K')
-        lattice(j).K = zeros(M,nsamples);
+        lattice(j).K = zeros(nsamples,P);
     else
-        lattice(j).Kf = zeros(M,nsamples);
-        lattice(j).Kb = zeros(M,nsamples);
+        M = lattice(j).alg.nchannels;
+        if M > 1
+            lattice(j).Kf = zeros(nsamples,P,M,M);
+            lattice(j).Kb = zeros(nsamples,P,M,M);
+        else
+            lattice(j).Kf = zeros(nsamples,P);
+            lattice(j).Kb = zeros(nsamples,P);
+        end
     end
 end
 
 % compute reflection coef estimates
 for i=1:nsamples
+    if verbose
+        fprintf('sample %d\n',i);
+    end
     
     for j=1:nfilters
         % update the filter with the new measurement
-        lattice(j).alg.update(x(i));
+        lattice(j).alg.update(x(:,i));
         
         % copy reflection coefficients
         if isempty(lattice(j).K)
-            lattice(j).Kf(:,i) = lattice(j).alg.Kf;
-            lattice(j).Kb(:,i) = lattice(j).alg.Kb;
+            lattice(j).Kf(i,:,:,:) = lattice(j).alg.Kf;
+            lattice(j).Kb(i,:,:,:) = lattice(j).alg.Kb;
         else
-            lattice(j).K(:,i) = lattice(j).alg.K;
+            lattice(j).K(i,:) = lattice(j).alg.K;
         end
     end
 end

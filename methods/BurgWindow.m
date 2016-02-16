@@ -2,14 +2,18 @@ classdef BurgWindow < handle
     %BurgWindow windowed version of Burg's algorithm
     
     properties
-        % filter order
-        M;
         % window length
         nwindow;
         % sample buffer
         buffer;
         % weighting factor
         lambda;
+        
+        % filter order
+        order;
+        
+        % number of channels
+        nchannels = 1;
         
         % reflection coefficients
         K;
@@ -31,12 +35,12 @@ classdef BurgWindow < handle
                 lambda = 0;
             end
             
-            obj.M = order;
+            obj.order = order;
             obj.nwindow = nwindow;
             obj.lambda = lambda;
             
             obj.buffer = zeros(obj.nwindow,1);
-            obj.K = zeros(obj.M,1);
+            obj.K = zeros(obj.order,1);
         end
         
         function obj = update(obj,x)
@@ -52,7 +56,7 @@ classdef BurgWindow < handle
             obj.buffer(end+1) = x;
             
             % compute reflection coefficients
-            [~,~,Knew] = arburg(obj.buffer,obj.M);
+            [~,~,Knew] = arburg(obj.buffer,obj.order);
             
             % smooth the reflection coefficients
             obj.K = obj.lambda*obj.K + (1-obj.lambda)*Knew;

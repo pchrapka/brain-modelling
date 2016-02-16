@@ -2,7 +2,7 @@
 close all;
 
 nsamples = 1000;
-a_coefs = [1 -1.6 0.95];  % from Friedlander1982, case 1
+a_coefs = [1 -1.6 0.95]';  % from Friedlander1982, case 1
 [~,x] = gen_stationary_ar(a_coefs,nsamples);
 
 figure;

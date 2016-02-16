@@ -16,7 +16,10 @@ classdef QRDLSL < handle
         Kf;
         
         % filter order
-        M;
+        order;
+        
+        % number of channels
+        nchannels = 1;
         
         % weighting factor
         lambda;
@@ -32,14 +35,14 @@ classdef QRDLSL < handle
             %   lambda (scalar)
             %       exponential weighting factor between 0 and 1
             
-            obj.M = order;
+            obj.order = order;
             obj.lambda = lambda;
             
             delta = 0.1; % small positive constant
-            obj.Bpowerdd = delta*ones(obj.M+1,1);
+            obj.Bpowerdd = delta*ones(obj.order+1,1);
             obj.Fpowerd = obj.Bpowerdd;
             
-            zeroVec = zeros(obj.M,1);
+            zeroVec = zeros(obj.order,1);
             obj.Berrord = zeroVec;
             obj.pbd = zeroVec;
             obj.pfd = zeroVec;
@@ -56,7 +59,7 @@ classdef QRDLSL < handle
             %       new measurement
             
             % Mem allocation
-            zeroVec = zeros(obj.M,1);
+            zeroVec = zeros(obj.order,1);
             Berror = zeroVec;
             Ferror = zeroVec;
             gammad = zeroVec;
@@ -71,7 +74,7 @@ classdef QRDLSL < handle
             Ferror(1) = x;
             gammad(1) = 1; % i'm assuming this is right
             
-            for m=2:obj.M+1
+            for m=2:obj.order+1
                 
                 % Adaptive Forward prediction
                 % $XB * \PhiB = ZB$
