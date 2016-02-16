@@ -1,17 +1,12 @@
-%% exp06_mqrdlsl_4channeldep
+%% exp06_mqrdlsl_4channelind_reflection
 % 4 dependent channels
+% data generated with reflection coefficients
 close all;
 
 nsamples = 1000;
 order = 2;
 nchannels = 4;
-% %a_coefs = [1 0.082*ones(1,order)];  % from Lewis1990
-% r_coefs = [1 -1.6 0.95]';  % from Friedlander1982, case 1
-% A = zeros(order+1, nchannels, nchannels);
-% for ch=1:nchannels
-%     A(:,ch,ch) = a_coefs;
-% end
-% [~,X] = gen_stationary_ar(A,nsamples);
+
 Kf = zeros(order,nchannels, nchannels);
 Kf(1,:,:) = [...
 	-0.8205         0         0         0;
@@ -26,14 +21,6 @@ Kf(2,:,:) = [...
          0         0         0    0.9500;...
     ];
 Kb = Kf;
-% noise = randn(nchannels, nsamples);
-% X = rlattice_allpole_allpass(Kf,Kb,noise);
-% 
-% % NOTE Normalizing the variance is actually incredibly important to get
-% % sensible results
-% 
-% % normalize the variance
-% X = X./repmat(std(X,0,2),1,nsamples);
 
 [~,X,noise] = gen_stationary_ar_lattice(Kf,Kb,nsamples);
 
