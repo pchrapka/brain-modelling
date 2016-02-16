@@ -1,6 +1,7 @@
 %% exp06_mqrdlsl_4channelind
-% 3 independent channels
+% 4 independent channels
 close all;
+clear all;
 
 nsamples = 1000;
 order = 2;
@@ -14,7 +15,9 @@ end
 [~,X] = gen_stationary_ar(A,nsamples);
 
 %% Estimate the AR coefficients
-[a_est, e] = lpc(X(1,:), order)
+for ch=1:nchannels
+    [a_est, e] = lpc(X(ch,:), order)
+end
 
 %% Estimate the Reflection coefficients from the AR coefficients
 [~,~,k_est] = rlevinson(a_coefs,e)
