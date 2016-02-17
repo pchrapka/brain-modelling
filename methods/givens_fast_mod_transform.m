@@ -1,12 +1,12 @@
 function [ M, d, varargout ] = givens_fast_mod_transform(x, d)
 %GIVENS_FAST_MOD_TRANSFORM modified fast Givens transformation
 %   [M, d, [alpha, beta, type]] = GIVENS_FAST_MOD_TRANSFORM(x,d) returns
-%   the modified fast Givens transformation
+%   the modified fast Givens transformation M such that
 %
 %   M'*x = [ 0 ]
 %          [ r ]
 %
-%   M'DM = D1, where D1 is a diagonal matrix
+%   M'DM = D1, where D and D1 is a diagonal matrix
 %
 %   For more details see: Golub and van Loan, p221 Algorithm 5.1.4. Note
 %   this is a modified version of Algorithm 5.1.4
@@ -31,7 +31,8 @@ function [ M, d, varargout ] = givens_fast_mod_transform(x, d)
 %   type (optional)
 %       transformation type
 %
-%   Golub and van Loan, p221 Algorithm 5.1.4  
+%   This is a modified version of Algorithm 5.1.4, p221 in Golub and van
+%   Loan, Matrix Computations, 1996
 
 if abs(x(1)) > eps
     beta = -x(2)/x(1);

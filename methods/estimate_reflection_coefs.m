@@ -1,5 +1,5 @@
 function lattice = estimate_reflection_coefs(lattice, x)
-
+%
 %   Input
 %   -----
 %   lattice (struct array)

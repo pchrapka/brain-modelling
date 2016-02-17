@@ -1,6 +1,17 @@
 function [ X,d ] = givens_fast_lsl(X,d,m)
-%GIVENS_FAST_LSL Fast Givens rotation coefficients
+%GIVENS_FAST_LSL fast Givens transformation for least squares lattice
+%   [X,d] = GIVENS_FAST_LSL(X,d,m) zeros the first m elements in the first
+%   row of X using the fast Givens transformation
 %
+%   Example:
+%   m = 4
+%   X = [ x x x x x x x    M'    X = [ 0 0 0 0 x x x
+%         x x x x x x x   --->         x x x x x x x
+%         0 x x x x x x                0 x x x x x x
+%         0 0 x x x x x                0 0 x x x x x
+%         0 0 0 x x x x]               0 0 0 x x x x]
+%   
+%   
 %   Input
 %   -----
 %   X
@@ -17,10 +28,7 @@ function [ X,d ] = givens_fast_lsl(X,d,m)
 %   d
 %       updated diagonal of diagonal matrix D
 %
-%
-% NOTE Lewis uses the 1983 Golub van Loan and his notation differs
-% https://books.google.ca/books?id=mlOa7wPX6OYC&printsec=frontcover&source=gbs_ViewAPI&redir_esc=y#v=onepage&q&f=false
-% p.227
+%   See also GIVENS_FAST_MOD_TRANSFORM
 
 [rows,cols] = size(X);
 if isempty(d)
