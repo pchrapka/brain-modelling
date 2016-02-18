@@ -1,38 +1,58 @@
 %% exp06_mqrdlsl_4channeldep_reflection
 % 4 dependent channels
+%
+%  Goal:
+%  Test the MQRDLSL algorithm on a simulated signal that's explicitly
+%  defined by the reflection coefficients. The problem is made more
+%  difficult by making the signals dependent on each other.
+
 close all;
 
 nsamples = 1000;
 order = 2;
 nchannels = 4;
 
-% Kf = zeros(order, nchannels, nchannels);
-% Kf = 0.2*ones(order, nchannels, nchannels);
-% Kf = (1/4)*randn(order, nchannels, nchannels);
-% Kf(1,:,:) = [...
-% 	-0.8205         0       0.3         0;
-%           0   -0.8205         0         0;
-%         0.3         0   -0.8205         0;
-%           0         0         0   -0.8205;...
-%     ];
-% Kf(2,:,:) = [...
-%     0.9500         0         0         0;
-%          0    0.9500         0         0;
-%          0         0    0.9500         0;
-%          0         0         0    0.9500;...
-%     ];
-Kf(1,:,:) = [...
-	0.2       0.2       0.2       0.2;
-      0       0.2       0.2       0.2;
-      0         0       0.2       0.2;
-      0         0         0       0.2;...
-    ];
-Kf(2,:,:) = [...
-    0.2       0.2       0.2       0.2;
-      0       0.2       0.2       0.2;
-      0         0       0.2       0.2;
-      0         0         0       0.2;...
-    ];
+version_coefs = 1;
+switch version_coefs
+    case 1
+        Kf = 0.082*ones(order, nchannels, nchannels);
+        % Note a multiple of 0.1 is too big for the algo
+    case 2
+        % Good signal
+        % Bad algo results
+        Kf = (1/4)*randn(order, nchannels, nchannels);
+    case 3
+        Kf(1,:,:) = [...
+            -0.8205         0       0.3         0;
+            0   -0.8205         0         0;
+            -0.3         0   -0.8205         0;
+            0         0         0   -0.8205;...
+            ];
+        Kf(2,:,:) = [...
+            0.9500         0         0         0;
+            0    0.9500         0         0;
+            0         0    0.9500         0;
+            0         0         0    0.9500;...
+            ];
+    case 4
+        U(1,:,:) = [...
+        	  1         1         1         1;
+              0         1         1         1;
+              0         0         1         1;
+              0         0         0         1;...
+            ];
+        U(2,:,:) = [...
+              1         1         1         1;
+              0         1         1         1;
+              0         0         1         1;
+              0         0         0         1;...
+            ];
+        multiple = 0.1;
+        % Note a multiple of 0.2 is too big for the algo
+        Kf = multiple*U;
+    otherwise
+        error('unknown version %s\n',version_coefs);
+end
 Kb = Kf;
 
 [~,X,noise] = gen_stationary_ar_lattice(Kf,Kb,nsamples);
