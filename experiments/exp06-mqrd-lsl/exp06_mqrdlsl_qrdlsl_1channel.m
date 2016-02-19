@@ -3,7 +3,7 @@ close all;
 
 nsamples = 1000;
 a_coefs = [1 -1.6 0.95]';  % from Friedlander1982, case 1
-[~,x] = gen_stationary_ar(a_coefs,nsamples);
+[x,~] = gen_stationary_ar(a_coefs,nsamples);
 
 %% Estimate the AR coefficients
 order = 2;
@@ -19,7 +19,7 @@ lattice = [];
 channels = 1;
 order = 2;
 lambda = 0.99;
-lattice(i).alg = MQRDLSL(channels,order,lambda);
+lattice(i).alg = MQRDLSL2(channels,order,lambda);
 lattice(i).scale = -1;
 lattice(i).name = sprintf('MQRDLSL C%d P%d lambda=%0.2f',channels,order,lambda);
 i = i+1;

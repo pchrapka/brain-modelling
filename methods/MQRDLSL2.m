@@ -1,5 +1,5 @@
-classdef MQRDLSL < handle
-    %MQRDLSL Multichannel QR-Decomposition-based Least Squares Lattice
+classdef MQRDLSL2 < handle
+    %MQRDLSL2 Multichannel QR-Decomposition-based Least Squares Lattice
     %algorithm
     %   The implementation is as described in Lewis1990
     %   TODO add source
@@ -15,13 +15,7 @@ classdef MQRDLSL < handle
         
         gammasqd;   % delayed gamma
         berrord;    % delayed backward prediction error
-        
-%         Berrord;
-%         Bpowerdd;
-%         Fpowerd;
-%         pbd;
-%         pfd;
-%         
+
         % reflection coefficients
         Kb;
         Kf;
@@ -37,9 +31,9 @@ classdef MQRDLSL < handle
     end
     
     methods
-        function obj = MQRDLSL(channels, order, lambda)
-            %MQRDLSL constructor for MQRDLSL
-            %   MQRDLSL(ORDER, LAMBDA) creates a MQRDLSL object
+        function obj = MQRDLSL2(channels, order, lambda)
+            %MQRDLSL2 constructor for MQRDLSL2
+            %   MQRDLSL2(ORDER, LAMBDA) creates a MQRDLSL2 object
             %
             %   channels (integer)
             %       number of channels
@@ -68,18 +62,6 @@ classdef MQRDLSL < handle
             
             obj.berrord = zeros(obj.nchannels, obj.order+1);
             obj.gammasqd = ones(obj.order+1, 1);
-            
-%             obj.M = order;
-%             obj.lambda = lambda;
-%             
-%             delta = 0.1; % small positive constant
-%             obj.Bpowerdd = delta*ones(obj.M+1,1);
-%             obj.Fpowerd = obj.Bpowerdd;
-%             
-%             zeroVec = zeros(obj.M,1);
-%             obj.Berrord = zeroVec;
-%             obj.pbd = zeroVec;
-%             obj.pfd = zeroVec;
 
             obj.Kb = zeroMat;
             obj.Kf = zeroMat;
@@ -126,7 +108,9 @@ classdef MQRDLSL < handle
             
             % loop through stages
             for p=2:obj.order+1
-                % TODO gammasqd(0)
+                if debug_prints
+                    fprintf('order %d\n', p-1);
+                end
                 
                 % forward errors
                 df = [...
@@ -163,6 +147,9 @@ classdef MQRDLSL < handle
                     display(Xf)
                     display(betaf)
                     display(dfsq)
+                end
+                if ~isempty(find(dfsq == 0,1))
+                    fprintf('dfsq is zero\n');
                 end
                 
                 % check if we need to rescale
@@ -210,6 +197,9 @@ classdef MQRDLSL < handle
                     display(betab)
                     display(dbsq)
                 end
+                if ~isempty(find(dbsq == 0,1))
+                    fprintf('dbsq is zero\n');
+                end
                 
                 % check if we need to rescale
                 if ~isempty(find(dbsq > alpha^2,1))
@@ -228,9 +218,23 @@ classdef MQRDLSL < handle
                 berror(:,p) = obj.berrord(:,p-1) - Xf'*Dfsq_inv*betaf;
                 gammasq(p) = obj.gammasqd(p-1) - betaf'*Dfsq_inv*betaf;
                 if debug_prints
-                    display(ferror)
-                    display(berror)
-                    display(gammasq)
+                    fprintf('ferror\n');
+                    display(ferror(:,p))
+                    fprintf('berror\n');
+                    display(berror(:,p))
+                    fprintf('gammasq\n');
+                    display(gammasq(p))
+                end
+                if abs(gammasq(p)) <= eps
+                    fprintf('gammasq is < eps\n');
+                    % NOTE if gammasq becomes zero that propagates to the
+                    % diagonal matrix D that is then supplied to the fast
+                    % givens rotation, which assumes that it's positive
+                    % I think
+                    gammasq(p) = 1;
+                end
+                if isnan(gammasq(p))
+                    fprintf('gammasq is nan\n');
                 end
                 
                 % calculate reflection coefficients

@@ -34,6 +34,8 @@ function [ M, d, varargout ] = givens_fast_mod_transform(x, d)
 %   This is a modified version of Algorithm 5.1.4, p221 in Golub and van
 %   Loan, Matrix Computations, 1996
 
+dcopy = d;
+
 if abs(x(1)) > eps
     beta = -x(2)/x(1);
     alpha = -beta*d(1)/d(2);
@@ -56,6 +58,20 @@ else
     alpha = 0;
     beta = 0;
 end
+
+if ~isempty(find(d(2) == 0,1))
+    display(d)
+    display(x)
+    display(dcopy)
+    fprintf('got some zeros\n');
+end
+
+% if abs(d(1)) <= eps
+%     d(1) = 0;
+% end
+% if abs(d(2)) <= eps
+%     d(2) = 0;
+% end
 
 if type==1
     M = [beta 1; 1 alpha];
