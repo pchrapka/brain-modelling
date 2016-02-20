@@ -103,7 +103,8 @@ classdef MQRDLSL1 < handle
                 
                 % gamma
                 gammad = sqrt(obj.gammasqd(p-1));
-                if gammad < eps
+                if gammad <= eps
+                    fprintf('resetting gamma\n');
                     gammad_inv = 0;
                 else
                     gammad_inv = 1/gammad;

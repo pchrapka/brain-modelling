@@ -2,6 +2,7 @@
 % 4 dependent channels
 % data generated with reflection coefficients
 close all;
+clc;
 
 nsamples = 1000;
 order = 2;
@@ -43,7 +44,8 @@ lattice = [];
 % nchannels from above
 % order from above
 lambda = 0.99;
-lattice(i).alg = MQRDLSL1(nchannels,order,lambda);
+% lattice(i).alg = MQRDLSL1(nchannels,order,lambda);
+lattice(i).alg = MQRDLSL2(nchannels,order,lambda);
 lattice(i).scale = -1;
 lattice(i).name = sprintf('MQRDLSL C%d P%d lambda=%0.2f',nchannels,order,lambda);
 i = i+1;

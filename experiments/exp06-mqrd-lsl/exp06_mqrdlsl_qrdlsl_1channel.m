@@ -1,4 +1,8 @@
 %% exp06_mqrdlsl_qrdlsl_1channel
+%
+% Goal: Test the multichannel QRD-LSL algorithm of Lewis1990 vs. the
+% QRD-LSL of Haykin for a single channel of data
+
 close all;
 
 nsamples = 1000;
@@ -19,7 +23,8 @@ lattice = [];
 channels = 1;
 order = 2;
 lambda = 0.99;
-lattice(i).alg = MQRDLSL2(channels,order,lambda);
+lattice(i).alg = MQRDLSL1(channels,order,lambda);
+%lattice(i).alg = MQRDLSL2(channels,order,lambda);
 lattice(i).scale = -1;
 lattice(i).name = sprintf('MQRDLSL C%d P%d lambda=%0.2f',channels,order,lambda);
 i = i+1;

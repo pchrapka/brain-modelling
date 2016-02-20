@@ -40,6 +40,8 @@ for j=1:nsamples
         % Note the Kf, Kb notation is from Lewis1990. Haykin has the opposite
     end
     berror(:,1) = ferror(:,1);
+    display(berror)
+    display(ferror)
     
     % delay backwards error
     berrord = berror;

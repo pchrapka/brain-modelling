@@ -1,5 +1,6 @@
-function lattice = estimate_reflection_coefs(lattice, x)
-%
+function lattice = estimate_reflection_coefs(lattice, x, varargin)
+%ESTIMATE_REFLECTION_COEFS estimates reflection coefficients of X
+%   [lattice] = ESTIMATE_REFLECTION_COEFS(lattice, x, [verbose])
 %   Input
 %   -----
 %   lattice (struct array)
@@ -11,6 +12,9 @@ function lattice = estimate_reflection_coefs(lattice, x)
 %
 %   x (matrix)
 %       measurements, [channels nsamples]
+%
+%   verbose (boolean, default = false)
+%       selects verbosity of output
 %
 %   Output
 %   ------
@@ -29,7 +33,11 @@ function lattice = estimate_reflection_coefs(lattice, x)
 %           backward reflection coefficients [Order x Samples], depending
 %           on algorithm, empty if not used
 
-verbose = true;
+if nargin > 2
+    verbose = varargin{1};
+else
+    verbose = false;
+end
 
 % get sizes
 nsamples = size(x,2);

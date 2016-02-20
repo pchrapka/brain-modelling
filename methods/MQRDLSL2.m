@@ -231,6 +231,7 @@ classdef MQRDLSL2 < handle
                     % diagonal matrix D that is then supplied to the fast
                     % givens rotation, which assumes that it's positive
                     % I think
+                    fprintf('\tresetting gammasq\n');
                     gammasq(p) = 1;
                 end
                 if isnan(gammasq(p))
