@@ -6,3 +6,4 @@
 *.eps
 **/output
 **/auto
+**/.ipynb_checkpoints
