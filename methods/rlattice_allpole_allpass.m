@@ -1,7 +1,8 @@
 function Y = rlattice_allpole_allpass(Kf,Kb,X)
 %RLATTICE_ALLPOLE_ALLPASS synthesizes white noise to AR process
-%   Y = RLATTICE_ALLPOLE_ALLPASS(Kf, Kb, X) generates an AR process from
-%   white noise with the specified reflection coefficients
+%   Y = RLATTICE_ALLPOLE_ALLPASS(Kf, Kb, X) reverse all-pole all-pass
+%   lattice filter. Generates an AR process from white noise with the
+%   specified reflection coefficients
 %
 %   See Haykin, Adaptive Filter Theory (4th Ed.), 2002, Section 3.9 p.180
 %
@@ -40,8 +41,8 @@ for j=1:nsamples
         % Note the Kf, Kb notation is from Lewis1990. Haykin has the opposite
     end
     berror(:,1) = ferror(:,1);
-    display(berror)
-    display(ferror)
+%     display(berror)
+%     display(ferror)
     
     % delay backwards error
     berrord = berror;
