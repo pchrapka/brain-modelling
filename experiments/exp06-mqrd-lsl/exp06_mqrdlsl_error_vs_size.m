@@ -14,26 +14,28 @@ params.order = 4;
 params.nsamples = 1000;
 params.nsamples_long = 10*params.nsamples;
 
-doplot = true;
+doplot = false;
 print_coefs = false;
+mse_time = false;
+mse_channels = true;
 
 results = [];
-results.Kfmse_avg = zeros(params.order, length(params.nchannels));
-results.Kbmse_avg = results.Kfmse_avg;
+[results(1:params.nchannels).Kfmse_avg] = deal(zeros(params.order,1));
+[results(1:params.nchannels).Kbmse_avg] = deal(zeros(params.order,1));
 
 for j=1:length(params.nchannels)
     order = params.order;
     nchannels = params.nchannels(j);
     nsamples = params.nsamples;
     
-    results.nchannels_name(j) = {sprintf('%d channels',nchannels)};
+    results(j).nchannels_name = {sprintf('%d channels',nchannels)};
     
     s = VAR(nchannels, order);
     s.coefs_gen();
     if ~s.coefs_stable()
         error('coefs unstable for K=%d p=%d', nchannels, order);
     end
-    results.var(j) = s;
+    results(j).var = s;
 
     %% Generate VAR
     % Simulate long signal to get a good estimate of the true reflection
@@ -136,28 +138,62 @@ for j=1:length(params.nchannels)
     end
     
     % mse at each time point average over channels
-    K_true = reshape(Kest_stationary,[order nchannels^2]);
-    K_true_repeat = repmat(shiftdim(K_true,-1),nsamples,1,1);
-    Kf_est = reshape(lattice(1).Kf, [nsamples order nchannels^2]);
-    Kfmse = mse
-    
-%     % mse
-%     Kfmse = mse_coefs(lattice(1).scale*lattice(1).Kf, Kest_stationary, 'time');
-%     Kbmse = mse_coefs(lattice(1).scale*lattice(1).Kb, Kest_stationary, 'time');
-%     for p=1:order
-%         error = Kfmse(p,:,:);
-%         results.Kfmse_avg(p,j) = mean(error(:));
-%         error = Kbmse(p,:,:);
-%         results.Kbmse_avg(p,j) = mean(error(:));
-%     end
+    if mse_channels
+        Kfmse = mse_coefs(lattice(1).scale*lattice(1).Kf, Kest_stationary, 'channels');
+        Kbmse = mse_coefs(lattice(1).scale*lattice(1).Kb, Kest_stationary, 'channels');
+        results(j).Kfmse = Kfmse;
+        results(j).Kbmse = Kbmse;
+    end
+
+    if mse_time
+        % mse
+        Kfmse = mse_coefs(lattice(1).scale*lattice(1).Kf, Kest_stationary, 'time');
+        Kbmse = mse_coefs(lattice(1).scale*lattice(1).Kb, Kest_stationary, 'time');
+        for p=1:order
+            error = Kfmse(p,:,:);
+            results(j).Kfmse_avg(p) = mean(error(:));
+            error = Kbmse(p,:,:);
+            results(j).Kbmse_avg(p) = mean(error(:));
+        end
+    end
 end
 
 %% Plot
-figure;
-for j=1:length(params.nchannels)
-    plot(1:order, results.Kfmse_avg(:,j));
-    xlabel('order');
-    ylabel('Kf avg MSE');
-    hold on;
+if mse_channels
+    figure;
+    for k=1:params.order
+        subplot(params.order,1,k);
+        for j=1:length(params.nchannels)
+            plot(1:params.nsamples, log(results(j).Kfmse(:,k)))
+            hold on;
+        end
+        ylabel(sprintf('order %d',k));
+    end
+    legend([results(:).nchannels_name]);
+    
+    figure;
+    nsamples_skip = 200;
+    for k=1:params.order
+        subplot(params.order,1,k);
+        for j=1:length(params.nchannels)
+            plot(1:params.nsamples, results(j).Kfmse(:,k))
+            xlim_cur = xlim;
+            xlim([nsamples_skip xlim_cur(2)]);
+            hold on;
+        end
+        ylabel(sprintf('order %d',k));
+    end
+    legend([results(:).nchannels_name]);
+        
 end
-legend(results.nchannels_name);
+
+if mse_time
+    figure;
+    for j=1:length(params.nchannels)
+        plot(1:order, results(j).Kfmse_avg);
+        xlabel('order');
+        ylabel('Kf avg MSE');
+        hold on;
+    end
+    legend(results.nchannels_name);
+end
