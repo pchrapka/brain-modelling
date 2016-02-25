@@ -11,6 +11,12 @@ addpath(pwd);
 addpath(fullfile(pwd,'external'));
 addpath(fullfile(pwd,'external','subaxis'));
 
+pkg_dir = fullfile(pwd,'external','biosig4octmat-3.0');
+curdir = pwd;
+cd(pkg_dir)
+biosig_installer;
+cd(curdir);
+
 % add methods directory
 addpath(fullfile(pwd,'methods'));
 
