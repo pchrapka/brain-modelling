@@ -14,7 +14,7 @@ params.nchannels = [13];%[5 10 11 12 13];
 params.order = 4;
 params.nsamples = 1000;
 
-doplot = true;
+doplot = false;
 
 for j=1:length(params.nchannels)
     order = params.order;
@@ -26,6 +26,11 @@ for j=1:length(params.nchannels)
     Kf = 0.082*ones(order, nchannels, nchannels);
     % NOTE a multiple of 0.1 is too big for the algo
     % NOTE this form tops out at 4th order and 12 channels
+    % NOTE "If the eigenvalues of $A_{1}$ have modulus less than 1, the sequence
+    % $A^{i}_1, i=0,1,... $ is absolutely summable" Lutkepohl2005, p.13
+    % If `Kf = 0.082*ones(4,13,13)`, then one eigenvalue exceeds 1. That is
+    % my problem.
+    % For VAR(p), p > 1, (2.1.9) or (2.1.12) on p.15 is more appropriate
     Kb = Kf;
 
     [~,X,noise] = gen_stationary_ar_lattice(Kf,Kb,nsamples);
