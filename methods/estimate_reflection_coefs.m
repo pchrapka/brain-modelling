@@ -1,4 +1,4 @@
-function lattice = estimate_reflection_coefs(lattice, x, varargin)
+function [lattice,errors] = estimate_reflection_coefs(lattice, x, varargin)
 %ESTIMATE_REFLECTION_COEFS estimates reflection coefficients of X
 %   [lattice] = ESTIMATE_REFLECTION_COEFS(lattice, x, [verbose])
 %   Input
@@ -32,6 +32,14 @@ function lattice = estimate_reflection_coefs(lattice, x, varargin)
 %       lattice.Kb
 %           backward reflection coefficients [Order x Samples], depending
 %           on algorithm, empty if not used
+%
+%   errors (struct array)
+%       warning messages from each iteration, struct contains the following
+%       fields:
+%       msg (string)
+%           warning message
+%       warning (boolean)
+%           
 
 if nargin > 2
     verbose = varargin{1};
@@ -68,14 +76,27 @@ for j=1:nfilters
 end
 
 % compute reflection coef estimates
+[errors(1:nsamples).warning] = deal(false);
+[errors(1:nsamples).msg] = deal('');
 for i=1:nsamples
     if verbose
         fprintf('sample %d\n',i);
     end
     
     for j=1:nfilters
+        % clear the last warning
+        lastwarn('');
+        
         % update the filter with the new measurement
         lattice(j).alg.update(x(:,i));
+        
+        % check last warning
+        [~, lastid] = lastwarn();
+        if isequal(lastid,'MATLAB:singularMatrix')
+            errors(i).warning = true;
+            errors(i).msg = lastid;
+        end
+        
         
         % copy reflection coefficients
         if isempty(lattice(j).K)

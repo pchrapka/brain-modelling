@@ -29,6 +29,7 @@ classdef VAR < handle
             obj.P = p;
             obj.A = zeros(K,K,p);
         end
+            
         
         function coefs_set(obj,A)
             %COEFS_SET sets coefficients of VAR process
@@ -62,7 +63,8 @@ classdef VAR < handle
                     % Don't know if I should include that in the
                     % coefficients
                     
-                    lambda = 2.5;
+                    %lambda = 2.5;
+                    lambda = 4;
                     for i=1:obj.P
                         obj.A(:,:,i) = (lambda^(-i))*rand(obj.K,obj.K) ...
                             - ((2*lambda)^(-i))*ones(obj.K,obj.K);
@@ -77,9 +79,19 @@ classdef VAR < handle
             end
         end
         
-        function coefs_check(obj)
-            %COEFS_CHECK checks VAR coefficients for stability
-            %   COEFS_CHECK(OBJ) checks VAR coefficients for stability
+        function stable = coefs_stable(obj,verbose)
+            %COEFS_STABLE checks VAR coefficients for stability
+            %   stable = COEFS_STABLE([verbose]) checks VAR coefficients for stability
+            %
+            %   Input
+            %   -----
+            %   verbose (boolean, optional)
+            %       toggles verbosity of function, default = false
+            %
+            %   Output
+            %   ------
+            %   stable (boolean)
+            %       true if stable, false otherwise
             %
             %   References
             %   [1] J. D. Hamilton, Time series analysis, vol. 2. Princeton
@@ -88,7 +100,53 @@ classdef VAR < handle
             %   [2] H. Lütkepohl, New Introduction to Multiple Time Series
             %   Analysis. Springer Berlin Heidelberg, 2005.
             %       Equation (2.1.9)
-
+            
+            
+            stable = false;
+            if nargin < 2
+                verbose = false;
+            end
+            
+            if obj.init
+                % Get F matrix
+                F = obj.coefs_getF();
+                
+                % Get eigenvalues
+                lambda = eig(F);
+                %disp(lambda);
+                %disp(abs(lambda));
+                
+                % Check eigenvalues
+                if max(abs(lambda)) >= 1
+                    if verbose
+                        fprintf('unstable VAR\n');
+                        disp(abs(lambda));
+                    end
+                    stable = false;
+                else
+                    if verbose
+                        fprintf('stable VAR\n');
+                        disp(abs(lambda));
+                    end
+                    stable = true;
+                end                
+            end
+            
+        end
+        
+        function F = coefs_getF(obj)
+            %COEFS_GETF builds matrix F
+            %   COEFS_GETF(OBJ) builds matrix F as defined by Hamilton
+            %   (10.1.10)
+            %
+            %   Output
+            %   ------
+            %   F (matrix)
+            %       coefficient matrix of size [K*P K*P]
+            %
+            %   References
+            %   [1] J. D. Hamilton, Time series analysis, vol. 2. Princeton
+            %   university press Princeton, 1994.
             
             % Collect coefs
             F1 = [];
@@ -121,20 +179,6 @@ classdef VAR < handle
             % Sanity check
             if ~isequal(size(F),[obj.K*obj.P obj.K*obj.P])
                 error('F has a bad size');
-            end
-            
-            % Get eigenvalues
-            lambda = eig(F);
-            disp(lambda);
-            disp(abs(lambda));
-            
-            % Check eigenvalues
-            if max(abs(lambda)) >= 1
-                fprintf('unstable VAR\n');
-                disp(abs(lambda));
-                error('eigenvalues larger than 1');
-            else
-                fprintf('stable VAR\n');
             end
         end
         
