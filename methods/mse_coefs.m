@@ -28,7 +28,7 @@ Kest_size = size(Kest);
 Ktrue_size = size(Ktrue);
 if ~isequal(length(Kest_size),length(Ktrue_size))
     % check dimension sizes
-    if isequal(Kest_size,Ktrue_size(2:end))
+    if isequal(Ktrue_size,Kest_size(2:end))
         % repeat true over nsamples
         nsamples = size(Kest,1);
         Ktrue = repmat(shiftdim(Ktrue,-1),nsamples,1,1,1);
