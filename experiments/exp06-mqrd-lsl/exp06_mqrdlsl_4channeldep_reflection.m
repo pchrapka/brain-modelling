@@ -101,7 +101,8 @@ if doplot
 end
 
 % mse
-[Kfmse, Kbmse] = mse_reflection_coefs(lattice(1), Kf, Kb, true);
+Kfmse = mse_coefs(lattice(1).scale*lattice(1).Kf, Kf, 'time');
+Kbmse = mse_coefs(lattice(1).scale*lattice(1).Kb, Kb, 'time');
 for p=1:order
     fprintf('order %d\n',p);
     fprintf('MSE Kf:\n');

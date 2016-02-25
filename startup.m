@@ -16,6 +16,7 @@ curdir = pwd;
 cd(pkg_dir)
 biosig_installer;
 cd(curdir);
+clear all;
 
 % add methods directory
 addpath(fullfile(pwd,'methods'));
