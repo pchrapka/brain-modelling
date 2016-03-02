@@ -34,7 +34,7 @@ hm = ftb.Headmodel(params_hm,'bemcp-cm');
 
 params_e = fullfile(config_dir, 'E128-cm.mat');
 e = ftb.Electrodes(params_e,'128-cm');
-e.force = true;
+e.force = false;
 
 % params_lf = fullfile(config_dir, 'L10mm-norm.mat');
 % lf = ftb.Leadfield(params_lf,'10mm-norm');

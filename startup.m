@@ -18,6 +18,11 @@ biosig_installer;
 cd(curdir);
 clear all;
 
+pkg_dir = fullfile(pwd,'external','fieldtrip-beamforming');
+fb_install
+fb_make_configs
+clear all;
+
 % add methods directory
 addpath(fullfile(pwd,'methods'));
 
