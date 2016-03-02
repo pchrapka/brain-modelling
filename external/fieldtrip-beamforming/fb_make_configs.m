@@ -1,16 +1,15 @@
-%% fb_make_configs
+function fb_make_configs()
+%FB_MAKE_CONFIGS creates default AnalysisStep configs
+%   FB_MAKE_CONFIGS creates default AnalysisStep configs
 
-curdir = pwd;
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
-if ~isequal(curdir,srcdir)
-    cd(srcdir);
-end
 
 % get configs
-config_dir = 'configs';
-files = dir(fullfile('configs','*.m'));
+files = dir(fullfile(srcdir,'configs','*.m'));
 % compile mat files
 for i=1:length(files)
     script = strrep(files(i).name, '.m', '');
     eval(script);
+end
+
 end

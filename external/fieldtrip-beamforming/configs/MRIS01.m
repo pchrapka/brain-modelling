@@ -1,10 +1,7 @@
+function MRIS01()
 % MRIS01
 
-curdir = pwd;
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
-if ~isequal(curdir,srcdir)
-    cd(srcdir);
-end
 
 cfg = [];
 % Processing options
@@ -16,6 +13,6 @@ cfg.ft_prepare_mesh.numvertices = [2000, 2000, 1000];
 % MRI data
 cfg.mri_data = fullfile(srcdir,'..','anatomy','Subject01','Subject01.mri');
 
-save('MRIS01.mat','cfg');
+save(fullfile(srcdir,'MRIS01.mat'),'cfg');
 
-cd(curdir);
+end

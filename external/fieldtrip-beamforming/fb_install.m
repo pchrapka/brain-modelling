@@ -1,28 +1,23 @@
-%% fb_install.m
+function fb_install()
+%FB_INSTALL install the fieldtrip-beamforming package
+%   FB_INSTALL install the fieldtrip-beamforming package
 
-% switch to project folder
-curdir = pwd;
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
-if ~isequal(curdir,srcdir)
-    cd(srcdir);
-end
 
-% Get the user's Matlab directory
+% add fieldtrip-beamforming
+addpath(srcdir);
+addpath(fullfile(srcdir,'configs'));
+addpath(fullfile(srcdir,'ft_extensions'));
+
+% add fieldtrip-beamforming external packages
+addpath(fullfile(srcdir,'external'));
+addpath(fullfile(srcdir,'external','phasereset'));    % add phasereset
+
+%% Add fieldtrip
+% get the user's Matlab directory
 matlab_dir = userpath;
 matlab_dir = matlab_dir(1:end-1);
 
-%% Add packages to the Matlab path
-
-% add fieldtrip-beamforming
-addpath(pwd);
-addpath(fullfile(pwd,'configs'));
-addpath(fullfile(pwd,'ft_extensions'));
-
-% add fieldtrip-beamforming external packages
-addpath(fullfile(pwd,'external'));
-addpath(fullfile(pwd,'external','phasereset'));    % add phasereset
-
-% Add fieldtrip
 % dep_path = fullfile(matlab_dir,'fieldtrip-20150127');
 dep_path = fullfile(matlab_dir,'fieldtrip-20160128');
 if ~exist(dep_path,'dir')
@@ -40,8 +35,4 @@ newpath = fullfile(dep_path, 'private_not');
 copyfile(oldpath, newpath);
 addpath(newpath);
 
-% TODO wget anatomy data, or is it available in fieldtrip?
-
-% return to working dir
-cd(curdir);
-clear all;
+end

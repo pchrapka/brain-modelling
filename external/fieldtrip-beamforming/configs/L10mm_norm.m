@@ -1,10 +1,7 @@
+function L10mm_norm()
 % L10mm_norm
 
-curdir = pwd;
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
-if ~isequal(curdir,srcdir)
-    cd(srcdir);
-end
 
 cfg = [];
 resolution = 10;
@@ -15,6 +12,6 @@ cfg.ft_prepare_leadfield.grid.zgrid = -10:resolution:120;
 % cfg.ft_prepare_leadfield.grid.resolution = 5;
 cfg.ft_prepare_leadfield.grid.unit = 'mm';
 
-save('L10mm-norm.mat','cfg');
+save(fullfile(srcdir,'L10mm-norm.mat'),'cfg');
 
-cd(curdir);
+end

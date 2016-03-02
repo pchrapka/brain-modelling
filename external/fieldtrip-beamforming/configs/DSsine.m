@@ -1,10 +1,7 @@
+function DSsine()
 % DSsine
 
-curdir = pwd;
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
-if ~isequal(curdir,srcdir)
-    cd(srcdir);
-end
 
 unit = 'mm';
 if isequal(unit, 'cm')
@@ -42,6 +39,6 @@ cfg.ft_timelockanalysis.covariancewindow = 'all';
 cfg.ft_timelockanalysis.keeptrials = 'no';
 cfg.ft_timelockanalysis.removemean = 'yes';
 
-save('DSsine.mat','cfg');
+save(fullfile(srcdir,'DSsine.mat'),'cfg');
 
-cd(curdir);
+end
