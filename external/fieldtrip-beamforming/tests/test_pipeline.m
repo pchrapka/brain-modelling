@@ -1,4 +1,4 @@
-%% test_pipeline_object
+%% test_pipeline
 
 close all;
 
@@ -29,8 +29,8 @@ params_mri = fullfile(config_dir, 'MRIS01.mat');
 m = ftb.MRI(params_mri,'S01');
 
 % Headmodel
-params_hm = fullfile(config_dir, 'HMbemcp-cm.mat');
-hm = ftb.Headmodel(params_hm,'bemcp-cm');
+params_hm = fullfile(config_dir, 'HMdipoli-cm.mat');
+hm = ftb.Headmodel(params_hm,'dipoli-cm');
 
 params_e = fullfile(config_dir, 'E128-cm.mat');
 e = ftb.Electrodes(params_e,'128-cm');
@@ -38,13 +38,26 @@ e.force = false;
 
 % params_lf = fullfile(config_dir, 'L10mm-norm.mat');
 % lf = ftb.Leadfield(params_lf,'10mm-norm');
+
+% 1cm normalized
 params_lf = fullfile(config_dir, 'L1cm-norm.mat');
 lf = ftb.Leadfield(params_lf,'1cm-norm');
+
+% % 1cm unnormalized
+% params_lf = fullfile(config_dir, 'L1cm.mat');
+% lf = ftb.Leadfield(params_lf,'1cm');
+
 lf.force = false;
 
-params_dsim = fullfile(config_dir, 'DSsine-cm.mat');
-dsim = ftb.DipoleSim(params_dsim,'sine-cm');
-dsim.force = false;
+% params_dsim = fullfile(config_dir, 'DSsine-cm.mat');
+% dsim = ftb.DipoleSim(params_dsim,'sine-cm');
+
+% multiple sources
+DSdip3_sine_cm();
+params_dsim = fullfile(config_dir, 'DSdip3-sine-cm.mat');
+dsim = ftb.DipoleSim(params_dsim,'dip3-sine-cm');
+
+dsim.force = true;
 
 % params_dsim = fullfile(config_dir, 'DSsine-test1.mat');
 % dsim = ftb.DipoleSim(params_dsim,'sine-test1');
@@ -102,7 +115,13 @@ analysis.init();
 analysis.process();
 
 figure;
+dsim.plot_data('simulated');
+
+figure;
+dsim.plot_data('timelock');
+
+figure;
 bf.plot({'brain','skull','scalp','fiducials','dipole'});
 figure;
 bf.plot_scatter([]);
-bf.plot_anatomical();
+% bf.plot_anatomical();

@@ -18,8 +18,8 @@ params_mri = fullfile(config_dir, 'MRIS01.mat');
 m = ftb.MRI(params_mri,'S01');
 
 % Headmodel
-params_hm = fullfile(config_dir, 'HMbemcp-cm.mat');
-hm = ftb.Headmodel(params_hm,'bemcp-cm');
+params_hm = fullfile(config_dir, 'HMdipoli-cm.mat');
+hm = ftb.Headmodel(params_hm,'dipoli-cm');
 
 params_e = fullfile(config_dir, 'E128-cm.mat');
 e = ftb.Electrodes(params_e,'128-cm');
@@ -64,6 +64,8 @@ analysis.add(dsim);
 % dsim.plot({'brain','skull','scalp','fiducials','dipole'});
 
 analysis.add(bf);
+analysis.init();
+analysis.process();
 
 figure;
 bf.plot({'brain','skull','scalp','fiducials','dipole'});

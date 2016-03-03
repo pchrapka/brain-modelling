@@ -183,6 +183,45 @@ classdef DipoleSim < ftb.AnalysisStep
             end
         end
         
+        function plot_data(obj,mode)
+            %   mode (string)
+            %       selects data to plot: 'simulated', 'timelock'
+            
+            switch mode
+                case 'timelock'
+                    lfObj = obj.prev;
+                    eObj = lfObj.prev;
+                    %cfg.layout = ftb.util.loadvar(eObj.elec_aligned);
+                    cfg.elecfile = eObj.elec_aligned;
+                    layout = ft_prepare_layout(cfg,[]);
+                    
+                    data = ftb.util.loadvar(obj.timelock);
+                    cfg = [];
+                    %cfg.hlim = [0 1];
+                    cfg.layout = layout;
+                    cfg.showlabels = 'yes';
+                    %ft_singleplotER(cfg, data);
+                    ft_multiplotER(cfg, data);
+                case 'simulated'
+                    lfObj = obj.prev;
+                    eObj = lfObj.prev;
+                    %cfg.layout = ftb.util.loadvar(eObj.elec_aligned);
+                    cfg.elecfile = eObj.elec_aligned;
+                    layout = ft_prepare_layout(cfg,[]);
+                    
+                    data = ftb.util.loadvar(obj.simulated);
+                    cfg = [];
+                    %cfg.hlim = [0 1];
+                    cfg.layout = layout;
+                    cfg.showlabels = 'yes';
+                    %ft_singleplotER(cfg, data);
+                    ft_multiplotER(cfg, data);
+                otherwise
+                    error(['ftb:' mfilename],...
+                        'unknown mode %s');
+            end
+        end
+        
     end
 end
 

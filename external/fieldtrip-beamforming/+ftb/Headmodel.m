@@ -124,22 +124,23 @@ classdef Headmodel < ftb.AnalysisStep
                         
                         style = {'edgecolor','none','facealpha',0.3,'facecolor','b'};
                         % Plot the scalp
-                        if isfield(vol, 'bnd')
-                            switch vol.type
-                                case 'bemcp'
-                                    ft_plot_mesh(vol.bnd(3),style{:});
-                                case 'dipoli'
-                                    ft_plot_mesh(vol.bnd(1),style{:});
-                                case 'openmeeg'
-                                    idx = vol.skin_surface;
-                                    ft_plot_mesh(vol.bnd(idx),style{:});
-                                otherwise
-                                    error(['ftb:' mfilename],...
-                                        'Which one is the scalp?');
-                            end
-                        elseif isfield(vol, 'r')
-                            style = {'facecolor','none','faceindex',false,'vertexindex', false};
-                            ft_plot_vol(vol,style{:});
+                        switch vol.type
+                            case 'bemcp'
+                                ft_plot_mesh(vol.bnd(3),style{:});
+                            case 'dipoli'
+                                ft_plot_mesh(vol.bnd(1),style{:});
+                            case 'openmeeg'
+                                idx = vol.skin_surface;
+                                ft_plot_mesh(vol.bnd(idx),style{:});
+                            case 'concentricspheres'
+                                [~,idx] = max(vol.r);
+                                voltmp = vol;
+                                voltmp.r = vol.r(idx);
+                                voltmp.cond = vol.cond(idx);
+                                ft_plot_vol(voltmp,style{:});
+                            otherwise
+                                error(['ftb:' mfilename],...
+                                    'Which one is the scalp?');
                         end
                         
                     case 'skull'
@@ -152,20 +153,25 @@ classdef Headmodel < ftb.AnalysisStep
                         
                         style = {'edgecolor','none','facealpha',0.3,'facecolor','g'};
                         % Plot the skull
-                        if isfield(vol, 'bnd')
-                            switch vol.type
-                                case {'bemcp','dipoli'}
-                                    ft_plot_mesh(vol.bnd(2),style{:});
-                                case 'openmeeg'
-                                    idx = vol.skull_surface;
-                                    ft_plot_mesh(vol.bnd(idx),style{:});
-                                otherwise
-                                    error(['ftb:' mfilename],...
-                                        'Which one is the scalp?');
-                            end
-                        else
-                            error(['ftb:' mfilename],...
-                                'Which one is the skull?');
+                        switch vol.type
+                            case {'bemcp','dipoli'}
+                                ft_plot_mesh(vol.bnd(2),style{:});
+                            case 'openmeeg'
+                                if vol.source > vol.skin_surface
+                                    idx = vol.skin_surface + 1;
+                                else
+                                    idx = vol.source + 1;
+                                end
+                                ft_plot_mesh(vol.bnd(idx),style{:});
+                            case 'concentricspheres'
+                                idx = 2;
+                                voltmp = vol;
+                                voltmp.r = vol.r(idx);
+                                voltmp.cond = vol.cond(idx);
+                                ft_plot_vol(voltmp,style{:});
+                            otherwise
+                                error(['ftb:' mfilename],...
+                                    'Which one is the scalp?');
                         end
                         
                     case 'brain'
@@ -178,22 +184,23 @@ classdef Headmodel < ftb.AnalysisStep
                         
                         style = {'edgecolor','none','facealpha',0.3,'facecolor','r'};
                         % Plot the brain
-                        if isfield(vol, 'bnd')
-                            switch vol.type
-                                case 'bemcp'
-                                    ft_plot_mesh(vol.bnd(1),style{:});
-                                case 'dipoli'
-                                    ft_plot_mesh(vol.bnd(3),style{:});
-                                case 'openmeeg'
-                                    idx = vol.source;
-                                    ft_plot_mesh(vol.bnd(idx),style{:});
-                                otherwise
-                                    error(['ftb:' mfilename],...
-                                        'Which one is the brain?');
-                            end
-                        else
-                            error(['ftb:' mfilename],...
-                                'Which one is the brain?');
+                        switch vol.type
+                            case 'bemcp'
+                                ft_plot_mesh(vol.bnd(1),style{:});
+                            case 'dipoli'
+                                ft_plot_mesh(vol.bnd(3),style{:});
+                            case 'openmeeg'
+                                idx = vol.source;
+                                ft_plot_mesh(vol.bnd(idx),style{:});
+                            case 'concentricspheres'
+                                [~,idx] = min(vol.r);
+                                voltmp = vol;
+                                voltmp.r = vol.r(idx);
+                                voltmp.cond = vol.cond(idx);
+                                ft_plot_vol(voltmp,style{:});
+                            otherwise
+                                error(['ftb:' mfilename],...
+                                    'Which one is the brain?');
                         end
                 end
             end
