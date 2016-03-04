@@ -92,17 +92,17 @@ if exist([BIOSIG_HOME,'/NaN/src'],'dir')
 end
 
 p = pwd; 
-try
-	if ~exist('OCTAVE_VERSION','builtin') && ~ispc,
-		mex -setup
-	end; 
-        if ~ispc && exist([BIOSIG_HOME,'/NaN/src'],'dir');
-        	cd([BIOSIG_HOME,'/NaN/src']);
-	        make
-	end;         
-catch 
+% try
+% 	if ~exist('OCTAVE_VERSION','builtin') && ~ispc,
+% 		mex -setup
+% 	end; 
+%         if ~ispc && exist([BIOSIG_HOME,'/NaN/src'],'dir');
+%         	cd([BIOSIG_HOME,'/NaN/src']);
+% 	        make
+% 	end;         
+% catch 
 	fprintf(1,'Compilation of Mex-files failed - precompiled binary mex-files are used instead\n'); 
-end;
+% end;
 cd(p);
 
 %%% NONFREE %%%

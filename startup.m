@@ -11,7 +11,7 @@ addpath(pwd);
 addpath(fullfile(pwd,'external'));
 addpath(fullfile(pwd,'external','subaxis'));
 
-pkg_dir = fullfile(pwd,'external','biosig4octmat-3.0');
+pkg_dir = fullfile(pwd,'external','biosig4octmat-3.0.1');
 curdir = pwd;
 cd(pkg_dir)
 biosig_installer;
@@ -26,4 +26,6 @@ fb_make_configs()
 addpath(fullfile(pwd,'methods'));
 
 % add all experiment directories
-addpath(genpath(fullfile(pwd,'experiments')));
+% FIXME i want to keep my experiments independent, so this is probably not
+% a good idea
+% addpath(genpath(fullfile(pwd,'experiments')));
