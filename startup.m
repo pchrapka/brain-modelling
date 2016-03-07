@@ -10,13 +10,14 @@ addpath(pwd);
 % add external packages
 addpath(fullfile(pwd,'external'));
 addpath(fullfile(pwd,'external','subaxis'));
+addpath(fullfile(pwd,'external','tsa'));
 
-pkg_dir = fullfile(pwd,'external','biosig4octmat-3.0.1');
-curdir = pwd;
-cd(pkg_dir)
-biosig_installer;
-cd(curdir);
-clear all;
+% pkg_dir = fullfile(pwd,'external','biosig4octmat-3.0.1');
+% curdir = pwd;
+% cd(pkg_dir)
+% biosig_installer;
+% cd(curdir);
+% clear all;
 
 addpath(fullfile(pwd,'external','fieldtrip-beamforming'));
 fb_install()
