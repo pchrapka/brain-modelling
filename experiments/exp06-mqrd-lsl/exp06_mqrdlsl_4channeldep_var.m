@@ -38,7 +38,7 @@ end
 % reflection coefficients
 
 % Estimate reflection coefs using mvar
-[AR,RC,PE] = mvar(Y', order, 13);
+[AR,RC,PE] = tsa.mvar(Y', order, 13);
 Aest = zeros(nchannels,nchannels,order);
 Kest_stationary = zeros(order,nchannels,nchannels);
 % TODO change all 3-d arrays to K,K,p
@@ -71,7 +71,7 @@ lattice = [];
 % nchannels from above
 % order from above
 lambda = 0.99;
-verbose = true;
+verbose = 1;
 % lattice(i).alg = MQRDLSL1(nchannels,order,lambda);
 lattice(i).alg = MQRDLSL2(nchannels,order,lambda);
 lattice(i).scale = 1;

@@ -13,7 +13,7 @@ nsamples = 1000;
 order = 2;
 nchannels = 4;
 
-version_coefs = 1;
+version_coefs = 3;
 switch version_coefs
     case 1
         Kf = 0.082*ones(order, nchannels, nchannels);
@@ -24,16 +24,16 @@ switch version_coefs
         Kf = (1/4)*randn(order, nchannels, nchannels);
     case 3
         Kf(1,:,:) = [...
-            -0.8205         0       0.3         0;
-            0   -0.8205         0         0;
-            -0.3         0   -0.8205         0;
-            0         0         0   -0.8205;...
+            -0.8205   0         0.3         0;
+            0         -0.8205   0           0;
+            -0.3      0         -0.8205     0;
+            0         0         0           -0.8205;...
             ];
         Kf(2,:,:) = [...
-            0.9500         0         0         0;
-            0    0.9500         0         0;
-            0         0    0.9500         0;
-            0         0         0    0.9500;...
+            0.9500    0         0         0;
+            0         0.9500    0         0;
+            0         0         0.9500    0;
+            0         0         0         0.9500;...
             ];
     case 4
         U(1,:,:) = [...
@@ -87,7 +87,7 @@ i = i+1;
 lattice = estimate_reflection_coefs(lattice, X);
 
 %% Compare true and estimated
-doplot = false;
+doplot = true;
 
 % plot
 if doplot

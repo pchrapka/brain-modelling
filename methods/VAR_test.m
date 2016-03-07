@@ -48,7 +48,7 @@ end
 
 % [AR,RC,PE] = lattice(X, p, 'BURG');  % treats each channel separately
 clc;
-[AR,RC,PE] = mvar(X', p, 13);
+[AR,RC,PE] = tsa.mvar(X', p, 13);
 if ~isequal(size(AR),[K, K*p])
     fprintf('weird output size\n');
     disp(size(AR));

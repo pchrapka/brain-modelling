@@ -13,8 +13,8 @@ function [lattice,errors] = estimate_reflection_coefs(lattice, x, varargin)
 %   x (matrix)
 %       measurements, [channels nsamples]
 %
-%   verbose (boolean, default = false)
-%       selects verbosity of output
+%   verbose (integer, default = 0)
+%       selects verbosity of output, 0,1,2
 %
 %   Output
 %   ------
@@ -44,7 +44,7 @@ function [lattice,errors] = estimate_reflection_coefs(lattice, x, varargin)
 if nargin > 2
     verbose = varargin{1};
 else
-    verbose = false;
+    verbose = 0;
 end
 
 % get sizes
@@ -79,7 +79,7 @@ end
 [errors(1:nsamples).warning] = deal(false);
 [errors(1:nsamples).msg] = deal('');
 for i=1:nsamples
-    if verbose
+    if verbose > 1
         fprintf('sample %d\n',i);
     end
     
@@ -104,6 +104,30 @@ for i=1:nsamples
             lattice(j).Kb(i,:,:,:) = lattice(j).alg.Kb;
         else
             lattice(j).K(i,:) = lattice(j).alg.K;
+        end
+    end
+end
+
+if verbose > 0
+    if sum([errors.warning]) > 0
+        error_idx = [errors.warning];
+        % get error indices
+        idx = 1:length(errors);
+        error_mat = idx(error_idx);
+        % set up formatting
+        cols = 10;
+        rows = ceil(length(error_mat)/cols);
+        if length(error_mat) < cols*rows
+            error_mat(cols*rows) = 0; % extend with 0
+        end
+        fprintf('warnings at:\n');
+        for i=1:rows
+            idx_start = (i-1)*cols + 1;
+            idx_end = idx_start -1 + cols;
+            row = error_mat(idx_start:idx_end);
+            fprintf('\t');
+            fprintf('%d ', row);
+            fprintf('\n');
         end
     end
 end

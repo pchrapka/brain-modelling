@@ -60,7 +60,7 @@ for j=1:length(params.nchannels)
     % Use lots of samples to get a good estimate of the truth
     
     % Estimate reflection coefs using mvar
-    [AR,RC,PE] = mvar(Y', order, 13);
+    [AR,RC,PE] = tsa.mvar(Y', order, 13);
     Aest = zeros(nchannels,nchannels,order);
     Kest_stationary = zeros(order,nchannels,nchannels);
     % TODO change all 3-d arrays to K,K,p
@@ -101,28 +101,7 @@ for j=1:length(params.nchannels)
     lattice.name = sprintf('MQRDLSL C%d P%d lambda=%0.2f',nchannels,order,lambda);
     
     % estimate the reflection coefficients
-    [lattice,errors] = estimate_reflection_coefs(lattice, X, verbose);
-    if sum([errors.warning]) > 0
-        error_idx = [errors.warning];
-        % get error indices
-        idx = 1:length(errors);
-        error_mat = idx(error_idx);
-        % set up formatting
-        cols = 10;
-        rows = ceil(length(error_mat)/cols);
-        if length(error_mat) < cols*rows
-            error_mat(cols*rows) = 0; % extend with 0
-        end
-        fprintf('warnings at:\n');
-        for i=1:rows
-            idx_start = (i-1)*cols + 1;
-            idx_end = idx_start -1 + cols;
-            row = error_mat(idx_start:idx_end);
-            fprintf('\t');
-            fprintf('%d ', row);
-            fprintf('\n');
-        end
-    end
+    [lattice,~] = estimate_reflection_coefs(lattice, X, verbose);
     
     %% Compare true and estimated
     
