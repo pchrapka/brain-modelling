@@ -45,8 +45,14 @@ classdef MRI < ftb.AnalysisStep
         end
         
         function obj = add_prev(obj,prev)
+            
+            % parse inputs
+            p = inputParser;
+            addRequired(p,'prev',@(x)isempty(x));
+            parse(p,prev);
+            
             % set the previous step, aka None
-            obj.prev = [];
+            obj.prev = p.Results.prev;
         end
         
         function obj = init(obj,out_folder)

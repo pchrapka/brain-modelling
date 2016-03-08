@@ -93,6 +93,13 @@ classdef TestHeadmodel < matlab.unittest.TestCase
             testCase.verifyTrue(isfield(a.prev.config, 'ft_prepare_mesh'));
         end
         
+        function test_add_prev_error(testCase)
+            a = ftb.Headmodel(testCase.params, testCase.name);
+            testCase.verifyEqual(a.prev,[]);
+            testCase.verifyError(@()a.add_prev(ftb.tests.create_test_hm()),...
+                'MATLAB:InputParser:ArgumentFailedValidation');
+        end
+        
         function test_get_name1(testCase)
             a = ftb.Headmodel(testCase.params, testCase.name);
             n = a.get_name();

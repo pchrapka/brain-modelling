@@ -92,6 +92,22 @@ classdef TestBeamformer < matlab.unittest.TestCase
             testCase.verifyTrue(isfield(a.prev.config, 'ft_dipolesimulation'));
         end
         
+        function test_add_prev2(testCase)
+            a = ftb.Beamformer(testCase.params, testCase.name);
+            testCase.verifyEqual(a.prev,[]);
+            
+            a.add_prev(ftb.tests.create_test_eeg());
+            testCase.verifyTrue(isa(a.prev,'ftb.EEG'));
+            testCase.verifyTrue(isfield(a.prev.config, 'ft_definetrial'));
+        end
+        
+        function test_add_prev_error(testCase)
+            a = ftb.Beamformer(testCase.params, testCase.name);
+            testCase.verifyEqual(a.prev,[]);
+            testCase.verifyError(@()a.add_prev(ftb.tests.create_test_leadfield()),...
+                'MATLAB:InputParser:ArgumentFailedValidation');
+        end
+        
         function test_get_name1(testCase)
             a = ftb.Beamformer(testCase.params, testCase.name);
             n = a.get_name();

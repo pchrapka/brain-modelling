@@ -1,14 +1,15 @@
-classdef Beamformer < ftb.AnalysisStep
-    %Beamformer Summary of this class goes here
+classdef EEG < ftb.AnalysisStep
+    %EEG Summary of this class goes here
     %   Detailed explanation goes here
     
     properties(SetAccess = private);
         config;
-        sourceanalysis;
+        definetrial;
+        preprocessed;
     end
     
     methods
-        function obj = Beamformer(params,name)
+        function obj = EEG(params,name)
             %   params (struct or string)
             %       struct or file name
             %
@@ -25,7 +26,7 @@ classdef Beamformer < ftb.AnalysisStep
             parse(p,params,name);
             
             % set vars
-            obj@ftb.AnalysisStep('BF');
+            obj@ftb.AnalysisStep('EEG');
             obj.name = p.Results.name;
             
             if isstruct(p.Results.params)
@@ -37,17 +38,18 @@ classdef Beamformer < ftb.AnalysisStep
                 obj.config = din.cfg;
             end
             
-            obj.sourceanalysis = '';
+            obj.definetrial = '';
+            obj.preprocessed = '';
         end
         
         function obj = add_prev(obj,prev)
             
             % parse inputs
             p = inputParser;
-            addRequired(p,'prev',@(x)isa(x,'ftb.DipoleSim') || isa(x,'ftb.EEG'));
+            addRequired(p,'prev',@(x)isa(x,'ftb.Leadfield'));
             parse(p,prev);
             
-            % set the previous step, aka DipoleSim
+            % set the previous step, aka Leadfield
             obj.prev = p.Results.prev;
         end
         
@@ -71,7 +73,8 @@ classdef Beamformer < ftb.AnalysisStep
             end            
             
             % set up file names
-            obj.sourceanalysis = fullfile(out_folder2, 'sourceanalysis.mat');
+            obj.definetrial = fullfile(out_folder2, 'definetrial.mat');
+            obj.preprocessed = fullfile(out_folder2, 'preprocessed.mat');
             
             obj.init_called = true;
         end
@@ -82,34 +85,37 @@ classdef Beamformer < ftb.AnalysisStep
                     'not initialized');
             end
             
-            % get analysis step objects
-            dsObj = obj.prev;
-            lfObj = dsObj.prev;
-            elecObj = lfObj.prev;
-            hmObj = elecObj.prev;
-            
-            if obj.check_file(obj.sourceanalysis)
-                % setup cfg
-                cfgin = obj.config.ft_sourceanalysis;
-                cfgin.elecfile = elecObj.elec_aligned;
-                cfgin.headmodel = hmObj.mri_headmodel;
-                cfgin.grid = ftb.util.loadvar(lfObj.leadfield);
-                
-                cfgin.inputfile = dsObj.timelock;
-                cfgin.outputfile = obj.sourceanalysis;
-                
-                % source analysis
-                ft_sourceanalysis(cfgin)
+            if obj.check_file(obj.definetrial)
+                % define the trial
+                data = ft_definetrial(obj.config.ft_definetrial);
+                save(obj.definetrial, 'data');
             else
-                fprintf('%s: skipping ft_sourceanalysis, already exists\n',...
+                fprintf('%s: skipping ft_definetrial, already exists\n',...
                     mfilename);
             end
+            
+            if obj.check_file(obj.preprocessed)
+                % load output of ft_definetrial
+                cfgdef = ftb.util.loadvar(obj.definetrial);
+                % copy fields from obj.config.ft_preprocessing
+                cfg = copyfields(obj.config.ft_preprocessing, cfgdef,...
+                    fieldnames(obj.config.ft_preprocessing));
+                
+                % preprocess data
+                data = ft_preprocessing(cfg);
+                save(obj.preprocessed, 'data');
+            else
+                fprintf('%s: skipping ft_preprocessing, already exists\n',...
+                    mfilename);
+            end
+            
+
         end
         
         function plot(obj, elements)
             %   elements
-            %       cell array of head model elements to be plotted from
-            %       previous stages
+            %       cell array of head model elements to be plotted:
+            %       can also include elements from previous stages
             %       'dipole'
             %       'leadfield'
             %       'electrodes'
@@ -120,6 +126,14 @@ classdef Beamformer < ftb.AnalysisStep
             %       'brain'
             %       'fiducials'
             
+            unit = 'mm';
+            
+%             for i=1:length(elements)
+%                 switch elements{i}
+%                     
+%                     case 'dipole'
+%                 end
+%             end
             
             % plot previous steps
             if ~isempty(obj.prev)
@@ -127,8 +141,19 @@ classdef Beamformer < ftb.AnalysisStep
             end
         end
         
-        plot_anatomical(obj);
-        plot_scatter(obj,cfg);
+        function plot_data(obj,mode)
+            %   mode (string)
+            %       selects data to plot: 'preprocessed'
+            
+            switch mode
+                case 'preprocessed'
+                    error('needs implementation');
+                otherwise
+                    error(['ftb:' mfilename],...
+                        'unknown mode %s',mode);
+            end
+        end
+        
     end
 end
 

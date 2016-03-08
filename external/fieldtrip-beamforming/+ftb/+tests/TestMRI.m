@@ -105,6 +105,13 @@ classdef TestMRI < matlab.unittest.TestCase
             testCase.verifyEqual(a.prev,[]);
         end
         
+        function test_add_prev_error(testCase)
+            a = ftb.MRI(testCase.params, testCase.name);
+            testCase.verifyEqual(a.prev,[]);
+            testCase.verifyError(@()a.add_prev(ftb.tests.create_test_mri()),...
+                'MATLAB:InputParser:ArgumentFailedValidation');
+        end
+        
         function test_process1(testCase)
             a = ftb.MRI(testCase.params, testCase.name);
             testCase.verifyError(@()a.process(),'ftb:MRI');
