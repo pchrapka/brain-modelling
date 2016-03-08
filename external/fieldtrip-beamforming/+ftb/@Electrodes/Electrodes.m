@@ -6,6 +6,13 @@ classdef Electrodes < ftb.AnalysisStep
         config;
         elec;
         elec_aligned;
+        
+        process_mode;
+    end
+    
+    methods(Access = private)
+        obj = process_default(obj)
+        obj = process_auto(obj)
     end
     
     methods
@@ -111,36 +118,20 @@ classdef Electrodes < ftb.AnalysisStep
                 obj.plot(elements);
             end
             
-            % Try automatic alignment
-            % Refer to http://fieldtrip.fcdonders.nl/tutorial/headmodel_eeg
-            obj.align_electrodes('fiducial');
-            
-            % Visualization - check alignment
-            h = figure;
-            elements = {'electrodes-aligned', 'electrodes-labels', 'scalp', 'fiducials'};
-            obj.plot(elements);
-            
-            % Interactive alignment
-            prompt = 'How''s it looking? Need manual alignment? (Y/n)';
-            response = input(prompt, 's');
-            if isequal(response, 'Y')
-                close(h);
-                % Refer to http://fieldtrip.fcdonders.nl/tutorial/headmodel_eeg
-                obj.align_electrodes('interactive',...
-                    'Input',obj.elec_aligned);
+            % determine process mode
+            if ~isfield(obj.config, 'ft_electroderealign')
+                obj.process_mode = 'auto';
+            else
+                obj.process_mode = 'default';
             end
             
-            % Visualization - check alignment
-            h = figure;
-            elements = {'electrodes-aligned', 'electrodes-labels', 'scalp', 'fiducials'};
-            obj.plot(elements);
-            
-            % Convert units
-            if isfield(obj.config,'units')
-                fprintf('%s: converting units to %s\n', mfilename, obj.config.units);
-                elec = ftb.util.loadvar(obj.elec_aligned);
-                elec = ft_convert_units(elec, obj.config.units);
-                save(obj.elec_aligned, 'elec');
+            switch obj.process_mode
+                case 'auto'
+                    obj.process_auto();
+                case 'default'
+                    obj.process_default();
+                otherwise
+                    error(['ftb:' mfilename], 'unknown mode %s', obj.process_mode)
             end
         end
         
@@ -160,8 +151,6 @@ classdef Electrodes < ftb.AnalysisStep
             % Load electrodes
             elec = ftb.util.loadvar(in_file);
             % Load head model obj
-            mriObj = obj.prev.prev;
-            % Load
             hmObj = obj.prev;
             
             switch type
@@ -169,22 +158,7 @@ classdef Electrodes < ftb.AnalysisStep
                 case 'fiducial'
                     % Fiducial alignment
                     
-                    % Load MRI data
-                    if isprop(mriObj, 'mri_mat')
-                        mri = ftb.util.loadvar(mriObj.mri_mat);
-                    else
-                        mri = ft_read_mri(mriObj.mri_data);
-                    end
-                    
-                    % get fiducials
-                    transm = mri.transform;
-                    fields = {'nas','lpa','rpa'};
-                    for j=1:length(fields)
-                        coord = mri.hdr.fiducial.mri.(fields{j});
-                        coord = ft_warp_apply(transm, coord, 'homogenous');
-                        pos(j,:) = coord;
-                        %str{j} = upper(fields{j});
-                    end
+                    [pos,names] = obj.get_mri_fiducials();
                     
                     % create a structure similar to a template set of electrodes
                     fid.chanpos       = pos;       % ctf-coordinates of fiducials
@@ -243,6 +217,32 @@ classdef Electrodes < ftb.AnalysisStep
             % remove Fid channels
             channels = ft_channelselection({'all','-Fid*'}, sens.label);
             
+        end
+        
+        function [pos,names] = get_mri_fiducials(obj)
+            % extracts fiducials from mri
+            
+            % load head model obj
+            hmObj = obj.prev;
+            % load mri obj
+            mriObj = hmOjb.prev;
+            
+            % Load MRI data
+            if isprop(mriObj, 'mri_mat')
+                mri = ftb.util.loadvar(mriObj.mri_mat);
+            else
+                mri = ft_read_mri(mriObj.mri_data);
+            end
+            
+            % get fiducials
+            transm = mri.transform;
+            fields = {'nas','lpa','rpa'};
+            for j=1:length(fields)
+                coord = mri.hdr.fiducial.mri.(fields{j});
+                coord = ft_warp_apply(transm, coord, 'homogenous');
+                pos(j,:) = coord;
+                names{j} = upper(fields{j});
+            end
         end
         
         function plot(obj, elements)
