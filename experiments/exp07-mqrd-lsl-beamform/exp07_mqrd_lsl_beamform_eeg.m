@@ -43,36 +43,45 @@ analysis.process();
 % Electrodes
 params_e = [];
 params_e.elec_orig = fullfile(datadir,'BC.HC.YOUTH.P020-10834.sfp');
-[pos,names] = m.get_mri_fiducials();
-% replace NAS with NZ
-for i=1:length(names)
-    if isequal(names{i},'NAS')
-        names{i} = 'NZ';
-        break;
-    end
-end
-
-% create a structure similar to a template set of electrodes
-fit = [];
-fid.chanpos = pos;          % ctf-coordinates of fiducials
-fid.label = upper(names);   % same as in elec
-fid.unit = 'mm';            % same units as mri
-
-% Alignment
-params_e.ft_electroderealign = [];
-params_e.ft_electroderealign.method = 'fiducial';
-params_e.ft_electroderealign.template = fid;
-% labels of fiducials in fid and in elec
-params_e.ft_electroderealign.fiducial = upper(names);
+% [pos,names] = m.get_mri_fiducials();
+% % replace NAS with NZ
+% for i=1:length(names)
+%     if isequal(names{i},'NAS')
+%         names{i} = 'NZ';
+%         break;
+%     end
+% end
+% 
+% % create a structure similar to a template set of electrodes
+% fit = [];
+% fid.chanpos = pos;          % ctf-coordinates of fiducials
+% fid.label = upper(names);   % same as in elec
+% fid.unit = 'mm';            % same units as mri
+% 
+% % Alignment
+% params_e.ft_electroderealign = [];
+% params_e.ft_electroderealign.method = 'fiducial';
+% params_e.ft_electroderealign.template = fid;
+% % labels of fiducials in fid and in elec
+% params_e.ft_electroderealign.fiducial = upper(names);
 [~,name_e,~] = fileparts(params_e.elec_orig);
 name_e = strrep(name_e,'BC.HC.YOUTH.','');
+
 e = ftb.Electrodes(params_e,name_e);
+e.set_fiducial_channels('NAS','NZ','LPA','LPA','RPA','RPA');
 analysis.add(e);
-e.force = true;
+e.force = false;
 
 % Process pipeline
 analysis.init();
 analysis.process();
+e.force = false;
+
+% Manually rename channel
+elec = ftb.util.loadvar(e.elec_aligned);
+idx = cellfun(@(x) isequal(x,'Afz'),elec.label);
+elec.label{idx} = 'AFz';
+save(e.elec_aligned,'elec');
 
 e.plot({'scalp','fiducials','electrodes-aligned','electrodes-labels'});
 
@@ -84,20 +93,21 @@ e.plot({'scalp','fiducials','electrodes-aligned','electrodes-labels'});
 BFlcmv_exp07();
 
 % Leadfield
-params_lf = [];
-resolution = 1;
-params_lf.ft_prepare_leadfield.normalize = 'yes';
-params_lf.ft_prepare_leadfield.grid.xgrid = -6:resolution:11;
-params_lf.ft_prepare_leadfield.grid.ygrid = -7:resolution:6;
-params_lf.ft_prepare_leadfield.grid.zgrid = -1:resolution:12;
-% params_lf.ft_prepare_leadfield.grid.resolution = 5;
-params_lf.ft_prepare_leadfield.grid.unit = 'cm';
-elec = ftb.util.loadvar(e.elec_aligned);
-params_lf.ft_prepare_leadfield.channel = ft_channelselection(...
-    {'all','-NZ','-LPA','-RPA'}, elec.label);
-% params_lf = 'L1cm-norm.mat';
+% params_lf = [];
+% resolution = 1;
+% params_lf.ft_prepare_leadfield.normalize = 'yes';
+% params_lf.ft_prepare_leadfield.grid.xgrid = -6:resolution:11;
+% params_lf.ft_prepare_leadfield.grid.ygrid = -7:resolution:6;
+% params_lf.ft_prepare_leadfield.grid.zgrid = -1:resolution:12;
+% % params_lf.ft_prepare_leadfield.grid.resolution = 5;
+% params_lf.ft_prepare_leadfield.grid.unit = 'cm';
+% elec = ftb.util.loadvar(e.elec_aligned);
+% params_lf.ft_prepare_leadfield.channel = ft_channelselection(...
+%     {'all','-NZ','-LPA','-RPA','-Afz'}, elec.label);
+params_lf = 'L1cm-norm.mat';
 lf = ftb.Leadfield(params_lf,'1cm-norm-custom');
 analysis.add(lf);
+lf.force = true;
 
 % EEG
 datafile = 'BC.HC.YOUTH.P020-10834-MMNf.eeg';
@@ -108,7 +118,6 @@ params_eeg.ft_definetrial.trialdef.eventtype = 'Stimulus';
 params_eeg.ft_definetrial.trialdef.eventvalue = {'S 11'};
 params_eeg.ft_definetrial.trialdef.prestim = 0.4; % in seconds
 params_eeg.ft_definetrial.trialdef.poststim = 1; % in seconds
-% params_eeg = ft_definetrial(params_eeg); % TODO move to EEG.process
 
 % assuming data was already processed
 params_eeg.ft_preprocessing.method = 'trial';
@@ -116,7 +125,12 @@ params_eeg.ft_preprocessing.continuous = 'no';
 params_eeg.ft_preprocessing.detrend = 'no';
 params_eeg.ft_preprocessing.demean = 'no';
 params_eeg.ft_preprocessing.channel = 'EEG';
-% data_std = ft_preprocessing(params_eeg_std); % TODO move to EEG.process
+
+params_eeg.ft_timelockanalysis.covariance = 'yes';
+params_eeg.ft_timelockanalysis.covariancewindow = 'all';
+params_eeg.ft_timelockanalysis.keeptrials = 'no';
+params_eeg.ft_timelockanalysis.removemean = 'yes';
+
 name_eeg = strrep(datafile,'BC.HC.YOUTH.','');
 name_eeg = strrep(name_eeg,'.eeg','');
 eeg = ftb.EEG(params_eeg,name_eeg);
@@ -131,6 +145,8 @@ analysis.add(bf);
 analysis.init();
 analysis.process();
 
+% FIXME NOT WORKING!!!
+% TODO Plot timelocked data
 
 %% Plot all results
 figure;
