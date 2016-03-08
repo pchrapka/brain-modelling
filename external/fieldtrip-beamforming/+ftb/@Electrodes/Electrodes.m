@@ -150,15 +150,17 @@ classdef Electrodes < ftb.AnalysisStep
             
             % Load electrodes
             elec = ftb.util.loadvar(in_file);
-            % Load head model obj
+            % load head model obj
             hmObj = obj.prev;
+            % load mri obj
+            mriObj = hmObj.prev;
             
             switch type
                 
                 case 'fiducial'
                     % Fiducial alignment
                     
-                    [pos,names] = obj.get_mri_fiducials();
+                    [pos,names] = mriObj.get_mri_fiducials();
                     
                     % create a structure similar to a template set of electrodes
                     fid.chanpos       = pos;       % ctf-coordinates of fiducials
@@ -217,32 +219,6 @@ classdef Electrodes < ftb.AnalysisStep
             % remove Fid channels
             channels = ft_channelselection({'all','-Fid*'}, sens.label);
             
-        end
-        
-        function [pos,names] = get_mri_fiducials(obj)
-            % extracts fiducials from mri
-            
-            % load head model obj
-            hmObj = obj.prev;
-            % load mri obj
-            mriObj = hmOjb.prev;
-            
-            % Load MRI data
-            if isprop(mriObj, 'mri_mat')
-                mri = ftb.util.loadvar(mriObj.mri_mat);
-            else
-                mri = ft_read_mri(mriObj.mri_data);
-            end
-            
-            % get fiducials
-            transm = mri.transform;
-            fields = {'nas','lpa','rpa'};
-            for j=1:length(fields)
-                coord = mri.hdr.fiducial.mri.(fields{j});
-                coord = ft_warp_apply(transm, coord, 'homogenous');
-                pos(j,:) = coord;
-                names{j} = upper(fields{j});
-            end
         end
         
         function plot(obj, elements)

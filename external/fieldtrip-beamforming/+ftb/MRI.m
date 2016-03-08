@@ -135,6 +135,23 @@ classdef MRI < ftb.AnalysisStep
             end
         end
         
+        function [pos,names] = get_mri_fiducials(obj)
+            % extracts fiducials from mri
+            
+            % Load MRI data
+            mri = ftb.util.loadvar(obj.mri_mat);
+            
+            % get fiducials
+            transm = mri.transform;
+            fields = {'nas','lpa','rpa'};
+            for j=1:length(fields)
+                coord = mri.hdr.fiducial.mri.(fields{j});
+                coord = ft_warp_apply(transm, coord, 'homogenous');
+                pos(j,:) = coord;
+                names{j} = upper(fields{j});
+            end
+        end
+        
         function plot(obj,elements)
             
             for i=1:length(elements)
@@ -142,17 +159,8 @@ classdef MRI < ftb.AnalysisStep
                     case 'fiducials'
                         hold on;
                         
-                        % load data
-                        mri = ftb.util.loadvar(obj.mri_mat);
-                    
-                        transm = mri.transform;
-                        fields = {'nas','lpa','rpa'};
-                        for j=1:length(fields)
-                            coord = mri.hdr.fiducial.mri.(fields{j});
-                            coord = ft_warp_apply(transm, coord, 'homogenous');
-                            pos(j,:) = coord;
-                            str{j} = upper(fields{j});
-                        end
+                        % load fiducials
+                        [pos,str] = obj.get_mri_fiducials();
                         style = 'or';
                         
                         % plot points
