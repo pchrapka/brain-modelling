@@ -2,7 +2,7 @@ classdef Headmodel < ftb.AnalysisStep
     %Headmodel Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties(SetAccess = private);
+    properties(SetAccess = private)
         config;
         mri_headmodel;
     end

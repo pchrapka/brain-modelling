@@ -2,7 +2,7 @@ classdef Beamformer < ftb.AnalysisStep
     %Beamformer Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties(SetAccess = private);
+    properties(SetAccess = private)
         config;
         sourceanalysis;
     end
@@ -83,8 +83,8 @@ classdef Beamformer < ftb.AnalysisStep
             end
             
             % get analysis step objects
-            dsObj = obj.prev;
-            lfObj = dsObj.prev;
+            eegObj = obj.prev;
+            lfObj = eegObj.prev;
             elecObj = lfObj.prev;
             hmObj = elecObj.prev;
             
@@ -95,7 +95,7 @@ classdef Beamformer < ftb.AnalysisStep
                 cfgin.headmodel = hmObj.mri_headmodel;
                 cfgin.grid = ftb.util.loadvar(lfObj.leadfield);
                 
-                cfgin.inputfile = dsObj.timelock;
+                cfgin.inputfile = eegObj.timelock;
                 cfgin.outputfile = obj.sourceanalysis;
                 
                 % source analysis

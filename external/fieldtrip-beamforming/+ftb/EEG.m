@@ -2,10 +2,11 @@ classdef EEG < ftb.AnalysisStep
     %EEG Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties(SetAccess = private);
+    properties(SetAccess = private)
         config;
         definetrial;
         preprocessed;
+        timelock;
     end
     
     methods
@@ -40,6 +41,7 @@ classdef EEG < ftb.AnalysisStep
             
             obj.definetrial = '';
             obj.preprocessed = '';
+            obj.timelock = '';
         end
         
         function obj = add_prev(obj,prev)
@@ -75,6 +77,7 @@ classdef EEG < ftb.AnalysisStep
             % set up file names
             obj.definetrial = fullfile(out_folder2, 'definetrial.mat');
             obj.preprocessed = fullfile(out_folder2, 'preprocessed.mat');
+            obj.timelock = fullfile(out_folder2, 'timelock.mat');
             
             obj.init_called = true;
         end
@@ -109,6 +112,16 @@ classdef EEG < ftb.AnalysisStep
                     mfilename);
             end
             
+            if obj.check_file(obj.timelock)
+                cfgin = obj.config.ft_timelockanalysis;
+                cfgin.inputfile = obj.preprocessed;
+                cfgin.outputfile = obj.timelock;
+                
+                ft_timelockanalysis(cfgin);
+            else
+                fprintf('%s: skipping ft_timelockanalysis, already exists\n',...
+                    mfilename);
+            end
 
         end
         

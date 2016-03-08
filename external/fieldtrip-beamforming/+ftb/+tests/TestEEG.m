@@ -60,6 +60,7 @@ classdef TestEEG < matlab.unittest.TestCase
            testCase.verifyEqual(a.init_called,false);
            testCase.verifyTrue(isempty(a.definetrial));
            testCase.verifyTrue(isempty(a.preprocessed));
+           testCase.verifyTrue(isempty(a.timelock));
         end
         
         function test_constructor2(testCase)
@@ -72,6 +73,7 @@ classdef TestEEG < matlab.unittest.TestCase
            testCase.verifyEqual(a.init_called,false);
            testCase.verifyTrue(isempty(a.definetrial));
            testCase.verifyTrue(isempty(a.preprocessed));
+           testCase.verifyTrue(isempty(a.timelock));
         end
         
         function test_init1(testCase)
@@ -87,6 +89,7 @@ classdef TestEEG < matlab.unittest.TestCase
             testCase.verifyEqual(a.init_called,true);
             testCase.verifyTrue(~isempty(a.definetrial));
             testCase.verifyTrue(~isempty(a.preprocessed));
+            testCase.verifyTrue(~isempty(a.timelock));
         end
         
         function test_init3(testCase)
@@ -99,6 +102,8 @@ classdef TestEEG < matlab.unittest.TestCase
             [pathstr,~,~] = fileparts(a.definetrial);
             testCase.verifyEqual(pathstr, fullfile(testCase.out_folder,n));
             [pathstr,~,~] = fileparts(a.preprocessed);
+            testCase.verifyEqual(pathstr, fullfile(testCase.out_folder,n));
+            [pathstr,~,~] = fileparts(a.timelock);
             testCase.verifyEqual(pathstr, fullfile(testCase.out_folder,n));
         end
         

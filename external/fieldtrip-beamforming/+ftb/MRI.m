@@ -2,7 +2,7 @@ classdef MRI < ftb.AnalysisStep
     %MRI Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties(SetAccess = private);
+    properties(SetAccess = private)
         config;
         mri_mat;
         mri_segmented;
