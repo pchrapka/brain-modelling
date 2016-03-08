@@ -1,6 +1,6 @@
 %% exp07_mqrd_lsl_beamform
 % Goal: 
-%   Apply MQRD-LSL on beamformed EEG data
+%   Apply MQRD-LSL on beamformed simulated EEG data
 
 close all;
 
