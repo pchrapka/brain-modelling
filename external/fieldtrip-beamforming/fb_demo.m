@@ -23,6 +23,7 @@ hm = ftb.Headmodel(params_hm,'dipoli-cm');
 
 params_e = fullfile(config_dir, 'E128-cm.mat');
 e = ftb.Electrodes(params_e,'128-cm');
+e.set_fiducial_channels('NAS','FidNz','LPA','FidT9','RPA','FidT10');
 e.force = false;
 
 params_lf = fullfile(config_dir, 'L1cm-norm.mat');

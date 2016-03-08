@@ -32,6 +32,7 @@ for i=1:length(params_hm)
 
     params_e = 'E128-cm.mat';
     e{i} = ftb.Electrodes(params_e,'128-cm');
+    e{i}.set_fiducial_channels('NAS','FidNz','LPA','FidT9','RPA','FidT10');
     e{i}.force = false;
 
     % 1cm normalized

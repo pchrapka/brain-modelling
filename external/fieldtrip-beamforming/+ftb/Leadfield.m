@@ -112,7 +112,8 @@ classdef Leadfield < ftb.AnalysisStep
                     % Remove fiducial channels
                     elec = ftb.util.loadvar(cfgin.elecfile);
                     cfgin.channel = ft_channelselection(...
-                        {'all','-FidNz','-FidT9','-FidT10'}, elec.label);
+                        {'all', ['-' elecObj.fid_nas], ['-' elecObj.fid_lpa],...
+                        ['-' elecObj.fid_rpa]}, elec.label);
                 end
                 
                 % Compute leadfield

@@ -7,6 +7,11 @@ classdef Electrodes < ftb.AnalysisStep
         elec;
         elec_aligned;
         
+        % fiducial channel labels
+        fid_nas;
+        fid_lpa;
+        fid_rpa;
+        
         process_mode;
     end
     
@@ -83,6 +88,11 @@ classdef Electrodes < ftb.AnalysisStep
             obj.elec = fullfile(out_folder2, 'elec.mat');
             obj.elec_aligned = fullfile(out_folder2, 'elec_aligned.mat');
             
+            if isempty(obj.fid_nas)
+                fprintf('%s: using defaults for fiducial channels\n',mfilename);
+                obj.set_fiducial_channels();
+            end
+            
             obj.init_called = true;
         end
         
@@ -135,6 +145,23 @@ classdef Electrodes < ftb.AnalysisStep
             end
         end
         
+                
+        function obj = set_fiducial_channels(obj, varargin)
+            % sets fiducial channel names
+            
+            % parse inputs
+            p = inputParser;
+            addParameter(p,'NAS','NAS',@ischar);
+            addParameter(p,'LPA','LPA',@ischar);
+            addParameter(p,'RPA','RPA',@ischar);
+            parse(p,varargin{:});
+            
+            obj.fid_nas = p.Results.NAS;
+            obj.fid_lpa = p.Results.LPA;
+            obj.fid_rpa = p.Results.RPA;
+            
+        end
+        
         function align_electrodes(obj, type, varargin)
             % Refer to http://fieldtrip.fcdonders.nl/tutorial/headmodel_eeg
             
@@ -149,7 +176,7 @@ classdef Electrodes < ftb.AnalysisStep
             out_file = p.Results.Output;
             
             % Load electrodes
-            elec = ftb.util.loadvar(in_file);
+            elecdata = ftb.util.loadvar(in_file);
             % load head model obj
             hmObj = obj.prev;
             % load mri obj
@@ -163,26 +190,31 @@ classdef Electrodes < ftb.AnalysisStep
                     [pos,names] = mriObj.get_mri_fiducials();
                     
                     % create a structure similar to a template set of electrodes
-                    fid.chanpos       = pos;       % ctf-coordinates of fiducials
-                    fid.label         = {'FidNz','FidT9','FidT10'};    % same labels as in elec
-                    fid.unit          = 'mm';                  % same units as mri
+                    fid.chanpos = pos;       % ctf-coordinates of fiducials
+                    % same labels as in elec, same order as in
+                    % get_mri_fiducials
+                    names = lower(names);
+                    for i=1:length(names)
+                        fid.label{i} = obj.(['fid_' names{i}]);
+                    end
+                    %fid.label = {obj.fid_nas, obj.fid_lpa, obj.fid_rpa};
+                    fid.unit = 'mm'; % same units as mri
                     
                     % Alignment
                     cfgin               = [];
                     cfgin.method        = 'fiducial';
                     cfgin.template      = fid;                   % see above
+                    cfgin.elec          = elecdata;
+                    % labels of fiducials in fid and in elec
+                    cfgin.fiducial      = {obj.fid_nas, obj.fid_lpa, obj.fid_rpa};
+                    elec      = ft_electroderealign(cfgin);
+                    
                     % NOTE If you want to address the warning RE
                     % cfgin.template, you need to use chanpos
                     %cfgin.target.chanpos(1,:) = nas;
                     %cfgin.target.chanpos(2,:) = lpa;
                     %cfgin.target.chanpos(3,:) = rpa;
                     %cfgin.target.label    = {'FidNz','FidT9','FidT10'};
-                    cfgin.elec          = elec;
-                    cfgin.fiducial      = {'FidNz','FidT9','FidT10'};  % labels of fiducials in fid and in elec
-                    elec      = ft_electroderealign(cfgin);
-                    
-                    % Remove the fiducial labels
-                    %         temp = ft_channelselection({'all','-FidNz','-FidT9','-FidT10'}, elec.label);
                     
                 case 'interactive'
                     % Interactive alignment
@@ -191,7 +223,7 @@ classdef Electrodes < ftb.AnalysisStep
                     
                     cfgin           = [];
                     cfgin.method    = 'interactive';
-                    cfgin.elec      = elec;
+                    cfgin.elec      = elecdata;
                     if isfield(vol, 'skin_surface')
                         cfgin.headshape = vol.bnd(vol.skin_surface);
                     else

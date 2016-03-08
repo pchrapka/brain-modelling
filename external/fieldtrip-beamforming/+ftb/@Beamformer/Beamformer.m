@@ -98,6 +98,14 @@ classdef Beamformer < ftb.AnalysisStep
                 cfgin.inputfile = eegObj.timelock;
                 cfgin.outputfile = obj.sourceanalysis;
                 
+                if ~isfield(cfgin, 'channel')
+                    % Remove fiducial channels
+                    elec = ftb.util.loadvar(cfgin.elecfile);
+                    cfgin.channel = ft_channelselection(...
+                        {'all', ['-' elecObj.fid_nas], ['-' elecObj.fid_lpa],...
+                        ['-' elecObj.fid_rpa]}, elec.label);
+                end
+                
                 % source analysis
                 ft_sourceanalysis(cfgin)
             else
