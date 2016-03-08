@@ -37,6 +37,11 @@ cfgin = [];
 cfgin.parameter = 'pow';
 interp = ft_sourceinterpolate(cfgin, sourcenai, resliced);
 
+plot_log = true;
+if plot_log
+    interp.pow = db(interp.pow,'power');
+end
+
 cfgin = [];
 cfgin.method = 'slice';
 %             cfgin.method = 'ortho';
