@@ -80,8 +80,10 @@ e.force = false;
 % Manually rename channel
 elec = ftb.util.loadvar(e.elec_aligned);
 idx = cellfun(@(x) isequal(x,'Afz'),elec.label);
-elec.label{idx} = 'AFz';
-save(e.elec_aligned,'elec');
+if any(idx)
+    elec.label{idx} = 'AFz';
+    save(e.elec_aligned,'elec');
+end
 
 e.plot({'scalp','fiducials','electrodes-aligned','electrodes-labels'});
 
@@ -107,7 +109,7 @@ BFlcmv_exp07();
 params_lf = 'L1cm-norm.mat';
 lf = ftb.Leadfield(params_lf,'1cm-norm-custom');
 analysis.add(lf);
-lf.force = true;
+lf.force = false;
 
 % EEG
 datafile = 'BC.HC.YOUTH.P020-10834-MMNf.eeg';
@@ -123,7 +125,8 @@ params_eeg.ft_definetrial.trialdef.poststim = 1; % in seconds
 params_eeg.ft_preprocessing.method = 'trial';
 params_eeg.ft_preprocessing.continuous = 'no';
 params_eeg.ft_preprocessing.detrend = 'no';
-params_eeg.ft_preprocessing.demean = 'no';
+params_eeg.ft_preprocessing.demean = 'yes';
+params_eeg.ft_preprocessing.baselinewindow = [-0.4 0];
 params_eeg.ft_preprocessing.channel = 'EEG';
 
 params_eeg.ft_timelockanalysis.covariance = 'yes';
@@ -135,6 +138,7 @@ name_eeg = strrep(datafile,'BC.HC.YOUTH.','');
 name_eeg = strrep(name_eeg,'.eeg','');
 eeg = ftb.EEG(params_eeg,name_eeg);
 analysis.add(eeg);
+eeg.force = false;
 
 % Beamformer
 params_bf = 'BFlcmv-exp07.mat';
@@ -146,11 +150,28 @@ analysis.init();
 analysis.process();
 
 % FIXME NOT WORKING!!!
-% TODO Plot timelocked data
 
 %% Plot all results
+% TODO Check individual trials
+
+% figure;
+% cfg = [];
+% cfg.datafile = fullfile(datadir,datafile);
+% cfg.continuous = 'yes';
+% ft_databrowser(cfg);
+
+% figure;
+% cfg = ftb.util.loadvar(eeg.definetrial);
+% ft_databrowser(cfg);
+
 figure;
-bf.plot({'brain','skull','scalp','fiducials'});
+eeg.plot_data('preprocessed');
+
+figure;
+eeg.plot_data('timelock');
+
+% figure;
+% bf.plot({'brain','skull','scalp','fiducials'});
 figure;
 bf.plot_scatter([]);
 bf.plot_anatomical();
