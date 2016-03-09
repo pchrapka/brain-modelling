@@ -46,7 +46,7 @@ dsObj.plot(elements);
 
 % Plot the leadfield with source analysis results
 hold on;
-lfObj = dsObj.prev;
+lfObj = obj.get_dep('ftb.Leadfield');
 % load leadfield
 leadfield = ftb.util.loadvar(lfObj.leadfield);
 % dipole is in mm

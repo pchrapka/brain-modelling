@@ -75,23 +75,48 @@ classdef AnalysisStep < handle
             
         end
         
-        function result = get_dep(obj,class_name)
-            %GET_DEP finds first dependency that matches the class name
-            %   GET_DEP finds first dependency that matches the class name
+        function result = get_dep(obj,class_name,varargin)
+            %GET_DEP finds dependencies that match the class name
+            %   GET_DEP(obj, class_name, [mode]) finds dependencies that
+            %   match the class name, mode = 'first' by default
+            %
+            %   GET_DEP(obj, class_name, 'first') finds first dependency
+            %   that matches the class name
+            %
+            %   GET_DEP(obj, class_name, 'all') finds all dependencies that
+            %   match the class name
+            %
+            %   Input
+            %   -----
+            %   mode (optional, default = 'first')
+            %       selects number of results to find
             %   
             %   Output
             %   ------
             %   result (Object)
-            %       first dependency that matches the class name, otherwise
-            %       []
+            %       mode = 'first'
+            %       first dependency that matches the class name
+            %       mode = 'all'
+            %       array of depedencies that match the class name
+            %       otherwise {}
             
-            result = [];
+                        
+            p = inputParser;
+            addOptional(p,'mode','first',...
+                @(x)any(validatestring(x,{'first','all'})));
+            parse(p,varargin{:});
+            
+            result = {};
             ptr = obj.prev;
             while ~isempty(ptr)
                 % check if class matches
                 if isa(ptr,class_name)
-                    result = ptr;
-                    break;
+                    if isequal(p.Results.mode,'first')
+                        result = ptr;
+                        break;
+                    elseif isequal(p.Results.mode,'all')
+                        result{end+1} = ptr;
+                    end
                 end
                 ptr = ptr.prev;
             end

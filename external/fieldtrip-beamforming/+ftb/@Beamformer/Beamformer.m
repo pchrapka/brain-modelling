@@ -84,10 +84,10 @@ classdef Beamformer < ftb.AnalysisStep
             end
             
             % get analysis step objects
-            eegObj = obj.prev;
-            lfObj = eegObj.prev;
-            elecObj = lfObj.prev;
-            hmObj = elecObj.prev;
+            eegObj = obj.get_dep('ftb.EEG');
+            lfObj = obj.get_dep('ftb.Leadfield');
+            elecObj = obj.get_dep('ftb.Electrodes');
+            hmObj = obj.get_dep('ftb.Headmodel');
             
             if obj.check_file(obj.sourceanalysis)
                 % setup cfg
