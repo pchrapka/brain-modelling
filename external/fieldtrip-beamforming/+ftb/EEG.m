@@ -174,7 +174,7 @@ classdef EEG < ftb.AnalysisStep
                     
                 case 'preprocessed'
                     
-                    ft_databrowser([],ftb.util.loadvar(eeg.preprocessed));
+                    ft_databrowser([],ftb.util.loadvar(obj.preprocessed));
                 otherwise
                     error(['ftb:' mfilename],...
                         'unknown mode %s',mode);

@@ -1,22 +1,16 @@
-function plot_anatomical(obj)
+function plot_anatomical(obj,varargin)
 %PLOT_ANATOMICAL plots source power on anatomical image
+%   PLOT_ANATOMICAL(obj, [method]) plots source power on anatomical images.
+%   Method can be 'slice' or 'ortho'.
+
+% parse inputs
+p = inputParser;
+p.StructExpand = false;
+addParameter(p,'method','slice',@(x)any(validatestring(x,{'slice','ortho'})));
+parse(p,varargin{:});
 
 % load source analysis
 source = ftb.util.loadvar(obj.sourceanalysis);
-
-% % load the head model
-% cfgtmp = ftb.get_stage(cfg, 'headmodel');
-% cfghm = ftb.load_config(cfgtmp.stage.full);
-% vol = ftb.util.loadvar(cfghm.files.mri_headmodel);
-
-% if isfield(cfg, 'contrast')
-%     % Load noise source
-%     cfgcopy = cfg;
-%     cfgcopy.stage.dipolesim = cfg.contrast;
-%     cfgtmp = ftb.get_stage(cfgcopy);
-%     cfgnoise = ftb.load_config(cfgtmp.stage.full);
-%     source_noise = ftb.util.loadvar(cfgnoise.files.ft_sourceanalysis.all);
-% end
 
 % get MRI object
 mriObj = obj.get_dep('ftb.MRI');
@@ -37,14 +31,13 @@ cfgin = [];
 cfgin.parameter = 'pow';
 interp = ft_sourceinterpolate(cfgin, sourcenai, resliced);
 
-plot_log = true;
+plot_log = false;
 if plot_log
     interp.pow = db(interp.pow,'power');
 end
 
 cfgin = [];
-cfgin.method = 'slice';
-%             cfgin.method = 'ortho';
+cfgin.method = p.Results.method;
 cfgin.funparameter = 'pow';
 ft_sourceplot(cfgin, interp);
 

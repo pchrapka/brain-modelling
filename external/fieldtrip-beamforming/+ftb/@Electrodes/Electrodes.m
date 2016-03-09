@@ -285,9 +285,9 @@ classdef Electrodes < ftb.AnalysisStep
                         
                         % Plot electrodes
                         if plot_labels
-                            ft_plot_sens(sens,'style','og','label','label');
+                            ft_plot_sens(sens,'style','ok','label','label');
                         else
-                            ft_plot_sens(sens,'style','og');
+                            ft_plot_sens(sens,'style','ok');
                         end
                     
                     case 'electrodes-aligned'
@@ -301,9 +301,9 @@ classdef Electrodes < ftb.AnalysisStep
                         
                         % Plot electrodes
                         if plot_labels
-                            ft_plot_sens(sens,'style','og','label','label');
+                            ft_plot_sens(sens,'style','ok','label','label');
                         else
-                            ft_plot_sens(sens,'style','og');
+                            ft_plot_sens(sens,'style','ok');
                         end
                 end
             end
