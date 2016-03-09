@@ -5,6 +5,7 @@ classdef Beamformer < ftb.AnalysisStep
     properties(SetAccess = private)
         config;
         sourceanalysis;
+        
     end
     
     methods
