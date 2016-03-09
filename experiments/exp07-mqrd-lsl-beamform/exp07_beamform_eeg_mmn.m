@@ -1,6 +1,6 @@
-%% exp07_mqrd_lsl_beamform_eeg
+%% exp07_beamform_eeg_mmn
 % Goal: 
-%   Apply MQRD-LSL on beamformed real EEG data
+%   Beamform MMN signal
 
 close all;
 
@@ -68,6 +68,7 @@ analysis.process();
 e.force = false;
 
 % Manually rename channel
+% NOTE This is why the electrodes are processed ahead of time
 elec = ftb.util.loadvar(e.elec_aligned);
 idx = cellfun(@(x) isequal(x,'Afz'),elec.label);
 if any(idx)
@@ -99,12 +100,12 @@ else
     eeg_name = subject_name;
 end
 
+% EEG Deviant
 params_eeg.ft_definetrial = [];
 params_eeg.ft_definetrial.dataset = fullfile(datadir,[subject '-MMNf.eeg']);
 % use default function
 params_eeg.ft_definetrial.trialdef.eventtype = 'Stimulus';
-params_eeg.ft_definetrial.trialdef.eventvalue = {'S 11'}; % standard
-%params_eeg.ft_definetrial.trialdef.eventvalue = {'S 16'}; % deviant
+params_eeg.ft_definetrial.trialdef.eventvalue = {'S 16'}; % deviant
 params_eeg.ft_definetrial.trialdef.prestim = 0.4; % in seconds
 params_eeg.ft_definetrial.trialdef.poststim = 1; % in seconds
 
@@ -120,9 +121,25 @@ params_eeg.ft_timelockanalysis.covariancewindow = 'poststim';
 params_eeg.ft_timelockanalysis.keeptrials = 'no';
 params_eeg.ft_timelockanalysis.removemean = 'yes';
 
-eeg = ftb.EEG(params_eeg,[eeg_name '-event']);
-analysis.add(eeg);
-eeg.force = true;
+eeg_dev = ftb.EEG(params_eeg,[eeg_name '-dev']);
+analysis.add(eeg_dev);
+eeg_dev.force = false;
+
+% EEG Standard
+% use the same params from deviant case
+params_eeg.ft_definetrial.trialdef.eventvalue = {'S 11'}; % standard
+eeg_std = ftb.EEG(params_eeg,[eeg_name '-std']);
+analysis.add(eeg_std);
+eeg_std.force = false;
+
+params_eeg_mmn = [];
+params_eeg_mmn.ft_timelockanalysis.covariance = 'yes';
+params_eeg_mmn.ft_timelockanalysis.covariancewindow = 'poststim';
+params_eeg_mmn.ft_timelockanalysis.keeptrials = 'no';
+params_eeg_mmn.ft_timelockanalysis.removemean = 'yes';
+eeg_mmn = ftb.EEGMMN(params_eeg_mmn,[eeg_name '-mmn']);
+analysis.add(eeg_mmn);
+eeg_mmn.force = false;
 
 % Beamformer
 params_bf = 'BFlcmv-exp07.mat';
@@ -145,81 +162,17 @@ analysis.process();
 % ft_databrowser(cfg);
 
 % figure;
-% cfg = ftb.util.loadvar(eeg.definetrial);
+% cfg = ftb.util.loadvar(eeg_std.definetrial);
 % ft_databrowser(cfg);
 
 % figure;
-% eeg.plot_data('preprocessed');
+% eeg_std.plot_data('preprocessed');
 % 
 % figure;
-% eeg.plot_data('timelock');
+% eeg_std.plot_data('timelock');
 
 % figure;
 % bf.plot({'brain','skull','scalp','fiducials'});
 figure;
 bf.plot_scatter([]);
 bf.plot_anatomical('method','slice');
-
-%% Extract sources of interest (SOI)
-% max_sources = 10;
-% moments = moments_max(bf.sourceanalysis, 'N', max_sources);
-% %X = moments(1:max_sources);
-% %convert moments to signals, how do i get a 1D signal from moment
-% % for now use 1st component
-% component = 1;
-% 
-% % get component from moments
-% nsamples = size(moments{1},2);
-% X = zeros(max_sources,nsamples);
-% for i=1:max_sources
-%     X(i,:) = moments{i}(component,:);
-% end
-% 
-% % Normalize variance of each channel to unit variance
-% X_norm = X./repmat(std(X,0,2),1,nsamples);
-% 
-% if ~isequal(size(X), [max_sources nsamples])
-%     disp(size(X))
-%     error('X is bad size');
-% end
-% 
-% if doplot
-%     
-% end
-% 
-% %% LSL params
-% nchannels = max_sources;
-% order = 4;
-% 
-% %% Estimate the Reflection coefficients using the MQRD-LSL algorithm
-% i=1;
-% lattice = [];
-% 
-% % nchannels from above
-% % order from above
-% lambda = 0.99;
-% verbose = 1;
-% % lattice(i).alg = MQRDLSL1(nchannels,order,lambda);
-% lattice(i).alg = MQRDLSL2(nchannels,order,lambda);
-% lattice(i).scale = 1;
-% lattice(i).name = sprintf('MQRDLSL C%d P%d lambda=%0.2f',nchannels,order,lambda);
-% i = i+1;
-% 
-% % estimate the reflection coefficients
-% lattice = estimate_reflection_coefs(lattice, X_norm, verbose);
-% 
-% %% Compare true and estimated
-% Kest_stationary = zeros(order,nchannels,nchannels);
-% 
-% % TODO get true values
-% 
-% % plot
-% if doplot
-%     for ch1=1:nchannels
-%         for ch2=ch1:nchannels
-%             figure;
-%             k_true = repmat(squeeze(Kest_stationary(:,ch1,ch2)),1,nsamples);
-%             plot_reflection_coefs(lattice, k_true, nsamples, ch1, ch2);
-%         end
-%     end
-% end
