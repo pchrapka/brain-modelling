@@ -53,7 +53,8 @@ classdef EEG < ftb.AnalysisStep
             
             % parse inputs
             p = inputParser;
-            addRequired(p,'prev',@(x)isa(x,'ftb.Leadfield') || isa(x,'ftb.EEG'));
+            addRequired(p,'prev',...
+                @(x)isa(x,'ftb.Leadfield') || isa(x,'ftb.EEG') || isa(x,'ftb.Beamformer'));
             parse(p,prev);
             
             % set the previous step, aka Leadfield

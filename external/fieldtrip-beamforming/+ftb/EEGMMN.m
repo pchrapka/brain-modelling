@@ -20,15 +20,6 @@ classdef EEGMMN < ftb.EEG
             obj@ftb.EEG(params,name);
             obj.prefix = 'EEGMMN';
             
-%             % TODO figure out from dependencies?
-%             % or specify directly
-%             % adding in forks complicates the dependency structure
-%             p1 = inputParser;
-%             addRequired(p1,'EEG1',@(x) isa(x,'ftb.EEG'));
-%             addRequired(p1,'EEG2',@(x) isa(x,'ftb.EEG'));
-%             parse(p1,obj.config.EEG);
-%             obj.EEG1 = p1.Results.EEG1;
-%             obj.EEG2 = p1.Results.EEG2;
         end
         
         function obj = add_prev(obj,prev)
@@ -53,38 +44,23 @@ classdef EEGMMN < ftb.EEG
             
             % get all EEG deps
             eeg_steps = obj.get_dep('ftb.EEG','all');
-            if length(eeg_steps) > 2
-                error(['ftb:' mfilename],...
-                    'too many EEG objects %d',length(eeg_steps));
+            nsteps = length(eeg_steps);
+            if nsteps ~= 2
+                if nsteps > 2
+                    error(['ftb:' mfilename],...
+                        'too many EEG objects %d',nsteps);
+                else
+                    error(['ftb:' mfilename],...
+                        'not enough EEG objects %d',nsteps);
+                end
             end
-            
-            % % ft_preprocessing
-            % if obj.check_file(obj.preprocessed)
-            %     eegObj1 = eeg_steps(1);
-            %     eegObj2 = eeg_steps(2);
-            %
-            %     eeg_preprocessed = ftb.util.loadvar(eegObj1.preprocessed);
-            %
-            %     eeg1 = ftb.util.loadvar(eegObj1.timelock);
-            %     eeg2 = ftb.util.loadvar(eegObj1.timelock);
-            %
-            %     eeg_preprocessed
-            %     eegout.avg = eeg1.avg - eeg2.avg;
-            %
-            %     % preprocess data
-            %     data = ft_preprocessing(cfg);
-            %     save(obj.preprocessed, 'data');
-            % else
-            %     fprintf('%s: skipping ft_preprocessing, already exists\n',...
-            %         mfilename);
-            % end
             
             % ft_timelockanalysis
             if obj.check_file(obj.timelock)
                 eegObj1 = eeg_steps{1};
                 eegObj2 = eeg_steps{2};
                 
-                % subtract the timelocked data
+                % load timelocked data
                 eeg1 = ftb.util.loadvar(eegObj1.timelock);
                 eeg2 = ftb.util.loadvar(eegObj2.timelock);
                 
@@ -94,7 +70,11 @@ classdef EEGMMN < ftb.EEG
                 
                 % create output struct
                 data = eeg1;
+                
+                % subtract the timelocked data
                 data.avg = eeg1.avg - eeg2.avg;
+                
+                % remove covariance field to recompute
                 data = rmfield(data,'cov');
                 save(obj.timelock, 'data');
                 
