@@ -116,6 +116,9 @@ switch cfg.method
             'unknown method %s', cfg.method);
 end
 
+% Check for zeros
+source_inside(source_inside == 0) = eps;
+
 markersize = 100;
 scatter3(...
     lfpos_inside(:,1),...

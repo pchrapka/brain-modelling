@@ -72,7 +72,7 @@ classdef Headmodel < ftb.AnalysisStep
             
             % set up file names
             obj.mri_headmodel = fullfile(...
-                out_folder2, ['mri_vol_' obj.config.ft_prepare_headmodel.method '.mat']);
+                out_folder2, ['mri_vol.mat']);
             
             obj.init_called = true;
         end
@@ -83,11 +83,13 @@ classdef Headmodel < ftb.AnalysisStep
                     'not initialized');
             end
             
-            % Create the head model from the segmented data
-            cfgin = obj.config.ft_prepare_headmodel;
-            inputfile = obj.prev.mri_mesh;
+            mriObj = obj.get_dep('ftb.MRI');
+            
             if obj.check_file(obj.mri_headmodel)
-                data = ftb.util.loadvar(inputfile);
+                % Create the head model from the segmented data
+                cfgin = obj.config.ft_prepare_headmodel;
+                data = ftb.util.loadvar(mriObj.mri_mesh);
+                
                 vol = ft_prepare_headmodel(cfgin, data);
                 
                 % convert units

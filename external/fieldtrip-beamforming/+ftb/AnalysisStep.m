@@ -122,6 +122,42 @@ classdef AnalysisStep < handle
             end
         end
         
+        function load_file(obj, property, filename)
+            %LOAD_FILE loads a  precomputed output file
+            %   LOAD_FILE loads a precomputed output file
+            %   
+            %   Input
+            %   -----
+            %   property (string)
+            %       object property
+            %   filename (string)
+            %       precomputed data in mat file
+            
+            if ~obj.init_called
+                error(['ftb:' mfilename],...
+                    'not initialized');
+            end
+            
+            % check property
+            if ~isprop(obj, property)
+                error(['ftb:' mfilename],...
+                    'not a property %s', property);
+            end
+            
+            % check file
+            [~,~,ext] = fileparts(filename);
+            if ~isequal(ext,'.mat')
+                error(['ftb:' mfilename],...
+                    'not sure what to do with %s file', ext);
+            end
+            
+            fprintf('%s: loading %s\n', strrep(class(obj),'ftb.',''), filename);
+            
+            % load data
+            data = ftb.util.loadvar(filename);
+            save(obj.(property),'data');
+        end
+        
     end
     
     methods (Access = protected)

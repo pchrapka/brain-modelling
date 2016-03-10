@@ -2,7 +2,7 @@ classdef EEG < ftb.AnalysisStep
     %EEG Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties(SetAccess = private)
+    properties(SetAccess = protected)
         config;
         definetrial;
         preprocessed;
@@ -127,30 +127,73 @@ classdef EEG < ftb.AnalysisStep
             end
         end
         
-        function plot_data(obj,mode)
+        function plot_data(obj,mode,varargin)
             %   mode (string)
             %       selects data to plot: 'preprocessed'
             
+            if nargin > 2
+                cfgin = varargin{1};
+            else
+                cfgin = [];
+            end
+            
             switch mode
                 case 'timelock'
+                    
                     eObj = obj.get_dep('ftb.Electrodes');
                     cfg.elecfile = eObj.elec_aligned;
                     layout = ft_prepare_layout(cfg,[]);
                     
-                    data = ftb.util.loadvar(obj.timelock);
-                    cfg = [];
-                    %cfg.hlim = [0 1];
-                    cfg.layout = layout;
-                    cfg.showlabels = 'yes';
-                    ft_multiplotER(cfg, data);
+                    %cfgin.hlim = [0 1];
+                    cfgin.layout = layout;
+                    cfgin.showlabels = 'yes';
+                    ft_multiplotER(cfgin, ftb.util.loadvar(obj.timelock));
                     
                 case 'preprocessed'
                     
-                    ft_databrowser([],ftb.util.loadvar(obj.preprocessed));
+                    ft_databrowser(cfgin,ftb.util.loadvar(obj.preprocessed));
+                    
                 otherwise
                     error(['ftb:' mfilename],...
                         'unknown mode %s',mode);
             end
+        end
+        
+        function print_labels(obj)
+            %PRINT_LABELS prints EEG and sensor labels
+            %   PRINT_LABELS prints EEG and sensor labels
+            %   Fieldtrip has bugs when the labels aren't the same order, i
+            %   think
+            
+            elecObj = obj.get_dep('ftb.Electrodes');
+            lfObj = obj.get_dep('ftb.Leadfield');
+            elec = ftb.util.loadvar(elecObj.elec_aligned);
+            lf = ftb.util.loadvar(lfObj.leadfield);
+            eeg = ftb.util.loadvar(obj.preprocessed);
+            
+            nlabels = max([length(eeg.label), length(elec.label), length(lf.label)]);
+            for i=1:nlabels
+                if i > length(eeg.label)
+                    fprintf('eeg: NA ');
+                else
+                    fprintf('eeg: %s ', eeg.label{i});
+                end
+                
+                if i > length(elec.label)
+                    fprintf('\tsens: NA ');
+                else
+                    fprintf('\tsens: %s ', elec.label{i});
+                end
+                
+                if i > length(lf.label)
+                    fprintf('\tlf: NA ');
+                else
+                    fprintf('\tlf: %s ', lf.label{i});
+                end
+                    
+                fprintf('\n');
+            end
+            
         end
         
     end

@@ -2,7 +2,7 @@ classdef Beamformer < ftb.AnalysisStep
     %Beamformer Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties(SetAccess = private)
+    properties(SetAccess = protected)
         config;
         sourceanalysis;
         
@@ -89,30 +89,8 @@ classdef Beamformer < ftb.AnalysisStep
             elecObj = obj.get_dep('ftb.Electrodes');
             hmObj = obj.get_dep('ftb.Headmodel');
             
-            if obj.check_file(obj.sourceanalysis)
-                % setup cfg
-                cfgin = obj.config.ft_sourceanalysis;
-                cfgin.elecfile = elecObj.elec_aligned;
-                cfgin.headmodel = hmObj.mri_headmodel;
-                cfgin.grid = ftb.util.loadvar(lfObj.leadfield);
-                
-                cfgin.inputfile = eegObj.timelock;
-                cfgin.outputfile = obj.sourceanalysis;
-                
-                if ~isfield(cfgin, 'channel')
-                    % Remove fiducial channels
-                    elec = ftb.util.loadvar(cfgin.elecfile);
-                    cfgin.channel = ft_channelselection(...
-                        {'all', ['-' elecObj.fid_nas], ['-' elecObj.fid_lpa],...
-                        ['-' elecObj.fid_rpa]}, elec.label);
-                end
-                
-                % source analysis
-                ft_sourceanalysis(cfgin)
-            else
-                fprintf('%s: skipping ft_sourceanalysis, already exists\n',...
-                    mfilename);
-            end
+            % process source analysis
+            obj.process_deps(eegObj,lfObj,elecObj,hmObj);
         end
         
         function plot(obj, elements)
@@ -164,6 +142,42 @@ classdef Beamformer < ftb.AnalysisStep
         plot_anatomical(obj,varargin);
         plot_scatter(obj,cfg);
         plot_moment(obj,varargin);
+    end
+    
+    methods(Access = protected)
+        function obj = process_deps(obj,eegObj,lfObj,elecObj,hmObj)
+            
+            if obj.check_file(obj.sourceanalysis)
+                % setup cfg
+                cfgin = obj.config.ft_sourceanalysis;
+                cfgin.elecfile = elecObj.elec_aligned;
+                cfgin.headmodel = hmObj.mri_headmodel;
+                cfgin.grid = ftb.util.loadvar(lfObj.leadfield);
+                if isfield(obj.config.ft_sourceanalysis,'grid')
+                    % there may some extra fields in grid from the original
+                    % config, so copy them over
+                    cfgin.grid = copyfields(obj.config.ft_sourceanalysis.grid, cfgin.grid,...
+                        fieldnames(obj.config.ft_sourceanalysis.grid));
+                end
+                
+                cfgin.inputfile = eegObj.timelock;
+                cfgin.outputfile = obj.sourceanalysis;
+                
+                if ~isfield(cfgin, 'channel')
+                    % Remove fiducial channels
+                    elec = ftb.util.loadvar(cfgin.elecfile);
+                    cfgin.channel = ft_channelselection(...
+                        {'all', ['-' elecObj.fid_nas], ['-' elecObj.fid_lpa],...
+                        ['-' elecObj.fid_rpa]}, elec.label);
+                end
+                
+                % source analysis
+                ft_sourceanalysis(cfgin)
+            else
+                fprintf('%s: skipping ft_sourceanalysis, already exists\n',...
+                    mfilename);
+            end
+        end
     end
 end
 

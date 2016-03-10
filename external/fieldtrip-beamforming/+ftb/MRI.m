@@ -95,30 +95,33 @@ classdef MRI < ftb.AnalysisStep
             end
             
             % Read the MRI
-            cfgin = [];
-            cfgin.inputfile = obj.config.mri_data;
-            cfgin.outputfile = obj.mri_mat;
-            if ~exist(cfgin.outputfile,'file')
+            if ~exist(obj.mri_mat,'file')
+                cfgin = [];
+                cfgin.inputfile = obj.config.mri_data;
+                cfgin.outputfile = obj.mri_mat;
+                
                 ft_read_mri_mat(cfgin);
             else
                 fprintf('%s: skipping ft_read_mri_mat, already exists\n',mfilename);
             end
             
             % Segment the MRI data
-            cfgin = obj.config.ft_volumesegment;
-            cfgin.inputfile = obj.mri_mat;
-            cfgin.outputfile = obj.mri_segmented;
-            if ~exist(cfgin.outputfile,'file')
+            if ~exist(obj.mri_segmented,'file')
+                cfgin = obj.config.ft_volumesegment;
+                cfgin.inputfile = obj.mri_mat;
+                cfgin.outputfile = obj.mri_segmented;
+                
                 ft_volumesegment(cfgin);
             else
                 fprintf('%s: skipping ft_volumesegment, already exists\n',mfilename);
             end
             
-            % Prep the mesh
-            cfgin = obj.config.ft_prepare_mesh;
-            cfgin.inputfile = obj.mri_segmented;
-            % cfgin.outputfile = obj.mri_mesh; % forbidden
             if obj.check_file(obj.mri_mesh)
+                % Prep the mesh
+                cfgin = obj.config.ft_prepare_mesh;
+                cfgin.inputfile = obj.mri_segmented;
+                % cfgin.outputfile = obj.mri_mesh; % forbidden
+                
                 mesh = ft_prepare_mesh(cfgin);
                 save(obj.mri_mesh, 'mesh');
                 
@@ -140,10 +143,10 @@ classdef MRI < ftb.AnalysisStep
             
             % Load MRI data
             mri = ftb.util.loadvar(obj.mri_mat);
+            fields = {'nas','lpa','rpa'};
             
             % get fiducials
             transm = mri.transform;
-            fields = {'nas','lpa','rpa'};
             for j=1:length(fields)
                 coord = mri.hdr.fiducial.mri.(fields{j});
                 coord = ft_warp_apply(transm, coord, 'homogenous');
