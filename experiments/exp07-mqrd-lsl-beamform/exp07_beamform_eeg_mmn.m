@@ -10,6 +10,7 @@ datadir = '/home/phil/projects/data-coma-richard/BC-HC-YOUTH/Cleaned';
 % subject = 'BC.HC.YOUTH.P020-10834';
 % subject = 'BC.HC.YOUTH.P021-10852';
 subject = 'BC.HC.YOUTH.P022-9913';
+% subject = 'BC.HC.YOUTH.P023-10279';
 subject_name = strrep(subject,'BC.HC.YOUTH.','');
 
 subject_specific = true;
@@ -106,14 +107,14 @@ params_eeg.ft_definetrial.dataset = fullfile(datadir,[subject '-MMNf.eeg']);
 % use default function
 params_eeg.ft_definetrial.trialdef.eventtype = 'Stimulus';
 params_eeg.ft_definetrial.trialdef.eventvalue = {'S 16'}; % deviant
-params_eeg.ft_definetrial.trialdef.prestim = 0.4; % in seconds
-params_eeg.ft_definetrial.trialdef.poststim = 1; % in seconds
+params_eeg.ft_definetrial.trialdef.prestim = 0.2; % in seconds
+params_eeg.ft_definetrial.trialdef.poststim = 0.5; % in seconds
 
 % assuming data was already processed
 params_eeg.ft_preprocessing.method = 'trial';
 params_eeg.ft_preprocessing.detrend = 'no';
 params_eeg.ft_preprocessing.demean = 'no';
-params_eeg.ft_preprocessing.baselinewindow = [-0.4 0];
+params_eeg.ft_preprocessing.baselinewindow = [-0.2 0];
 params_eeg.ft_preprocessing.channel = 'EEG';
 
 params_eeg.ft_timelockanalysis.covariance = 'yes';
@@ -121,14 +122,14 @@ params_eeg.ft_timelockanalysis.covariancewindow = 'poststim';
 params_eeg.ft_timelockanalysis.keeptrials = 'no';
 params_eeg.ft_timelockanalysis.removemean = 'yes';
 
-eeg_dev = ftb.EEG(params_eeg,[eeg_name '-dev']);
+eeg_dev = ftb.EEG(params_eeg,[eeg_name 'dev']);
 analysis.add(eeg_dev);
-eeg_dev.force = false;
+eeg_dev.force = true;
 
 % EEG Standard
 % use the same params from deviant case
 params_eeg.ft_definetrial.trialdef.eventvalue = {'S 11'}; % standard
-eeg_std = ftb.EEG(params_eeg,[eeg_name '-std']);
+eeg_std = ftb.EEG(params_eeg,[eeg_name 'std']);
 analysis.add(eeg_std);
 eeg_std.force = false;
 
@@ -137,7 +138,7 @@ params_eeg_mmn.ft_timelockanalysis.covariance = 'yes';
 params_eeg_mmn.ft_timelockanalysis.covariancewindow = 'poststim';
 params_eeg_mmn.ft_timelockanalysis.keeptrials = 'no';
 params_eeg_mmn.ft_timelockanalysis.removemean = 'yes';
-eeg_mmn = ftb.EEGMMN(params_eeg_mmn,[eeg_name '-mmn']);
+eeg_mmn = ftb.EEGMMN(params_eeg_mmn,[eeg_name 'post']);
 analysis.add(eeg_mmn);
 eeg_mmn.force = false;
 
@@ -145,6 +146,7 @@ eeg_mmn.force = false;
 params_bf = 'BFlcmv-exp07.mat';
 bf = ftb.Beamformer(params_bf,'lcmv-exp07');
 analysis.add(bf);
+bf.force = true;
 
 %% Process pipeline
 analysis.init();
@@ -154,6 +156,7 @@ analysis.process();
 
 %% Plot all results
 % TODO Check individual trials
+bf.remove_outlier(3);
 
 % figure;
 % cfg = [];
@@ -165,14 +168,27 @@ analysis.process();
 % cfg = ftb.util.loadvar(eeg_std.definetrial);
 % ft_databrowser(cfg);
 
-% figure;
-% eeg_std.plot_data('preprocessed');
-% 
-% figure;
-% eeg_std.plot_data('timelock');
+eegObj = eeg_dev;
+if isa(eegObj,'ftb.EEGMMN')
+    figure;
+    eegObj.plot_data('timelock');
+else
+    figure;
+    eegObj.plot_data('preprocessed');
+    figure;
+    eegObj.plot_data('timelock');
+end
 
 % figure;
 % bf.plot({'brain','skull','scalp','fiducials'});
 figure;
 bf.plot_scatter([]);
 bf.plot_anatomical('method','slice');
+%bf.plot_anatomical('method','ortho');
+
+figure;
+bf.plot_moment('2d-all');
+figure;
+bf.plot_moment('2d-top');
+figure;
+bf.plot_moment('1d-top');

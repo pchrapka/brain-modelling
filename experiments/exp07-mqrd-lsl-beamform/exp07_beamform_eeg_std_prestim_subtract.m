@@ -106,14 +106,14 @@ params_eeg.ft_definetrial.dataset = fullfile(datadir,[subject '-MMNf.eeg']);
 % use default function
 params_eeg.ft_definetrial.trialdef.eventtype = 'Stimulus';
 params_eeg.ft_definetrial.trialdef.eventvalue = {'S 11'}; % standard
-params_eeg.ft_definetrial.trialdef.prestim = 0.4; % in seconds
-params_eeg.ft_definetrial.trialdef.poststim = 1; % in seconds
+params_eeg.ft_definetrial.trialdef.prestim = 0.2; % in seconds
+params_eeg.ft_definetrial.trialdef.poststim = 0.5; % in seconds
 
 % assuming data was already processed
 params_eeg.ft_preprocessing.method = 'trial';
 params_eeg.ft_preprocessing.detrend = 'no';
 params_eeg.ft_preprocessing.demean = 'no';
-params_eeg.ft_preprocessing.baselinewindow = [-0.4 0];
+params_eeg.ft_preprocessing.baselinewindow = [-0.2 0];
 params_eeg.ft_preprocessing.channel = 'EEG';
 
 params_eeg.ft_timelockanalysis.covariance = 'yes';
@@ -155,6 +155,7 @@ analysis.process();
 
 %% Plot all results
 % TODO Check individual trials
+% bf.remove_outlier(10);
 
 % figure;
 % cfg = [];
@@ -166,14 +167,31 @@ analysis.process();
 % cfg = ftb.util.loadvar(eeg_std.definetrial);
 % ft_databrowser(cfg);
 
-% figure;
-% eeg_std.plot_data('preprocessed');
-% 
-% figure;
-% eeg_std.plot_data('timelock');
+% eegObj = eeg;
+% if isa(eegObj,'ftb.EEGMMN')
+%     figure;
+%     eegObj.plot_data('timelock');
+% else
+%     figure;
+%     eegObj.plot_data('preprocessed');
+%     figure;
+%     eegObj.plot_data('timelock');
+% end
 
 % figure;
 % bf.plot({'brain','skull','scalp','fiducials'});
+% figure;
+% bf.plot_scatter([]);
+% bf.plot_anatomical('method','slice');
+% %bf.plot_anatomical('method','ortho');
+% 
+% figure;
+% bf.plot_moment('2d-all');
+% figure;
+% bf.plot_moment('2d-top');
+% figure;
+% bf.plot_moment('1d-top');
+
 figure;
 bf_sub.plot_scatter([]);
 bf_prestim.plot_anatomical('method','slice');
