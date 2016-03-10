@@ -102,7 +102,6 @@ classdef EEG < ftb.AnalysisStep
             %   elements
             %       cell array of head model elements to be plotted:
             %       can also include elements from previous stages
-            %       'dipole'
             %       'leadfield'
             %       'electrodes'
             %       'electrodes-aligned'

@@ -178,9 +178,9 @@ classdef Electrodes < ftb.AnalysisStep
             % Load electrodes
             elecdata = ftb.util.loadvar(in_file);
             % load head model obj
-            hmObj = obj.prev;
+            hmObj = obj.get_dep('ftb.Headmodel');
             % load mri obj
-            mriObj = hmObj.prev;
+            mriObj = obj.get_dep('ftb.MRI');
             
             switch type
                 

@@ -66,6 +66,9 @@ classdef BeamformerSubtract < ftb.Beamformer
                 
                 % create output struct
                 data = bf1;
+                if isfield(data.avg,'mom')
+                    data.avg = rmfield(data.avg,'mom');
+                end
                 
                 % subtract the source analysis
                 data.avg.pow = bf1.avg.pow - bf2.avg.pow;

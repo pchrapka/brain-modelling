@@ -102,6 +102,53 @@ classdef Headmodel < ftb.AnalysisStep
             end
         end
         
+        function result = get_mesh(obj, type, varargin)
+            %GET_MESH returns mesh for selected surface
+            %   GET_MESH(ojb, type, [units])
+            %
+            %   Input
+            %   -----
+            %   type (string)
+            %       scalp,skull,brain
+            %   units (string, optional, default = 'cm')
+            %       mm, cm
+            
+            % parse inputs
+            p = inputParser;
+            addRequired(p,'type',@(x) any(validatestring(x,{'scalp','skull','brain'})));
+            addOptional(p,'units','cm', @(x) any(validatestring(x,{'mm','cm'})));
+            parse(p,type,varargin{:});
+            
+            % load data
+            vol = ftb.util.loadvar(obj.mri_headmodel);
+            % convert to mm
+            vol = ft_convert_units(vol, p.Results.units);
+            
+            switch p.Results.type
+                case 'scalp'
+                    switch vol.type
+                        case 'bemcp'
+                            result = vol.bnd(3);
+                        case 'dipoli'
+                            result = vol.bnd(1);
+                        case 'openmeeg'
+                            idx = vol.skin_surface;
+                            result = vol.bnd(idx);
+                        case 'concentricspheres'
+                            warning('no mesh for concentricspheres');
+                            result = [];
+                        otherwise
+                            error(['ftb:' mfilename],...
+                                'Which one is the scalp?');
+                    end
+                case 'skull'
+                    error('implement me');
+                case 'brain'
+                    error('implement me');
+            end
+            
+        end
+        
         function plot(obj, elements)
             %   elements
             %       cell array of head model elements to be plotted:

@@ -1,11 +1,9 @@
-classdef DipoleSim < ftb.AnalysisStep
+classdef DipoleSim < ftb.EEG
     %DipoleSim Summary of this class goes here
     %   Detailed explanation goes here
     
     properties(SetAccess = private);
-        config;
-        simulated;
-        timelock;
+        % other properties see ftb.EEG
     end
     
     methods
@@ -18,28 +16,9 @@ classdef DipoleSim < ftb.AnalysisStep
             %   prev (Object)
             %       previous analysis step
             
-            % parse inputs
-            p = inputParser;
-            p.StructExpand = false;
-            addRequired(p,'params');
-            addRequired(p,'name',@ischar);
-            parse(p,params,name);
-            
-            % set vars
-            obj@ftb.AnalysisStep('DS');
-            obj.name = p.Results.name;
-            
-            if isstruct(p.Results.params)
-                % Copy config
-                obj.config = p.Results.params;
-            else
-                % Load config from file
-                din = load(p.Results.params);
-                obj.config = din.cfg;
-            end
-            
-            obj.simulated = '';
-            obj.timelock = '';
+            % use EEG constructor
+            obj@ftb.EEG(params,name);
+            obj.prefix = 'DS';
         end
         
         function obj = add_prev(obj,prev)
@@ -53,32 +32,6 @@ classdef DipoleSim < ftb.AnalysisStep
             obj.prev = p.Results.prev;
         end
         
-        function obj = init(obj,out_folder)
-            
-            % parse inputs
-            p = inputParser;
-            addOptional(p,'out_folder','',@ischar);
-            parse(p,out_folder);
-            
-            % check inputs
-            if isempty(out_folder)
-                error(['ftb:' mfilename],...
-                    'please specify an output folder');
-            end
-            
-            % create folder for analysis step, name accounts for dependencies
-            out_folder2 = fullfile(out_folder, obj.get_name());
-            if ~exist(out_folder2,'dir')
-                mkdir(out_folder2)
-            end            
-            
-            % set up file names
-            obj.simulated = fullfile(out_folder2, 'simulated.mat');
-            obj.timelock = fullfile(out_folder2, 'timelock.mat');
-            
-            obj.init_called = true;
-        end
-        
         function obj = process(obj)
             if ~obj.init_called
                 error(['ftb:' mfilename],...
@@ -86,11 +39,10 @@ classdef DipoleSim < ftb.AnalysisStep
             end
             
             % get analysis step objects
-            lfObj = obj.prev;
-            elecObj = lfObj.prev;
-            hmObj = elecObj.prev;
+            elecObj = obj.get_dep('ftb.Electrodes');
+            hmObj = obj.get_dep('ftb.Headmodel');
             
-            if obj.check_file(obj.simulated)
+            if obj.check_file(obj.preprocessed)
                 % setup cfg
                 cfgin = obj.config.ft_dipolesimulation;
                 cfgin.elecfile = elecObj.elec_aligned;
@@ -104,7 +56,7 @@ classdef DipoleSim < ftb.AnalysisStep
                 
                 % simulate dipoles
                 data = ft_dipolesimulation(cfgin);
-                save(obj.simulated, 'data');
+                save(obj.preprocessed, 'data');
             else
                 fprintf('%s: skipping ft_dipolesimulation, already exists\n',...
                     mfilename);
@@ -112,7 +64,7 @@ classdef DipoleSim < ftb.AnalysisStep
             
             if obj.check_file(obj.timelock)
                 cfgin = obj.config.ft_timelockanalysis;
-                cfgin.inputfile = obj.simulated;
+                cfgin.inputfile = obj.preprocessed;
                 cfgin.outputfile = obj.timelock;
                 
                 ft_timelockanalysis(cfgin);
