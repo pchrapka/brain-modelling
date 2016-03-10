@@ -1,10 +1,10 @@
-function L1cm_norm()
-% L1cm_norm
+function L05cm_norm()
+% L05cm_norm
 
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 
 cfg = [];
-resolution = 1;
+resolution = 0.5;
 cfg.ft_prepare_leadfield.normalize = 'yes';
 cfg.ft_prepare_leadfield.grid.xgrid = -6:resolution:11;
 cfg.ft_prepare_leadfield.grid.ygrid = -7:resolution:6;

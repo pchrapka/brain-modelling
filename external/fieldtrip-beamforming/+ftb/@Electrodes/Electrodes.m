@@ -248,8 +248,9 @@ classdef Electrodes < ftb.AnalysisStep
             
             % load electrodes
             sens = ftb.util.loadvar(obj.elec_aligned);
-            % remove Fid channels
-            channels = ft_channelselection({'all','-Fid*'}, sens.label);
+            % remove fid channels
+            fidch = {'all', ['-' obj.fid_nas],['-' obj.fid_lpa],['-' obj.fid_rpa]};
+            channels = ft_channelselection(fidch, sens.label);
             
         end
         

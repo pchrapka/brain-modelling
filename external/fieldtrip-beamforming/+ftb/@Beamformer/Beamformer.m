@@ -136,8 +136,34 @@ classdef Beamformer < ftb.AnalysisStep
             end
         end
         
+        function obj = remove_outlier(obj, n)
+            %REMOVE_OUTLIER zeroes n sources with most power
+            
+            source = ftb.util.loadvar(obj.sourceanalysis);
+            pow = source.avg.pow;
+            % create an index
+            idx = 1:length(pow);
+            temp = [pow(:) idx(:)];
+            % sort by source power
+            sorted = sortrows(temp,-1);
+            sorted(isnan(sorted(:,1)),:) = [];
+            
+            fprintf('found %d: %f\n', fliplr(sorted(1:n,:))');
+            
+            % get indices of top n sources
+            idx_zero = sorted(1:n,2);
+            % zero the top most
+            pow(idx_zero) = NaN;
+            
+            % save data
+            source.avg.pow = pow;
+            save(obj.sourceanalysis,'source');
+            
+        end
+        
         plot_anatomical(obj,varargin);
         plot_scatter(obj,cfg);
+        plot_moment(obj,varargin);
     end
 end
 

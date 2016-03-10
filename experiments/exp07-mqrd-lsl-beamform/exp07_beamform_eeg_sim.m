@@ -57,8 +57,8 @@ else
     % too many
     
     % This works
-%     params_e = 'E32.mat';
-%     name_e = '32';
+    params_e = 'E32.mat';
+    name_e = '32';
     
     % Headshape method doesn't work at all
 %     params_e.elec_orig = 'GSN-HydroCel-32.sfp';
@@ -75,14 +75,14 @@ else
 %     params_e.ft_electroderealign.headshape = headshape;
 %     name_e = 'ECapM1-hs';
 
-    % Only way is to do interactive which is pretty difficult without
-    % fiducials
-    params_e.elec_orig = 'easycap-M1.txt';
-    params_e.units = 'cm';
-    params_e.ft_electroderealign.method = 'interactive';
-    headshape = hm.get_mesh('scalp','mm'); % use mm for fitting
-    params_e.ft_electroderealign.headshape = headshape;
-    name_e = 'ECapM1';
+%     % Only way is to do interactive which is pretty difficult without
+%     % fiducials
+%     params_e.elec_orig = 'easycap-M1.txt';
+%     params_e.units = 'cm';
+%     params_e.ft_electroderealign.method = 'interactive';
+%     headshape = hm.get_mesh('scalp','mm'); % use mm for fitting
+%     params_e.ft_electroderealign.headshape = headshape;
+%     name_e = 'ECapM1';
 end
 
 e = ftb.Electrodes(params_e,name_e);
@@ -98,7 +98,7 @@ else
     end
 end
 analysis.add(e);
-e.force = true;
+e.force = false;
 
 % Process pipeline
 analysis.init();
@@ -133,8 +133,10 @@ lf.force = false;
 % EEG - simulated
 params_dsim = 'DSdip3-sine-cm.mat';
 dsim = ftb.DipoleSim(params_dsim,'dip3-sine-cm');
+% params_dsim = 'DSsine-cm.mat';
+% dsim = ftb.DipoleSim(params_dsim,'sine-cm');
 analysis.add(dsim);
-dsim.force = false;
+dsim.force = true;
 
 % Beamformer
 params_bf = 'BFlcmv-exp07.mat';
@@ -173,7 +175,14 @@ end
 
 % figure;
 % bf.plot({'brain','skull','scalp','fiducials'});
+
 figure;
 bf.plot_scatter([]);
 bf.plot_anatomical('method','slice');
 
+figure;
+bf.plot_moment('2d-all');
+figure;
+bf.plot_moment('2d-top');
+figure;
+bf.plot_moment('1d-top');
