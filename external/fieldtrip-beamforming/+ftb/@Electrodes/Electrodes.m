@@ -113,7 +113,7 @@ classdef Electrodes < ftb.AnalysisStep
             
             % Load electrode data
             if obj.check_file(obj.elec)
-                data = ft_read_sens(obj.config.elec_orig);
+                data = ft_read_sens(obj.config.elec_orig,'senstype','eeg');
                 % Ensure electrode coordinates are in mm
                 data = ft_convert_units(data, 'mm'); % should be the same unit as MRI
                 % Save
