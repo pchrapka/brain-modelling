@@ -13,7 +13,8 @@ subject = 'BC.HC.YOUTH.P022-9913';
 subject_name = strrep(subject,'BC.HC.YOUTH.','');
 
 subject_specific = true;
-subject_condition = 'odd';
+subject_condition = 'std';
+% subject_condition = 'odd';
 % option_elec = 'subject';
 
 % use absolute directories
@@ -285,8 +286,8 @@ if plot_bf
     
     %figure;
     %bf_contrast.plot_scatter([]);
-    bf_contrast.plot_anatomical('method','slice','options',options);
-    bf_contrast.plot_anatomical('method','ortho','options',options);
+%     bf_contrast.plot_anatomical('method','slice','options',options);
+%     bf_contrast.plot_anatomical('method','ortho','options',options);
     bf_contrast.plot_anatomical('method','slice','options',options,'mask','max');
     bf_contrast.plot_anatomical('method','ortho','options',options,'mask','max');
     
