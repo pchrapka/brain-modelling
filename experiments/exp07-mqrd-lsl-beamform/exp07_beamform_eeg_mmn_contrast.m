@@ -29,7 +29,7 @@ analysis = ftb.AnalysisBeamformer(out_folder);
 
 %% Create and process MRI and HM
 
-hm_type = 1;
+hm_type = 3;
 
 switch hm_type
     case 1
@@ -146,9 +146,6 @@ lf.force = false;
 
 eeg_name = '';
 
-% i can't use ft_redefinetrial on averaged data
-% so... use consecutive pairs of std deviant trials
-
 % EEG Deviant
 params_eeg.ft_definetrial = [];
 params_eeg.ft_definetrial.dataset = fullfile(datadir,[subject '-MMNf.eeg']);
@@ -245,10 +242,6 @@ bf_contrast.force = false;
 %% Process pipeline
 analysis.init();
 analysis.process();
-
-%eeg_prepost.print_labels();
-
-% FIXME NOT WORKING!!!
 
 %% Plot all results
 % TODO Check individual trials
