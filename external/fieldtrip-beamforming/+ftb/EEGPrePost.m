@@ -34,7 +34,7 @@ classdef EEGPrePost < ftb.EEG
             
             % parse inputs
             p = inputParser;
-            addRequired(p,'prev',@(x)isa(x,'ftb.Leadfield'));
+            addRequired(p,'prev',@(x)isa(x,'ftb.Leadfield') || isa(x,'ftb.EEGMMN'));
             parse(p,prev);
             
             % set the previous step

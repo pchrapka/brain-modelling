@@ -55,8 +55,8 @@ classdef EEGMMN < ftb.EEG
                 end
             end
             
-            % ft_timelockanalysis
-            if obj.check_file(obj.timelock)
+            % subtract std and dev
+            if obj.check_file(obj.preprocessed)
                 eegObj1 = eeg_steps{1};
                 eegObj2 = eeg_steps{2};
                 
@@ -68,19 +68,27 @@ classdef EEGMMN < ftb.EEG
                     [eegObj1.prefix eegObj1.name], ...
                     [eegObj2.prefix eegObj2.name]);
                 
-                % create output struct
-                data = eeg1;
+                % create output struct, similar to preprocessed
+                datapre = ftb.util.loadvar(eegObj1.preprocessed);
+                data = [];
+                data.label = eeg1.label;
+                data.time = {eeg1.time};
+                data.fsample = datapre.fsample;
+                data.sampleinfo = [1 length(eeg1.time)];
                 
                 % subtract the timelocked data
-                data.avg = eeg1.avg - eeg2.avg;
+                data.trial = {eeg1.avg - eeg2.avg};
                 
-                % remove covariance field to recompute
-                data = rmfield(data,'cov');
-                save(obj.timelock, 'data');
+                % save
+                save(obj.preprocessed, 'data');
+            end
+                
+            % ft_timelockanalysis
+            if obj.check_file(obj.timelock)
                 
                 % compute covariance
                 cfgin = obj.config.ft_timelockanalysis;
-                cfgin.inputfile = obj.timelock;
+                cfgin.inputfile = obj.preprocessed;
                 cfgin.outputfile = obj.timelock;
                 
                 ft_timelockanalysis(cfgin);
