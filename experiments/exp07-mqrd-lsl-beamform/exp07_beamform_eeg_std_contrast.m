@@ -1,4 +1,4 @@
-%% exp07_beamform_eeg_std_contrast
+%% exp07_beamform_eeg_contrast
 % Goal: 
 %   Beamform EEG, Standard stimulus with prestimulus contrast
 
@@ -13,6 +13,7 @@ subject = 'BC.HC.YOUTH.P022-9913';
 subject_name = strrep(subject,'BC.HC.YOUTH.','');
 
 subject_specific = true;
+subject_condition = 'odd';
 % option_elec = 'subject';
 
 % use absolute directories
@@ -143,23 +144,37 @@ analysis.add(lf);
 lf.force = false;
 
 % EEG
-eeg_name = '';
+switch subject_condition
+    case 'std'
+        eeg_name = 'std';
+    case 'odd'
+        eeg_name = 'odd';
+    otherwise
+        error('unknown condition %s', subject_condition);
+end
 
-% EEG Standard
+% EEG
 params_eeg = [];
 params_eeg.ft_definetrial = [];
 params_eeg.ft_definetrial.dataset = fullfile(datadir,[subject '-MMNf.eeg']);
 % use default function
-params_eeg.ft_definetrial.trialdef.eventtype = 'Stimulus';
-params_eeg.ft_definetrial.trialdef.eventvalue = {'S 11'}; % standard
+switch subject_condition
+    case 'std'
+        params_eeg.ft_definetrial.trialdef.eventtype = 'Stimulus';
+        params_eeg.ft_definetrial.trialdef.eventvalue = {'S 11'}; % standard
+    case 'odd'
+        params_eeg.ft_definetrial.trialdef.eventtype = 'Stimulus';
+        params_eeg.ft_definetrial.trialdef.eventvalue = {'S 16'}; % standard
+end
 params_eeg.ft_definetrial.trialdef.prestim = 0.2; % in seconds
 params_eeg.ft_definetrial.trialdef.poststim = 0.5; % in seconds
 
 % assuming data was already processed
-params_eeg.ft_preprocessing.method = 'trial';
+%params_eeg.ft_preprocessing.method = 'trial';
+params_eeg.ft_preprocessing.continuous = 'yes';
 params_eeg.ft_preprocessing.detrend = 'no';
 params_eeg.ft_preprocessing.demean = 'yes';
-params_eeg.ft_preprocessing.baselinewindow = [-0.2 0];
+%params_eeg.ft_preprocessing.baselinewindow = [-0.2 0];
 params_eeg.ft_preprocessing.channel = 'EEG';
 
 params_eeg.ft_timelockanalysis.covariance = 'yes';
@@ -183,17 +198,17 @@ eeg_prepost.force = false;
 % Beamformer - Common
 params_bfcommon = [];
 params_bfcommon.ft_sourceanalysis.method = 'lcmv';
-params_bfcommon.ft_sourceanalysis.keepmom = 'no';
-params_bfcommon.ft_sourceanalysis.keepfilter = 'yes';
+params_bfcommon.ft_sourceanalysis.lcmv.keepmom = 'no';
+params_bfcommon.ft_sourceanalysis.lcmv.keepfilter = 'yes';
 bf_common = ftb.Beamformer(params_bfcommon,'common');
 analysis.add(bf_common);
-bf_common.force = true;
+bf_common.force = false;
 
 %% Set up contrast
 
 params_bfcontrast = [];
 params_bfcontrast.ft_sourceanalysis.method = 'lcmv';
-params_bfcontrast.ft_sourceanalysis.keepmom = 'yes';
+params_bfcontrast.ft_sourceanalysis.lcmv.keepmom = 'yes';
 bf_contrast = ftb.BeamformerContrast(params_bfcontrast,'');
 analysis.add(bf_contrast);
 bf_contrast.force = false;
@@ -263,10 +278,17 @@ plot_moment = false; % no moment in contrast
 if plot_bf
     % figure;
     % bf.plot({'brain','skull','scalp','fiducials'});
-    figure;
-    bf_contrast.plot_scatter([]);
-    bf_contrast.plot_anatomical('method','slice');
-    %bf_contrast.plot_anatomical('method','ortho');
+    
+    options = [];
+    %options.funcolorlim = [-0.2 0.2];
+    options.funcolormap = 'jet';
+    
+    %figure;
+    %bf_contrast.plot_scatter([]);
+    bf_contrast.plot_anatomical('method','slice','options',options);
+    bf_contrast.plot_anatomical('method','ortho','options',options);
+    bf_contrast.plot_anatomical('method','slice','options',options,'mask','max');
+    bf_contrast.plot_anatomical('method','ortho','options',options,'mask','max');
     
     if plot_moment
         figure;
@@ -277,13 +299,14 @@ if plot_bf
         bf_contrast.plot_moment('1d-top');
     end
     
+    options = [];
+    %options.funcolorlim = [-0.2 0.2];
+    options.funcolormap = 'jet';
     
-    % figure;
-    % bf.plot({'brain','skull','scalp','fiducials'});
-    figure;
-    bf_contrast.pre.plot_scatter([]);
-    bf_contrast.pre.plot_anatomical('method','slice');
-    %bf_contrast.pre.plot_anatomical('method','ortho');
+    %figure;
+    %bf_contrast.pre.plot_scatter([]);
+    bf_contrast.pre.plot_anatomical('method','slice','options',options);
+    bf_contrast.pre.plot_anatomical('method','ortho','options',options);
     
     if plot_moment
         figure;
@@ -294,13 +317,10 @@ if plot_bf
         bf_contrast.pre.plot_moment('1d-top');
     end
     
-    
-    % figure;
-    % bf.plot({'brain','skull','scalp','fiducials'});
-    figure;
-    bf_contrast.post.plot_scatter([]);
-    bf_contrast.post.plot_anatomical('method','slice');
-    %bf_contrast.post.plot_anatomical('method','ortho');
+    %figure;
+    %bf_contrast.post.plot_scatter([]);
+    bf_contrast.post.plot_anatomical('method','slice','options',options);
+    bf_contrast.post.plot_anatomical('method','ortho','options',options);
     
     if plot_moment
         figure;
