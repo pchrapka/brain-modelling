@@ -11,6 +11,7 @@ addpath(pwd);
 addpath(fullfile(pwd,'external'));
 addpath(fullfile(pwd,'external','subaxis'));
 addpath(fullfile(pwd,'external','tsa'));
+addpath(fullfile(pwd,'external','lumberjack'));
 
 % pkg_dir = fullfile(pwd,'external','biosig4octmat-3.0.1');
 % curdir = pwd;
