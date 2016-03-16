@@ -1,9 +1,5 @@
 %% setup paths and environment
 
-% % get the user's Matlab directory
-% matlab_dir = userpath;
-% matlab_dir = matlab_dir(1:end-1);
-
 % add the current directory
 addpath(pwd);
 
@@ -12,6 +8,7 @@ addpath(fullfile(pwd,'external'));
 addpath(fullfile(pwd,'external','subaxis'));
 addpath(fullfile(pwd,'external','tsa'));
 addpath(fullfile(pwd,'external','lumberjack'));
+addpath(fullfile(pwd,'external','export_fig'));
 
 % pkg_dir = fullfile(pwd,'external','biosig4octmat-3.0.1');
 % curdir = pwd;

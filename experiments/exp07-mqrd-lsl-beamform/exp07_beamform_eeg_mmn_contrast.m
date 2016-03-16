@@ -130,21 +130,17 @@ e.plot({'scalp','fiducials','electrodes-aligned','electrodes-labels'});
 
 %% Create the rest of the pipeline
 
-% Create custom configs
-% DSarind_cm();
-BFlcmv_exp07();
-
 % Leadfield
 % params_lf = 'L1cm-norm.mat';
 % lf = ftb.Leadfield(params_lf,'1cm-norm');
-params_lf = 'L1cm.mat';
-lf = ftb.Leadfield(params_lf,'1cm');
-% params_lf = [];
-% params_lf.ft_prepare_leadfield.normalize = 'no';
-% params_lf.ft_prepare_leadfield.tight = 'yes';
-% params_lf.ft_prepare_leadfield.grid.resolution = 1;
-% params_lf.ft_prepare_leadfield.grid.unit = 'cm';
-% lf = ftb.Leadfield(params_lf,'1cm-full');
+% params_lf = 'L1cm.mat';
+% lf = ftb.Leadfield(params_lf,'1cm');
+params_lf = [];
+params_lf.ft_prepare_leadfield.normalize = 'no';
+params_lf.ft_prepare_leadfield.tight = 'yes';
+params_lf.ft_prepare_leadfield.grid.resolution = 1;
+params_lf.ft_prepare_leadfield.grid.unit = 'cm';
+lf = ftb.Leadfield(params_lf,'1cm-full');
 analysis.add(lf);
 lf.force = false;
 
