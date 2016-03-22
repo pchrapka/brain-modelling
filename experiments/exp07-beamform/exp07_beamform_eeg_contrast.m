@@ -172,7 +172,7 @@ end
 params_eeg.ft_definetrial.trialdef.prestim = 0.2; % in seconds
 params_eeg.ft_definetrial.trialdef.poststim = 0.5; % in seconds
 
-% assuming data was already processed
+% assuming data was already de-artifacted
 %params_eeg.ft_preprocessing.method = 'trial';
 params_eeg.ft_preprocessing.continuous = 'yes';
 params_eeg.ft_preprocessing.detrend = 'no';
