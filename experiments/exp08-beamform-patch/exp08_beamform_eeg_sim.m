@@ -91,7 +91,7 @@ switch hm_type
         % process should ignore the files above
         analysis.process();
         
-        hm.plot({'scalp','skull','brain','fiducials'});
+        %hm.plot({'scalp','skull','brain','fiducials'});
 end
 
 %% Create and process the electrodes
@@ -132,7 +132,7 @@ if subject_specific
     end
 end
 
-e.plot({'scalp','fiducials','electrodes-aligned','electrodes-labels'});
+% e.plot({'scalp','fiducials','electrodes-aligned','electrodes-labels'});
 
 
 %% Leadfield
@@ -157,7 +157,14 @@ dsim = ftb.DipoleSim(params_dsim,'dip3-sine-cm');
 % params_dsim = 'DSsine-cm.mat';
 % dsim = ftb.DipoleSim(params_dsim,'sine-cm');
 analysis.add(dsim);
-dsim.force = true;
+dsim.force = false;
+
+%% Process pipeline
+analysis.init();
+analysis.process();
+
+% Could be omitted if the patch beamformer is its own class, then i can
+% access dependencies at run time
 
 %% Patch beamformer filters
 % Set up an atlas
@@ -170,7 +177,7 @@ atlas_file = fullfile(pathstr,'ROI_MNI_V4.nii');
 data = ftb.util.loadvar(dsim.timelock);
 leadfield = ftb.util.loadvar(lf.leadfield);
 patches = get_patches_aal(atlas_file);
-filters = beamform_lcmv_patch(data, leadfield, atlas_file, patches);
+filters = beamformer_lcmv_patch(data, leadfield, atlas_file, patches);
 
 
 %% Beamformer
@@ -178,7 +185,7 @@ filters = beamform_lcmv_patch(data, leadfield, atlas_file, patches);
 % BFlcmv_exp07();
 
 params_bf = [];
-params_bf.ft_sourceanalysis.filter = ; % TODO add filters
+params_bf.ft_sourceanalysis.filter = filters; % TODO add filters
 bf = ftb.Beamformer(params_bf,'lcmv-patch');
 analysis.add(bf);
 
