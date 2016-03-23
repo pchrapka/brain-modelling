@@ -94,13 +94,6 @@ switch hm_type
         hm.plot({'scalp','skull','brain','fiducials'});
 end
 
-%% Set up an atlas
-matlab_dir = userpath;
-pathstr = fullfile(matlab_dir(1:end-1),'fieldtrip-20160128','template','atlas','aal');
-atlas_file = fullfile(pathstr,'ROI_MNI_V4.nii');
-
-aal = ft_read_atlas(atlas_file);    
-
 %% Create and process the electrodes
 
 % Electrodes
@@ -142,11 +135,7 @@ end
 e.plot({'scalp','fiducials','electrodes-aligned','electrodes-labels'});
 
 
-%% Create the rest of the pipeline
-
-% Create custom configs
-% DSarind_cm();
-BFlcmv_exp07();
+%% Leadfield
 
 % Leadfield
 params_lf = [];
@@ -158,7 +147,11 @@ lf = ftb.Leadfield(params_lf,'1cm-full');
 analysis.add(lf);
 lf.force = false;
 
-% EEG - simulated
+%% EEG simulation
+
+% Create custom configs
+% DSarind_cm();
+
 params_dsim = 'DSdip3-sine-cm.mat';
 dsim = ftb.DipoleSim(params_dsim,'dip3-sine-cm');
 % params_dsim = 'DSsine-cm.mat';
@@ -166,10 +159,24 @@ dsim = ftb.DipoleSim(params_dsim,'dip3-sine-cm');
 analysis.add(dsim);
 dsim.force = true;
 
+%% Patch beamformer filters
+% Set up an atlas
+matlab_dir = userpath;
+pathstr = fullfile(matlab_dir(1:end-1),'fieldtrip-20160128','template','atlas','aal');
+atlas_file = fullfile(pathstr,'ROI_MNI_V4.nii');
+
 % TODO Compute filters
 % Needs leadfields and an atlas
+data = ftb.util.loadvar(dsim.timelock);
+leadfield = ftb.util.loadvar(lf.leadfield);
+patches = get_patches_aal(atlas_file);
+filters = beamform_lcmv_patch(data, leadfield, atlas_file, patches);
 
-% Beamformer
+
+%% Beamformer
+% Create custom config
+% BFlcmv_exp07();
+
 params_bf = [];
 params_bf.ft_sourceanalysis.filter = ; % TODO add filters
 bf = ftb.Beamformer(params_bf,'lcmv-patch');
