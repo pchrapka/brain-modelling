@@ -113,12 +113,14 @@ regions(k).patterns = {...
     };
 k = k+1;
 
+regions_all = {};
 for i=1:length(regions)
     matches_all = {};
     for j=1:length(regions(i).patterns)
         matches = regexpmatchlist(atlas.tissuelabel, regions(i).patterns{j});
         matches_all = [matches_all matches];
     end
+    regions_all = [regions_all matches_all];
     fprintf('region: %s\n',regions(i).name);
     for j=1:length(matches_all)
         fprintf('\t%s\n',matches_all{j});
@@ -128,7 +130,29 @@ for i=1:length(regions)
     title(regions(i).name);
 end
 
+plot_atlas(atlas,'nslices',30,'roi', regions_all);
+title('regions accounted for');
+
+%% left over areas
 % TODO left over
 % most of limibc lobe
 % insula
 % sub cortcal gray nuclei
+% cerebellum
+
+pattern = 'Insula.*';
+% pattern = 'Cingulum.*';
+% pattern = 'Hippo.*';
+% pattern = 'ParaHippo.*';
+% pattern = 'Amygdala.*';
+% pattern = 'Caudate.*';
+% pattern = 'Putamen.*';
+% pattern = 'Thalamus.*';
+% pattern = 'Pallidum.*';
+% pattern = 'Cerebelum.*';
+% pattern = 'Vermis.*';
+matches = regexpmatchlist(atlas.tissuelabel, pattern);
+plot_atlas(atlas,'roi',matches);
+
+name = strrep(pattern,'.*','');
+title(name);

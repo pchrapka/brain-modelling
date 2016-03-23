@@ -41,33 +41,33 @@ figure;
 rows = ceil(sqrt(nsliceplots));
 cols = ceil(nsliceplots/rows);
 for i=1:nsliceplots
-    subplot(rows,cols,i);
+    %subplot(rows,cols,i);
+    subaxis(rows, cols, i,...
+                'Spacing', 0, 'SpacingVert', 0.05, 'Padding', 0, 'Margin', 0.05);
     if isequal(p.Results.roi,'all')
         imagesc(atlas.tissue(:,:,slice_idx_plot(i)));
     else
         slice_data = atlas.tissue(:,:,slice_idx_plot(i));
-        rowsel = [];
-        colsel = [];
+
+        % create mask for selected ROIs
+        mask = zeros(size(slice_data));
         for j=1:nrois
-            [rowidx,colidx] = find(slice_data == roi_idx(j));
-            rowsel = [rowsel; rowidx];
-            colsel = [colsel; colidx];
+            % for the current ROI, set each voxel to 1
+            mask(slice_data == roi_idx(j)) = 1;
         end
         
         iscontrast = true;
         if iscontrast
-            % select specific region
-            mask = zeros(size(slice_data));
-            mask(slice_data > 0) = 0.5;
-            mask(rowsel,colsel) = 1;
-            imagesc(mask,[0 1]);
+            % apply the mask
+            slice_image = zeros(size(slice_data));
+            slice_image(slice_data > 0) = 0.5;
+            slice_image = slice_image + 0.5*mask;
+            imagesc(slice_image,[0 1]);
         else
-            % select specific region
-            mask = zeros(size(slice_data));
-            mask(rowsel,colsel) = 1;
-            slice_data = slice_data.*mask;
+            % apply the mask
+            slice_image = slice_data.*mask;
             
-            imagesc(slice_data);
+            imagesc(slice_image);
         end
     end
     axis square

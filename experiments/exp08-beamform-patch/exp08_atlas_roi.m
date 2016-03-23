@@ -24,8 +24,9 @@ end
 %% plot single roi
 
 % pattern = 'Precentral.*';
-pattern = 'Frontal_Sup_Medial_L';
-pattern = 'Precu.*';
+% pattern = 'Frontal_Sup_Medial_L';
+% pattern = 'Precu.*';
+pattern = 'Vermis.*';
 matches = regexpmatchlist(atlas.tissuelabel, pattern);
 plot_atlas(atlas,'roi',matches);
 
