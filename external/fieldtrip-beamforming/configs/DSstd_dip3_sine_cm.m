@@ -1,19 +1,19 @@
-function DSdip3_sine_cm()
-% DSdip3_sine_cm
+function DSstd_dip3_sine_cm()
+% DSstd_dip3_sine_cm
 
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 
 unit = 'cm';
 
 k = 1;
-pos(k,:) = [-5 -1 5]; % cm
+pos(k,:) = [-1 -9 4]; % cm
 mom(k,:) = pos(k,:)/norm(pos(k,:));
 k = k+1;
-pos(k,:) = [-4 4 7]; % cm
+pos(k,:) = [4 -7 5]; % cm
 % mom(k,:) = pos(k,:)/norm(pos(k,:));
 mom(k,:) = [0 0 1];
 k = k+1;
-pos(k,:) = [10 2 4]; % cm
+pos(k,:) = [2 5 4]; % cm
 % % mom(k,:) = pos(k,:)/norm(pos(k,:));
 mom(k,:) = [0 1 1];
 

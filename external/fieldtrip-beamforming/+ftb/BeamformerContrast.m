@@ -5,7 +5,7 @@ classdef BeamformerContrast < ftb.Beamformer
     properties
         pre;        % ftb.Beamformer
         post;       % ftb.Beamformer
-        % original EEG properties - describes contrast
+        % original ftb.Beamformer properties - describes contrast
     end
     
     methods

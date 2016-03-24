@@ -178,6 +178,85 @@ classdef Beamformer < ftb.AnalysisStep
                     mfilename);
             end
         end
+        
+        function plot_anatomical_deps(~,mri,source,varargin)
+            %PLOT_ANATOMICAL_DEPS plots source power on anatomical image
+            %   PLOT_ANATOMICAL_DEPS(obj, ['method', value, 'options', value]) plots source
+            %   power on anatomical images. Method can be 'slice' or 'ortho'.
+            %
+            %   Input
+            %   -----
+            %   mri (struct)
+            %       mri data, ftb.MRI.mri_mat
+            %   source (struct)
+            %       source analysis data, ftb.Beamformer.sourceanalysis
+            %
+            %   Parameters
+            %   ----------
+            %   method (default = 'slice')
+            %       plotting method: slice or ortho
+            %   options (struct)
+            %       options for ft_sourceplot, see ft_sourceplot
+            %   mask (default = 'none')
+            %       mask for functional data, if using this opt
+            %       thresh - plots values above a threshold
+            %       none - no mask
+            %   thresh (default = 0.5)
+            %       threshold for mask = 'thresh', calculated as a factor
+            %       of the maximum power
+            
+            % parse inputs
+            p = inputParser;
+            p.StructExpand = false;
+            addParameter(p,'method','slice',@(x)any(validatestring(x,{'slice','ortho'})));
+            addParameter(p,'options',[]);
+            addParameter(p,'mask','none',@(x)any(validatestring(x,{'thresh','none'})));
+            addParameter(p,'thresh',0.5,@isnumeric);
+            parse(p,varargin{:});
+            
+            % reslice
+            % TODO save instead of redoing
+            cfgin = [];
+            resliced = ft_volumereslice(cfgin, mri);
+            
+            if isfield(source,'time')
+                source = rmfield(source,'time');
+            end
+            
+            % interpolate
+            cfgin = [];
+            cfgin.parameter = 'pow';
+            interp = ft_sourceinterpolate(cfgin, source, resliced);
+            
+            % data transformation
+            plot_log = false;
+            if plot_log
+                interp.pow = db(interp.pow,'power');
+            end
+            
+            % source plot
+            cfgplot = [];
+            if ~isempty(p.Results.options)
+                % copy options
+                cfgplot = copyfields(p.Results.options, cfgplot, fieldnames(p.Results.options));
+            end
+            
+            if isfield(cfgplot,'mask') && ~isempty(p.Results.mask)
+                warning('overwriting mask field');
+            end
+            switch p.Results.mask
+                case 'thresh'
+                    fprintf('creating mask\n');
+                    cfgplot.maskparameter = 'mask';
+                    interp.mask = interp.pow > max(interp.pow(:))*p.Results.thresh;
+                case 'none'
+                    % none
+            end
+            
+            cfgplot.method = p.Results.method;
+            cfgplot.funparameter = 'pow';
+            ft_sourceplot(cfgplot, interp);
+        end
     end
 end
 

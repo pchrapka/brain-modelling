@@ -43,10 +43,26 @@ classdef DipoleSim < ftb.EEG
             hmObj = obj.get_dep('ftb.Headmodel');
             
             if obj.check_file(obj.preprocessed)
+                hm = ftb.util.loadvar(hmObj.mri_headmodel);
+                elec = ftb.util.loadvar(elecObj.elec_aligned);
+                
+                % convert units of headmodel and elec to match dip units
+                if isfield(obj.config.ft_dipolesimulation,'dip')
+                    if isfield(obj.config.ft_dipolesimulation.dip,'unit')
+                        units = obj.config.ft_dipolesimulation.dip.unit;
+                        fprintf('%s: converting units to %s\n', mfilename, units);
+                        hm = ft_convert_units(hm, units);
+                        elec = ft_convert_units(elec, units);
+                    else
+                        warning(['ftb:' mfilename],...
+                            'units not specified in dipole params');
+                    end
+                end
+                
                 % setup cfg
                 cfgin = obj.config.ft_dipolesimulation;
-                cfgin.elecfile = elecObj.elec_aligned;
-                cfgin.headmodel = hmObj.mri_headmodel;
+                cfgin.elec = elec;
+                cfgin.headmodel = hm;
                 
                 % remove fiducial channels
                 if ~isfield(cfgin, 'channel')
