@@ -4,7 +4,16 @@
 
 close all;
 
-doplot = true;
+% plot flags
+plot_beampattern = false;
+plot_beampattern_save = false;
+
+plot_patch_resolution = false;
+plot_patch_resolution_save = false;
+
+% beamformer type
+% bf_type = 'regular';
+bf_type = 'patch';
 
 datadir = '/home/phil/projects/data-coma-richard/BC-HC-YOUTH/Cleaned';
 % subject = 'BC.HC.YOUTH.P020-10834';
@@ -30,6 +39,7 @@ analysis = ftb.AnalysisBeamformer(out_folder);
 %% Create and process MRI and HM
 
 hm_type = 3;
+% NOTE other headmodels won't work until they're in MNI coordinates
 
 switch hm_type
     case 1
@@ -134,7 +144,6 @@ end
 
 % e.plot({'scalp','fiducials','electrodes-aligned','electrodes-labels'});
 
-
 %% Leadfield
 
 % Leadfield
@@ -143,7 +152,7 @@ params_lf.ft_prepare_leadfield.normalize = 'yes';
 params_lf.ft_prepare_leadfield.tight = 'yes';
 params_lf.ft_prepare_leadfield.grid.resolution = 1;
 params_lf.ft_prepare_leadfield.grid.unit = 'cm';
-lf = ftb.Leadfield(params_lf,'1cm-full');
+lf = ftb.Leadfield(params_lf,'1cm-norm-tight');
 analysis.add(lf);
 lf.force = false;
 
@@ -151,84 +160,128 @@ lf.force = false;
 
 % Create custom configs
 % DSarind_cm();
-
-params_dsim = 'DSdip3-sine-cm.mat';
-dsim = ftb.DipoleSim(params_dsim,'dip3-sine-cm');
-% params_dsim = 'DSsine-cm.mat';
-% dsim = ftb.DipoleSim(params_dsim,'sine-cm');
+switch m.name
+    case 'std'
+        DSstd_dip3_sine_cm();
+        params_dsim = 'DSstd-dip3-sine-cm.mat';
+        dsim = ftb.DipoleSim(params_dsim,'std-dip3-sine-cm');
+    otherwise
+        params_dsim = 'DSdip3-sine-cm.mat';
+        dsim = ftb.DipoleSim(params_dsim,'dip3-sine-cm');
+end
 analysis.add(dsim);
-dsim.force = false;
+dsim.force = true;
 
-%% Process pipeline
-analysis.init();
-analysis.process();
+% % Process pipeline to check dipole locations
+% analysis.init();
+% analysis.process();
+% 
+% % Can be ommitted
+% if exist('dsim','var')
+%     figure;
+%     dsim.plot({'brain','skull','scalp','fiducials','dipole'});
+% end
 
-% Could be omitted if the patch beamformer is its own class, then i can
-% access dependencies at run time
+%% Patch beamformer
 
-%% Patch beamformer filters
-% Set up an atlas
-matlab_dir = userpath;
-pathstr = fullfile(matlab_dir(1:end-1),'fieldtrip-20160128','template','atlas','aal');
-atlas_file = fullfile(pathstr,'ROI_MNI_V4.nii');
-
-% TODO Compute filters
-% Needs leadfields and an atlas
-data = ftb.util.loadvar(dsim.timelock);
-leadfield = ftb.util.loadvar(lf.leadfield);
-patches = get_patches_aal(atlas_file);
-filters = beamformer_lcmv_patch(data, leadfield, atlas_file, patches);
-
-
-%% Beamformer
-% Create custom config
-% BFlcmv_exp07();
-
-params_bf = [];
-params_bf.ft_sourceanalysis.filter = filters; % TODO add filters
-bf = ftb.Beamformer(params_bf,'lcmv-patch');
-analysis.add(bf);
-
-%% Process pipeline
-analysis.init();
-analysis.process();
-
-% FIXME NOT WORKING!!!
-
-%% Plot all results
-% TODO Check individual trials
-
-if exist('dsim','var')
-    figure;
-    bf.plot({'brain','skull','scalp','fiducials','dipole'});
+switch bf_type
+    case 'patch'
+        % Set up an atlas
+        matlab_dir = userpath;
+        pathstr = fullfile(matlab_dir(1:end-1),'fieldtrip-20160128','template','atlas','aal');
+        atlas_file = fullfile(pathstr,'ROI_MNI_V4.nii');
+        
+        params_bf = [];
+        params_bf.atlas_file = atlas_file;
+        params_bf.ft_sourceanalysis.method = 'lcmv';
+        params_bf.ft_sourceanalysis.lcmv.keepmom = 'yes';
+        bf = ftb.BeamformerPatch(params_bf,'exp08');
+        analysis.add(bf);
+        
+    case 'regular'
+        % Regular Beamformer
+        params_bf = [];
+        params_bf.ft_sourceanalysis.method = 'lcmv';
+        params_bf.ft_sourceanalysis.lcmv.keepmom = 'yes';
+        bf = ftb.Beamformer(params_bf,'reg-exp08');
+        analysis.add(bf);
+    otherwise
+        error('unknown beamformer');
 end
 
-% figure;
-% cfg = [];
-% cfg.datafile = fullfile(datadir,datafile);
-% cfg.continuous = 'yes';
-% ft_databrowser(cfg);
+%% Process pipeline
+analysis.init();
+analysis.process();
+
+%% Plot beampatterns
+% NOTE beampatterns are data dependent
+
+if plot_beampattern
+    cfgsave = [];
+    if plot_beampattern_save
+        [pathstr,~,~] = fileparts(bf.sourceanalysis);
+        cfgsave.out_dir = fullfile(pathstr,'img');
+        
+        if ~exist(cfgsave.out_dir,'dir')
+            mkdir(cfgsave.out_dir);
+        end
+    end
+    
+    % get patches
+    patches = ftb.patches.get_aal_coarse(atlas_file);
+    % loop through patches
+    for i=1:length(patches)
+        % use patch name as seed
+        seed = patches(i).name;
+        
+        thresh = 0.6;
+        bf.plot_beampattern(seed,'method','slice','mask','thresh','thresh',thresh);
+        title(seed);
+        
+        save_fig(cfgsave, sprintf('beampattern-%s-%d',strrep(seed,' ','-'),thresh*100), plot_beampattern_save);
+    end
+    
+end
+
+%% Plot patch resolution
+% NOTE Nice way to evaluate the resolution of all the pathches
+
+if plot_patch_resolution
+    cfgsave = [];
+    if plot_patch_resolution_save
+        [pathstr,~,~] = fileparts(bf.sourceanalysis);
+        cfgsave.out_dir = fullfile(pathstr,'img');
+        
+        if ~exist(cfgsave.out_dir,'dir')
+            mkdir(cfgsave.out_dir);
+        end
+    end
+    
+    % get patches
+    patches = ftb.patches.get_aal_coarse(atlas_file);
+    % loop through patches
+    for i=1:length(patches)
+        % use patch name as seed
+        seed = patches(i).name;
+        
+        bf.plot_patch_resolution(seed,'method','slice');
+        title(seed);
+        save_fig(cfgsave, sprintf('patch-res-%s',strrep(seed,' ','-')), plot_patch_resolution_save);
+    end
+end
+
+%% Plot source analysis results
+
+figure;
+bf.plot({'brain','skull','scalp','fiducials','dipole'});
 
 % figure;
-% cfg = ftb.util.loadvar(eeg.definetrial);
-% ft_databrowser(cfg);
-
-% figure;
-% eeg.plot_data('preprocessed');
+% bf.plot_scatter([]);
+bf.plot_anatomical('method','slice');
 % 
 % figure;
-% eeg.plot_data('timelock');
-
+% bf.plot_moment('2d-all');
 % figure;
-% bf.plot({'brain','skull','scalp','fiducials'});
-
-figure;
-bf.plot_scatter([]);
-bf.plot_anatomical('method','slice');
-
-figure;
-bf.plot_moment('2d-all');
-figure;
-bf.plot_moment('2d-top');
-figure;
-bf.plot_moment('1d-top');
+% bf.plot_moment('2d-top');
+% figure;
+% bf.plot_moment('1d-top');

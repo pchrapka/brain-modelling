@@ -2,4 +2,4 @@
 
 list = {'a','b','c','cthis','cthat'};
 pattern = 'c.*';
-regexpmatchlist(list,pattern)
+ftb.util.regexpmatchlist(list,pattern)

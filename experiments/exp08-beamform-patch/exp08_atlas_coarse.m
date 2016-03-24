@@ -111,11 +111,23 @@ regions(k).patterns = {...
     };
 k = k+1;
 
+plot_roi_save = true;
+% set up save params
+if plot_roi_save
+    cfgsave = [];
+    [pathstr,~,~] = fileparts(mfilename('fullpath'));
+    cfgsave.out_dir = fullfile(pathstr,'img');
+    
+    if ~exist(cfgsave.out_dir,'dir')
+        mkdir(cfgsave.out_dir);
+    end
+end
+
 regions_all = {};
 for i=1:length(regions)
     matches_all = {};
     for j=1:length(regions(i).patterns)
-        matches = regexpmatchlist(atlas.tissuelabel, regions(i).patterns{j});
+        matches = ftb.util.regexpmatchlist(atlas.tissuelabel, regions(i).patterns{j});
         matches_all = [matches_all matches];
     end
     regions_all = [regions_all matches_all];
@@ -124,12 +136,14 @@ for i=1:length(regions)
         fprintf('\t%s\n',matches_all{j});
     end
     plot_atlas(atlas,'nslices',30,'roi', matches_all);
-    
     title(regions(i).name);
+    
+    save_fig(cfgsave, ['roi-' strrep(regions(i).name,' ','-')], plot_roi_save);
 end
 
 plot_atlas(atlas,'nslices',30,'roi', regions_all);
 title('regions accounted for');
+save_fig(cfgsave, 'roi-accounted-for', plot_roi_save);
 
 %% left over areas
 % TODO left over
@@ -149,7 +163,7 @@ pattern = 'Insula.*';
 % pattern = 'Pallidum.*';
 % pattern = 'Cerebelum.*';
 % pattern = 'Vermis.*';
-matches = regexpmatchlist(atlas.tissuelabel, pattern);
+matches = ftb.util.regexpmatchlist(atlas.tissuelabel, pattern);
 plot_atlas(atlas,'roi',matches);
 
 name = strrep(pattern,'.*','');

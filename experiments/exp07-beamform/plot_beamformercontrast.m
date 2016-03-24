@@ -50,9 +50,9 @@ if p.Results.beamformer
     save_fig(cfgsave, 'full-slice-contrast-no-mask', p.Results.save);
     bf_contrast.plot_anatomical('method','ortho','options',options);
     save_fig(cfgsave, 'full-ortho-contrast-no-mask', p.Results.save);
-    bf_contrast.plot_anatomical('method','slice','options',options,'mask','max');
+    bf_contrast.plot_anatomical('method','slice','options',options,'mask','thresh','thresh',0.3);
     save_fig(cfgsave, 'full-slice-contrast-mask', p.Results.save);
-    bf_contrast.plot_anatomical('method','ortho','options',options,'mask','max');
+    bf_contrast.plot_anatomical('method','ortho','options',options,'mask','thresh','thresh',0.3);
     save_fig(cfgsave, 'full-ortho-contrast-mask', p.Results.save);
     
     if p.Results.moment

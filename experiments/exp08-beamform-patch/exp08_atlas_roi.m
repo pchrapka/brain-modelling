@@ -16,7 +16,7 @@ end
 %% print specific labels
 % pattern = 'Precentral.*';
 pattern = 'Frontal.*';
-matches = regexpmatchlist(atlas.tissuelabel, pattern);
+matches = ftb.util.regexpmatchlist(atlas.tissuelabel, pattern);
 for i=1:length(matches)
     fprintf('%s\n',matches{i})
 end
@@ -27,7 +27,7 @@ end
 % pattern = 'Frontal_Sup_Medial_L';
 % pattern = 'Precu.*';
 pattern = 'Vermis.*';
-matches = regexpmatchlist(atlas.tissuelabel, pattern);
+matches = ftb.util.regexpmatchlist(atlas.tissuelabel, pattern);
 plot_atlas(atlas,'roi',matches);
 
 name = strrep(pattern,'.*','');
@@ -66,7 +66,7 @@ patterns = {...
     };
 
 for i=1:length(patterns)
-    matches = regexpmatchlist(atlas.tissuelabel, patterns{i});
+    matches = ftb.util.regexpmatchlist(atlas.tissuelabel, patterns{i});
     plot_atlas(atlas,'roi',matches);
     
     name = strrep(patterns{i},'.*','');

@@ -305,8 +305,8 @@ if plot_bf
     
     figure;
     %bf_contrast.plot_scatter([]);
-    bf_contrast.plot_anatomical('method','slice','options',options,'mask','max');
-    bf_contrast.plot_anatomical('method','ortho','options',options,'mask','max');
+    bf_contrast.plot_anatomical('method','slice','options',options,'mask','thresh','thresh',0.3);
+    bf_contrast.plot_anatomical('method','ortho','options',options,'mask','thresh','thresh',0.3);
     
     if plot_moment
         figure;
