@@ -175,7 +175,7 @@ classdef Beamformer < ftb.AnalysisStep
                 ft_sourceanalysis(cfgin)
             else
                 fprintf('%s: skipping ft_sourceanalysis, already exists\n',...
-                    mfilename);
+                    strrep(class(obj),'ftb.',''));
             end
         end
         

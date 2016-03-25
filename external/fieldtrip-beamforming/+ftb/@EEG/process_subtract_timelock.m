@@ -41,7 +41,7 @@ if obj.check_file(obj.timelock)
     eeg1 = ftb.util.loadvar(eegObj1.timelock);
     eeg2 = ftb.util.loadvar(eegObj2.timelock);
     
-    fprintf('%s: subtracting: %s - %s\n', mfilename,...
+    fprintf('%s: subtracting: %s - %s\n', strrep(class(obj),'ftb.',''),...
         [eegObj1.prefix eegObj1.name], ...
         [eegObj2.prefix eegObj2.name]);
     
@@ -59,7 +59,7 @@ if obj.check_file(obj.timelock)
     ft_timelockanalysis(cfgin);
 else
     fprintf('%s: skipping ft_timelockanalysis, already exists\n',...
-        mfilename);
+        strrep(class(obj),'ftb.',''));
 end
 
 end

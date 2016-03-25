@@ -151,11 +151,16 @@ classdef AnalysisStep < handle
                     'not sure what to do with %s file', ext);
             end
             
-            fprintf('%s: loading %s\n', strrep(class(obj),'ftb.',''), filename);
-            
-            % load data
-            data = ftb.util.loadvar(filename);
-            save(obj.(property),'data');
+            if obj.check_file(obj.(property))
+                fprintf('%s: loading %s\n', strrep(class(obj),'ftb.',''), filename);
+                
+                % load data
+                data = ftb.util.loadvar(filename);
+                save(obj.(property),'data');
+            else
+                fprintf('%s: skipping load_file, already exists\n',...
+                    strrep(class(obj),'ftb.',''));
+            end
         end
         
     end

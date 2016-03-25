@@ -1,11 +1,10 @@
-function [source, patches] = beamformer_lcmv_patch(...
-    data, leadfield, atlasfile, patches, varargin)
+function source = beamformer_lcmv_patch(...
+    data, leadfield, patches, varargin)
 %BEAMFORMER_LCMV_PATCH computes filters for an LCMV beamformer that
 %operates on patches instead of point sources
-%   [source,patches] = BEAMFORMER_LCMV_PATCH(data, leadfield,
-%   atlasfile, patches, ...) computes filters for an LCMV beamformer that
-%   operates on patches instead of point sources. This is useful for coarse
-%   beamforming.
+%   [source] = BEAMFORMER_LCMV_PATCH(data, leadfield, patches, ...)
+%   computes filters for an LCMV beamformer that operates on patches
+%   instead of point sources. This is useful for coarse beamforming.
 %
 %   TODO add reference Limpiti2006
 %
@@ -15,18 +14,12 @@ function [source, patches] = beamformer_lcmv_patch(...
 %       timelocked EEG data, output of ft_timelockanalysis
 %   leadfield (struct)
 %       leadfields, output of ft_prepare_leadfield
-%   atlasfile (string)
-%       atlas file name
 %   patches (struct array)
 %       patch configuration, output of ftb.patches functions, for example
 %       ftb.patches.get_aal_coarse
 %
 %   Parameters
 %   ----------
-%   eta (default = 0.85)
-%       representation accuracy, ideally should be close to 1 but it will
-%       also lose its ability to differentiate other patches and resolution
-%       will suffer, see Limpiti2006 for more
 %   fixedori (default = true)
 %       fixed moment orientation, chooses the moment that maximizes the
 %       power of the beamformer
@@ -42,28 +35,15 @@ function [source, patches] = beamformer_lcmv_patch(...
 %       specified as precomputed filters in ft_sourceanalysis
 %   source.patch_labels (cell array)
 %       anatomical label for each point in the leadfield grid
-%
-%   patches (struct array)
-%       patch configuration, with the following updated fields
-%   patches.U
-%       basis for the patch
-%   patches.inside
-%       logical index of points inside the patch
 
 
 p = inputParser;
 addRequired(p,'data',@isstruct);
 addRequired(p,'leadfield',@isstruct);
-addRequired(p,'atlasfile',@ischar);
 addRequired(p,'patches',@isstruct);
-addParameter(p,'eta',0.85);
 addParameter(p,'fixedori',true,@islogical);
 % add options
-parse(p,data,leadfield,atlasfile,patches,varargin{:});
-
-% load the atlas
-atlas = ft_read_atlas(p.Results.atlasfile);
-atlas = ft_convert_units(atlas,'cm');
+parse(p,data,leadfield,patches,varargin{:});
 
 % allocate mem
 source = [];
@@ -72,56 +52,9 @@ source.patch_labels = cell(size(leadfield.leadfield));
 
 % computer filter for each patch
 for i=1:length(patches)
-    
-    % select grid points in anatomical regions that make up the patch
-    cfg = [];
-    cfg.atlas = atlas;
-    cfg.roi = patches(i).labels;
-    cfg.inputcoord = 'mni';
-    patches(i).inside = ft_volumelookup(cfg, leadfield);
-    
-%     % select grid points inside patch
-%     grid_sel = false(size(leadfield.inside));
-%     grid_sel(patches(i).inside) = 1;
-    
-    % get leadfields in patch
-    lf_patch = leadfield.leadfield(patches(i).inside);
-    % concatenate into a single wide matrix
-    % Nx3q, q is number of points
-    Hk = [lf_patch{:}];
-    patches(i).H = Hk;
-    
-    % generate basis for patch
-    
-    % assume Gamma = I, i.e. white noise
-    % otherwise 
-    %   L = chol(Gamma);
-    %   Hk_tilde = L*Hk;
-    
-    % take SVD of Hk
-    % S elements are in decreasing order
-    [U,Sk,~] = svd(Hk);
-    nsingular = size(Sk,1);
-    % select the minimum number of singular values
-    for j=1:nsingular
-        % NOTE if Gamma ~= I
-        %   Uk_tilde = L*Uk;
-        
-        % select j left singular vectors corresponding to largest singular
-        % values
-        Uk = U(:,1:j);
-        
-        % compute the representation accuracy
-        gammak = trace(Hk'*(Uk*Uk')*Hk)/trace(Hk'*Hk);
-        
-        % check if we've reached the threshold
-        if gammak > p.Results.eta
-            % use the current Uk
-            break;
-        end
-    end
-    % save Uk
-    patches(i).U = Uk;
+
+    % get the patch basis
+    Uk = patches(i).U;
     
     Yk = Uk'*pinv(data.cov)*Uk;
     

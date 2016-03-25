@@ -89,7 +89,8 @@ classdef Electrodes < ftb.AnalysisStep
             obj.elec_aligned = fullfile(out_folder2, 'elec_aligned.mat');
             
             if isempty(obj.fid_nas)
-                fprintf('%s: using defaults for fiducial channels\n',mfilename);
+                fprintf('%s: using defaults for fiducial channels\n',...
+                    strrep(class(obj),'ftb.',''));
                 obj.set_fiducial_channels();
             end
             
@@ -107,7 +108,8 @@ classdef Electrodes < ftb.AnalysisStep
             % Check if we're setting up a head model from scratch
             if ~obj.check_file(obj.elec_aligned)
                 % Return if it already exists
-                fprintf('%s: skipping %s, already exists\n', mfilename, obj.elec_aligned);
+                fprintf('%s: skipping %s, already exists\n',...
+                    strrep(class(obj),'ftb.',''), obj.elec_aligned);
                 return
             end
             
@@ -119,7 +121,8 @@ classdef Electrodes < ftb.AnalysisStep
                 % Save
                 save(obj.elec, 'data');
             else
-                fprintf('%s: skipping ft_read_sens, already exists\n',mfilename);
+                fprintf('%s: skipping ft_read_sens, already exists\n',...
+                    strrep(class(obj),'ftb.',''));
             end
             
             if debug

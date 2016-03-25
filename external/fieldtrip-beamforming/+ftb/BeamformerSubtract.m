@@ -60,7 +60,8 @@ classdef BeamformerSubtract < ftb.Beamformer
                 bf1 = ftb.util.loadvar(bfObj1.sourceanalysis);
                 bf2 = ftb.util.loadvar(bfObj2.sourceanalysis);
                 
-                fprintf('%s: subtracting: %s - %s\n', mfilename,...
+                fprintf('%s: subtracting: %s - %s\n',...
+                    strrep(class(obj),'ftb.',''),...
                     [bfObj1.prefix bfObj1.name], ...
                     [bfObj2.prefix bfObj2.name]);
                 
@@ -76,7 +77,7 @@ classdef BeamformerSubtract < ftb.Beamformer
                 save(obj.sourceanalysis,'data');
             else
                 fprintf('%s: skipping ft_sourceanalysis, already exists\n',...
-                    mfilename);
+                    strrep(class(obj),'ftb.',''));
             end
         end
     end

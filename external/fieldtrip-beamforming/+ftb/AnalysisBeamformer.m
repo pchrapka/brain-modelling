@@ -55,6 +55,10 @@ classdef AnalysisBeamformer < handle
                     'no steps to process');
             end
             
+            fprintf('\n');
+            fprintf('Starting beamformer analysis\n');
+            fprintf('----------------------------\n');
+            
             % process each step
             for i=1:length(obj.steps)
                 obj.steps{i}.process();

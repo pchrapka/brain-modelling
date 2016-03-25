@@ -102,7 +102,8 @@ classdef MRI < ftb.AnalysisStep
                 
                 ft_read_mri_mat(cfgin);
             else
-                fprintf('%s: skipping ft_read_mri_mat, already exists\n',mfilename);
+                fprintf('%s: skipping ft_read_mri_mat, already exists\n',...
+                    strrep(class(obj),'ftb.',''));
             end
             
             % Segment the MRI data
@@ -113,7 +114,8 @@ classdef MRI < ftb.AnalysisStep
                 
                 ft_volumesegment(cfgin);
             else
-                fprintf('%s: skipping ft_volumesegment, already exists\n',mfilename);
+                fprintf('%s: skipping ft_volumesegment, already exists\n',...
+                    strrep(class(obj),'ftb.',''));
             end
             
             if obj.check_file(obj.mri_mesh)
@@ -134,7 +136,8 @@ classdef MRI < ftb.AnalysisStep
                     end
                 end
             else
-                fprintf('%s: skipping ft_prepare_mesh, already exists\n',mfilename);
+                fprintf('%s: skipping ft_prepare_mesh, already exists\n',...
+                    strrep(class(obj),'ftb.',''));
             end
         end
         

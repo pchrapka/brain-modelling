@@ -18,11 +18,8 @@ classdef EEG < ftb.AnalysisStep
         function obj = EEG(params,name)
             %   params (struct or string)
             %       struct or file name
-            %
             %   name (string)
             %       object name
-            %   prev (Object)
-            %       previous analysis step
             
             % parse inputs
             p = inputParser;
@@ -40,8 +37,8 @@ classdef EEG < ftb.AnalysisStep
                 obj.config = p.Results.params;
             else
                 % Load config from file
-                din = load(p.Results.params);
-                obj.config = din.cfg;
+                din = ftb.util.loadvar(p.Results.params);
+                obj.config = din;
             end
             
             obj.definetrial = '';
@@ -57,7 +54,7 @@ classdef EEG < ftb.AnalysisStep
                 @(x)isa(x,'ftb.Leadfield') || isa(x,'ftb.EEG') || isa(x,'ftb.Beamformer'));
             parse(p,prev);
             
-            % set the previous step, aka Leadfield
+            % set the previous step
             obj.prev = p.Results.prev;
         end
         

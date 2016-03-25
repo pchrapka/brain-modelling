@@ -120,7 +120,8 @@ classdef Leadfield < ftb.AnalysisStep
                 leadfield = ft_prepare_leadfield(cfgin);
                 save(obj.leadfield, 'leadfield');
             else
-                fprintf('%s: skipping ft_prepare_leadfield, already exists\n',mfilename);
+                fprintf('%s: skipping ft_prepare_leadfield, already exists\n',...
+                    strrep(class(obj),'ftb.',''));
             end
         end
         

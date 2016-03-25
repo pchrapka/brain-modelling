@@ -24,6 +24,8 @@ function patches = get_aal_coarse(atlasfile,varargin)
 %   patches.labels (cell array of string)
 %       anatomical labels that make up the patch, each patch contains a
 %       mutually exclusive set of labels
+%   patches.atlasfile (string)
+%       path of associated atlas file
 
 % FIXME atlas_file should point to the AAL atlas in fieldtrip, how do I
 % check for this?
@@ -158,6 +160,7 @@ for i=1:length(patches)
         end
     end
 end
-
+% save atlasfile
+[patches.atlasfile] = deal(p.Results.atlasfile);
 
 end

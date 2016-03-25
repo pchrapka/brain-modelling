@@ -103,7 +103,8 @@ classdef BeamformerContrast < ftb.Beamformer
                 bfpre = ftb.util.loadvar(obj.pre.sourceanalysis);
                 bfpost = ftb.util.loadvar(obj.post.sourceanalysis);
                 
-                fprintf('%s: contrasting: %s / %s\n', mfilename,...
+                fprintf('%s: contrasting: %s / %s\n',...
+                    strrep(class(obj),'ftb.',''),...
                     [obj.post.prefix obj.post.name], ...
                     [obj.pre.prefix obj.pre.name]);
                 
@@ -119,7 +120,7 @@ classdef BeamformerContrast < ftb.Beamformer
                 save(obj.sourceanalysis,'data');
             else
                 fprintf('%s: skipping ft_sourceanalysis, already exists\n',...
-                    mfilename);
+                    strrep(class(obj),'ftb.',''));
             end
         end
     end

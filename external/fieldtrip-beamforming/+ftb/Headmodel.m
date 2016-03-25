@@ -94,13 +94,15 @@ classdef Headmodel < ftb.AnalysisStep
                 
                 % convert units
                 if isfield(obj.config,'units')
-                    fprintf('%s: converting units to %s\n', mfilename, obj.config.units);
+                    fprintf('%s: converting units to %s\n',...
+                        strrep(class(obj),'ftb.',''), obj.config.units);
                     vol = ft_convert_units(vol, obj.config.units);
                 end
                 
                 save(obj.mri_headmodel, 'vol');
             else
-                fprintf('%s: skipping ft_prepare_headmodel, already exists\n',mfilename);
+                fprintf('%s: skipping ft_prepare_headmodel, already exists\n',...
+                    strrep(class(obj),'ftb.',''));
             end
         end
         

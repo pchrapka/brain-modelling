@@ -50,7 +50,8 @@ classdef DipoleSim < ftb.EEG
                 if isfield(obj.config.ft_dipolesimulation,'dip')
                     if isfield(obj.config.ft_dipolesimulation.dip,'unit')
                         units = obj.config.ft_dipolesimulation.dip.unit;
-                        fprintf('%s: converting units to %s\n', mfilename, units);
+                        fprintf('%s: converting units to %s\n',...
+                            strrep(class(obj),'ftb.',''), units);
                         hm = ft_convert_units(hm, units);
                         elec = ft_convert_units(elec, units);
                     else
@@ -67,7 +68,8 @@ classdef DipoleSim < ftb.EEG
                 % remove fiducial channels
                 if ~isfield(cfgin, 'channel')
                     cfgin.channel = elecObj.remove_fiducials();
-                    fprintf('%s: removing fiducial electrodes\n', mfilename)
+                    fprintf('%s: removing fiducial electrodes\n',...
+                        strrep(class(obj),'ftb.',''))
                 end
                 
                 % simulate dipoles
@@ -75,7 +77,7 @@ classdef DipoleSim < ftb.EEG
                 save(obj.preprocessed, 'data');
             else
                 fprintf('%s: skipping ft_dipolesimulation, already exists\n',...
-                    mfilename);
+                    strrep(class(obj),'ftb.',''));
             end
             
             if obj.check_file(obj.timelock)
@@ -86,7 +88,7 @@ classdef DipoleSim < ftb.EEG
                 ft_timelockanalysis(cfgin);
             else
                 fprintf('%s: skipping ft_timelockanalysis, already exists\n',...
-                    mfilename);
+                    strrep(class(obj),'ftb.',''));
             end
             
 

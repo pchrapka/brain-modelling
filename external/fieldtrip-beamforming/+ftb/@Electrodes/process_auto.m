@@ -26,7 +26,8 @@ obj.plot(elements);
 
 % Convert units
 if isfield(obj.config,'units')
-    fprintf('%s: converting units to %s\n', mfilename, obj.config.units);
+    fprintf('%s: converting units to %s\n',...
+        strrep(class(obj),'ftb.',''), obj.config.units);
     elec = ftb.util.loadvar(obj.elec_aligned);
     elec = ft_convert_units(elec, obj.config.units);
     save(obj.elec_aligned, 'elec');

@@ -8,20 +8,21 @@ classdef BeamformerPatch < ftb.Beamformer
         patches; % patch file
     end
     
-    methods (Static, Access = private)
+    methods (Static, Access = protected)
         [source, patches] = beamformer_lcmv_patch(...
             data, leadfield, atlasfile, patches, varargin);
+    end
+    
+    methods (Access = protected)
+        obj = process_beamformer_patch(obj);
     end
     
     methods
         function obj = BeamformerPatch(params,name)
             %   params (struct or string)
             %       struct or file name
-            %
             %   name (string)
             %       object name
-            %   prev (Object)
-            %       previous analysis step
             
             % use Beamformer constructor
             obj@ftb.Beamformer(params,name);
@@ -76,26 +77,48 @@ classdef BeamformerPatch < ftb.Beamformer
             elecObj = obj.get_dep('ftb.Electrodes');
             hmObj = obj.get_dep('ftb.Headmodel');
             
+            if obj.check_file(obj.patches)
+                % load data
+                leadfield = ftb.util.loadvar(lfObj.leadfield);
+                patches = ftb.patches.get_aal_coarse(obj.config.atlas_file);
+                % FIXME this shouldn't be so specific
+                
+                % get the patch basis
+                if ~isfield(obj.config,'ftb_patches_basis')
+                    obj.config.ftb_patches_basis = {};
+                end
+                patches = ftb.patches.basis(patches, leadfield,...
+                    obj.config.ftb_patches_basis{:});
+                
+                % save patches
+                save(obj.patches, 'patches');
+            else
+                fprintf('%s: skipping ftb.patches.basis, already exists\n',...
+                    strrep(class(obj),'ftb.',''));
+            end
+            
             % precompute filters
             if obj.check_file(obj.lf.leadfield)
                 % load data
                 data = ftb.util.loadvar(eegObj.timelock);
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
-                patches = ftb.patches.get_aal_coarse(obj.config.atlas_file);
-                % FIXME this shouldn't be so specific
+                patches = ftb.util.loadvar(obj.patches);
                 
                 % computer filters
-                [source, patches] = ftb.BeamformerPatch.beamformer_lcmv_patch(...
-                    data, leadfield, obj.config.atlas_file, patches);
+                source = ftb.BeamformerPatch.beamformer_lcmv_patch(...
+                    data, leadfield, patches);
                 
                 % save filters
                 leadfield.filter = source.filters;
                 leadfield.filter_label = source.patch_labels;
                 save(obj.lf.leadfield, 'leadfield');
-                % save patches
-                save(obj.patches, 'patches');
+            else
+                fprintf('%s: skipping beamformer_lcmv_patch, already exists\n',...
+                    strrep(class(obj),'ftb.',''));
             end
             
+            % source analysis
+            % -----
             % process source analysis
             obj.process_deps(eegObj,obj.lf,elecObj,hmObj);
         end

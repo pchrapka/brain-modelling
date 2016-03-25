@@ -7,7 +7,7 @@ if obj.check_file(obj.definetrial)
     save(obj.definetrial, 'data');
 else
     fprintf('%s: skipping ft_definetrial, already exists\n',...
-        mfilename);
+        strrep(class(obj),'ftb.',''));
 end
 
 % ft_preprocessing
@@ -23,7 +23,7 @@ if obj.check_file(obj.preprocessed)
     save(obj.preprocessed, 'data');
 else
     fprintf('%s: skipping ft_preprocessing, already exists\n',...
-        mfilename);
+        strrep(class(obj),'ftb.',''));
 end
 
 % ft_timelockanalysis
@@ -35,7 +35,7 @@ if obj.check_file(obj.timelock)
     ft_timelockanalysis(cfgin);
 else
     fprintf('%s: skipping ft_timelockanalysis, already exists\n',...
-        mfilename);
+        strrep(class(obj),'ftb.',''));
 end
 
 end
