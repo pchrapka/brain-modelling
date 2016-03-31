@@ -99,12 +99,15 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                     % filters
                     % -------
                     % computer filters
+                    % NOTE if mode == 'all' each source struct takes up a
+                    % few MBs, if there are 1000 trials, that's a few GBs
                     source = ftb.BeamformerPatch.beamformer_lcmv_patch(...
-                        timelock, leadfield, patches);
+                        timelock, leadfield, patches,'mode','single');
                     
                     % save filters
                     leadfield.filter = source.filters;
                     leadfield.filter_label = source.patch_labels;
+                    leadfield.inside = source.inside;
                     save(obj.lf.leadfield, 'leadfield');
                     
                     % source analysis
@@ -115,9 +118,13 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                     % concatenate results into data struct
                     if i == 1    
                         % allocate mem
-                        sourceanalysis_all(ntrials) = ftb.util.loadvar(obj.sourceanalysis);
+                        data = ftb.util.loadvar(obj.sourceanalysis);
+                        data = rmfield(data,'cfg'); % takes up a lot of memory
+                        sourceanalysis_all(ntrials) = data;
                     end
-                    sourceanalysis_all(i) = ftb.util.loadvar(obj.sourceanalysis);
+                    data = ftb.util.loadvar(obj.sourceanalysis);
+                    data = rmfield(data,'cfg'); % takes up a lot of memory
+                    sourceanalysis_all(i) = data;
                     
                     % delete temp files
                     if exist(obj.sourceanalysis,'file')

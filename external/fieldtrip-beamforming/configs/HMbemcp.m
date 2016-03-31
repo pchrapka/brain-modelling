@@ -6,6 +6,6 @@ function HMbemcp()
 cfg = [];
 cfg.ft_prepare_headmodel.method = 'bemcp';
 
-save(fullfile(srcdir,'HMbemcp.mat'),'cfg');
+save(fullfile(srcdir, [strrep(mfilename,'_','-') '.mat']),'cfg');
 
 end

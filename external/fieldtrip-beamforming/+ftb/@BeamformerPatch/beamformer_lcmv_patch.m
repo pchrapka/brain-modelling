@@ -25,11 +25,20 @@ function source = beamformer_lcmv_patch(...
 %       power of the beamformer
 %
 %       NOTE fixedori = false is not implemented
+%   mode (default = 'all')
+%       mode of operation, chooses how many grid points are set for the
+%       beamforming step
+%       all - all points inside a patch are selected and contain the patch
+%       filter
+%       single - one point inside a patch is selected and contains the
+%       patch filter
 %   
 %   Output
 %   ------
 %   source (struct)
 %       struct containing spatial filters and patch ables
+%   source.inside (cell array)
+%       index specifying which grid points are to be evaluated
 %   source.filters (cell array)
 %       beamforming filter for each point in the leadfield grid, to be
 %       specified as precomputed filters in ft_sourceanalysis
@@ -42,6 +51,7 @@ addRequired(p,'data',@isstruct);
 addRequired(p,'leadfield',@isstruct);
 addRequired(p,'patches',@isstruct);
 addParameter(p,'fixedori',true,@islogical);
+addParameter(p,'mode','all',@(x) any(validatestring(x,{'all','single'})));
 % add options
 parse(p,data,leadfield,patches,varargin{:});
 
@@ -49,6 +59,7 @@ parse(p,data,leadfield,patches,varargin{:});
 source = [];
 source.filters = cell(size(leadfield.leadfield));
 source.patch_labels = cell(size(leadfield.leadfield));
+source.inside = false(size(leadfield.inside));
 
 % computer filter for each patch
 for i=1:length(patches)
@@ -81,28 +92,49 @@ for i=1:length(patches)
         filter = pinv(Yk)*Uk'*pinv(data.cov);
     end
     
-    % set patch filter at each point in patch
-    [source.filters{patches(i).inside}] = deal(filter);
-    % NOTE Redundant, but it keeps everything else in Fieldtrip working
-    % as normal
-    
-    % save patch label for each point
-    [source.patch_labels{patches(i).inside}] = deal(patches(i).name);
+    switch p.Results.mode
+        case 'all'
+            % set patch filter at each point in patch
+            [source.filters{patches(i).inside}] = deal(filter);
+            % NOTE Redundant, but it keeps everything else in Fieldtrip working
+            % as normal
+            
+            % save patch label for each point
+            [source.patch_labels{patches(i).inside}] = deal(patches(i).name);
+            
+        case 'single'
+            idx = find(patches(i).inside == 1, 1, 'first');
+            % set patch filter at one point in patch
+            source.filters{idx} = filter;
+            
+            % save patch label for each point
+            source.patch_labels{idx} = patches(i).name;
+            
+            % save point location
+            source.inside(idx) = true;
+    end
     
 end
 
-% set empty filters to zero
-
-% check which filters are empty
-grid_empty = cellfun('isempty',source.filters);
-% select those that are inside only
-grid_empty = grid_empty' & leadfield.inside;
-% create a filter with zeros
-filter = zeros(size(filter));
-[source.filters{grid_empty}] = deal(filter);
-
-% check which labels are empty
-grid_empty = cellfun('isempty',source.patch_labels);
-[source.patch_labels{grid_empty}] = deal('');
+switch p.Results.mode
+    case 'all'
+        % set empty filters to zero
+        
+        % check which filters are empty
+        grid_empty = cellfun('isempty',source.filters);
+        % select those that are inside only
+        grid_empty = grid_empty' & leadfield.inside;
+        % create a filter with zeros
+        filter = zeros(size(filter));
+        [source.filters{grid_empty}] = deal(filter);
+        
+        % check which labels are empty
+        grid_empty = cellfun('isempty',source.patch_labels);
+        [source.patch_labels{grid_empty}] = deal('');
+        
+        source.inside = leadfield.inside;
+    case 'single'
+        % inside points with empty filters should be ignored
+end
 
 end
