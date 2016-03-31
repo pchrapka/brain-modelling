@@ -48,23 +48,9 @@ analysis = create_bfanalysis_subject_specific(out_folder,...
 
 %% EEG
 
-% TODO Need to split this up into single trials
-% It's not dependent on others so I could process this separately and then
-% do each trial separately, loading files for ft_definetrial (fake),
-% ft_preprocessing (single trial)
-
 params_eeg = EEGstddev(datadir, subject_file, stimulus);
 eeg = ftb.EEG(params_eeg, stimulus);
 analysis.add(eeg);
-
-% % split up trials into singles
-% params_eeg_split = [];
-% params_eeg_split.ft_timelockanalysis.covariance = 'yes';
-% params_eeg_split.ft_timelockanalysis.covariancewindow = 'all';
-% params_eeg_split.ft_timelockanalysis.keeptrials = 'no';
-% params_eeg_split.ft_timelockanalysis.removemean = 'yes';
-% eeg_split = ftb.EEGTrial(params_eeg_split,'');
-% analysis.add(eeg_split);
 
 %% Beamformer
 

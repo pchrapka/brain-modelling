@@ -21,8 +21,9 @@ addpath(fullfile(pwd,'external','fieldtrip-beamforming'));
 fb_install()
 fb_make_configs()
 
-% add methods directory
+% add project directories
 addpath(fullfile(pwd,'methods'));
+addpath(fullfile(pwd,'analysis'));
 
 % add all experiment directories
 % FIXME i want to keep my experiments independent, so this is probably not
