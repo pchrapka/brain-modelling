@@ -61,7 +61,7 @@ cols = 1;
 legend_str = {};
 for k=1:M
     subaxis(rows, cols, k,...
-        'Spacing', 0, 'SpacingVert', 0.05, 'Padding', 0, 'Margin', 0.05);
+        'Spacing', 0, 'SpacingVert', 0, 'Padding', 0, 'Margin', 0.05);
     plot(1:nsamples, k_true(k,1:nsamples));
     
     if k==1
@@ -91,7 +91,7 @@ for k=1:M
             end
         end
     end
-    ylim([-2 2]);
+    ylim([-1 1]);
     
     if k ~= M
         set(gca,'XTickLabel',[]);

@@ -134,7 +134,7 @@ classdef MQRDLSL2 < handle
                     display(Yf)
                 end
                 if ~isempty(find(isnan(Yf),1))
-                    fprintf('got some nans\n');
+                    warning('got some nans\n');
                 end
                 
                 % extract updated R,X,beta
@@ -149,7 +149,7 @@ classdef MQRDLSL2 < handle
                     display(dfsq)
                 end
                 if ~isempty(find(dfsq == 0,1))
-                    fprintf('dfsq is zero\n');
+                    warning('dfsq is zero\n');
                 end
                 
                 % check if we need to rescale
@@ -183,7 +183,7 @@ classdef MQRDLSL2 < handle
                     display(Yb)
                 end
                 if ~isempty(find(isnan(Yb),1))
-                    fprintf('got some nans\n');
+                    warning('got some nans\n');
                 end
                 
                 % extract updated R,X,beta
@@ -198,7 +198,7 @@ classdef MQRDLSL2 < handle
                     display(dbsq)
                 end
                 if ~isempty(find(dbsq == 0,1))
-                    fprintf('dbsq is zero\n');
+                    warning('dbsq is zero\n');
                 end
                 
                 % check if we need to rescale
@@ -226,16 +226,15 @@ classdef MQRDLSL2 < handle
                     display(gammasq(p))
                 end
                 if abs(gammasq(p)) <= eps
-                    fprintf('gammasq is < eps\n');
+                    warning('gammasq is < eps, resetting gammasq\n');
                     % NOTE if gammasq becomes zero that propagates to the
                     % diagonal matrix D that is then supplied to the fast
                     % givens rotation, which assumes that it's positive
                     % I think
-                    fprintf('\tresetting gammasq\n');
                     gammasq(p) = 1;
                 end
                 if isnan(gammasq(p))
-                    fprintf('gammasq is nan\n');
+                    warning('gammasq is nan\n');
                 end
                 
                 % calculate reflection coefficients
