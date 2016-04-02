@@ -9,6 +9,23 @@ addpath(fullfile(pwd,'external','subaxis'));
 addpath(fullfile(pwd,'external','tsa'));
 addpath(fullfile(pwd,'external','lumberjack'));
 addpath(fullfile(pwd,'external','export_fig'));
+addpath(fullfile(pwd,'external','heatmaps'));
+addpath(fullfile(pwd,'external','FEAST-v1.1.1','FEAST'));
+addpath(fullfile(pwd,'external','FEAST-v1.1.1','MIToolbox'));
+
+% Check FEAST has been compiled
+if ~exist('FSToolboxMex.mexa64','file')
+    % Compile FEAST
+    fprintf('Compiling FEAST\n');
+    curdir = pwd;
+    cd(fullfile('external','FEAST-v1.1.1','FEAST'));
+    try
+        CompileFEAST
+    catch
+        fprintf('Something went wrong. FEAST did not compile\n');
+    end
+    cd(curdir);
+end
 
 % pkg_dir = fullfile(pwd,'external','biosig4octmat-3.0.1');
 % curdir = pwd;
