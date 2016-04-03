@@ -40,6 +40,10 @@ end
 samples(bad_samples,:) = [];
 class_labels(bad_samples,:) = [];
 
+% get feature labels
+feature_labels = lattice_feature_labels(size(din.lattice.Kf));
+feature_labels = reshape(feature_labels,1,numel(din.lattice.Kf));
+
 % % check features
 % figure;
 % imagesc(samples);
@@ -63,3 +67,15 @@ nbins = 20;
 
 heatmap(confusion_mat, confusion_order, confusion_order, 1,...
     'Colormap','red','ShowAllTicks',1,'UseLogColorMap',true,'Colorbar',true);
+
+%% common features
+[feat_common, freq] = features_select_common(feat_sel, 40);
+
+%% save
+data = [];
+data.nbins = nbins;
+data.nfeatures = nfeatures;
+data.feat_sel = feat_sel;
+data.predictions = predictions;
+file_out = fullfile(srcdir,'features.mat');
+save(file_out,'data');
