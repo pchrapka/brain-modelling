@@ -1,4 +1,4 @@
-%% exp09_svmmrmr
+%% exp09_svmmrmr_raw
 
 % set up output folder
 % use absolute directories
@@ -77,5 +77,5 @@ data.nbins = nbins;
 data.nfeatures = nfeatures;
 data.feat_sel = feat_sel;
 data.predictions = predictions;
-file_out = fullfile(srcdir,'features.mat');
+file_out = fullfile(srcdir,[strrep(mfilename,'_','-') '-' datestr(now,'yyyy-mm-dd') '.mat']);
 save(file_out,'data');

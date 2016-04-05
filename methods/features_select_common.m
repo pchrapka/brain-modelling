@@ -1,4 +1,4 @@
-function [feat_common, freq] = select_common(feat_sel, nfeatures)
+function [feat_common, freq] = features_select_common(feat_sel, nfeatures)
 %SELECT_COMMON selects common features from LOO feature selection
 %   [FEAT_COMMON, FREQ] = SELECT_COMMON(FEAT_SEL, NFEATURES) selects common
 %   features from different feature selection runs
