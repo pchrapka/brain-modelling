@@ -10,6 +10,7 @@ addpath(fullfile(pwd,'external','tsa'));
 addpath(fullfile(pwd,'external','lumberjack'));
 addpath(fullfile(pwd,'external','export_fig'));
 addpath(fullfile(pwd,'external','heatmaps'));
+addpath(fullfile(pwd,'external','psom-1.2.1'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','FEAST'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','MIToolbox'));
 

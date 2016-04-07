@@ -30,7 +30,7 @@ for i=1:nlabels
 end
 
 ratio = (mu(1,:) - mu(2,:)).^2./(sigma(1,:).^2 + sigma(2,:).^2);
-if ~isequal(size(ratio),[nfeatures,1])
+if ~isequal(size(ratio),[1 nfeatures])
     error([mfilename ':output'],...
         'something went wrong here');
 end

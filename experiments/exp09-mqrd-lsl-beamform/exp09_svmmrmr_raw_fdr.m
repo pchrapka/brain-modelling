@@ -45,6 +45,12 @@ feature_labels = lattice_feature_labels(size(din.lattice.Kf));
 feature_labels = reshape(feature_labels,1,numel(din.lattice.Kf));
 
 ratio = fishers_discriminant_ratio(samples,class_labels);
+temp = [ratio' (1:nfeatures)'];
+ratio_sorted = sortrows(temp,-1);
+
+nfeatures_mrmr = 20000;
+feat_sel_fdr = ratio_sorted(1:nfeatures_mrmr,2);
+features = samples(:,feat_sel_fdr);
 
 % % check features
 % figure;
@@ -57,7 +63,7 @@ ratio = fishers_discriminant_ratio(samples,class_labels);
 % imagesc(large_samples);
 
 %% validate features
-model = SVMMRMR(samples, class_labels); %, feature_labels);
+model = SVMMRMR(features, class_labels); %, feature_labels);
 nfeatures = 100;
 nbins = 20;
 [predictions, feat_sel] = model.validate_features(...
@@ -71,13 +77,15 @@ heatmap(confusion_mat, confusion_order, confusion_order, 1,...
     'Colormap','red','ShowAllTicks',1,'UseLogColorMap',true,'Colorbar',true);
 
 %% common features
-[feat_common, freq] = features_select_common(feat_sel, 40);
+[feat_common, freq] = features_select_common(feat_sel, 100);
 
 %% save
 data = [];
 data.nbins = nbins;
 data.nfeatures = nfeatures;
+data.feat_sel_fdr = feat_sel_fdr;
 data.feat_sel = feat_sel;
+data.feature_labels = feature_labels;
 data.predictions = predictions;
 file_out = fullfile(srcdir,[strrep(mfilename,'_','-') '-' datestr(now,'yyyy-mm-dd') '.mat']);
 save(file_out,'data');

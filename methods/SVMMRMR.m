@@ -46,12 +46,17 @@ classdef SVMMRMR < handle
             %
             %   Outline of algorithm:
             %   
-            %   for each sample
+            %   parfor each sample
             %       leave one out
             %       select N features using MRMR
             %       optimize SVM using a grid search and leave one out
             %       train an SVM with optimal params
             %       predict
+            %
+            %   NOTES:
+            %   parfor setup
+            %       make sure to configure your machine for parallel
+            %       execution
             %
             %   Input
             %   -----
@@ -67,6 +72,7 @@ classdef SVMMRMR < handle
             %       (Brown2012, "Conditional Likelihood Maximisation: A
             %       Unifying Framework for Information Theoretic Feature
             %       Selection")
+            %
             %   verbosity (integer, default = 0)
             %       verbosity level of function, choices 0,1,2
             %
@@ -97,8 +103,11 @@ classdef SVMMRMR < handle
             feat_sel = zeros(p.Results.nfeatures, nsamples);
             predictions = zeros(nsamples,1);
             
+            nfeatures = p.Results.nfeatures;
+            verbosity = p.Results.verbosity;
+            
             % loop over samples
-            for i=1:nsamples
+            parfor i=1:nsamples
                 % Set up leave one out
                 testidx = zeros(nsamples,1);
                 testidx(i) = 1;
@@ -107,11 +116,11 @@ classdef SVMMRMR < handle
                 %%%%%
                 
                 [feat_sel(:,i)] = feast('mrmr',...
-                    p.Results.nfeatures,...
+                    nfeatures,...
                     samples_discrete(~testidx,:),...
                     obj.class_labels(~testidx));
                 
-                if p.Results.verbosity > 1 
+                if verbosity > 1 
                     fprintf('Features selected:\n');
                     if ~isempty(obj.feature_labels)
                         fprintf('\t%s\n',obj.feature_labels{feat_sel(:,i)});
@@ -135,7 +144,7 @@ classdef SVMMRMR < handle
                     'CVPartition', c,...
                     ...'Leaveout', 'on',...
                     'KernelFunction','rbf',...
-                    'verbosity',p.Results.verbosity);
+                    'verbosity', verbosity);
                 
                 % Train SVM with optimized params
                 %%%%%
