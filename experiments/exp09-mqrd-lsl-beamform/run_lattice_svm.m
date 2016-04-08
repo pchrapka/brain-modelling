@@ -11,6 +11,9 @@ outdir = fullfile(srcdir,'..','lattice-svm');
 subject_file = 'BC.HC.YOUTH.P022-9913';
 subject_dir = strrep(subject_file,'BC.HC.YOUTH.','');
 
+%% set up parallel pool
+% TODO
+
 %% set up pipeline
 
 pipedir = fullfile(outdir,subject_dir);
@@ -42,7 +45,7 @@ prev_job = pipeline.last_job();
 pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
 
 % pipeline options
-obj.pipeline_options.path_logs = fullfile(outdir, 'logs');
+obj.pipeline_options.path_logs = fullfile(pipedir, 'logs');
 obj.pipeline_options.mode = 'background';
 obj.pipeline_options.max_queued = 1; % use one thread since all stages use parfor
 
