@@ -74,15 +74,40 @@ classdef SVM < handle
                 for j=1:length(p.Results.scale)
                     
                     % Train the SVM
-                    svm_params = [fieldnames(p.Unmatched) struct2cell(p.Unmatched)];
-                    svm_params = reshape(svm_params',1,numel(svm_params));
-                    model = fitcsvm(obj.samples, obj.class_labels,...
-                        'BoxConstraint', p.Results.box(i),...
-                        'KernelScale', p.Results.scale(j),...
-                        svm_params{:});
+                    if exist('fitcsvm','file')
+                        svm_params = [fieldnames(p.Unmatched) struct2cell(p.Unmatched)];
+                        svm_params = reshape(svm_params',1,numel(svm_params));
+                        model = fitcsvm(obj.samples, obj.class_labels,...
+                            'BoxConstraint', p.Results.box(i),...
+                            'KernelScale', p.Results.scale(j),...
+                            svm_params{:});
+                        
+                        % Calculate the loss or CV error
+                        loss(i,j) = kfoldLoss(model); % TODO double check output
+                    else
+                        % set svm options
+                        % svm type
+                        svm_type = '-s 0 ';
+                        % kernel type
+                        switch p.Unmatched.KernelFunction
+                            case 'rbf'
+                                kernel = '-t 2 ';
+                        end
+                        % kernel scale
+                        gamma = sprintf('-g %g ', p.Results.scale(j));
+                        % cost constraint
+                        cost = sprintf('-c %g ', p.Results.box(i));
+                        % n-fold cross validation mode
+                        crossval = sprintf('-v %d ', length(obj.class_labels));
+                        
+                        options = [svm_type kernel gamma cost crossval];
                     
-                    % Calculate the loss or CV error
-                    loss(i,j) = kfoldLoss(model); % TODO double check output
+                        accuracy = svmtrain(obj.class_labels, obj.samples, options);
+                        loss(i,j) = 1 - accuracy;
+                        % TODO check if accuracy is percent or decimal
+                        error('fix me');
+                    end
+                    
                     if p.Results.verbosity > 1
                         fprintf('\tLoss: %0.6f\n', loss(i,j));
                     end
@@ -114,7 +139,32 @@ classdef SVM < handle
             %   ------
             %   updates obj.model
             
-            obj.model = fitcsvm(obj.samples, obj.class_labels, varargin{:});
+            if exist('fitcsvm','file')
+                obj.model = fitcsvm(obj.samples, obj.class_labels, varargin{:});
+            else
+                p = inputParser();
+                addParameter(p,'KernelFunction','rbf');
+                addParameter(p,'BoxConstraint',0,@isnumeric);
+                addParameter(p,'KernelScale',1,@isnumeric);
+                parse(p,varargin{:});
+                
+                % set svm options
+                % svm type
+                svm_type = '-s 0 ';
+                % kernel type
+                switch p.Results.KernelFunction
+                    case 'rbf'
+                        kernel = '-t 2 ';
+                end
+                % kernel scale
+                gamma = sprintf('-g %g ', p.Results.KernelScale);
+                % cost constraint
+                cost = sprintf('-c %g ', p.Results.BoxConstraint);
+                
+                options = [svm_type kernel gamma cost crossval];
+                
+                obj.model = svmtrain(obj.class_labels, obj.samples, options);
+            end
         end
         
         function prediction = predict(obj, test)
@@ -131,10 +181,16 @@ classdef SVM < handle
             %   prediction
             %       predicted class label for test sample
             
-            
-            prediction = predict(obj.model, test);
+            if exist('fitcsvm','file')
+                prediction = predict(obj.model, test);
+            else
+                prediction = svmpredict(1, test, obj.model);
+                % TODO check predictions output
+                error('check predictions output');
+            end
         end
     end
     
 end
+
 
