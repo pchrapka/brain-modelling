@@ -63,7 +63,7 @@ features = samples(:,feat_sel_fdr);
 % imagesc(large_samples);
 
 %% validate features
-model = SVMMRMR(features, class_labels); %, feature_labels);
+model = SVMMRMR(features, class_labels, 'implementation', 'libsvm'); %, feature_labels);
 nfeatures = 100;
 nbins = 20;
 [predictions, feat_sel] = model.validate_features(...

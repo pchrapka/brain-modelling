@@ -2,14 +2,15 @@ classdef SVM < handle
     %SVM Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties
+    properties (SetAccess = protected)
         samples;
         class_labels;
         model;
+        implementation;
     end
     
     methods
-        function obj = SVM(samples, class_labels)
+        function obj = SVM(samples, class_labels,varargin)
             %SVM constructs an SVM object
             %   obj = SVM(samples, class_labels) constructs an SVM object
             %   
@@ -22,13 +23,26 @@ classdef SVM < handle
             %   class_labels (vector)
             %       class label for each sample
             %
+            %   Parameters
+            %   ----------
+            %   implementation (string, default = libsvm)
+            %       specify the svm implementation: matlab or libsvm
+            %
             %   Output
             %   ------
             %   obj
             %       SVM object
             
-            obj.samples = samples;
-            obj.class_labels = class_labels;
+            p = inputParser();
+            addRequired(p,'samples',@ismatrix);
+            addRequired(p,'class_labels',@isvector);
+            options_imp = {'matlab','libsvm'};
+            addParameter(p,'implementation','libsvm',@(x) any(validatestring(x,options_imp)));
+            parse(p,samples,class_labels,varargin{:});
+            
+            obj.samples = p.Results.samples;
+            obj.class_labels = p.Results.class_labels;
+            obj.implementation = p.Results.implementation;
         end
         
         function params = optimize(obj, varargin)
@@ -74,7 +88,7 @@ classdef SVM < handle
                 for j=1:length(p.Results.scale)
                     
                     % Train the SVM
-                    if exist('fitcsvm','file')
+                    if isequal(obj.implementation,'matlab')
                         svm_params = [fieldnames(p.Unmatched) struct2cell(p.Unmatched)];
                         svm_params = reshape(svm_params',1,numel(svm_params));
                         model = fitcsvm(obj.samples, obj.class_labels,...
@@ -139,7 +153,7 @@ classdef SVM < handle
             %   ------
             %   updates obj.model
             
-            if exist('fitcsvm','file')
+            if isequal(obj.implementation,'matlab')
                 obj.model = fitcsvm(obj.samples, obj.class_labels, varargin{:});
             else
                 p = inputParser();
@@ -181,7 +195,7 @@ classdef SVM < handle
             %   prediction
             %       predicted class label for test sample
             
-            if exist('fitcsvm','file')
+            if isequal(obj.implementation,'matlab')
                 prediction = predict(obj.model, test);
             else
                 prediction = svmpredict(1, test, obj.model);

@@ -55,7 +55,7 @@ feature_labels = reshape(feature_labels,1,numel(din.lattice.Kf));
 % imagesc(large_samples);
 
 %% validate features
-model = SVMMRMR(samples, class_labels); %, feature_labels);
+model = SVMMRMR(samples, class_labels, 'implementation', 'libsvm'); %, feature_labels);
 nfeatures = 100;
 nbins = 20;
 [predictions, feat_sel] = model.validate_features(...

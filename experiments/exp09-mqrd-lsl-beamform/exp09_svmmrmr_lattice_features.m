@@ -80,7 +80,7 @@ features_zeromean = features - repmat(mean(features),nsamples,1);
 features_norm = features_zeromean./repmat(std(features_zeromean,0,1),nsamples,1);
 
 %% validate features
-model = SVMMRMR(features_norm, class_labels); %, feature_labels);
+model = SVMMRMR(features_norm, class_labels, 'implementation', 'libsvm'); %, feature_labels);
 nfeatures = 100;
 nbins = 20;
 [predictions, feat_sel] = model.validate_features(...

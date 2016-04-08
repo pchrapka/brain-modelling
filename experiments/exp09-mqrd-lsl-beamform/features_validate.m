@@ -40,7 +40,7 @@ parse(p,files_in,files_out,opt{:});
 data = ftb.util.loadvar(files_in);
 
 % create a model
-model = SVMMRMR(data.features, data.class_labels);
+model = SVMMRMR(data.features, data.class_labels, 'implementation', 'libsvm');
 
 % validate features
 data = [];

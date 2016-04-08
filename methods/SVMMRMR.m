@@ -1,11 +1,9 @@
-classdef SVMMRMR < handle
+classdef SVMMRMR < SVM
     %SVMMRMR Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties
-        samples;
-        class_labels;
-        feature_labels;
+    properties (SetAccess = protected)
+        %feature_labels;
     end
     
     methods
@@ -21,23 +19,24 @@ classdef SVMMRMR < handle
             %       each column represents one feature
             %   class_labels (vector)
             %       class label for each sample
+            %
+            %   Parameters
+            %   ----------
             %   feature_labels (optional, cell array)
             %       label for each feature
+            %   implementation (string, default = libsvm)
+            %       specify the svm implementation: matlab or libsvm
             %
             %   Output
             %   ------
             %   obj (SVMMRMR object)
             %       SVMMRMR object
             
-            p = inputParser;
-            addRequired(p,'samples',@ismatrix);
-            addRequired(p,'class_labels',@isvector);
-            addParameter(p,'feature_labels',{},@iscell);
-            parse(p,samples, class_labels, varargin{:});
+            % call SVM constructor
+            obj@SVM(samples,class_labels,varargin{:});
             
-            obj.samples = p.Results.samples;
-            obj.class_labels = p.Results.class_labels;
-            obj.feature_labels = p.Results.feature_labels;
+            %addParameter(p,'feature_labels',{},@iscell);
+            %obj.feature_labels = p.Results.feature_labels;
         end
         
         function [predictions, feat_sel] = validate_features(obj,varargin)
@@ -137,8 +136,10 @@ classdef SVMMRMR < handle
             
                 svm_model = SVM(...
                     obj.samples(~testidx,feat_sel(:,i)),...
-                    obj.class_labels(~testidx));
-                if exist('fitcsvm','file')
+                    obj.class_labels(~testidx),...
+                    'implementation', obj.implementation);
+                
+                if isequal(obj.implementation,'matlab')
                     % partition samples into a leave one out scheme
                     c = cvpartition(nsamples-1, 'KFold', nsamples-1);
                     
@@ -163,7 +164,7 @@ classdef SVMMRMR < handle
                 % Train SVM with optimized params
                 %%%%%
                 
-                if exist('fitcsvm','file')
+                if isequal(obj.implementation,'matlab')
                     svm_model.train(...
                         'Standardize', true,...
                         'KernelFunction','rbf',...
