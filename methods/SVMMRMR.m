@@ -106,7 +106,8 @@ classdef SVMMRMR < SVM
             verbosity = p.Results.verbosity;
             
             % loop over samples
-            parfor i=1:nsamples
+            %parfor i=1:nsamples
+            for i=1:nsamples
                 % Set up leave one out
                 testidx = zeros(nsamples,1);
                 testidx(i) = 1;
@@ -121,11 +122,11 @@ classdef SVMMRMR < SVM
                 
                 if verbosity > 1 
                     fprintf('Features selected:\n');
-                    if ~isempty(obj.feature_labels)
-                        fprintf('\t%s\n',obj.feature_labels{feat_sel(:,i)});
-                    else
-                        fprintf('\t%d\n',feat_sel(:,i));
-                    end
+                    %if ~isempty(obj.feature_labels)
+                    %    fprintf('\t%s\n',obj.feature_labels{feat_sel(:,i)});
+                    %else
+                    fprintf('\t%d\n',feat_sel(:,i));
+                    %end
                 end
                 
                 
@@ -158,7 +159,6 @@ classdef SVMMRMR < SVM
                         'verbosity', verbosity,...
                         'box',box,...
                         'scale',scale);
-                    error('fix me');
                 end
                 
                 % Train SVM with optimized params

@@ -57,7 +57,7 @@ classdef SVM < handle
             %   scale (vector)
             %       KernelScale parameter choices, default = exp(-2:2)
             %   verbosity (integer, default = 0)
-            %       verbosity level of function, choices 0,1,2
+            %       verbosity level of function, choices 0,1,2,3
             %
             %   Output
             %   ------
@@ -72,7 +72,7 @@ classdef SVM < handle
             addParameter(p,'box',params_box);
             params_scale = exp(-2:2);
             addParameter(p,'scale',params_scale);
-            params_verbosity = [0 1 2];
+            params_verbosity = [0 1 2 3];
             addParameter(p,'verbosity',0,@(x) any(find(params_verbosity == x)));
             parse(p,varargin{:});
             
@@ -114,15 +114,18 @@ classdef SVM < handle
                         % n-fold cross validation mode
                         crossval = sprintf('-v %d ', length(obj.class_labels));
                         
-                        options = [svm_type kernel gamma cost crossval];
+                        if p.Results.verbosity > 2
+                            options = [svm_type kernel gamma cost crossval];
+                        else
+                            % quiet mode
+                            options = [svm_type kernel gamma cost crossval '-q'];
+                        end
                     
                         accuracy = svmtrain(obj.class_labels, obj.samples, options);
-                        loss(i,j) = 1 - accuracy;
-                        % TODO check if accuracy is percent or decimal
-                        error('fix me');
+                        loss(i,j) = 100 - accuracy;
                     end
                     
-                    if p.Results.verbosity > 1
+                    if p.Results.verbosity > 2
                         fprintf('\tLoss: %0.6f\n', loss(i,j));
                     end
                     
@@ -130,6 +133,10 @@ classdef SVM < handle
             end
             
             % Choose the params with the lowest CV loss
+            if p.Results.verbosity > 1
+                fprintf('Loss:\n');
+                disp(loss);
+            end
             [~,idx] = min(loss(:));
             [i,j] = ind2sub(size(loss), idx);
             params.BoxConstraint = p.Results.box(i);
@@ -175,7 +182,7 @@ classdef SVM < handle
                 % cost constraint
                 cost = sprintf('-c %g ', p.Results.BoxConstraint);
                 
-                options = [svm_type kernel gamma cost crossval];
+                options = [svm_type kernel gamma cost '-q'];
                 
                 obj.model = svmtrain(obj.class_labels, obj.samples, options);
             end
@@ -198,9 +205,7 @@ classdef SVM < handle
             if isequal(obj.implementation,'matlab')
                 prediction = predict(obj.model, test);
             else
-                prediction = svmpredict(1, test, obj.model);
-                % TODO check predictions output
-                error('check predictions output');
+                prediction = svmpredict(1, test, obj.model, '-q');
             end
         end
     end
