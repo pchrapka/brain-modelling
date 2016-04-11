@@ -35,8 +35,7 @@ end
 
 
 %% set up parallel pool
-% setup_parfor('blade');
-setup_parfor('laptop');
+setup_parfor();
 
 %% set up pipeline
 
