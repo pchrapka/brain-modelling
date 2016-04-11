@@ -1,11 +1,13 @@
 %% run_lattice_svm
+% Goal:
+%   Run lattice svm alg on P022 data, depends on output from exp10_beamform_patch
 
 %% set up output folder
 % use absolute directories
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 
 % pipeline folder
-outdir = fullfile(srcdir,'..','lattice-svm');
+outdir = fullfile(srcdir,'output','lattice-svm');
 
 % subject folder
 subject_file = 'BC.HC.YOUTH.P022-9913';
@@ -22,7 +24,11 @@ pipeline = PipelineLatticeSVM(pipedir);
 % add select trials
 name_brick = 'bricks.select_trials';
 opt_func = 'params_st_1';
-trial_list = {}; % TODO get analysis from exp09_beamform_lattice
+trial_list = {...
+    fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstd-BPatchTriallcmvmom/sourceanalysis.mat'),...
+    fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGodd-BPatchTriallcmvmom/sourceanalysis.mat'),...
+    };
+
 % NOTE trial_list order matters, should follow labels in params
 pipeline.add_job(name_brick,opt_func,'trial_list',trial_list);
 

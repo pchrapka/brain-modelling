@@ -7,7 +7,7 @@
 % set up output folder
 % use absolute directories
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
-lattice_folder = fullfile(srcdir,'..','lattice');
+lattice_folder = fullfile(srcdir,'output','lattice');
 
 %% load data
 files = dir(fullfile(lattice_folder,'lattice*.mat'));
@@ -103,5 +103,5 @@ data.nfeatures = nfeatures;
 data.feat_sel = feat_sel;
 data.feature_labels = feature_labels;
 data.predictions = predictions;
-file_out = fullfile(srcdir,[strrep(mfilename,'_','-') '-' datestr(now,'yyyy-mm-dd') '.mat']);
+file_out = fullfile(srcdir,'output',[strrep(mfilename,'_','-') '-' datestr(now,'yyyy-mm-dd') '.mat']);
 save(file_out,'data');

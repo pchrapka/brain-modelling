@@ -1,7 +1,7 @@
 %% exp09_check_lattice_trial
 
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
-lattice_folder = fullfile(srcdir,'..','lattice');
+lattice_folder = fullfile(srcdir,'output','lattice');
 
 trial = 1;
 lattice_file = sprintf('lattice%d.mat',trial);

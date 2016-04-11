@@ -23,11 +23,12 @@ function lattice_filter_sources(files_in,files_out,opt)
 %       verbosity level, options: 0,1
 
 p = inputParser;
-addRequired(p,'data',@isstruct);
+addRequired(p,'files_in',@iscell);
+addRequired(p,'files_out',@iscell);
 addParameter(p,'order',4,@isnumeric);
 addParameter(p,'lambda',0.99,@isnumeric);
 addParameter(p,'verbose',0);
-parse(p,opt{:});
+parse(p,files_in,files_out,opt{:});
 
 plot_ref_coefs = false;
 

@@ -1,4 +1,4 @@
-%% exp09_beamform_lattice
+%% exp10_beamform_patch
 
 %% Analysis params
 
@@ -40,21 +40,8 @@ analysis{2} = analysis_eeg_beamform_patch(...
     'subject_name', subject_name,...
     'stimulus', stimulus);
 
-
-%% Select data for lattice filter
-stimulus = {'std','odd'};
-data = analysis_select_data(analysis,stimulus,'trials',100);
-
-%% Lattice filter
-% set lattice filter params
-order = 10;
-lambda = 0.99;
-verbose = 0;
-
-lattice_folder = fullfile(srcdir,'output','lattice');
-if ~exist(lattice_folder,'dir')
-    mkdir(lattice_folder);
+%% Print beamformer output files
+fprintf('Beamformer output:\n');
+for i=1:length(analysis)
+    fprintf('%s\n',analysis{i}.steps{end}.sourceanalysis);
 end
-
-analysis_eeg_lattice(data,'outdir',lattice_folder,...
-    'order',order,'lambda',lambda,'verbose',verbose);

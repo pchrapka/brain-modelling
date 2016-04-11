@@ -20,7 +20,7 @@ subject_specific = true; % select electrode configuration
 
 %% Set up beamformer analysis
 % use folder common to all experiments to avoid recomputation
-out_folder = fullfile(srcdir,'..','output-fb');
+out_folder = fullfile(srcdir,'..','output-common','fb');
 if ~exist(out_folder,'dir')
     mkdir(out_folder);
 end
