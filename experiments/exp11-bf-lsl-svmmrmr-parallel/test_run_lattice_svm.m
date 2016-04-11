@@ -8,6 +8,9 @@
 
 % pipeline folder
 outdir = fullfile(srcdir,'output','lattice-svm-test');
+if ~exist(outdir)
+    mkdir(outdir);
+end
 
 %% set up test data
 ncond = 2;
