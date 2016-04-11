@@ -26,7 +26,7 @@ for i=1:ncond
             data(j).avg.mom{k} = rand(ntime,1);
         end
     end
-    save(data,sprintf('%s.mat',cond_labels{i}));
+    save(fullfile(outdir,sprintf('%s.mat',cond_labels{i})),'data');
 end
 
 
