@@ -14,7 +14,9 @@ end
 switch comp_name
     case sprintf('blade16.ece.mcmaster.ca\n')
         if verLessThan('matlab', '8.2.0.29') % R2013b
-            matlabpool('open', 10);
+            if matlabpool('size') == 0 
+                matlabpool('open', 10);
+            end
         else
             % close the current pool
             if ~isempty(gcp)
