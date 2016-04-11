@@ -14,7 +14,6 @@ addpath(fullfile(pwd,'external','psom-1.2.1'));
 addpath(fullfile(pwd,'external','libsvm-321','matlab'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','FEAST'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','MIToolbox'));
-addpath(fullfile(pwd,'external','fieldtrip-20160128'));
 
 %% check compiled files
 % Check fEAST has been compiled
@@ -42,7 +41,9 @@ if ~exist('svmtrain.mexa64','file')
     end
     cd(curdir);
 end
-    
+
+addpath(fullfile(pwd,'external','fieldtrip-20160128'));
+ft_defaults();
 
 % pkg_dir = fullfile(pwd,'external','biosig4octmat-3.0.1');
 % curdir = pwd;
