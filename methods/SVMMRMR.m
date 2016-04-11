@@ -106,8 +106,8 @@ classdef SVMMRMR < SVM
             verbosity = p.Results.verbosity;
             
             % loop over samples
-            %parfor i=1:nsamples
-            for i=1:nsamples
+            parfor i=1:nsamples
+            %for i=1:nsamples
                 % Set up leave one out
                 testidx = zeros(nsamples,1);
                 testidx(i) = 1;
