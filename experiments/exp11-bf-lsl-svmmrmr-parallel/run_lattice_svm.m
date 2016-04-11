@@ -23,7 +23,7 @@ pipeline = PipelineLatticeSVM(pipedir);
 
 % add select trials
 name_brick = 'bricks.select_trials';
-opt_func = 'params_st_1';
+opt_func = 'params_st_100';
 trial_list = {...
     fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstd-BPatchTriallcmvmom/sourceanalysis.mat'),...
     fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGodd-BPatchTriallcmvmom/sourceanalysis.mat'),...
@@ -35,25 +35,25 @@ pipeline.add_job(name_brick,opt_func,'trial_list',trial_list);
 % add lattice filter sources
 name_brick = 'bricks.lattice_filter_sources';
 opt_func = 'params_lf_1';
-prev_job = pipeline.last_job();
-pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+prev_job = job_name;
+[~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
 
 % add feature matrix
 name_brick = 'bricks.lattice_features_matrix';
 opt_func = 'params_fm_1';
-prev_job = pipeline.last_job();
-pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+prev_job = job_name;
+[~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
 
 % add feature validation
 name_brick = 'bricks.features_validate';
 opt_func = 'params_fv_1';
-prev_job = pipeline.last_job();
-pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+prev_job = job_name;
+[~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
 
 % pipeline options
-obj.pipeline_options.path_logs = fullfile(pipedir, 'logs');
-obj.pipeline_options.mode = 'background';
-obj.pipeline_options.max_queued = 1; % use one thread since all stages use parfor
+pipeline.options.path_logs = fullfile(pipedir, 'logs');
+pipeline.options.mode = 'background';
+pipeline.options.max_queued = 1; % use one thread since all stages use parfor
 
 pipeline.run();
 
@@ -62,16 +62,16 @@ pipeline.run();
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Display flowchart
-% psom_pipeline_visu(obj.pipeline_options.path_logs,'flowchart');
+% psom_pipeline_visu(pipeline.options.path_logs,'flowchart');
 
 %% List the finished jobs
-% psom_pipeline_visu(obj.pipeline_options.path_logs,'finished');
+% psom_pipeline_visu(pipeline.options.path_logs,'finished');
 
 %% Display log
-% psom_pipeline_visu(obj.pipeline_options.path_logs,'log','quadratic');
+% psom_pipeline_visu(pipeline.options.path_logs,'log','quadratic');
 
 %% Display Computation time
-% psom_pipeline_visu(obj.pipeline_options.path_logs,'time','');
+% psom_pipeline_visu(pipeline.options.path_logs,'time','');
 
 %% Monitor history
-% psom_pipeline_visu(obj.pipeline_options.path_logs,'monitor');
+% psom_pipeline_visu(pipeline.options.path_logs,'monitor');

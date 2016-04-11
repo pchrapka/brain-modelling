@@ -38,10 +38,14 @@ nchannels = sum(data.inside);
 nsamples = length(data.time);
 
 ntrials = length(files_in);
-parfor i=1:ntrials
+% parfor i=1:ntrials
+for i=1:ntrials
     if p.Results.verbose > 1
         fprintf('trial %d\n',i);
     end
+    
+    % load data
+    data = ftb.util.loadvar(files_in{i});
     
     % set up lattice filter
     lattice = [];
@@ -50,7 +54,7 @@ parfor i=1:ntrials
     lattice.scale = 1;
     lattice.name = sprintf('MQRDLSL C%d P%d lambda=%0.2f',...
         nchannels, p.Results.order, p.Results.lambda);
-    lattice.label = data(i).label;
+    lattice.label = data.label;
     
     % initialize lattice filter with noise
     mu = zeros(nchannels,1);
@@ -61,7 +65,7 @@ parfor i=1:ntrials
     warning('on','all');
     
     % get source data
-    temp = data(i).avg.mom(data(i).inside);
+    temp = data.avg.mom(data.inside);
     % convert to matrix [patches x time]
     sources = cell2mat(temp);
     
@@ -96,7 +100,7 @@ parfor i=1:ntrials
     % save only Kf, half memory size
     lattice = rmfield(lattice,'Kb');
     % chop off the prestimulus, a bit less memory
-    idx = data(i).time < 0;
+    idx = data.time < 0;
     lattice.Kf(idx,:,:,:) = [];
     
     % save lattice output

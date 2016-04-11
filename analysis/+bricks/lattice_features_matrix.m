@@ -16,7 +16,7 @@ function lattice_features_matrix(files_in,files_out,opt)
 %   
 %   Parameters
 %   ----------
-%   threshold (scalar, default = 2)
+%   threshold (scalar, default = 'none')
 %       threshold for lattice coefficient values, samples containing
 %       coefficents above this value are removed
 %   features_fdr (scalar, default = 1000)
@@ -40,7 +40,7 @@ function lattice_features_matrix(files_in,files_out,opt)
 p = inputParser;
 addRequired(p,'files_in',@iscell);
 addRequired(p,'files_out',@ischar);
-addParameter(p,'threshold',2,@isnumeric);
+addParameter(p,'threshold','none');
 addParameter(p,'features_fdr',1000,@isnumeric);
 parse(p,files_in,files_out,opt{:});
 
@@ -70,8 +70,10 @@ for i=1:nsamples
     end
     
     % check if we have bad samples
-    if any(abs(samples(i,:)) > p.Results.threshold)
-        bad_samples(end+1,1) = i;
+    if ~isequal(p.Results.threshold,'none')
+        if any(abs(samples(i,:)) > p.Results.threshold)
+            bad_samples(end+1,1) = i;
+        end
     end
 end
 

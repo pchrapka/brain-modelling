@@ -32,6 +32,7 @@ function features_validate(files_in,files_out,opt)
 
 
 p = inputParser;
+p.KeepUnmatched = true;
 addRequired(p,'files_in',@ischar);
 addRequired(p,'files_out',@ischar);
 parse(p,files_in,files_out,opt{:});
