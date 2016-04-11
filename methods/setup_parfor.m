@@ -12,7 +12,7 @@ end
     
 
 switch comp_name
-    case 'blade16.ece.mcmaster.ca'
+    case sprintf('blade16.ece.mcmaster.ca\n')
         if verLessThan('matlab', '8.2.0.29') % R2013b
             matlabpool('open', 10);
         else
