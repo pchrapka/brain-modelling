@@ -38,8 +38,8 @@ nchannels = sum(data.inside);
 nsamples = length(data.time);
 
 ntrials = length(files_in);
-% parfor i=1:ntrials
-for i=1:ntrials
+parfor i=1:ntrials
+% for i=1:ntrials
     if p.Results.verbose > 1
         fprintf('trial %d\n',i);
     end
