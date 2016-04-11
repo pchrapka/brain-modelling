@@ -57,7 +57,7 @@ classdef PipelineLatticeSVM < handle
             %   specific for each brick
             
             % get brick options from option function
-            feval(sprintf('opt=%s();',opt_func));
+            opt = feval(opt_func);
             
             % get the brick's stage
             stage = obj.get_brick_stage(name_brick);
