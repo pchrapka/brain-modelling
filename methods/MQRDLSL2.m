@@ -15,6 +15,7 @@ classdef MQRDLSL2 < handle
         
         gammasqd;   % delayed gamma
         berrord;    % delayed backward prediction error
+        ferror;     % forward prediction error
 
         % reflection coefficients
         Kb;
@@ -28,6 +29,9 @@ classdef MQRDLSL2 < handle
         
         % weighting factor
         lambda;
+        
+        % name
+        name
     end
     
     methods
@@ -61,10 +65,15 @@ classdef MQRDLSL2 < handle
             obj.dbsq = onesMat;
             
             obj.berrord = zeros(obj.nchannels, obj.order+1);
+            obj.ferror = zeros(obj.nchannels, obj.order+1);
             obj.gammasqd = ones(obj.order+1, 1);
 
-            obj.Kb = zeroMat;
-            obj.Kf = zeroMat;
+            zeroMat3 = zeros(obj.order, obj.nchannels, obj.nchannels);
+            obj.Kb = zeroMat3;
+            obj.Kf = zeroMat3;
+            
+            obj.name = sprintf('MQRDLSL C%d P%d lambda=%0.2f',...
+                channels, order, lambda);
         end
         
         function obj = update(obj, x)
@@ -238,8 +247,8 @@ classdef MQRDLSL2 < handle
                 end
                 
                 % calculate reflection coefficients
-                obj.Kf(p,:,:) = Rf\Xf;
-                obj.Kb(p,:,:) = (Rb\Xb)';
+                obj.Kf(p-1,:,:) = Rf\Xf;
+                obj.Kb(p-1,:,:) = (Rb\Xb)';
                 % NOTE these are singular for the first few iterations
                 % because there are not enough samples, so Rb isn't full
                 % rank
@@ -255,12 +264,10 @@ classdef MQRDLSL2 < handle
                 
             end
             
-            obj.Kf(1,:,:) = [];
-            obj.Kb(1,:,:) = [];
-            
             % save current values as delayed versions for next iteration
             obj.berrord = berror;
             obj.gammasqd = gammasq;
+            obj.ferror = ferror;
             
         end
     end
