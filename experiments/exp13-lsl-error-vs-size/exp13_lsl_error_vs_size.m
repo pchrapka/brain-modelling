@@ -57,18 +57,20 @@ for i=1:nchannels
 end
 
 %% Plots
+x = repmat(channels',1,norder);
+y = repmat(order,nchannels,1);
 figure;
-surf(results.rev);
+surf(x,y,results.rev);
 title('Relative Error Variance');
 zlabel('REV');
-xlabel('Number of channels');
+xlabel('Channels');
 ylabel('Order');
 % FIXME This is showing a strange pattern, decreasing for increasing
 % channel number
 
 figure;
-surf(results.ms_inno_error);
+surf(x,y,results.ms_inno_error);
 title('Innovation Error');
 zlabel('MSE');
-xlabel('Number of channels');
+xlabel('Channels');
 ylabel('Order');
