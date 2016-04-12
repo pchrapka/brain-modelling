@@ -111,12 +111,14 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                     leadfield_cpy.filter = source.filters;
                     leadfield_cpy.filter_label = source.patch_labels;
                     leadfield_cpy.inside = source.inside;
-                    save_parfor(obj.lf.leadfield,leadfield_cpy);
+                    lfObjPatch = obj.lf;
+                    lfObjPatch.leadfield = [tempname '.mat'];
+                    save_parfor(lfObjPatch.leadfield,leadfield_cpy);
                     
                     % source analysis
                     % -------
                     % process source analysis
-                    obj.process_deps(eegtrialObj,obj.lf,elecObj,hmObj);
+                    obj.process_deps(eegtrialObj,lfObjPatch,elecObj,hmObj);
                     
                     % concatenate results into data struct
 %                     if i == 1    

@@ -1,8 +1,8 @@
 %% exp08_atlas_coarse
 
 %% load the atlas
-matlab_dir = userpath;
-pathstr = fullfile(matlab_dir(1:end-1),'fieldtrip-20160128','template','atlas','aal');
+[srcdir,~,~] = fileparts(mfilename('fullpath'));
+pathstr = fullfile(srcdir,'..','external','fieldtrip-20160128','template','atlas','aal');
 atlas_file = fullfile(pathstr,'ROI_MNI_V4.nii');
 
 atlas = ft_read_atlas(atlas_file);
