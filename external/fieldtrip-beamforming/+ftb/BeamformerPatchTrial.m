@@ -78,7 +78,7 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                 obj.sourceanalysis = strrep(obj.sourceanalysis,'.mat','-trial.mat');
                     
                 ntrials = size(timelock_all.trialinfo,1);
-                for i=1:ntrials
+                parfor i=1:ntrials
                     % trial
                     % -------
                     
@@ -90,25 +90,28 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                     timelock.trialinfo = timelock_all.trialinfo(i,:);
                     
                     % save
-                    tmp_timelock_file = fullfile(out_folder,'temp.mat');
-                    save(tmp_timelock_file, 'timelock');
+                    tmp_timelock_file = [tempname '.mat'];
+                    save_parfor(tmp_timelock_file, timelock);
                    
                     % load timelock data into ftb.EEG object
                     eegtrialObj.load_file('timelock', tmp_timelock_file);
                     
                     % filters
                     % -------
+                    % copy leadfield
+                    leadfield_cpy = leadfield;
+                    
                     % computer filters
                     % NOTE if mode == 'all' each source struct takes up a
                     % few MBs, if there are 1000 trials, that's a few GBs
                     source = ftb.BeamformerPatch.beamformer_lcmv_patch(...
-                        timelock, leadfield, patches,'mode','single');
+                        timelock, leadfield_cpy, patches,'mode','single');
                     
                     % save filters
-                    leadfield.filter = source.filters;
-                    leadfield.filter_label = source.patch_labels;
-                    leadfield.inside = source.inside;
-                    save(obj.lf.leadfield, 'leadfield');
+                    leadfield_cpy.filter = source.filters;
+                    leadfield_cpy.filter_label = source.patch_labels;
+                    leadfield_cpy.inside = source.inside;
+                    save_parfor(obj.lf.leadfield,leadfield_cpy);
                     
                     % source analysis
                     % -------
@@ -116,12 +119,12 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                     obj.process_deps(eegtrialObj,obj.lf,elecObj,hmObj);
                     
                     % concatenate results into data struct
-                    if i == 1    
-                        % allocate mem
-                        data = ftb.util.loadvar(obj.sourceanalysis);
-                        data = rmfield(data,'cfg'); % takes up a lot of memory
-                        sourceanalysis_all(ntrials) = data;
-                    end
+%                     if i == 1    
+%                         % allocate mem
+%                         data = ftb.util.loadvar(obj.sourceanalysis);
+%                         data = rmfield(data,'cfg'); % takes up a lot of memory
+%                         sourceanalysis_all(ntrials) = data;
+%                     end
                     data = ftb.util.loadvar(obj.sourceanalysis);
                     data = rmfield(data,'cfg'); % takes up a lot of memory
                     sourceanalysis_all(i) = data;
