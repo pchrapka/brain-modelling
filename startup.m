@@ -59,3 +59,4 @@ fb_make_configs()
 %% add project directories
 addpath(fullfile(pwd,'methods'));
 addpath(fullfile(pwd,'analysis'));
+addpath(fullfile(pwd,'params'));
