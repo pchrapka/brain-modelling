@@ -52,9 +52,9 @@ opt_func = 'params_fv_1000';
 
 % pipeline options
 pipeline.options.path_logs = fullfile(pipedir, 'logs');
-pipeline.options.mode = 'batch';
-pipeline.options.mode_pipeline_manager = 'batch';
-% pipeline.options.mode = 'session';
+pipeline.options.mode = 'session';
+% NOTE other modes don't seem to work well, i think i might need proper
+% project and parfor setup code in each function
 pipeline.options.max_queued = 1; % use one thread since all stages use parfor
 
 pipeline.run();
