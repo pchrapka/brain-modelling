@@ -9,12 +9,11 @@
 % pipeline folder
 outdir = fullfile(srcdir,'output','lattice-svm');
 
-% subject folder
-subject_file = 'BC.HC.YOUTH.P022-9913';
-subject_dir = strrep(subject_file,'BC.HC.YOUTH.','');
+% subject specific info
+[~,subject_file,subject_name] = get_coma_data(22);
 
 %% set up parallel pool
-% TODO
+setup_parfor();
 
 %% set up pipeline
 
@@ -23,20 +22,18 @@ pipeline = PipelineLatticeSVM(pipedir);
 
 % add select trials
 name_brick = 'bricks.select_trials';
-opt_func = 'params_st_100';
-trial_list = {...
-    fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstd-BPatchTriallcmvmom/sourceanalysis.mat'),...
-    fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGodd-BPatchTriallcmvmom/sourceanalysis.mat'),...
-    };
-
-% NOTE trial_list order matters, should follow labels in params
-pipeline.add_job(name_brick,opt_func,'trial_list',trial_list);
+opt_func = 'params_st_std_100';
+files_in = fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstd-BPatchTriallcmvmom/sourceanalysis.mat');
+[~,job_std] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
+opt_func = 'params_st_odd_100';
+files_in = fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGodd-BPatchTriallcmvmom/sourceanalysis.mat');
+[~,job_odd] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
 
 % add lattice filter sources
 name_brick = 'bricks.lattice_filter_sources';
 opt_func = 'params_lf_1';
-prev_job = job_name;
-[~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+files_in = [pipeline.pipeline.(job_std).files_out; pipeline.pipeline.(job_odd).files_out];
+[~,job_name] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
 
 % add feature matrix
 name_brick = 'bricks.lattice_features_matrix';
@@ -46,8 +43,11 @@ prev_job = job_name;
 
 % add feature validation
 name_brick = 'bricks.features_validate';
-opt_func = 'params_fv_1';
+opt_func = 'params_fv_100';
 prev_job = job_name;
+[~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+
+opt_func = 'params_fv_1000';
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
 
 % pipeline options
