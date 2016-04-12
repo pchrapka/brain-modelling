@@ -111,7 +111,8 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                     leadfield_cpy.filter = source.filters;
                     leadfield_cpy.filter_label = source.patch_labels;
                     leadfield_cpy.inside = source.inside;
-                    lfObjPatch = obj.lf;
+                    % fake an lf object with a struct
+                    lfObjPatch = [];
                     lfObjPatch.leadfield = [tempname '.mat'];
                     save_parfor(lfObjPatch.leadfield,leadfield_cpy);
                     
