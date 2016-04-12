@@ -1,7 +1,8 @@
 % load eeg
 
-datadir = '/home/phil/projects/data-coma-richard/BC-HC-YOUTH/Cleaned';
-datafile = 'BC.HC.YOUTH.P020-10834-MMNf.eeg';
+% subject specific info
+[datadir,subject_file,subject_name] = get_coma_data(20);
+datafile = [subject_file '-MMNf.eeg'];
 
 %% Check header and events
 cfg = [];

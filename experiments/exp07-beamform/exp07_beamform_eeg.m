@@ -6,12 +6,8 @@ close all;
 
 doplot = true;
 
-datadir = '/home/phil/projects/data-coma-richard/BC-HC-YOUTH/Cleaned';
-% subject = 'BC.HC.YOUTH.P020-10834';
-% subject = 'BC.HC.YOUTH.P021-10852';
-subject = 'BC.HC.YOUTH.P022-9913';
-% subject = 'BC.HC.YOUTH.P023-10279';
-subject_name = strrep(subject,'BC.HC.YOUTH.','');
+% subject specific info
+[datadir,subject_file,subject_name] = get_coma_data(22);
 
 % use absolute directories
 [srcdir,~,~] = fileparts(mfilename('fullpath'));

@@ -6,11 +6,8 @@ close all;
 
 doplot = true;
 
-datadir = '/home/phil/projects/data-coma-richard/BC-HC-YOUTH/Cleaned';
-% subject = 'BC.HC.YOUTH.P020-10834';
-% subject = 'BC.HC.YOUTH.P021-10852';
-subject = 'BC.HC.YOUTH.P022-9913';
-subject_name = strrep(subject,'BC.HC.YOUTH.','');
+% subject specific info
+[datadir,subject_file,subject_name] = get_coma_data(22);
 
 subject_specific = true;
 % subject_condition = 'std';
@@ -101,7 +98,7 @@ end
 % Electrodes
 params_e = [];
 if subject_specific
-    params_e.elec_orig = fullfile(datadir,[subject '.sfp']);
+    params_e.elec_orig = fullfile(datadir,[subject_file '.sfp']);
 else
     % Not sure what cap to use easycap-M1 has right channel names but
     % too many
@@ -159,7 +156,7 @@ end
 % EEG
 params_eeg = [];
 params_eeg.ft_definetrial = [];
-params_eeg.ft_definetrial.dataset = fullfile(datadir,[subject '-MMNf.eeg']);
+params_eeg.ft_definetrial.dataset = fullfile(datadir,[subject_file '-MMNf.eeg']);
 % use default function
 switch subject_condition
     case 'std'

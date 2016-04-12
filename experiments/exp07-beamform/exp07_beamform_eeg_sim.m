@@ -6,12 +6,8 @@ close all;
 
 doplot = true;
 
-datadir = '/home/phil/projects/data-coma-richard/BC-HC-YOUTH/Cleaned';
-% subject = 'BC.HC.YOUTH.P020-10834';
-% subject = 'BC.HC.YOUTH.P021-10852';
-% subject = 'BC.HC.YOUTH.P022-9913';
-subject = 'BC.HC.YOUTH.P023-10279';
-subject_name = strrep(subject,'BC.HC.YOUTH.','');
+% subject specific info
+[datadir,subject_file,subject_name] = get_coma_data(22);
 
 subject_specific = true; % select electrode configuration
 
@@ -50,7 +46,7 @@ analysis.process();
 % Electrodes
 params_e = [];
 if subject_specific
-    params_e.elec_orig = fullfile(datadir,[subject '.sfp']);
+    params_e.elec_orig = fullfile(datadir,[subject_file '.sfp']);
     name_e = subject_name;
 else
     % Not sure what cap to use easycap-M1 has right channel names but

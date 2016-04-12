@@ -18,12 +18,7 @@ bf_type = 'patch';
 %% Analysis file path params
 
 % subject specific info
-datadir = '/home/phil/projects/data-coma-richard/BC-HC-YOUTH/Cleaned';
-% subject_file = 'BC.HC.YOUTH.P020-10834';
-% subject_file = 'BC.HC.YOUTH.P021-10852';
-subject_file = 'BC.HC.YOUTH.P022-9913';
-% subject_file = 'BC.HC.YOUTH.P023-10279';
-subject_name = strrep(subject_file,'BC.HC.YOUTH.','');
+[datadir,subject_file,subject_name] = get_coma_data(22);
 
 subject_specific = true; % select electrode configuration
 

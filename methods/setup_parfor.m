@@ -1,14 +1,10 @@
 function setup_parfor()
+%SETUP_PARFOR sets up parallel pool for a given computer configuration
+%   SETUP_PARFOR sets up parallel pool for a given computer configuration
+%
+%   Feel free to add a new configuration
 
-[ret, comp_name] = system('hostname'); 
-
-if ret ~= 0
-    if ispc
-        comp_name = getenv('COMPUTERNAME');
-    else
-        comp_name = getenv('HOSTNAME');
-    end
-end
+comp_name = get_compname();
     
 
 switch comp_name
