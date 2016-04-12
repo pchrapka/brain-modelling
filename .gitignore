@@ -11,3 +11,4 @@ external/fieldtrip-beamforming/.git
 external/lumberjack/.git
 external/libsvm*/matlab/*.mex*
 external/FEAST*/**/*.mex*
+!external/fieldtrip-20160128/template/atlas/**/*.nii
