@@ -17,7 +17,7 @@ setup_parfor();
 
 %% set up pipeline
 
-pipedir = fullfile(outdir,subject_dir);
+pipedir = fullfile(outdir,subject_name);
 pipeline = PipelineLatticeSVM(pipedir);
 
 % add select trials
