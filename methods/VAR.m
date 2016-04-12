@@ -193,6 +193,16 @@ classdef VAR < handle
             %   mu (vector, optional)
             %       mean of VAR process, default is zero
             %
+            %   Output
+            %   ------
+            %   Y (matrix)
+            %       simulated VAR process [channels, samples]
+            %   Y_norm (matrix)
+            %       simulated VAR process, with each channel normalized to
+            %       unit variance [channels, samples]
+            %   noise (matrix)
+            %       driving white noise, [channels, samples]
+            %
             % Source: http://www.kris-nimark.net/pdf/Handout_S1.pdf
             
             if ~obj.init
