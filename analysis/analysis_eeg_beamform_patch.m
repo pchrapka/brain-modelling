@@ -49,9 +49,9 @@ analysis.add(eeg);
 
 %% Beamformer
 
-params_bf = 'BFPatchAAL.mat';
+params_bf = 'BFPatchAALCustom.mat';
 if ~exist(params_bf,'file')
-    BFPatchAAL();
+    BFPatchAALCustom();
 end
 bf = ftb.BeamformerPatchTrial(params_bf,'lcmvmom');
 analysis.add(bf);
