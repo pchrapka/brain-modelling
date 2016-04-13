@@ -1,4 +1,4 @@
-%% exp13_lsl_error_vs_size
+%% exp13_lsl_error_vs_size_steady_state
 %   Goal:
 %   Test error of MQRDLSL algorithm as a function of number of parameters
 
@@ -21,7 +21,7 @@ for i=1:nchannels
         
         % simulate data
         nsamples = 1000;
-        [X,X_norm,noise] = s.simulate(nsamples);
+        [X,X_norm,noise] = s.simulate(2*nsamples);
         
         %% Estimate coefs using lattice filter
         
@@ -32,18 +32,19 @@ for i=1:nchannels
         trace = LatticeTrace(filter,'fields',{'Kf','ferror'});
         
         % run the filter
-        trace.run(X,'verbosity',0);
+        trace.run(X(:,nsamples+1:end),'verbosity',0);
         
         %% Calculate the relative error
         % Section 3.3 in Schlogl2000
         
         % innovation error Lewis1990
-        inno_error = (trace.trace.ferror(:,:,end)' - noise).^2;
+        inno_error = (trace.trace.ferror(:,:,end)' - noise(:,nsamples+1:end)).^2;
         ms_inno_error = sum(inno_error(:))/numel(inno_error);
         
         % relative error variance
         % section 3.3 in Schlogl2000
-        ms_signal = var(X(:));
+        X_steady = X(:,nsamples+1:end);
+        ms_signal = var(X_steady(:));
         % all iterations, all channels, last order
         last_ferror = trace.trace.ferror(:,:,end);
         ms_pred_error = var(last_ferror(:));
