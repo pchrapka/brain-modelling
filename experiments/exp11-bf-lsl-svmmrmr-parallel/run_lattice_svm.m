@@ -46,9 +46,15 @@ name_brick = 'bricks.features_validate';
 opt_func = 'params_fv_100';
 prev_job = job_name;
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+% approx. 60%
 
 opt_func = 'params_fv_1000';
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+% approx. 73%
+
+opt_func = 'params_fv_10000';
+[~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+% approx. ?
 
 % pipeline options
 pipeline.options.path_logs = fullfile(pipedir, 'logs');
