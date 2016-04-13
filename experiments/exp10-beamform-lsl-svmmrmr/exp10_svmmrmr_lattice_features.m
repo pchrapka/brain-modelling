@@ -1,4 +1,4 @@
-%% exp09_svmmrmr_lattice_features
+%% exp10_svmmrmr_lattice_features
 % Goal: 
 %   Summarize reflection coefficient time series. There are way too many
 %   raw coefficients (400k) for feature selection to run in a reasonable

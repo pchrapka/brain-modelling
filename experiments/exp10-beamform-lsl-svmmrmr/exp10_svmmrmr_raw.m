@@ -1,4 +1,4 @@
-%% exp09_svmmrmr_raw
+%% exp10_svmmrmr_raw
 
 % set up output folder
 % use absolute directories
