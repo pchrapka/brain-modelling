@@ -60,3 +60,4 @@ fb_make_configs()
 addpath(fullfile(pwd,'methods'));
 addpath(fullfile(pwd,'analysis'));
 addpath(fullfile(pwd,'params'));
+addpath(fullfile(pwd,'visualizations'));
