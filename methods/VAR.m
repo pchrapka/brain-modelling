@@ -3,10 +3,10 @@ classdef VAR < handle
     %   Detailed explanation goes here
     
     properties
-        K;
-        P;
+        K; % process dimension
+        P; % model order
         
-        A;
+        A; % coefficients
     end
     
     properties(SetAccess = private)
@@ -14,7 +14,7 @@ classdef VAR < handle
     end
     
     methods
-        function obj = VAR(K,p)
+        function obj = VAR(K,order)
             %VAR constructor
             %   VAR(K,p) creates a VAR object with order p and dimension K
             %
@@ -22,12 +22,12 @@ classdef VAR < handle
             %   -----
             %   K (integer)
             %       process dimension
-            %   p (integer)
+            %   order (integer)
             %       model order
             
             obj.K = K;
-            obj.P = p;
-            obj.A = zeros(K,K,p);
+            obj.P = order;
+            obj.A = zeros(K,K,order);
         end
             
         

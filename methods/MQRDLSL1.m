@@ -4,7 +4,7 @@ classdef MQRDLSL1 < handle
     %   The implementation is as described in Lewis1990
     %   TODO add source
     
-    properties
+    properties (SetAccess = protected)
         % filter variables
         Rf;     % R forward (e)
         Rb;     % R backward (r)
@@ -24,6 +24,11 @@ classdef MQRDLSL1 < handle
         % number of channels
         nchannels;
         
+        % name
+        name
+    end
+    
+    properties
         % weighting factor
         lambda;
     end
@@ -54,8 +59,12 @@ classdef MQRDLSL1 < handle
             obj.berrord = zeros(obj.nchannels, obj.order+1);
             obj.gammasqd = ones(obj.order+1, 1);
 
-            obj.Kb = zeroMat;
-            obj.Kf = zeroMat;
+            zeroMat2 = zeros(obj.order, obj.nchannels, obj.nchannels);
+            obj.Kb = zeroMat2;
+            obj.Kf = zeroMat2;
+            
+            obj.name = sprintf('MQRDLSL1 C%d P%d lambda=%0.2f',...
+                channels, order, lambda);
         end
         
         function obj = update(obj, x)
@@ -63,14 +72,18 @@ classdef MQRDLSL1 < handle
             %   UPDATE(OBJ,X) updates the reflection coefficients using the
             %   measurement X
             %
+            %   Input
+            %   -----
             %   x (vector)
-            %       new measurement
+            %       new measurements at current iteration, the vector has
+            %       the size [channels 1]
             
             debug_prints = false;
             
-            x = x(:);
             if ~isequal(size(x), [obj.nchannels 1])
-                error('bad input size: %d %d', size(x,1), size(x,2));
+                error([mfilename ':update'],...
+                    'samples do not match filter channels: %d %d',...
+                    size(x,1), obj.nchannels);
             end
             
             % allocate mem
@@ -151,7 +164,7 @@ classdef MQRDLSL1 < handle
                 Yb2 = obj.lambda*squeeze(obj.Xb(p,:,:));
                 Yb = [...
                     Yb1      Yb2      zeros(m,1);...
-                    yb1'     yb2'     gammad;...                    
+                    yb1'     yb2'     gammad;...
                     ];
                 % NOTE the row to be zeroed is last so I can use the
                 % standard Givens rotation with no modifications
@@ -201,8 +214,8 @@ classdef MQRDLSL1 < handle
                 end
                 
                 % calculate reflection coefficients
-                obj.Kf(p,:,:) = Rf\Xf;
-                obj.Kb(p,:,:) = (Rb\Xb)';
+                obj.Kf(p-1,:,:) = Rf\Xf;
+                obj.Kb(p-1,:,:) = (Rb\Xb)';
                 % NOTE these are singular for the first few iterations
                 % because there are not enough samples, so Rb isn't full
                 % rank
@@ -215,9 +228,6 @@ classdef MQRDLSL1 < handle
                 obj.Xb(p,:,:) = Xb;
                 
             end
-            
-            obj.Kf(1,:,:) = [];
-            obj.Kb(1,:,:) = [];
             
             % save current values as delayed versions for next iteration
             obj.berrord = berror;

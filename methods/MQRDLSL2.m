@@ -4,7 +4,7 @@ classdef MQRDLSL2 < handle
     %   The implementation is as described in Lewis1990
     %   TODO add source
     
-    properties
+    properties (SetAccess = protected)
         % filter variables
         dfsq;       % squared diagonal of D forward (e)
         dbsq;       % squared diagonal of D backward squared (r)
@@ -27,11 +27,13 @@ classdef MQRDLSL2 < handle
         % number of channels
         nchannels;
         
-        % weighting factor
-        lambda;
-        
         % name
         name
+    end
+    
+    properties
+        % weighting factor
+        lambda;
     end
     
     methods
@@ -72,7 +74,7 @@ classdef MQRDLSL2 < handle
             obj.Kb = zeroMat3;
             obj.Kf = zeroMat3;
             
-            obj.name = sprintf('MQRDLSL C%d P%d lambda=%0.2f',...
+            obj.name = sprintf('MQRDLSL2 C%d P%d lambda=%0.2f',...
                 channels, order, lambda);
         end
         
@@ -81,16 +83,20 @@ classdef MQRDLSL2 < handle
             %   UPDATE(OBJ,X) updates the reflection coefficients using the
             %   measurement X
             %
+            %   Input
+            %   -----
             %   x (vector)
-            %       new measurement
+            %       new measurements at current iteration, the vector has
+            %       the size [channels 1]
             
             debug_prints = false;
             
             alpha = 100;
             
-            x = x(:);
             if ~isequal(size(x), [obj.nchannels 1])
-                error('bad input size: %d %d', size(x,1), size(x,2));
+                error([mfilename ':update'],...
+                    'samples do not match filter channels: %d %d',...
+                    size(x,1), obj.nchannels);
             end
             
             % allocate mem
