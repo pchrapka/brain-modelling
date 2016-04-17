@@ -81,18 +81,78 @@ classdef LatticeTrace < handle
             end
         end
         
-        function run(obj,samples,varargin)
-            %   samples (matrix)
-            %       sample matrix [channels samples]
+        function plot_trace(obj,iter,varargin)
             %
             %   Parameters
             %   ----------
+            %   ch1 (integer, default = 1)
+            %       channel 1 selection
+            %   ch2 (integer, default = 1)
+            %       channel 2 selection
+            %   true (matrix)
+            %       true value of Kf [order samples]
+            
+            p = inputParser();
+            addParameter(p,'ch1',1,@isnumeric);
+            addParameter(p,'ch2',1,@isnumeric);
+            addParameter(p,'true',[]);
+            parse(p,varargin{:});
+            
+            if ~isfield(obj.trace,'Kf')
+                error('missing Kf in trace');
+            end
+            
+            % clear the figure;
+            clf;
+            
+            norder = size(obj.trace.Kf,2);
+            rows = norder;
+            cols = 1;
+            for k=1:norder
+                subaxis(rows, cols, k,...
+                    'Spacing', 0, 'SpacingVert', 0, 'Padding', 0, 'Margin', 0.05);
+                
+                % plot true value
+                if ~isempty(p.Results.true)
+                    plot(1:iter, p.Results.true(k,1:iter));
+                    hold on;
+                end
+                
+                % plot estimate
+                %plot(1:nsamples, k_est.scale*k_est(j).Kf(1:nsamples,k,idx1,idx2));
+                plot(1:iter, obj.trace.Kf(1:iter,k,p.Results.ch1,p.Results.ch2));
+                
+                ylim([-1 1]);
+                
+                if k ~= norder
+                    set(gca,'XTickLabel',[]);
+                end
+            end 
+        end
+        
+        function run(obj,samples,varargin)
+            %   Input
+            %   -----
+            %   samples (matrix)
+            %       sample data. the data can be specified as 
+            %       [channels samples] or [channels samples trials]
+            %
+            %   Parameters
+            %   ----------
+            %   mode (default = 'none')
+            %       runtime options: 'none','plot'
+            %   plot_options (cell array)
+            %       name, value list of plot options, see
+            %       LatticeTrace.plot_trace
             %   verbosity (default = 0)
             %       selects chattiness of code, options: 0,1,2
             
             p = inputParser();
-            addRequired(p,'samples',@ismatrix);
+            addRequired(p,'samples');
+            addParameter(p,'mode','none',...
+                @(x) any(validatestring(x,{'none','plot'})));
             addParameter(p,'verbosity',0,@isnumeric);
+            addParameter(p,'plot_options',{},@iscell);
             parse(p,samples,varargin{:});
             
             % get size
@@ -106,6 +166,7 @@ classdef LatticeTrace < handle
 
             % compute reflection coef estimates
             for i=1:nsamples
+                
                 if p.Results.verbosity > 1
                     fprintf('sample %d\n',i);
                 end
@@ -127,12 +188,14 @@ classdef LatticeTrace < handle
                 
                 % copy filter state
                 obj.trace_copy(i);
+                
+                if isequal(p.Results.mode,'plot')
+                    obj.plot_trace(i,p.Results.plot_options{:});
+                    pause(0.01);
+                end
+                
             end
             
-            % compute relative error variance
-            % FIXME how do i do this?
-%             msy = var(samples,1);
-%             obj.rev = mse./msy;
         end
     end
     
