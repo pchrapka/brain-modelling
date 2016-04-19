@@ -24,6 +24,7 @@ time_start = 0;
 time_end = (nsamples_signal*2-1)/fs;
 time_axis = linspace(time_start,time_end,nsamples_signal*2-1);
 plot(time_axis, erp);
+xlim([time_axis(1), time_axis(end)]);
 title('ERP');
 
 nsamples = length(erp);
@@ -52,10 +53,12 @@ end
 
 figure;
 plot(time_axis,squeeze(x_orig(1,:,:)));
+xlim([time_axis(1), time_axis(end)]);
 title('Trials');
 
 figure;
 plot(time_axis,squeeze(x(1,:,:)));
+xlim([time_axis(1), time_axis(end)]);
 title('Trials Normalized');
 
 % take the average of all trials
@@ -63,6 +66,7 @@ x_avg = mean(x,3);
 
 figure;
 plot(time_axis,x_avg(1,:));
+xlim([time_axis(1), time_axis(end)]);
 title('Trials Averaged');
 
 %% Estimate the Reflection coefficients 
