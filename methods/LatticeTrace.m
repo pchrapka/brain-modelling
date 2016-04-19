@@ -116,7 +116,7 @@ classdef LatticeTrace < handle
                 legend_str = {};
                 
                 subaxis(rows, cols, k,...
-                    'Spacing', 0, 'SpacingVert', 0, 'Padding', 0, 'Margin', 0.05);
+                    'Spacing', 0, 'SpacingVert', 0, 'Padding', 0, 'Margin', 0.1);
                 
                 % plot true value
                 if ~isempty(p.Results.true)
@@ -131,6 +131,7 @@ classdef LatticeTrace < handle
                 legend_str{end+1} = obj.filter.name;
                 hold on;
                 
+                xlim([1 max(iter,2)]);
                 ylim([-1 1]);
                 
                 if k == 1
