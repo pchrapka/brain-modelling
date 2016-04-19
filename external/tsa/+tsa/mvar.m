@@ -105,6 +105,8 @@ function [ARF,RCF,PE,DC,varargout] = mvar(Y, Pmax, Mode);
 %    You should have received a copy of the GNU General Public License
 %    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import tsa.*
+
 
 % Inititialization
 [N,M] = size(Y);
