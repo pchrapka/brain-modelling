@@ -79,6 +79,35 @@ classdef VAR < handle
             end
         end
         
+        function coefs_gen_sparse(obj, sparseness)
+            %COEFS_GEN_SPARSE generates coefficients of VAR process
+            %   COEFS_GEN_SPARSE(OBJ, sparseness) generates coefficients of
+            %   VAR process. this method has a better chance of finding a
+            %   stable system with larger eigenvalues.
+            %
+            %   Input
+            %   -----
+            %   sparseness (scalar)
+            %       percentage of coefficients containing a non zero value
+            
+            % reset coefs
+            obj.A = zeros(obj.K,obj.K,obj.P);
+            
+            ncoefs = numel(obj.A);
+            % randomly select coefficient indices
+            idx = rand(ncoefs,1) < sparseness;
+            
+            % randomly assign coefficient values from uniform distribution
+            % on interval [-1 1]
+            nidx = sum(idx);
+            a = -1;
+            b = 1;
+            obj.A(idx) = a + (b-a).*rand(nidx,1);
+            
+            obj.init = true;
+            
+        end
+        
         function stable = coefs_stable(obj,verbose)
             %COEFS_STABLE checks VAR coefficients for stability
             %   stable = COEFS_STABLE([verbose]) checks VAR coefficients for stability
@@ -130,6 +159,8 @@ classdef VAR < handle
                     end
                     stable = true;
                 end                
+            else
+                error('no coefficients set');
             end
             
         end
