@@ -114,7 +114,7 @@ classdef LatticeTrace < handle
                 
                 % plot true value
                 if ~isempty(p.Results.true)
-                    plot(1:iter, p.Results.true(k,1:iter));
+                    plot(1:iter, p.Results.true(1:iter,k,p.Results.ch1,p.Results.ch2));
                     hold on;
                 end
                 
@@ -124,7 +124,12 @@ classdef LatticeTrace < handle
                 
                 ylim([-1 1]);
                 
-                if k ~= norder
+                if k == norder
+                    % plot small error indicators
+                    errors_ind = -1*[obj.errors(1:iter).warning];
+                    errors_ind(errors_ind == 0) = NaN;
+                    plot(1:iter, errors_ind, 'o');
+                else
                     set(gca,'XTickLabel',[]);
                 end
             end 
@@ -163,6 +168,10 @@ classdef LatticeTrace < handle
             
             % init error
             obj.errors(1:nsamples) = obj.errors(1);
+            
+            if p.Results.verbosity > 0
+                fprintf('starting: %s\n',obj.filter.name);
+            end
 
             % compute reflection coef estimates
             for i=1:nsamples
@@ -175,7 +184,8 @@ classdef LatticeTrace < handle
                 lastwarn('');
                 
                 % update the filter with the new measurement
-                obj.filter.update(samples(:,i));
+                obj.filter.update(permute(samples(:,i,:),[1 3 2]),...
+                    'verbosity',p.Results.verbosity);
                 
                 % check last warning
                 [msg, lastid] = lastwarn();

@@ -67,7 +67,7 @@ classdef MQRDLSL1 < handle
                 channels, order, lambda);
         end
         
-        function obj = update(obj, x)
+        function obj = update(obj, x, varargin)
             %UPDATE updates reflection coefficients
             %   UPDATE(OBJ,X) updates the reflection coefficients using the
             %   measurement X
@@ -77,6 +77,16 @@ classdef MQRDLSL1 < handle
             %   x (vector)
             %       new measurements at current iteration, the vector has
             %       the size [channels 1]
+            %
+            %   Parameters
+            %   ----------
+            %   verbosity (integer, default = 0)
+            %       vebosity level, options: 0 1 2 3
+            
+            inputs = inputParser();
+            params_verbosity = [0 1 2 3];
+            addParameter(inputs,'verbosity',0,@(x) any(find(params_verbosity == x)));
+            parse(inputs,varargin{:});
             
             debug_prints = false;
             
@@ -110,14 +120,16 @@ classdef MQRDLSL1 < handle
             
             % loop through stages
             for p=2:obj.order+1
-                if debug_prints
+                if inputs.Results.verbosity > 1
                     fprintf('order %d\n', p-1);
                 end
                 
                 % gamma
                 gammad = sqrt(obj.gammasqd(p-1));
                 if gammad <= eps
-                    fprintf('resetting gamma\n');
+                    if inputs.Results.verbosity > 0
+                        fprintf('resetting gamma\n');
+                    end
                     gammad_inv = 0;
                 else
                     gammad_inv = 1/gammad;
@@ -134,15 +146,17 @@ classdef MQRDLSL1 < handle
                     ];
                 % NOTE the row to be zeroed is last so I can use the
                 % standard Givens rotation with no modifications
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     display(Yf)
                 end
                 Yf = givens_lsl(Yf,m);
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     display(Yf)
                 end
-                if ~isempty(find(isnan(Yf),1))
-                    fprintf('got some nans\n');
+                if inputs.Results.verbosity > 1
+                    if ~isempty(find(isnan(Yf),1))
+                        fprintf('got some nans\n');
+                    end
                 end
                 % remove last row
                 Yf(end,:) = [];
@@ -151,7 +165,7 @@ classdef MQRDLSL1 < handle
                 Rf = Yf(:,1:m);
                 Xf = Yf(:,m+1:2*m);
                 betaf = Yf(:,end);
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     display(Rf)
                     display(Xf)
                     display(betaf)
@@ -168,15 +182,17 @@ classdef MQRDLSL1 < handle
                     ];
                 % NOTE the row to be zeroed is last so I can use the
                 % standard Givens rotation with no modifications
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     display(Yb)
                 end
                 Yb = givens_lsl(Yb,m);
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     display(Yb)
                 end
-                if ~isempty(find(isnan(Yb),1))
-                    fprintf('got some nans\n');
+                if inputs.Results.verbosity > 1
+                    if ~isempty(find(isnan(Yb),1))
+                        fprintf('got some nans\n');
+                    end
                 end
                 % remove last row
                 Yb(end,:) = [];
@@ -185,7 +201,7 @@ classdef MQRDLSL1 < handle
                 Rb = Yb(:,1:m);
                 Xb = Yb(:,m+1:2*m);
                 betab = Yb(:,end);
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     display(Rb)
                     display(Xb)
                     display(betab)
@@ -196,7 +212,7 @@ classdef MQRDLSL1 < handle
                 ferror(:,p) = ferror(:,p-1) - Xb'*betab;
                 berror(:,p) = obj.berrord(:,p-1) - Xf'*betaf;
                 gammasq(p) = obj.gammasqd(p-1) - betaf'*betaf;
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     fprintf('ferror\n');
                     display(ferror(:,p))
                     fprintf('berror\n');
@@ -204,13 +220,15 @@ classdef MQRDLSL1 < handle
                     fprintf('gammasq\n');
                     display(gammasq(p))
                 end
-                if abs(gammasq(p)) <= eps
-                    fprintf('gammasq is < eps\n');
-                    % NOTE if gammasq becomes zero, the next iteration will
-                    % contain NaNs since the first step is 1/gamma
-                end
-                if isnan(gammasq(p))
-                    fprintf('gammasq is nan\n');
+                if inputs.Results.verbosity > 1
+                    if abs(gammasq(p)) <= eps
+                        fprintf('gammasq is < eps\n');
+                        % NOTE if gammasq becomes zero, the next iteration will
+                        % contain NaNs since the first step is 1/gamma
+                    end
+                    if isnan(gammasq(p))
+                        fprintf('gammasq is nan\n');
+                    end
                 end
                 
                 % calculate reflection coefficients
