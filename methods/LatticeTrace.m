@@ -91,11 +91,14 @@ classdef LatticeTrace < handle
             %       channel 2 selection
             %   true (matrix)
             %       true value of Kf [order samples]
+            %   title (string)
+            %       plot title
             
             p = inputParser();
             addParameter(p,'ch1',1,@isnumeric);
             addParameter(p,'ch2',1,@isnumeric);
             addParameter(p,'true',[]);
+            addParameter(p,'title','Lattice Trace',@ischar);
             parse(p,varargin{:});
             
             if ~isfield(obj.trace,'Kf')
@@ -109,26 +112,39 @@ classdef LatticeTrace < handle
             rows = norder;
             cols = 1;
             for k=1:norder
+                z = [];
+                legend_str = {};
+                
                 subaxis(rows, cols, k,...
                     'Spacing', 0, 'SpacingVert', 0, 'Padding', 0, 'Margin', 0.05);
                 
                 % plot true value
                 if ~isempty(p.Results.true)
-                    plot(1:iter, p.Results.true(1:iter,k,p.Results.ch1,p.Results.ch2));
+                    z(end+1) = plot(1:iter, p.Results.true(1:iter,k,p.Results.ch1,p.Results.ch2));
+                    legend_str{end+1} = 'True';
                     hold on;
                 end
                 
                 % plot estimate
                 %plot(1:nsamples, k_est.scale*k_est(j).Kf(1:nsamples,k,idx1,idx2));
-                plot(1:iter, obj.trace.Kf(1:iter,k,p.Results.ch1,p.Results.ch2));
+                z(end+1) = plot(1:iter, obj.trace.Kf(1:iter,k,p.Results.ch1,p.Results.ch2));
+                legend_str{end+1} = obj.filter.name;
+                hold on;
                 
                 ylim([-1 1]);
+                
+                if k == 1
+                    title(p.Results.title);
+                end
                 
                 if k == norder
                     % plot small error indicators
                     errors_ind = -1*[obj.errors(1:iter).warning];
                     errors_ind(errors_ind == 0) = NaN;
                     plot(1:iter, errors_ind, 'o');
+                    
+                    %legend(z,legend_str,'Location','SouthWest');
+                    % NOTE legend consideraly slows down plotting
                 else
                     set(gca,'XTickLabel',[]);
                 end
@@ -172,6 +188,7 @@ classdef LatticeTrace < handle
             if p.Results.verbosity > 0
                 fprintf('starting: %s\n',obj.filter.name);
             end
+            pause(1);
 
             % compute reflection coef estimates
             for i=1:nsamples
@@ -201,7 +218,7 @@ classdef LatticeTrace < handle
                 
                 if isequal(p.Results.mode,'plot')
                     obj.plot_trace(i,p.Results.plot_options{:});
-                    pause(0.01);
+                    pause(0.005);
                 end
                 
             end

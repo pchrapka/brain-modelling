@@ -83,17 +83,19 @@ for i=1:norder
 end
 %display(RC);
 
-for i=1:4
-    for j=1:4
-        fprintf('i=%d j=%d\n',i,j);
-        disp(Kest_stationary(:,i,j));
-    end
-end
+% for i=1:4
+%     for j=1:4
+%         fprintf('i=%d j=%d\n',i,j);
+%         disp(Kest_stationary(:,i,j));
+%     end
+% end
 
 k_true = repmat(Kest_stationary,1,1,1,nsamples);
 k_true = shiftdim(k_true,3);
 
 %% Estimate the Reflection coefficients 
+plot_options = {'ch1',2,'ch2',2,'true',k_true};
+
 %% MCMTQRDLSL1 with 10 trials
 order_est = 3;
 verbosity = 1;
@@ -105,7 +107,7 @@ trace = LatticeTrace(filter,'fields',{'Kf'});
 % run the filter
 figure;
 trace.run(x,'verbosity',verbosity,'mode','plot','plot_options',...
-    {'ch1',2,'ch2',2,'true',k_true});
+    'plot_options',plot_options);
 
 %% MCMTQRDLSL1 with 2 trials
 
@@ -116,7 +118,7 @@ trace = LatticeTrace(filter,'fields',{'Kf'});
 % run the filter
 figure;
 trace.run(x(:,:,1:2),'verbosity',verbosity,'mode','plot','plot_options',...
-    {'ch1',2,'ch2',2,'true',k_true});
+    'plot_options',plot_options);
 
 %% Compare to MQRDLSLS1
 
@@ -127,4 +129,4 @@ trace = LatticeTrace(filter,'fields',{'Kf'});
 % run the filter
 figure;
 trace.run(x(:,:,1),'verbosity',verbosity,'mode','plot','plot_options',...
-    {'ch1',2,'ch2',2,'true',k_true});
+    'plot_options',plot_options);
