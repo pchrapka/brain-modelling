@@ -6,7 +6,7 @@ close all;
 
 nchannels = 1;
 ntrials = 10;
-nsamples = 1000;
+nsamples = 200;
 
 % a_coefs = [1 -1.6 0.95]';  % from Friedlander1982, case 1
 coefs(1,1,:) = [1.6 -0.95];
@@ -36,13 +36,30 @@ order_est = 2;
 order_est = 2;
 
 lambda = 0.99;
-filter = MQRDLSL2(nchannels,order_est,lambda);
+filter = MCMTQRDLSL1(ntrials,nchannels,order_est,lambda);
+% filter = MQRDLSL1(nchannels,order_est,lambda);
+% filter = MQRDLSL2(nchannels,order_est,lambda);
 trace = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
-k_true = repmat(-1*k_est,1,nsamples);
-trace.run(x,'verbosity',0,'mode','plot','plot_options',{'true',k_true});
+figure;
+k_est_mat(:,1,1) = k_est;
+k_true = repmat(-1*k_est_mat,1,1,1,nsamples);
+k_true = shiftdim(k_true,3);
+trace.run(x,'verbosity',2,'mode','plot',...
+    'plot_options',{'ch1',1,'ch2',1,'true',k_true});
 
 % NOTE this multi trial won't work because the lattice filter assumes
 % consecutive data points. multiple instances of the same data point would
 % require a significantly different set up.
+
+%% Compare to MQRDLSLS1
+
+filter = MQRDLSL1(nchannels,order_est,lambda);
+% filter = MQRDLSL2(nchannels,order_est,lambda);
+trace = LatticeTrace(filter,'fields',{'Kf'});
+
+% run the filter
+figure;
+trace.run(x(:,:,1),'verbosity',2,'mode','plot',...
+    'plot_options',{'ch1',1,'ch2',1,'true',k_true});
