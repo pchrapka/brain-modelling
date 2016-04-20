@@ -88,8 +88,6 @@ classdef MQRDLSL1 < handle
             addParameter(inputs,'verbosity',0,@(x) any(find(params_verbosity == x)));
             parse(inputs,varargin{:});
             
-            debug_prints = false;
-            
             if ~isequal(size(x), [obj.nchannels 1])
                 error([mfilename ':update'],...
                     'samples do not match filter channels: %d %d',...

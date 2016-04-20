@@ -42,16 +42,18 @@ setup_parfor();
 pipedir = outdir;
 pipeline = PipelineLatticeSVM(pipedir);
 
+% TODO in beamforming step select only consecutive std dev pairs
+
 % add select trials
 name_brick = 'bricks.select_trials';
-opt_func = 'params_st_std_10';
+opt_func = 'params_st_std_10_consec';
 [~,job_std] = pipeline.add_job(name_brick,opt_func,'files_in',fullfile(outdir,'std.mat'));
-opt_func = 'params_st_odd_10';
+opt_func = 'params_st_odd_10_consec';
 [~,job_odd] = pipeline.add_job(name_brick,opt_func,'files_in',fullfile(outdir,'odd.mat'));
 
 % add lattice filter sources
 name_brick = 'bricks.lattice_filter_sources';
-opt_func = 'params_lf_1';
+opt_func = 'params_lf_mt5';
 files_in = [pipeline.pipeline.(job_std).files_out; pipeline.pipeline.(job_odd).files_out];
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
 

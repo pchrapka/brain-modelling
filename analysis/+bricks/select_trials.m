@@ -27,6 +27,8 @@ addRequired(p,'files_in',@ischar);
 addRequired(p,'files_out',@iscell);
 addParameter(p,'label','',@ischar);
 addParameter(p,'trials',100,@isnumeric);
+default_mode = {'random','consecutive'};
+addParameter(p,'mode','random',@(x) any(validatestring(x,default_mode)));
 parse(p,files_in,files_out,opt{:});
 
 % check length of output files
@@ -37,17 +39,23 @@ end
 % load data
 temp = ftb.util.loadvar(files_in);
 
-% select trials from each analysis randomly
-idx_rand = randsample(1:length(temp), p.Results.trials);
-temp_rand = temp(idx_rand);
+switch p.Results.mode
+    case 'random'
+        % select trials randomly
+        idx_rand = randsample(1:length(temp), p.Results.trials);
+        trials_sel = temp(idx_rand);
+    case 'consecutive'
+        % select consecutive trials
+        trials_sel = temp(1:p.Results.trials);
+end
 
 % add labels
-[temp_rand.label] = deal(p.Results.label);
+[trials_sel.label] = deal(p.Results.label);
 
 % save as individual trials
 parfor j=1:p.Results.trials
     % save the trial
-    save_parfor(files_out{j},temp_rand(j));
+    save_parfor(files_out{j},trials_sel(j));
 end
 
 end

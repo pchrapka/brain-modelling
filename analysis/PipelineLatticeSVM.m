@@ -110,16 +110,30 @@ classdef PipelineLatticeSVM < handle
                     addParameter(p,'files_in','',@iscell);
                     parse(p,varargin{:});
                     
+                    % temp process of function inputs for number of trials
+                    % per group
+                    p1 = inputParser;
+                    p1.KeepUnmatched = true;
+                    addParameter(p1,'trials',1,@isnumeric);
+                    parse(p1,opt{:});
+                    
                     files_in = p.Results.files_in;
                     ntrials = length(files_in);
-                    files_out = cell(ntrials,1);
-                    for i=1:ntrials
-                        % use the same tag as in the previous step
-                        [~,name,~] = fileparts(files_in{i});
-                        tag = strrep(name,'trial','');
+                    ntrial_groups = floor(ntrials/p1.Results.trials);
+                    
+                    files_out = cell(ntrial_groups,1);
+                    for i=1:ntrial_groups
                         % create output file name
-                        files_out{i} = fullfile(outbrickpath,...
-                            sprintf('lattice%s.mat',tag));
+                        if p1.Results.trials > 1
+                            files_out{i} = fullfile(outbrickpath,...
+                                sprintf('lattice%d.mat',i));
+                        else
+                            % use the same tag as in the previous step
+                            [~,name,~] = fileparts(files_in{i});
+                            tag = strrep(name,'trial','');
+                            files_out{i} = fullfile(outbrickpath,...
+                                sprintf('lattice%s.mat',tag));
+                        end
                     end
                     
                 case 'bricks.lattice_features_matrix'

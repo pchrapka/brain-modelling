@@ -78,7 +78,7 @@ classdef MQRDLSL2 < handle
                 channels, order, lambda);
         end
         
-        function obj = update(obj, x)
+        function obj = update(obj, x, varargin)
             %UPDATE updates reflection coefficients
             %   UPDATE(OBJ,X) updates the reflection coefficients using the
             %   measurement X
@@ -88,8 +88,16 @@ classdef MQRDLSL2 < handle
             %   x (vector)
             %       new measurements at current iteration, the vector has
             %       the size [channels 1]
+            %
+            %   Parameters
+            %   ----------
+            %   verbosity (integer, default = 0)
+            %       vebosity level, options: 0 1 2 3
             
-            debug_prints = false;
+            inputs = inputParser();
+            params_verbosity = [0 1 2 3];
+            addParameter(inputs,'verbosity',0,@(x) any(find(params_verbosity == x)));
+            parse(inputs,varargin{:});
             
             alpha = 100;
             
@@ -123,7 +131,7 @@ classdef MQRDLSL2 < handle
             
             % loop through stages
             for p=2:obj.order+1
-                if debug_prints
+                if inputs.Results.verbosity > 1
                     fprintf('order %d\n', p-1);
                 end
                 
@@ -136,7 +144,7 @@ classdef MQRDLSL2 < handle
                     ferror(:,p-1)' obj.berrord(:,p-1)' obj.gammasqd(p-1);...
                     squeeze(obj.Rtildef(p,:,:)) squeeze(obj.Xtildef(p,:,:)) zeros(m,1);...
                     ];
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     display(df)
                     display(Yf)
                 end
@@ -144,12 +152,14 @@ classdef MQRDLSL2 < handle
                     error('check size of Yf');
                 end
                 [Yf,df] = givens_fast_lsl(Yf,df,m);
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     display(df)
                     display(Yf)
                 end
-                if ~isempty(find(isnan(Yf),1))
-                    warning('got some nans\n');
+                if inputs.Results.verbosity > 1
+                    if ~isempty(find(isnan(Yf),1))
+                        warning('got some nans\n');
+                    end
                 end
                 
                 % extract updated R,X,beta
@@ -157,14 +167,16 @@ classdef MQRDLSL2 < handle
                 Xf = Yf(2:end,m+1:2*m);
                 betaf = Yf(2:end,end);
                 dfsq = df(2:end);
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     display(Rf)
                     display(Xf)
                     display(betaf)
                     display(dfsq)
                 end
-                if ~isempty(find(dfsq == 0,1))
-                    warning('dfsq is zero\n');
+                if inputs.Results.verbosity > 1
+                    if ~isempty(find(dfsq == 0,1))
+                        warning('dfsq is zero\n');
+                    end
                 end
                 
                 % check if we need to rescale
@@ -185,20 +197,24 @@ classdef MQRDLSL2 < handle
                     obj.berrord(:,p-1)' ferror(:,p-1)' obj.gammasqd(p-1);...
                     squeeze(obj.Rtildeb(p,:,:)) squeeze(obj.Xtildeb(p,:,:)) zeros(m,1);...
                     ];
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     display(db)
                     display(Yb)
                 end
-                if ~isequal(size(Yb),[m+1, 2*m+1])
-                    error('check size of Yb');
+                if inputs.Results.verbosity > 1
+                    if ~isequal(size(Yb),[m+1, 2*m+1])
+                        error('check size of Yb');
+                    end
                 end
                 [Yb,db] = givens_fast_lsl(Yb,db,m);
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     display(db)
                     display(Yb)
                 end
-                if ~isempty(find(isnan(Yb),1))
-                    warning('got some nans\n');
+                if inputs.Results.verbosity > 1
+                    if ~isempty(find(isnan(Yb),1))
+                        warning('got some nans\n');
+                    end
                 end
                 
                 % extract updated R,X,beta
@@ -206,14 +222,16 @@ classdef MQRDLSL2 < handle
                 Xb = Yb(2:end,m+1:2*m);
                 betab = Yb(2:end,end);
                 dbsq = db(2:end);
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     display(Rb)
                     display(Xb)
                     display(betab)
                     display(dbsq)
                 end
-                if ~isempty(find(dbsq == 0,1))
-                    warning('dbsq is zero\n');
+                if inputs.Results.verbosity > 1
+                    if ~isempty(find(dbsq == 0,1))
+                        warning('dbsq is zero\n');
+                    end
                 end
                 
                 % check if we need to rescale
@@ -232,7 +250,7 @@ classdef MQRDLSL2 < handle
                 ferror(:,p) = ferror(:,p-1) - Xb'*Dbsq_inv*betab;
                 berror(:,p) = obj.berrord(:,p-1) - Xf'*Dfsq_inv*betaf;
                 gammasq(p) = obj.gammasqd(p-1) - betaf'*Dfsq_inv*betaf;
-                if debug_prints
+                if inputs.Results.verbosity > 2
                     fprintf('ferror\n');
                     display(ferror(:,p))
                     fprintf('berror\n');
@@ -248,8 +266,10 @@ classdef MQRDLSL2 < handle
                     % I think
                     gammasq(p) = 1;
                 end
-                if isnan(gammasq(p))
-                    warning('gammasq is nan\n');
+                if inputs.Results.verbosity > 1
+                    if isnan(gammasq(p))
+                        warning('gammasq is nan\n');
+                    end
                 end
                 
                 % calculate reflection coefficients
