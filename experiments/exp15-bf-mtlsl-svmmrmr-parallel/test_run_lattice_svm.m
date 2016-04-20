@@ -42,8 +42,6 @@ setup_parfor();
 pipedir = outdir;
 pipeline = PipelineLatticeSVM(pipedir);
 
-% TODO in beamforming step select only consecutive std dev pairs
-
 % add select trials
 name_brick = 'bricks.select_trials';
 opt_func = 'params_st_std_10_consec';

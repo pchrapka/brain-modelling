@@ -1,13 +1,14 @@
 %% run_lattice_svm
 % Goal:
-%   Run lattice svm alg on P022 data, depends on output from exp10_beamform_patch
+%   Run multi trial lattice svm alg on P022 data, depends on output from
+%   exp10_beamform_patch
 
 %% set up output folder
 % use absolute directories
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 
 % pipeline folder
-outdir = fullfile(srcdir,'output','lattice-svm');
+outdir = fullfile(srcdir,'output','latticemt-svm');
 
 % subject specific info
 [~,subject_file,subject_name] = get_coma_data(22);
@@ -20,18 +21,20 @@ setup_parfor();
 pipedir = fullfile(outdir,subject_name);
 pipeline = PipelineLatticeSVM(pipedir);
 
+% TODO in beamforming step select only consecutive std dev pairs
+
 % add select trials
 name_brick = 'bricks.select_trials';
-opt_func = 'params_st_std_100';
+opt_func = 'params_st_std_100_consec';
 files_in = fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstd-BPatchTriallcmvmom/sourceanalysis.mat');
 [~,job_std] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
-opt_func = 'params_st_odd_100';
+opt_func = 'params_st_odd_100_consec';
 files_in = fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGodd-BPatchTriallcmvmom/sourceanalysis.mat');
 [~,job_odd] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
 
 % add lattice filter sources
 name_brick = 'bricks.lattice_filter_sources';
-opt_func = 'params_lf_1';
+opt_func = 'params_lf_mt5';
 files_in = [pipeline.pipeline.(job_std).files_out; pipeline.pipeline.(job_odd).files_out];
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
 
@@ -47,14 +50,22 @@ opt_func = 'params_fv_100';
 prev_job = job_name;
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
 % approx. 60%
+% runtime: quick on 10 cores
 
 opt_func = 'params_fv_1000';
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
 % approx. 73%
+% runtime: reasonable on 10 cores
 
-opt_func = 'params_fv_10000';
+opt_func = 'params_fv_2000';
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
 % approx. ?
+% runtime: ?
+
+% opt_func = 'params_fv_10000';
+% [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+% approx. ?
+% runtime: approx. 7-9 days on 10 cores
 
 % pipeline options
 pipeline.options.path_logs = fullfile(pipedir, 'logs');
