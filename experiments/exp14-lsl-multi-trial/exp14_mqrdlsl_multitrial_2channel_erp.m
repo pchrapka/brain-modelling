@@ -102,24 +102,46 @@ trace.run(x(:,:,1:2),'verbosity',verbosity,'mode','plot',...
 
 for i=1:ntrials
     filter = MQRDLSL1(nchannels,order_est,lambda);
-    % filter = MQRDLSL2(nchannels,order_est,lambda);
     trace = LatticeTrace(filter,'fields',{'Kf'});
     
     % run the filter
     figure;
-    plot_options_cust = [plot_options {'title',sprintf('Single Trial - Trial %d',i)}];
+    plot_options_cust = [plot_options {'title',sprintf('1 Single Trial - Trial %d',i)}];
     trace.run(x(:,:,i),'verbosity',verbosity,'mode','plot',...
         'plot_options',plot_options_cust);
 end
 
-%% MQRDLSL on averaged signal
+%% Compare to MQRDLSLS2
+
+for i=1:ntrials
+    filter = MQRDLSL2(nchannels,order_est,lambda);
+    trace = LatticeTrace(filter,'fields',{'Kf'});
+    
+    % run the filter
+    figure;
+    plot_options_cust = [plot_options {'title',sprintf('2 Single Trial - Trial %d',i)}];
+    trace.run(x(:,:,i),'verbosity',verbosity,'mode','plot',...
+        'plot_options',plot_options_cust);
+end
+
+%% MQRDLSL1 on averaged signal
 
 filter = MQRDLSL1(nchannels,order_est,lambda);
-% filter = MQRDLSL2(nchannels,order_est,lambda);
 trace = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
 figure;
-plot_options_cust = [plot_options {'title','Single Trial - Averaged ERP'}];
+plot_options_cust = [plot_options {'title','1 Single Trial - Averaged ERP'}];
+trace.run(x_avg,'verbosity',verbosity,'mode','plot',...
+    'plot_options',plot_options_cust);
+
+%% MQRDLSL2 on averaged signal
+
+filter = MQRDLSL2(nchannels,order_est,lambda);
+trace = LatticeTrace(filter,'fields',{'Kf'});
+
+% run the filter
+figure;
+plot_options_cust = [plot_options {'title','2 Single Trial - Averaged ERP'}];
 trace.run(x_avg,'verbosity',verbosity,'mode','plot',...
     'plot_options',plot_options_cust);

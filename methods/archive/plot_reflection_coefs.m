@@ -32,6 +32,9 @@ function plot_reflection_coefs(k_est, k_true, nsamples, varargin)
 %       index of second channel
 %
 
+warning([mfilename ':DEPRECATED'],...
+    'Deprecated function, use LatticeTrace instead');
+
 % number of coefs
 M = size(k_true,1);
 % number of samples

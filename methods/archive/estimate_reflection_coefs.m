@@ -41,6 +41,9 @@ function [lattice,errors] = estimate_reflection_coefs(lattice, x, varargin)
 %       warning (boolean)
 %           
 
+warning([mfilename ':DEPRECATED'],...
+    'Deprecated function, use LatticeTrace instead');
+
 if nargin > 2
     verbose = varargin{1};
 else

@@ -61,3 +61,8 @@ addpath(fullfile(pwd,'methods'));
 addpath(fullfile(pwd,'analysis'));
 addpath(fullfile(pwd,'params'));
 addpath(fullfile(pwd,'visualizations'));
+
+%% archived functions
+% keep for older scripts
+% make sure to include deprecated warnings
+addpath(fullfile(pwd,'methods','archive'));

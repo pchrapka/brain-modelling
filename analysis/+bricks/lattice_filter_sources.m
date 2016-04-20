@@ -3,6 +3,8 @@ function lattice_filter_sources(files_in,files_out,opt)
 %   LATTICE_FILTER_SOURCES filters brain sources using a lattice filter.
 %   formatted for use with PSOM pipeline
 %
+%   Input
+%   -----
 %   files_in (cell array)
 %       file names of trials to process, see also bricks.select_data
 %   files_out (cell array)
@@ -30,6 +32,7 @@ addParameter(p,'lambda',0.99,@isnumeric);
 addParameter(p,'verbose',0);
 parse(p,files_in,files_out,opt{:});
 
+% flag for plotting ref coefficients
 plot_ref_coefs = false;
 
 % load one data set to get dims
@@ -48,20 +51,16 @@ parfor i=1:ntrials
     data = ftb.util.loadvar(files_in{i});
     
     % set up lattice filter
-    lattice = [];
-    % lattice.alg = MQRDLSL1(nchannels, p.Results.order, p.Results.lambda);
-    lattice.alg = MQRDLSL2(nchannels, p.Results.order, p.Results.lambda);
-    lattice.scale = 1;
-    lattice.name = sprintf('MQRDLSL C%d P%d lambda=%0.2f',...
-        nchannels, p.Results.order, p.Results.lambda);
-    lattice.label = data.label;
+    % TODO select lattice algo somewhere
+    filter = MQRDLSL2(nchannels, p.Results.order, p.Results.lambda);
     
     % initialize lattice filter with noise
     mu = zeros(nchannels,1);
     sigma = eye(nchannels);
     noise = mvnrnd(mu,sigma,nsamples)';
     warning('off','all');
-    lattice = estimate_reflection_coefs(lattice, noise, p.Results.verbose);
+    trace_noise = LatticeTrace(filter,'fields',{});
+    trace_noise.run(noise,'verbosity',p.Results.verbose,'mode','none');
     warning('on','all');
     
     % get source data
@@ -73,32 +72,25 @@ parfor i=1:ntrials
     X_norm = sources./repmat(std(sources,0,2),1,nsamples);
     
     % estimate the reflection coefficients
-    [lattice,errors] = estimate_reflection_coefs(lattice, X_norm, p.Results.verbose);
-%     if sum([errors.warning]) > 0
-%         fprintf('\tfound errors\n');
-%     end
-%     % remove trial if there are errors
-%     last_error = find([errors.warning],1,'last');
-%     if ~isempty(last_error)
-%         fprintf('\tlast error at sample %d\n',last_error);
-%         fprintf('\tskipping trial\n')
-%         break;
-%     end
+    trace = LatticeTrace(filter,'fields',{'Kf'});
+    trace.run(X_norm,'verbosity',p.Results.verbose,'mode','none');
     
     % plot
     if plot_ref_coefs
         for ch1=1:nchannels
             for ch2=ch1:nchannels
                 figure;
-                Kest_stationary = zeros(p.Results.order,nchannels,nchannels);
-                k_true = repmat(squeeze(Kest_stationary(:,ch1,ch2)),1,nsamples);
-                plot_reflection_coefs(lattice, k_true, nsamples, ch1, ch2);
+                trace.plot_trace(nsamples,'ch1',ch1,'ch2',ch2,...
+                    'title',sprintf('Reflection Coefficient Estimate C%d-%d',ch1,ch2));
             end
         end
     end
     
-    % save only Kf, half memory size
-    lattice = rmfield(lattice,'Kb');
+    % prep lattice data to save
+    lattice = trace.trace;
+    % copy data label
+    lattice.label = data.label;
+    
     % chop off the prestimulus, a bit less memory
     idx = data.time < 0;
     lattice.Kf(idx,:,:,:) = [];
