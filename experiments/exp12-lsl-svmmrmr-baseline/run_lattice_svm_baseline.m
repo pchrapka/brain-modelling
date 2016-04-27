@@ -16,7 +16,7 @@ end
 cond_labels = {'std','odd'};
 ncond = length(cond_labels);
 for i=1:ncond
-    cond_files = fullfile(outdir,sprintf('%s.mat',cond_labels{i}));
+    cond_files{i} = fullfile(outdir,sprintf('%s.mat',cond_labels{i}));
 end
 ntrials = 100;
 nsources = 13;

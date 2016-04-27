@@ -1,4 +1,4 @@
-%% exp09_svmmrmr_test
+%% exp10_svmmrmr_test
 
 nsamples = 10;
 nfeatures = 100;
