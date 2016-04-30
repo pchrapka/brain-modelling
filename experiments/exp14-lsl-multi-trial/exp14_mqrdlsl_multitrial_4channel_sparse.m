@@ -106,8 +106,9 @@ trace = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
 figure;
-trace.run(x,'verbosity',verbosity,'mode','plot','plot_options',...
-    'plot_options',plot_options);
+plot_options_cust = [plot_options {'title','Multi Trial - All Trials'}];
+trace.run(x,'verbosity',verbosity,'mode','plot',...
+    'plot_options',plot_options_cust);
 
 %% MCMTQRDLSL1 with 2 trials
 
@@ -117,8 +118,9 @@ trace = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
 figure;
-trace.run(x(:,:,1:2),'verbosity',verbosity,'mode','plot','plot_options',...
-    'plot_options',plot_options);
+plot_options_cust = [plot_options {'title','Multi Trial - 2 Trials'}];
+trace.run(x(:,:,1:2),'verbosity',verbosity,'mode','plot',...
+    'plot_options',plot_options_cust);
 
 %% Compare to MQRDLSLS1
 
@@ -128,5 +130,6 @@ trace = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
 figure;
-trace.run(x(:,:,1),'verbosity',verbosity,'mode','plot','plot_options',...
-    'plot_options',plot_options);
+plot_options_cust = [plot_options {'title','Single Trial'}];
+trace.run(x(:,:,1),'verbosity',verbosity,'mode','plot',...
+    'plot_options',plot_options_cust);
