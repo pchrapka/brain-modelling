@@ -1,6 +1,10 @@
 classdef OSCD_TWL < handle
-    %OSCD_TWL Summary of this class goes here
-    %   Detailed explanation goes here
+    %OSCD_TWL Online Selective Coordinate Descent Time Weighted Lasso
+    %   Implementation of Algorithm 2 from 
+    %   D. Angelosante, J. A. Bazerque, and G. B. Giannakis, “Online
+    %   Adaptive Estimation of Sparse Signals: Where RLS Meets the -Norm,”
+    %   IEEE Transactions on Signal Processing, vol. 58, no. 7, pp.
+    %   3436–3447, Jul. 2010.
     
     properties
         % filter order
@@ -90,7 +94,7 @@ classdef OSCD_TWL < handle
             idx(pstar_idx) = false;
             
             % eq 18
-            rp = r_new(pstar_idx) - sum(R_new(pstar_idx,idx).*obj.x(idx)');
+            rp = r_new(pstar_idx) - R_new(pstar_idx,idx)*obj.x(idx);
             % eq 19
             x_new = obj.x;
             x_new(pstar_idx) = sign(rp)/R_new(pstar_idx,pstar_idx)*max((abs(rp) - obj.lambda),0);

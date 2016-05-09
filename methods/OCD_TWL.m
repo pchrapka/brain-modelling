@@ -1,6 +1,10 @@
 classdef OCD_TWL < handle
-    %OCD_TWL Summary of this class goes here
-    %   Detailed explanation goes here
+    %OCD_TWL Online Coordinate Descent Time Weighted Lasso
+    %   Implementation of Algorithm 1 from 
+    %   D. Angelosante, J. A. Bazerque, and G. B. Giannakis, “Online
+    %   Adaptive Estimation of Sparse Signals: Where RLS Meets the -Norm,”
+    %   IEEE Transactions on Signal Processing, vol. 58, no. 7, pp.
+    %   3436–3447, Jul. 2010.
     
     properties
         % filter order
@@ -15,6 +19,7 @@ classdef OCD_TWL < handle
         r;
         R;
         x;
+        iteration;
         
         % number of channels
         nchannels;
@@ -37,6 +42,7 @@ classdef OCD_TWL < handle
             obj.r = zeroVec;
             obj.x = zeroVec;
             obj.R = eye(order);
+            obj.iteration = 0;
         end
         
         function obj = update(obj, y, varargin)
@@ -66,20 +72,26 @@ classdef OCD_TWL < handle
                     size(y,1), obj.nchannels);
             end
             
+            % update iteration count
+            obj.iteration = obj.iteration + 1;
+            
             % eq 8
             r_new = obj.beta*obj.r + y*obj.h;
             R_new = obj.beta*obj.R + obj.h*obj.h';
             
+            % determine which coordinate to update
+            p = mod(obj.iteration,obj.order) + 1;
+            
+            idx = true(obj.order,1);
+            idx(p) = false;
+            
+            % copy old estimate
             x_new = obj.x;
-            for p=1:obj.order
-                idx = true(obj.order,1);
-                idx(p) = false;
-                
-                % eq 18
-                rp = r_new(p) - sum(R_new(p,idx).*x_new(idx)');
-                % eq 19
-                x_new(p) = sign(rp)/R_new(p,p)*max((abs(rp) - obj.lambda),0);
-            end
+            
+            % eq 18
+            rp = r_new(p) - R_new(p,idx)*obj.x(idx);
+            % eq 19
+            x_new(p) = sign(rp)/R_new(p,p)*max((abs(rp) - obj.lambda),0);
             
             % save vars
             obj.x = x_new;

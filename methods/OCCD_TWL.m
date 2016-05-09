@@ -1,6 +1,11 @@
 classdef OCCD_TWL < handle
-    %OCCD_TWL Summary of this class goes here
-    %   Detailed explanation goes here
+    %OCCD_TWL Online Cyclic Coordinate Descent Time Weighted Lasso
+    %   Implementation of Algorithm 3 from 
+    %   D. Angelosante, J. A. Bazerque, and G. B. Giannakis, “Online
+    %   Adaptive Estimation of Sparse Signals: Where RLS Meets the -Norm,”
+    %   IEEE Transactions on Signal Processing, vol. 58, no. 7, pp.
+    %   3436–3447, Jul. 2010.
+
     
     properties
         % filter order
@@ -71,14 +76,15 @@ classdef OCCD_TWL < handle
             R_new = obj.beta*obj.R + obj.h*obj.h';
             
             % FIXME i'm getting some kind of blow up here
+            % NOTE I think there's an error in Algorithm 3 in the paper
             
-            x_new = zeros(obj.order,1);
+            x_new = obj.x;
             for p=1:obj.order
                 idx = true(obj.order,1);
                 idx(p) = false;
                 
                 % eq 18
-                rp = r_new(p) - sum(R_new(p,idx).*obj.x(idx)');
+                rp = r_new(p) - R_new(p,idx)*x_new(idx);
                 % eq 19
                 x_new(p) = sign(rp)/R_new(p,p)*max((abs(rp) - obj.lambda),0);
             end
@@ -96,6 +102,7 @@ classdef OCCD_TWL < handle
             h_new = circshift(obj.h,1);
             h_new(1) = y;
             obj.h = h_new;
+            
         end
     end
     
