@@ -75,6 +75,8 @@ classdef LatticeTrace < handle
                         obj.trace.Kb(iter,:,:,:) = obj.filter.Kb;
                     case 'ferror'
                         obj.trace.ferror(iter,:,:) = obj.filter.ferror;
+                    case 'x'
+                        obj.trace.x(iter,:,:,:) = obj.filter.x;
                     otherwise
                         error('unknown field name %s',field);
                 end
@@ -93,22 +95,22 @@ classdef LatticeTrace < handle
             %       true value of Kf [order samples]
             %   title (string)
             %       plot title
+            %   fields (cell array, default = {'Kf'})
+            %       traces to include in plot
+            
             
             p = inputParser();
             addParameter(p,'ch1',1,@isnumeric);
             addParameter(p,'ch2',1,@isnumeric);
             addParameter(p,'true',[]);
             addParameter(p,'title','Lattice Trace',@ischar);
+            addParameter(p,'fields',{'Kf'},@iscell);
             parse(p,varargin{:});
             
-            if ~isfield(obj.trace,'Kf')
-                error('missing Kf in trace');
-            end
-            
             % clear the figure;
-            clf;
+            %clf;
             
-            norder = size(obj.trace.Kf,2);
+            norder = obj.filter.order;
             rows = norder;
             cols = 1;
             for k=1:norder
@@ -126,10 +128,12 @@ classdef LatticeTrace < handle
                 end
                 
                 % plot estimate
-                %plot(1:nsamples, k_est.scale*k_est(j).Kf(1:nsamples,k,idx1,idx2));
-                z(end+1) = plot(1:iter, obj.trace.Kf(1:iter,k,p.Results.ch1,p.Results.ch2));
-                legend_str{end+1} = obj.filter.name;
-                hold on;
+                nfields = length(p.Results.fields);
+                for j=1:nfields
+                    hold on;
+                    z(end+1) = obj.plot_field(p.Results.fields{j},iter,k,p.Results);
+                    legend_str{end+1} = obj.filter.name;
+                end
                 
                 xlim([1 max(iter,2)]);
                 ylim([-1 1]);
@@ -142,6 +146,7 @@ classdef LatticeTrace < handle
                     % plot small error indicators
                     errors_ind = -1*[obj.errors(1:iter).warning];
                     errors_ind(errors_ind == 0) = NaN;
+                    hold on;
                     plot(1:iter, errors_ind, 'o');
                     
                     %legend(z,legend_str,'Location','SouthWest');
@@ -149,6 +154,7 @@ classdef LatticeTrace < handle
                 else
                     set(gca,'XTickLabel',[]);
                 end
+                hold off;
             end 
         end
         
@@ -219,11 +225,25 @@ classdef LatticeTrace < handle
                 
                 if isequal(p.Results.mode,'plot')
                     obj.plot_trace(i,p.Results.plot_options{:});
-                    pause(0.005);
+                    drawnow;
+                    %pause(0.005);
                 end
                 
             end
             
+        end
+    end
+    
+    methods (Access = protected)
+        function out = plot_field(obj,field,iter,order,params)
+            switch field
+                case 'Kf'
+                    out = plot(1:iter, obj.trace.Kf(1:iter,order,params.ch1,params.ch2));
+                case 'Kb'
+                    out = plot(1:iter, obj.trace.Kb(1:iter,order,params.ch1,params.ch2));
+                case 'x'
+                    out = plot(1:iter, obj.trace.x(1:iter,order));
+            end
         end
     end
     
