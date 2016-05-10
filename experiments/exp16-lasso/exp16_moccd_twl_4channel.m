@@ -111,4 +111,4 @@ trace = LatticeTrace(filter,'fields',{'Kf'});
 % run the filter
 figure;
 trace.run(x(:,:,1),'verbosity',verbosity,'mode','plot',...
-    'plot_options',{'mode','3d','true',a_true,'fields',{'Kf'}});
+    'plot_options',{'mode','3d','true',k_true,'fields',{'Kf'}});

@@ -1,6 +1,6 @@
-%% exp16_mjoccd_twl_4channel
+%% exp16_mloccd_twl_4channel_ind
 %
-% Goal: Test the MJOCCD-TWL algorithm
+% Goal: Test the MLOCCD-TWL algorithm
 
 close all;
 
@@ -20,25 +20,26 @@ s = VAR(nchannels,norder);
 A = [];
 A(:,:,1) = [...
     0         0         0         0;...
-    -0.0270   0.2767    0         0;...
+    0         0.2767    0         0;...
     0         0         0         0;...
     0         0         0         0;...
     ];
 
 A(:,:,2) = [...
-    0         0         0   -0.7183;...
+    0.345     0         0         0;...
     0         0         0         0;...
-    0.4170    0         0         0;...
+    0         0         0         0;...
     0         0         0         0;...
     ];
 
 A(:,:,3) = [...
     0.2643    0         0         0;...
-    0.7388   -0.1545    0         0;...
+    0        -0.1545    0         0;...
     0         0         0.9887    0;...
     0         0         0         0;...
     ];
 s.coefs_set(A);
+%s.coefs_stable(true);
 
 % allocate mem for data
 x = zeros(nchannels,nsamples,ntrials);
@@ -88,42 +89,42 @@ coefs_true = shiftdim(A,2);
 a_true = repmat(coefs_true,1,1,1,nsamples);
 a_true = shiftdim(a_true,3);
 
-%% Estimate the AR coefficients using MJOCCD_TWL
+%% Estimate the Reflection coefficients using MLOCCD_TWL
 order_est = norder;
 verbosity = 2;
 
 sigma = 10^(-1);
 gamma = sqrt(2*sigma^2*nsamples*log(norder*nchannels^2));
 lambda = 0.99;
-filter = MJOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
-trace = LatticeTrace(filter,'fields',{'A'});
+filter = MLOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
+trace = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
 figure;
 trace.run(x,'verbosity',verbosity,'mode','plot',...
-    'plot_options',{'mode','3d','true',a_true,'fields',{'A'}});
+    'plot_options',{'mode','3d','true',k_true,'fields',{'Kf'}});
 
-%% Estimate the AR coefficients using MOCCD_TWL
-order_est = norder;
-verbosity = 2;
-
-sigma = 10^(-1);
-gamma = sqrt(2*sigma^2*nsamples*log(norder*nchannels^2));
-lambda = 0.99;
-filter = MOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
-trace = LatticeTrace(filter,'fields',{'A'});
-
-% run the filter
-figure;
-trace.run(x,'verbosity',verbosity,'mode','plot',...
-    'plot_options',{'mode','3d','true',a_true,'fields',{'A'}});
-
-%% Compare with MQRDLSL
-% filter = MQRDLSL1(nchannels,order_est,lambda);
-% % filter = MQRDLSL2(nchannels,order_est,lambda);
-% trace = LatticeTrace(filter,'fields',{'Kf'});
+% %% Estimate the AR coefficients using MOCCD_TWL
+% order_est = norder;
+% verbosity = 2;
+% 
+% sigma = 10^(-1);
+% gamma = sqrt(2*sigma^2*nsamples*log(norder*nchannels^2));
+% lambda = 0.99;
+% filter = MOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
+% trace = LatticeTrace(filter,'fields',{'A'});
 % 
 % % run the filter
 % figure;
-% trace.run(x(:,:,1),'verbosity',verbosity,'mode','plot',...
-%     'plot_options',{'mode','3d','true',k_true,'fields',{'Kf'}});
+% trace.run(x,'verbosity',verbosity,'mode','plot',...
+%     'plot_options',{'mode','3d','true',a_true,'fields',{'A'}});
+
+%% Compare with MQRDLSL
+filter = MQRDLSL1(nchannels,order_est,lambda);
+% filter = MQRDLSL2(nchannels,order_est,lambda);
+trace = LatticeTrace(filter,'fields',{'Kf'});
+
+% run the filter
+figure;
+trace.run(x(:,:,1),'verbosity',verbosity,'mode','plot',...
+    'plot_options',{'mode','3d','true',k_true,'fields',{'Kf'}});
