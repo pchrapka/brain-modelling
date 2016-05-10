@@ -75,9 +75,6 @@ classdef OCCD_TWL < handle
             r_new = obj.beta*obj.r + y*obj.h;
             R_new = obj.beta*obj.R + obj.h*obj.h';
             
-            % FIXME i'm getting some kind of blow up here
-            % NOTE I think there's an error in Algorithm 3 in the paper
-            
             x_new = obj.x;
             for p=1:obj.order
                 idx = true(obj.order,1);
@@ -85,6 +82,9 @@ classdef OCCD_TWL < handle
                 
                 % eq 18
                 rp = r_new(p) - R_new(p,idx)*x_new(idx);
+                % NOTE I think there's an error in Algorithm 3 in the paper
+                % It says to use obj.x instead of x_new
+                    
                 % eq 19
                 x_new(p) = sign(rp)/R_new(p,p)*max((abs(rp) - obj.lambda),0);
             end

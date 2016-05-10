@@ -47,7 +47,7 @@ coefs_true = shiftdim(coefs,2);
 a_true = repmat(coefs_true,1,1,1,nsamples);
 a_true = shiftdim(a_true,3);
 trace.run(x,'verbosity',2,'mode','plot',...
-    'plot_options',{'ch1',1,'ch2',1,'true',a_true,'fields',{'x'}});
+    'plot_options',{'mode','3d','ch1',1,'ch2',1,'true',a_true,'fields',{'x'}});
 
 %% Estimate the reflection coefs using MQRDLSL1
 
@@ -62,4 +62,4 @@ k_true = shiftdim(k_true,3);
 % run the filter
 figure;
 trace.run(x(:,:,1),'verbosity',2,'mode','plot',...
-    'plot_options',{'ch1',1,'ch2',1,'true',k_true,'fields',{'Kf'}});
+    'plot_options',{'mode','3d','ch1',1,'ch2',1,'true',k_true,'fields',{'Kf'}});

@@ -73,6 +73,8 @@ classdef LatticeTrace < handle
                         obj.trace.Kf(iter,:,:,:) = obj.filter.Kf;
                     case 'Kb'
                         obj.trace.Kb(iter,:,:,:) = obj.filter.Kb;
+                    case 'A'
+                        obj.trace.A(iter,:,:,:) = obj.filter.A;
                     case 'ferror'
                         obj.trace.ferror(iter,:,:) = obj.filter.ferror;
                     case 'x'
@@ -97,6 +99,8 @@ classdef LatticeTrace < handle
             %       plot title
             %   fields (cell array, default = {'Kf'})
             %       traces to include in plot
+            %   mode (string, default = 'subplot')
+            %       plotting mode
             
             
             p = inputParser();
@@ -105,6 +109,8 @@ classdef LatticeTrace < handle
             addParameter(p,'true',[]);
             addParameter(p,'title','Lattice Trace',@ischar);
             addParameter(p,'fields',{'Kf'},@iscell);
+            params_mode = {'subplot','3d'};
+            addParameter(p,'mode','subplot',@(x) any(validatestring(x,params_mode)));
             parse(p,varargin{:});
             
             % clear the figure;
@@ -113,49 +119,99 @@ classdef LatticeTrace < handle
             norder = obj.filter.order;
             rows = norder;
             cols = 1;
-            for k=1:norder
-                z = [];
-                legend_str = {};
-                
-                subaxis(rows, cols, k,...
-                    'Spacing', 0, 'SpacingVert', 0, 'Padding', 0, 'Margin', 0.1);
-                
-                % plot true value
-                if ~isempty(p.Results.true)
-                    z(end+1) = plot(1:iter, p.Results.true(1:iter,k,p.Results.ch1,p.Results.ch2));
-                    legend_str{end+1} = 'True';
+            switch p.Results.mode
+                case 'subplot'
+                    for k=1:norder
+                        z = [];
+                        legend_str = {};
+                        
+                        subaxis(rows, cols, k,...
+                            'Spacing', 0, 'SpacingVert', 0, 'Padding', 0, 'Margin', 0.1);
+                        
+                        % plot true value
+                        if ~isempty(p.Results.true)
+                            z(end+1) = plot(1:iter, p.Results.true(1:iter,k,p.Results.ch1,p.Results.ch2));
+                            legend_str{end+1} = 'True';
+                            hold on;
+                        end
+                        
+                        % plot estimate
+                        nfields = length(p.Results.fields);
+                        for j=1:nfields
+                            z(end+1) = obj.plot_field(p.Results.fields{j},iter,k,p.Results);
+                            legend_str{end+1} = obj.filter.name;
+                            hold on;
+                        end
+                        
+                        xlim([1 max(iter,2)]);
+                        ylim([-1 1]);
+                        
+                        if k == 1
+                            title(p.Results.title);
+                        end
+                        
+                        if k == norder
+                            % plot small error indicators
+                            errors_ind = -1*[obj.errors(1:iter).warning];
+                            errors_ind(errors_ind == 0) = NaN;
+                            hold on;
+                            plot(1:iter, errors_ind, 'o');
+                            
+                            %legend(z,legend_str,'Location','SouthWest');
+                            % NOTE legend consideraly slows down plotting
+                        else
+                            set(gca,'XTickLabel',[]);
+                        end
+                        hold off;
+                    end
+                case '3d'
+                    z = [];
+                    legend_str = {};
                     hold on;
-                end
-                
-                % plot estimate
-                nfields = length(p.Results.fields);
-                for j=1:nfields
-                    hold on;
-                    z(end+1) = obj.plot_field(p.Results.fields{j},iter,k,p.Results);
-                    legend_str{end+1} = obj.filter.name;
-                end
-                
-                xlim([1 max(iter,2)]);
-                ylim([-1 1]);
-                
-                if k == 1
-                    title(p.Results.title);
-                end
-                
-                if k == norder
-                    % plot small error indicators
-                    errors_ind = -1*[obj.errors(1:iter).warning];
-                    errors_ind(errors_ind == 0) = NaN;
-                    hold on;
-                    plot(1:iter, errors_ind, 'o');
                     
-                    %legend(z,legend_str,'Location','SouthWest');
-                    % NOTE legend consideraly slows down plotting
-                else
-                    set(gca,'XTickLabel',[]);
-                end
-                hold off;
-            end 
+                    colors = {'b','r','g','m','k'};
+                    alpha_val = 0.2;
+                    count = 1;
+                        
+                    % plot true value
+                    if ~isempty(p.Results.true)
+                        data = squeeze(p.Results.true(iter,:,:,:));
+                        nparams = numel(data);
+                        data = reshape(shiftdim(data,2),1,nparams);
+                        z(count) = plot3(repmat(iter,nparams,1), 1:nparams, data, colors{count});
+                        z_color = get(z(count),'Color');
+                        set(z(count),'Color',[z_color alpha_val]);
+                        legend_str{count} = 'True';
+                        count = count + 1;
+                        hold on;
+                    end
+                    
+                    % plot estimate
+                    nfields = length(p.Results.fields);
+                    for j=1:nfields
+                        data_field = obj.trace.(p.Results.fields{j});
+                        data = squeeze(data_field(iter,:,:,:));
+                        nparams = numel(data);
+                        data = reshape(shiftdim(data,2),1,nparams);
+                        z(count) = plot3(repmat(iter,nparams,1), 1:nparams, data, colors{count});
+                        %z_color = get(z(count),'Color');
+                        %set(z(count),'Color',[z_color alpha_val]);
+                        legend_str{count} = obj.filter.name;
+                        count = count + 1;
+                        hold on;
+                    end
+                    
+                    xlim([1 max(iter,2)]);
+                    zlim([-1 1]);
+                    
+                    title(p.Results.title);
+                    
+                    view(3);
+                    hold off;
+                    
+                otherwise
+                    error('unknown plotting mode');
+            end
         end
         
         function run(obj,samples,varargin)
@@ -241,6 +297,8 @@ classdef LatticeTrace < handle
                     out = plot(1:iter, obj.trace.Kf(1:iter,order,params.ch1,params.ch2));
                 case 'Kb'
                     out = plot(1:iter, obj.trace.Kb(1:iter,order,params.ch1,params.ch2));
+                case 'A'
+                    out = plot(1:iter, obj.trace.A(1:iter,order,params.ch1,params.ch2));
                 case 'x'
                     out = plot(1:iter, obj.trace.x(1:iter,order));
             end
