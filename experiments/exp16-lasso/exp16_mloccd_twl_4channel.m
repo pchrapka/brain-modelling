@@ -1,6 +1,6 @@
-%% exp16_moccd_twl_4channel
+%% exp16_mloccd_twl_4channel
 %
-% Goal: Test the MOCCD-TWL algorithm
+% Goal: Test the MLOCCD-TWL algorithm
 
 close all;
 
@@ -84,31 +84,46 @@ end
 k_true = repmat(Kest_stationary,1,1,1,nsamples);
 k_true = shiftdim(k_true,3);
 
-%% Estimate the AR coefficients using the MOCD TWL
+coefs_true = shiftdim(A,2);
+a_true = repmat(coefs_true,1,1,1,nsamples);
+a_true = shiftdim(a_true,3);
+
+%% Estimate the Reflection coefficients using MLOCCD_TWL
 order_est = norder;
 verbosity = 2;
 
 sigma = 10^(-1);
 gamma = sqrt(2*sigma^2*nsamples*log(norder*nchannels^2));
 lambda = 0.99;
-filter = MOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
-trace = LatticeTrace(filter,'fields',{'A'});
-
-% run the filter
-figure;
-%k_est_mat(:,1,1) = k_est;
-coefs_true = shiftdim(A,2);
-a_true = repmat(coefs_true,1,1,1,nsamples);
-a_true = shiftdim(a_true,3);
-trace.run(x,'verbosity',verbosity,'mode','plot',...
-    'plot_options',{'mode','3d','true',a_true,'fields',{'A'}});
-
-%% Compare with MQRDLSL
-filter = MQRDLSL1(nchannels,order_est,lambda);
-% filter = MQRDLSL2(nchannels,order_est,lambda);
+filter = MLOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
 trace = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
 figure;
-trace.run(x(:,:,1),'verbosity',verbosity,'mode','plot',...
-    'plot_options',{'mode','3d','true',a_true,'fields',{'Kf'}});
+trace.run(x,'verbosity',verbosity,'mode','plot',...
+    'plot_options',{'mode','3d','true',k_true,'fields',{'Kf'}});
+
+% %% Estimate the AR coefficients using MOCCD_TWL
+% order_est = norder;
+% verbosity = 2;
+% 
+% sigma = 10^(-1);
+% gamma = sqrt(2*sigma^2*nsamples*log(norder*nchannels^2));
+% lambda = 0.99;
+% filter = MOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
+% trace = LatticeTrace(filter,'fields',{'A'});
+% 
+% % run the filter
+% figure;
+% trace.run(x,'verbosity',verbosity,'mode','plot',...
+%     'plot_options',{'mode','3d','true',a_true,'fields',{'A'}});
+
+%% Compare with MQRDLSL
+% filter = MQRDLSL1(nchannels,order_est,lambda);
+% % filter = MQRDLSL2(nchannels,order_est,lambda);
+% trace = LatticeTrace(filter,'fields',{'Kf'});
+% 
+% % run the filter
+% figure;
+% trace.run(x(:,:,1),'verbosity',verbosity,'mode','plot',...
+%     'plot_options',{'mode','3d','true',a_true,'fields',{'Kf'}});
