@@ -6,13 +6,13 @@ close all;
 
 nchannels = 4;
 ntrials = 1;
-nsamples = 200;
+nsamples = 500;
 norder = 3;
 
 s = VAR(nchannels,norder);
 % stable = false;
 % while stable == false
-%     s.coefs_gen_sparse(0.1);
+%     s.coefs_gen_sparse('mode','probability','probability',0.1);
 %     disp(s.A);
 %     stable = s.coefs_stable(true);
 % end
@@ -96,34 +96,27 @@ sigma = 10^(-1);
 gamma = sqrt(2*sigma^2*nsamples*log(norder*nchannels^2));
 lambda = 0.99;
 filter = MLOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
-trace = LatticeTrace(filter,'fields',{'Kf'});
+trace{1} = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
 figure;
-trace.run(x,'verbosity',verbosity,'mode','plot',...
+trace{1}.run(x,'verbosity',verbosity,'mode','plot',...
     'plot_options',{'mode','3d','true',k_true,'fields',{'Kf'}});
 
-% %% Estimate the AR coefficients using MOCCD_TWL
-% order_est = norder;
-% verbosity = 2;
-% 
-% sigma = 10^(-1);
-% gamma = sqrt(2*sigma^2*nsamples*log(norder*nchannels^2));
-% lambda = 0.99;
-% filter = MOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
-% trace = LatticeTrace(filter,'fields',{'A'});
-% 
-% % run the filter
-% figure;
-% trace.run(x,'verbosity',verbosity,'mode','plot',...
-%     'plot_options',{'mode','3d','true',a_true,'fields',{'A'}});
-
 %% Compare with MQRDLSL
-% filter = MQRDLSL1(nchannels,order_est,lambda);
-% % filter = MQRDLSL2(nchannels,order_est,lambda);
-% trace = LatticeTrace(filter,'fields',{'Kf'});
-% 
-% % run the filter
-% figure;
-% trace.run(x(:,:,1),'verbosity',verbosity,'mode','plot',...
-%     'plot_options',{'mode','3d','true',k_true,'fields',{'Kf'}});
+filter = MQRDLSL1(nchannels,order_est,lambda);
+% filter = MQRDLSL2(nchannels,order_est,lambda);
+trace{2} = LatticeTrace(filter,'fields',{'Kf'});
+
+% run the filter
+figure;
+trace{2}.run(x(:,:,1),'verbosity',verbosity,'mode','plot',...
+    'plot_options',{'mode','3d','true',k_true,'fields',{'Kf'}});
+
+%% Plot MSE
+figure;
+plot_mse_vs_iteration(...
+    trace{1}.trace.Kf, k_true,...
+    trace{2}.trace.Kf, k_true,...
+    'mode','log',...
+    'labels',{trace{1}.filter.name,trace{2}.filter.name});

@@ -12,7 +12,7 @@ norder = 3;
 s = VAR(nchannels,norder);
 % stable = false;
 % while stable == false
-%     s.coefs_gen_sparse(0.1);
+%     s.coefs_gen_sparse('mode','probability','probability',0.1);
 %     disp(s.A);
 %     stable = s.coefs_stable(true);
 % end

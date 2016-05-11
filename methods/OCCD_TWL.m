@@ -94,9 +94,11 @@ classdef OCCD_TWL < handle
             obj.r = r_new;
             obj.R = R_new;
             
-            fprintf('x:');
-            fprintf('%0.2f ',obj.x);
-            fprintf('\n');
+            if inputs.Results.verbosity > 1
+                fprintf('x:');
+                fprintf('%0.2f ',obj.x);
+                fprintf('\n');
+            end
             
             % save new measurement
             h_new = circshift(obj.h,1);

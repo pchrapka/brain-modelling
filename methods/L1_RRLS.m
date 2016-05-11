@@ -108,9 +108,11 @@ classdef L1_RRLS < handle
             obj.x = x_new;
             obj.P = P_new;
             
-            fprintf('x:');
-            fprintf('%0.2f ',obj.x);
-            fprintf('\n');
+            if inputs.Results.verbosity > 1
+                fprintf('x:');
+                fprintf('%0.2f ',obj.x);
+                fprintf('\n');
+            end
             
             % save new measurement
             h_new = circshift(obj.h,1);

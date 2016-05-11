@@ -79,23 +79,50 @@ classdef VAR < handle
             end
         end
         
-        function coefs_gen_sparse(obj, sparseness)
+        function coefs_gen_sparse(obj, varargin)
             %COEFS_GEN_SPARSE generates coefficients of VAR process
             %   COEFS_GEN_SPARSE(OBJ, sparseness) generates coefficients of
             %   VAR process. this method has a better chance of finding a
             %   stable system with larger eigenvalues.
             %
-            %   Input
-            %   -----
-            %   sparseness (scalar)
-            %       percentage of coefficients containing a non zero value
+            %   Parameters
+            %   ----------
+            %   mode (string, default = probability)
+            %       method to select number of coefficients: 'probability'
+            %       and 'exact'
+            %       probability - sets the probability of a coefficient
+            %       being nonzero, requires probability parameter
+            %       exact - sets the exact number of coefficients to be
+            %       nonzero, requires ncoefs parameter
+            %   probability
+            %       probability of a coefficient being nonzero, required
+            %       when mode = 'probability'
+            %   ncoefs (integer)
+            %       number of coefficients to be nonzero, required when
+            %       mode = 'exact'
+            
+            p = inputParser;
+            params_mode = {'probability','exact'};
+            addParameter(p,'mode','probability',@(x) any(validatestring(x,params_mode)));
+            addParameter(p,'probability',0.1,@isnumeric);
+            addParameter(p,'ncoefs',0,@isnumeric);
+            parse(p,varargin{:});
             
             % reset coefs
             obj.A = zeros(obj.K,obj.K,obj.P);
             
             ncoefs = numel(obj.A);
-            % randomly select coefficient indices
-            idx = rand(ncoefs,1) < sparseness;
+            switch p.Results.mode
+                case 'probability'
+                    % randomly select coefficient indices
+                    idx = rand(ncoefs,1) < p.Results.probability;
+                case 'exact'
+                    % randomly select coefficient indices
+                    num_idx = randsample(1:ncoefs,p.Results.ncoefs);
+                    idx = false(ncoefs,1);
+                    idx(num_idx) = true;
+            end
+                    
             
             % randomly assign coefficient values from uniform distribution
             % on interval [-1 1]

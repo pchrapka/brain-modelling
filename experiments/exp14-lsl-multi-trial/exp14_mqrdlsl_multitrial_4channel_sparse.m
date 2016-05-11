@@ -13,7 +13,7 @@ norder = 3;
 s = VAR(nchannels,norder);
 % stable = false;
 % while stable == false
-%     s.coefs_gen_sparse(0.1);
+%     s.coefs_gen_sparse('mode','probability','probability',0.1);
 %     disp(s.A);
 %     stable = s.coefs_stable(true);
 % end
@@ -94,7 +94,8 @@ k_true = repmat(Kest_stationary,1,1,1,nsamples);
 k_true = shiftdim(k_true,3);
 
 %% Estimate the Reflection coefficients 
-plot_options = {'ch1',2,'ch2',2,'true',k_true};
+%plot_options = {'ch1',2,'ch2',2,'true',k_true};
+plot_options = {'mode','3d','true',k_true};
 
 %% MCMTQRDLSL1 with 10 trials
 order_est = 3;
@@ -102,34 +103,43 @@ verbosity = 1;
 
 lambda = 0.99;
 filter = MCMTQRDLSL1(ntrials,nchannels,order_est,lambda);
-trace = LatticeTrace(filter,'fields',{'Kf'});
+trace{1} = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
 figure;
 plot_options_cust = [plot_options {'title','Multi Trial - All Trials'}];
-trace.run(x,'verbosity',verbosity,'mode','plot',...
+trace{1}.run(x,'verbosity',verbosity,'mode','plot',...
     'plot_options',plot_options_cust);
 
 %% MCMTQRDLSL1 with 2 trials
 
 lambda = 0.99;
 filter = MCMTQRDLSL1(2,nchannels,order_est,lambda);
-trace = LatticeTrace(filter,'fields',{'Kf'});
+trace{2} = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
 figure;
 plot_options_cust = [plot_options {'title','Multi Trial - 2 Trials'}];
-trace.run(x(:,:,1:2),'verbosity',verbosity,'mode','plot',...
+trace{2}.run(x(:,:,1:2),'verbosity',verbosity,'mode','plot',...
     'plot_options',plot_options_cust);
 
 %% Compare to MQRDLSLS1
 
 filter = MQRDLSL1(nchannels,order_est,lambda);
 % filter = MQRDLSL2(nchannels,order_est,lambda);
-trace = LatticeTrace(filter,'fields',{'Kf'});
+trace{3} = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
 figure;
 plot_options_cust = [plot_options {'title','Single Trial'}];
-trace.run(x(:,:,1),'verbosity',verbosity,'mode','plot',...
+trace{3}.run(x(:,:,1),'verbosity',verbosity,'mode','plot',...
     'plot_options',plot_options_cust);
+
+%% Plot MSE
+figure;
+plot_mse_vs_iteration(...
+    trace{1}.trace.Kf, k_true,...
+    trace{2}.trace.Kf, k_true,...
+    trace{3}.trace.Kf, k_true,...
+    'mode','log',...
+    'labels',{trace{1}.filter.name,trace{2}.filter.name,trace{3}.filter.name});
