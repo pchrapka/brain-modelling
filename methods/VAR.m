@@ -40,7 +40,7 @@ classdef VAR < handle
             %   A (matrix)
             %       VAR coefficients of size [K K P]
             
-            if isequal(size(A),[obj.K, obj.K, obj.P])
+            if isequal(size(A),size(obj.A))
                 obj.A = A;
                 obj.init = true;
             else

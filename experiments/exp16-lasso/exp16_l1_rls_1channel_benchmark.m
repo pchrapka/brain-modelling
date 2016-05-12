@@ -75,6 +75,20 @@ for j=1:nsims
     
     order_est = norder;
     
+    %% Estimate the AR coefficients using RLS
+    lambda = 0.99;
+    filter = RLS(order_est,'lambda',lambda);
+    trace{count,j} = LatticeTrace(filter,'fields',{'x'});
+    
+    % run the filter
+    if isequal(plot_mode,'plot')
+        figure;
+    end
+    trace{count,j}.run(x,'verbosity',verbosity,'mode',plot_mode,...
+        'plot_options',plot_options);
+    
+    count = count + 1;
+    
     %% Estimate the AR coefficients using L1_RRLS
     lambda = 0.99;
     gamma = 1.2;
