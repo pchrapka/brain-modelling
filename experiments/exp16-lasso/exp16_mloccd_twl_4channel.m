@@ -103,6 +103,11 @@ figure;
 trace{1}.run(x,'verbosity',verbosity,'mode','plot',...
     'plot_options',{'mode','3d','true',k_true,'fields',{'Kf'}});
 
+[az,el] = view(3);
+save_fig_exp(mfilename('fullpath'),'tag','trace1-1');
+view(az+90,el);
+save_fig_exp(mfilename('fullpath'),'tag','trace1-2');
+
 %% Compare with MQRDLSL
 filter = MQRDLSL1(nchannels,order_est,lambda);
 % filter = MQRDLSL2(nchannels,order_est,lambda);
@@ -113,6 +118,11 @@ figure;
 trace{2}.run(x(:,:,1),'verbosity',verbosity,'mode','plot',...
     'plot_options',{'mode','3d','true',k_true,'fields',{'Kf'}});
 
+[az,el] = view(3);
+save_fig_exp(mfilename('fullpath'),'tag','trace2-1');
+view(az+90,el);
+save_fig_exp(mfilename('fullpath'),'tag','trace2-2');
+
 %% Plot MSE
 figure;
 plot_mse_vs_iteration(...
@@ -120,3 +130,5 @@ plot_mse_vs_iteration(...
     trace{2}.trace.Kf, k_true,...
     'mode','log',...
     'labels',{trace{1}.filter.name,trace{2}.filter.name});
+
+save_fig_exp(mfilename('fullpath'),'tag','mse');

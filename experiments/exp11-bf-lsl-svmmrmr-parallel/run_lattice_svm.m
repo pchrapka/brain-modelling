@@ -64,7 +64,7 @@ opt_func = 'params_fv_2000';
 
 % opt_func = 'params_fv_10000';
 % [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
-% approx. ?
+% approx. 83%
 % runtime: approx. 7-9 days on 10 cores
 
 % pipeline options

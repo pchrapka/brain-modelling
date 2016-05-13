@@ -107,7 +107,7 @@ classdef LatticeTrace < handle
             addParameter(p,'ch1',1,@isnumeric);
             addParameter(p,'ch2',1,@isnumeric);
             addParameter(p,'true',[]);
-            addParameter(p,'title','Lattice Trace',@ischar);
+            addParameter(p,'title',obj.filter.name,@ischar);
             addParameter(p,'fields',{'Kf'},@iscell);
             params_mode = {'subplot','3d'};
             addParameter(p,'mode','subplot',@(x) any(validatestring(x,params_mode)));
