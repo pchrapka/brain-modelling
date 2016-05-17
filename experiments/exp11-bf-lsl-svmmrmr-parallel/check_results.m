@@ -1,16 +1,19 @@
 %% check_results.m
 
 %% 100 features
+figure;
 plot_svmmrmr_confusion(...
     'output/lattice-svm/P022-9913/st3fm-params-fm-1/features-matrix.mat',...
     'output/lattice-svm/P022-9913/st4fv-params-fv-100/features-validated.mat')
 
 %% 1000 features
+figure;
 plot_svmmrmr_confusion(...
     'output/lattice-svm/P022-9913/st3fm-params-fm-1/features-matrix.mat',...
     'output/lattice-svm/P022-9913/st4fv-params-fv-1000/features-validated.mat')
 
 %% 10000 features
+figure;
 plot_svmmrmr_confusion(...
     'output/lattice-svm/P022-9913/st3fm-params-fm-1/features-matrix.mat',...
     'output/lattice-svm/P022-9913/st4fv-params-fv-10000/features-validated.mat')
