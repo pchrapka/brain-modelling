@@ -99,8 +99,7 @@ opt_func = 'params_fv_1000';
 
 % pipeline options
 pipeline.options.path_logs = fullfile(pipedir, 'logs');
-pipeline.options.mode = 'background';
-% pipeline.options.mode = 'session';
+pipeline.options.mode = 'session';
 pipeline.options.max_queued = 1; % use one thread since all stages use parfor
 
 pipeline.run();

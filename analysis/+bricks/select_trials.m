@@ -53,8 +53,7 @@ end
 [trials_sel.label] = deal(p.Results.label);
 
 % save as individual trials
-%parfor j=1:p.Results.trials
-for j=1:p.Results.trials
+parfor j=1:p.Results.trials
     % save the trial
     save_parfor(files_out{j},trials_sel(j));
 end
