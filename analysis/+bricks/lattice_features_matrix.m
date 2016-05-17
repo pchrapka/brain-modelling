@@ -69,17 +69,18 @@ for i=1:nsamples
             class_labels(i) = 0;
     end
     
-    % check if we have bad samples
-    if ~isequal(p.Results.threshold,'none')
-        if any(abs(samples(i,:)) > p.Results.threshold)
-            bad_samples(end+1,1) = i;
-        end
-    end
+    % % check if we have bad samples
+    % NOTE Can remove every sample, this is not a good approach
+    %if ~isequal(p.Results.threshold,'none')
+    %    if any(abs(samples(i,:)) > p.Results.threshold)
+    %        bad_samples(end+1,1) = i;
+    %    end
+    %end
 end
 
-% remove bad samples
-samples(bad_samples,:) = [];
-class_labels(bad_samples,:) = [];
+% % remove bad samples
+%samples(bad_samples,:) = [];
+%class_labels(bad_samples,:) = [];
 
 % get all feature labels
 feature_labels = lattice_feature_labels(size(lattice.Kf));
