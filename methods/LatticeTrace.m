@@ -100,7 +100,7 @@ classdef LatticeTrace < handle
             %   fields (cell array, default = {'Kf'})
             %       traces to include in plot
             %   mode (string, default = 'subplot')
-            %       plotting mode
+            %       plotting mode: subplot, 3d, grid
             
             
             p = inputParser();
@@ -109,7 +109,7 @@ classdef LatticeTrace < handle
             addParameter(p,'true',[]);
             addParameter(p,'title',obj.filter.name,@ischar);
             addParameter(p,'fields',{'Kf'},@iscell);
-            params_mode = {'subplot','3d'};
+            params_mode = {'subplot','3d','grid'};
             addParameter(p,'mode','subplot',@(x) any(validatestring(x,params_mode)));
             parse(p,varargin{:});
             
@@ -164,6 +164,7 @@ classdef LatticeTrace < handle
                         end
                         hold off;
                     end
+                    
                 case '3d'
                     z = [];
                     legend_str = {};
@@ -208,6 +209,45 @@ classdef LatticeTrace < handle
                     
                     view(3);
                     hold off;
+                    
+                case 'grid'
+                    nfields = length(p.Results.fields);
+                    if nfields > 1
+                        error('not sure what to do with multiple fields');
+                    end
+                    
+                    clim = [-1 1];
+                    
+                    nrows = obj.filter.order;
+                    ncols = 2;
+                    for i=1:nrows
+                        idx_plot = (i-1)*ncols + 1;
+                        
+                        subplot(nrows,ncols,idx_plot);
+                        data = obj.trace.(p.Results.fields{1});
+                        imagesc(squeeze(data(iter,i,:,:)),clim);
+                        set(gca,'XTickLabel',[]);
+                        set(gca,'YTickLabel',[]);
+                        ylabel(sprintf('%d',i));
+                        
+                        if i==1
+                            title({obj.filter.name,p.Results.fields{1}});
+                        end
+                        
+                        subplot(nrows,ncols,idx_plot+1);
+                        data = squeeze(p.Results.true(iter,i,:,:));
+                        imagesc(squeeze(data),clim);
+                        set(gca,'XTickLabel',[]);
+                        set(gca,'YTickLabel',[]);
+                        
+                        if i==1
+                            title({'True',p.Results.fields{1}});
+                        end
+                        
+                        if i==nrows
+                            colorbar;
+                        end
+                    end
                     
                 otherwise
                     error('unknown plotting mode');
