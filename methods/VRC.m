@@ -171,16 +171,6 @@ classdef VRC < handle
             %   ------
             %   stable (boolean)
             %       true if stable, false otherwise
-            %
-            %   References
-            %   [1] J. D. Hamilton, Time series analysis, vol. 2. Princeton
-            %   university press Princeton, 1994.
-            %   	Equation (10.1.10)
-            %   [2] H. Lütkepohl, New Introduction to Multiple Time Series
-            %   Analysis. Springer Berlin Heidelberg, 2005.
-            %       Equation (2.1.9)
-            
-            error('not sure how to check this');
             
             stable = false;
             if nargin < 2
@@ -188,16 +178,13 @@ classdef VRC < handle
             end
             
             if obj.init
-                % Get F matrix
-                F = obj.coefs_getF();
+                % simulate some data
+                [x,~,~] = obj.simulate(200);
+                x_max = max(abs(x(1,:)));
+                thresh = 10000;
                 
-                % Get eigenvalues
-                lambda = eig(F);
-                %disp(lambda);
-                %disp(abs(lambda));
-                
-                % Check eigenvalues
-                if max(abs(lambda)) >= 1
+                % check signal max
+                if x_max > thresh
                     if verbose
                         fprintf('unstable VRC\n');
                         disp(abs(lambda));

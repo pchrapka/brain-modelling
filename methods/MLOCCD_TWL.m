@@ -140,8 +140,13 @@ classdef MLOCCD_TWL < handle
                         idx(p) = false;
                         
                         % eq 18
-                        rfp = rf_new(p) - Rf_new(p,idx)*kf_new(idx);
-                        rbp = rb_new(p) - Rb_new(p,idx)*kb_new(idx);
+                        if obj.nregressors == 1
+                            rfp = rf_new(p);
+                            rbp = rb_new(p);
+                        else
+                            rfp = rf_new(p) - Rf_new(p,idx)*kf_new(idx);
+                            rbp = rb_new(p) - Rb_new(p,idx)*kb_new(idx);
+                        end
                         % NOTE I think there's an error in Algorithm 3 in the paper
                         % It says to use obj.x instead of x_new
                         
