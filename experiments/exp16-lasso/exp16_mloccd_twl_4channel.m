@@ -132,3 +132,26 @@ plot_mse_vs_iteration(...
     'labels',{trace{1}.filter.name,trace{2}.filter.name});
 
 save_fig_exp(mfilename('fullpath'),'tag','mse');
+
+%% Compare to AR coefs
+RC_cell = squeeze(trace{2}.trace.Kf(end,:,:,:));
+RC_est = zeros(nchannels,nchannels*norder);
+for i=1:norder
+    idx_start = (i-1)*nchannels+1;
+    idx_end = i*nchannels; 
+    RC_est(:,idx_start:idx_end) = RC_cell(i,:,:);
+end
+[AR_lsl,~,~,~] = tsa.rc2ar(RC_est);
+
+for i=1:norder
+    idx_start = (i-1)*nchannels+1;
+    idx_end = i*nchannels; 
+    
+    fprintf('order %d\n',i);
+    fprintf('Truth\n');
+    disp(A(:,:,i));
+    fprintf('Nuttall Strand\n');
+    disp(AR(:,idx_start:idx_end));
+    fprintf('LSL\n');
+    disp(AR_lsl(:,idx_start:idx_end));
+end

@@ -1,27 +1,42 @@
-%% exp17_vrc_test
+%% exp17_vrc_test_4channel
+% Goal:
+%   Test LSL algos with a 4 channel VRC process
+% Conclusion:
+%   ?
+
+clear all;
+clc;
+close all;
 
 nsamples = 200;
-norder = 2;
+norder = 3;
 nchannels = 4;
 ntrials = 1;
 
 Kf = zeros(nchannels, nchannels,norder);
 Kf(:,:,1) = [...
-	-0.8205         0         0         0;
-          0   -0.8205         0         0;
-          0         0   -0.8205         0;
-          0         0         0   -0.8205;...
+	-0.8         0         0         0;
+       0      -0.8         0         0;
+       0         0      -0.8         0;
+       0         0         0      -0.8;...
     ];
 Kf(:,:,2) = [...
-    0.9500         0         0         0;
-         0    0.9500         0         0;
-         0         0    0.9500         0;
-         0         0         0    0.9500;...
+       0.6         0         0         0;
+         0       0.6         0         0;
+         0         0       0.6         0;
+         0         0         0       0.6;...
+    ];
+Kf(:,:,3) = [...
+       0.2         0         0         0;
+         0       0.2         0         0;
+         0         0       0.2         0;
+         0         0         0       0.2;...
     ];
 
 Kb = zeros(nchannels,nchannels,norder);
 Kb(:,:,1) = Kf(:,:,1)';
 Kb(:,:,2) = Kf(:,:,2)';
+Kb(:,:,3) = Kf(:,:,3)';
 
 s = VRC(nchannels,norder);
 s.coefs_set(Kf,Kb);
@@ -46,18 +61,19 @@ for i=1:nchannels
     plot(1:nsamples_plot,Y(i,1:nsamples_plot));
 end
     
-%% Estimate the AR and reflection coefficients using stationary method
+%% Estimate the AR and reflection coefficients using stationary method, Nuttall Strand
 
-% Estimate reflection coefs using mvar
-method = 13;
-[AR,RC,PE] = tsa.mvar(Y', norder, method);
+[AR,RCF,RCB,PE] = nuttall_strand(Y', norder);
 Aest = zeros(nchannels,nchannels,norder);
-Kest_stationary = zeros(norder,nchannels,nchannels);
+Kf_NS = zeros(norder,nchannels,nchannels);
+Kb_NS = zeros(norder,nchannels,nchannels);
+fprintf('Method: Nuttall Strand\n');
 for i=1:norder
     idx_start = (i-1)*nchannels+1;
     idx_end = i*nchannels; 
     Aest(:,:,i) = AR(:,idx_start:idx_end);
-    Kest_stationary(i,:,:) = RC(:,idx_start:idx_end);
+    Kf_NS(i,:,:) = RCF(:,idx_start:idx_end);
+    Kb_NS(i,:,:) = RCB(:,idx_start:idx_end);
     
     fprintf('order %d\n\n',i);
     fprintf('VAR coefficients\n');
@@ -68,13 +84,17 @@ for i=1:norder
     fprintf('\n');
     
     fprintf('Reflection coefficients\n');
-    fprintf('Actual\n');
     fprintf('Kf:\n');
+    fprintf('Actual\n');
     disp(s.Kf(:,:,i));
+    fprintf('Estimated\n');
+    disp(squeeze(Kf_NS(i,:,:)));
+    
     fprintf('Kb:\n');
+    fprintf('Actual\n');
     disp(s.Kb(:,:,i));
     fprintf('Estimated\n');
-    disp(squeeze(Kest_stationary(i,:,:)));
+    disp(squeeze(Kb_NS(i,:,:)));
     fprintf('\n');
     
 end
@@ -91,8 +111,8 @@ verbosity = 0;
 
 order_est = norder;
 lambda = 0.99;
-filter = MLSL(nchannels,order_est,lambda);
-%filter = MQRDLSL1(nchannels,order_est,lambda);
+%filter = MLSL(nchannels,order_est,lambda);
+filter = MQRDLSL1(nchannels,order_est,lambda);
 % filter = MQRDLSL2(nchannels,order_est,lambda);
 trace = LatticeTrace(filter,'fields',{'Kf','Kb'});
 

@@ -1,22 +1,35 @@
-%% exp17_vrc_test_random
+%% exp17_vrc_test_1channel
+% Goal:
+%   Test LSL algos with a single channel VRC process
+% Conclusion:
+%   Works well
 
-clc;
 clear all;
+clc;
 close all;
 
-nsamples = 1000;
+nsamples = 200;
 norder = 3;
-nchannels = 4;
+nchannels = 1;
 ntrials = 1;
 
+Kf = zeros(nchannels, nchannels,norder);
+Kf(:,:,1) = -0.8;
+Kf(:,:,2) = 0.6;
+Kf(:,:,3) = 0.2;
+
+Kb = zeros(nchannels,nchannels,norder);
+Kb(:,:,1) = Kf(:,:,1)';
+Kb(:,:,2) = Kf(:,:,2)';
+Kb(:,:,3) = Kf(:,:,3)';
+
 s = VRC(nchannels,norder);
-s.coefs_gen_sparse('mode','exact','ncoefs',6);
+s.coefs_set(Kf,Kb);
 
 % allocate mem for data
 x = zeros(nchannels,nsamples,ntrials);
 for i=1:ntrials
     [~,x(:,:,i),~] = s.simulate(nsamples);
-    %[x(:,:,i),~,~] = s.simulate(nsamples);
 end
 
 %% Simulate signal
@@ -79,7 +92,7 @@ kf_true = shiftdim(kf_true,3);
 kb_true = repmat(shiftdim(s.Kb,2),1,1,1,nsamples);
 kb_true = shiftdim(kb_true,3);
 
-verbosity = 1;
+verbosity = 0;
 
 order_est = norder;
 lambda = 0.99;
@@ -90,6 +103,8 @@ trace = LatticeTrace(filter,'fields',{'Kf','Kb'});
 
 % run the filter
 trace.run(x(:,:,1),'verbosity',verbosity);
+
+% plot 3d
 figure;
 for i=1:nsamples
     trace.plot_trace(i,'mode','3d','fields',{'Kf'},'true',kf_true,'title','Kf');
@@ -116,7 +131,7 @@ for i=1:norder
     fprintf('Estimated\n');
     disp(squeeze(trace.trace.Kb(nsamples,i,:,:)));
     fprintf('\n');
-
+    
 end
 
 %% Plot MSE

@@ -242,14 +242,19 @@ classdef VAR < handle
         
         function [Y,Y_norm, noise] = simulate(obj, nsamples, varargin)
             %SIMULATE simulate VAR process
-            %   [Y,Y_norm,noise] = SIMULATE(obj, nsamples, [mu])
+            %   [Y,Y_norm,noise] = SIMULATE(obj, nsamples, ...)
             %
             %   Input
             %   -----
             %   nsamples (integer)
             %       number of samples
+            %
+            %   Parameters
+            %   ----------
             %   mu (vector, optional)
             %       mean of VAR process, default is zero
+            %   sigma (scalar, default = 0.1)
+            %       variance of VAR process
             %
             %   Output
             %   ------
@@ -267,14 +272,12 @@ classdef VAR < handle
                 error('no coefficients set');
             end
             
-            % Get the mean
-            if nargin > 2
-                v = varargin{1};
-            else
-                v = zeros(obj.K,1);
-            end
+            inputs = inputParser;
+            addParameter(inputs,'mu',zeros(obj.K,1),@isnumeric);
+            addParameter(inputs,'sigma',0.1,@isnumeric);
+            parse(inputs,varargin{:});
             
-            Sigma = eye(obj.K);
+            Sigma = inputs.Results.sigma*eye(obj.K);
             
             % Generate initial conditions Y^{-p+1} ... Y^{0}
             Ylag = zeros(obj.K,obj.P);
@@ -288,7 +291,7 @@ classdef VAR < handle
             Y(:,1:obj.P) = Ylag;
             for i=1:nsamples
                 % Add white noise
-                temp = v + noise(:,i);
+                temp = inputs.Results.mu + noise(:,i);
                 % Add contribution from past values (i.e. Ylag)
                 for p=1:obj.P
                     temp = temp + obj.A(:,:,p)*Ylag(:,p);

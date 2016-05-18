@@ -150,8 +150,11 @@ classdef VRC < handle
             a = -1;
             b = 1;
             obj.Kf(idx) = a + (b-a).*rand(nidx,1);
-            obj.Kb(idx) = a + (b-a).*rand(nidx,1);
-            % NOTE not sure if this will work
+            for i=1:obj.P
+                %obj.Kb(:,:,i) = obj.Kf(:,:,i)';
+                obj.Kb(:,:,i) = obj.Kf(:,:,i);
+            end
+            warning('setting reflection coefs randomly hasn''t worked well for me');
             % TODO Test this
             
             obj.init = true;
@@ -266,16 +269,21 @@ classdef VRC < handle
             end
         end
         
-        function [Y,Y_norm, noise] = simulate(obj, nsamples, varargin)
+        function [Y,Y_norm,noise] = simulate(obj, nsamples, varargin)
             %SIMULATE simulate VRC process
-            %   [Y,Y_norm,noise] = SIMULATE(obj, nsamples, [mu])
+            %   [Y,Y_norm,noise] = SIMULATE(obj, nsamples, ...)
             %
             %   Input
             %   -----
             %   nsamples (integer)
             %       number of samples
+            %
+            %   Parameters
+            %   ----------
             %   mu (vector, optional)
-            %       mean of VRC process, default is zero
+            %       mean of VAR process, default is zero
+            %   sigma (scalar, default = 0.1)
+            %       variance of VAR process
             %
             %   Output
             %   ------
@@ -286,24 +294,48 @@ classdef VRC < handle
             %       unit variance [channels, samples]
             %   noise (matrix)
             %       driving white noise, [channels, samples]
-            %
-            % Source: http://www.kris-nimark.net/pdf/Handout_S1.pdf
             
             if ~obj.init
                 error('no coefficients set');
             end
             
-            p = inputParser;
-            addOptional(p,'mu',zeros(obj.K,1),@isnumeric);
-            parse(p,varargin{:});
+            inputs = inputParser;
+            addOptional(inputs,'mu',zeros(obj.K,1),@isnumeric);
+            addOptional(inputs,'sigma',0.1,@isnumeric);
+            parse(inputs,varargin{:});
             
-            Sigma = eye(obj.K);
-
-            noise = mvnrnd(p.Results.mu, Sigma, nsamples)';
-            Y = rlattice_allpole_allpass(...
-                shiftdim(obj.Kf,2),...
-                shiftdim(obj.Kb,2),...
-                noise);
+            % generate noise
+            Sigma = inputs.Results.sigma*eye(obj.K);
+            noise = mvnrnd(inputs.Results.mu, Sigma, nsamples)';
+            
+            % init mem
+            zeroMat = zeros(obj.K, obj.P+1);
+            ferror = zeroMat;
+            berror = zeroMat;
+            berrord = zeroMat;
+            Y = zeros(obj.K, nsamples);
+            
+            for j=1:nsamples
+                % input
+                ferror(:,obj.P+1) = noise(:,j);
+                
+                % calculate forward and backward error at each stage
+                for p=obj.P+1:-1:2
+                    ferror(:,p-1) = ferror(:,p) + squeeze(obj.Kb(:,:,p-1))*berrord(:,p-1);
+                    berror(:,p) = berrord(:,p-1) - squeeze(obj.Kf(:,:,p-1))'*ferror(:,p-1);
+                    % Structure is from Haykin, p.179, sign convention is from
+                    % Lewis1990
+                end
+                berror(:,1) = ferror(:,1);
+                %     display(berror)
+                %     display(ferror)
+                
+                % delay backwards error
+                berrord = berror;
+                
+                % save 0th order forward error as output
+                Y(:,j) = ferror(:,1);
+            end
             
             % Normalize variance of each channel to unit variance
             Y_norm = Y./repmat(std(Y,0,2),1,nsamples);
