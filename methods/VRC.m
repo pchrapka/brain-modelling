@@ -48,8 +48,8 @@ classdef VRC < handle
             if isequal(size(Kf),size(obj.Kf))
                 obj.Kf = Kf;
             else
-                disp(size(Kf))
-                error('bad size, should be [%d %d %d]',...
+                error([mfilename ':ParamError'],...
+                    'bad size, should be [%d %d %d]',...
                     obj.K, obj.K, obj.P);
             end
             
@@ -57,8 +57,8 @@ classdef VRC < handle
             if isequal(size(Kb),size(obj.Kb))
                 obj.Kb = Kb;
             else
-                disp(size(Kb))
-                error('bad size, should be [%d %d %d]',...
+                error([mfilename ':ParamError'],...
+                    'bad size, should be [%d %d %d]',...
                     obj.K, obj.K, obj.P);
             end
             
@@ -107,9 +107,11 @@ classdef VRC < handle
             %   mode (string, default = probability)
             %       method to select number of coefficients: 'probability'
             %       and 'exact'
-            %       probability - sets the probability of a coefficient
+            %
+            %       'probability' - sets the probability of a coefficient
             %       being nonzero, requires probability parameter
-            %       exact - sets the exact number of coefficients to be
+            %
+            %       'exact' - sets the exact number of coefficients to be
             %       nonzero, requires ncoefs parameter
             %   probability
             %       probability of a coefficient being nonzero, required
@@ -117,8 +119,6 @@ classdef VRC < handle
             %   ncoefs (integer)
             %       number of coefficients to be nonzero, required when
             %       mode = 'exact'
-            
-            error('test me');
             
             p = inputParser;
             params_mode = {'probability','exact'};
@@ -128,9 +128,10 @@ classdef VRC < handle
             parse(p,varargin{:});
             
             % reset coefs
-            obj.A = zeros(obj.K,obj.K,obj.P);
+            obj.Kf = zeros(obj.K,obj.K,obj.P);
+            obj.Kb = zeros(obj.K,obj.K,obj.P);
             
-            ncoefs = numel(obj.A);
+            ncoefs = numel(obj.Kf);
             switch p.Results.mode
                 case 'probability'
                     % randomly select coefficient indices
@@ -298,8 +299,11 @@ classdef VRC < handle
             
             Sigma = eye(obj.K);
 
-            noise = mvnrnd(v, Sigma, nsamples)';
-            Y = rlattice_allpole_allpass(obj.Kf,obj.Kb,noise);
+            noise = mvnrnd(p.Results.mu, Sigma, nsamples)';
+            Y = rlattice_allpole_allpass(...
+                shiftdim(obj.Kf,2),...
+                shiftdim(obj.Kb,2),...
+                noise);
             
             % Normalize variance of each channel to unit variance
             Y_norm = Y./repmat(std(Y,0,2),1,nsamples);

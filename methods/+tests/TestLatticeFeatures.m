@@ -1,5 +1,5 @@
 classdef TestLatticeFeatures < matlab.unittest.TestCase
-    %UNTITLED6 Summary of this class goes here
+    %TestLatticeFeatures Summary of this class goes here
     %   Detailed explanation goes here
     
     properties

@@ -206,7 +206,6 @@ classdef MQRDLSL1 < handle
                 end
                 
                 % update errors
-                % TODO Check if Dbsq needs to be inverted
                 ferror(:,p) = ferror(:,p-1) - Xb'*betab;
                 berror(:,p) = obj.berrord(:,p-1) - Xf'*betaf;
                 gammasq(p) = obj.gammasqd(p-1) - betaf'*betaf;

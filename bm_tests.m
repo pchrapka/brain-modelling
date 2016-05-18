@@ -1,5 +1,6 @@
 %% runtests
 clc;
+close all;
 import matlab.unittest.TestSuite
 
 verbosity = 1;

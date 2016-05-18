@@ -36,9 +36,10 @@ for j=1:nsamples
     
     % calculate forward and backward error at each stage
     for p=norder+1:-1:2
-        ferror(:,p-1) = ferror(:,p) - squeeze(Kb(p-1,:,:))*berrord(:,p-1);
-        berror(:,p) = berrord(:,p-1) + squeeze(Kf(p-1,:,:))'*ferror(:,p-1);
-        % Note the Kf, Kb notation is from Lewis1990. Haykin has the opposite
+        ferror(:,p-1) = ferror(:,p) + squeeze(Kb(p-1,:,:))*berrord(:,p-1);
+        berror(:,p) = berrord(:,p-1) - squeeze(Kf(p-1,:,:))'*ferror(:,p-1);
+        % Structure is from Haykin, p.179, sign convention is from
+        % Lewis1990
     end
     berror(:,1) = ferror(:,1);
 %     display(berror)
