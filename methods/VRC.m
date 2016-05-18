@@ -151,11 +151,8 @@ classdef VRC < handle
             b = 1;
             obj.Kf(idx) = a + (b-a).*rand(nidx,1);
             for i=1:obj.P
-                %obj.Kb(:,:,i) = obj.Kf(:,:,i)';
                 obj.Kb(:,:,i) = obj.Kf(:,:,i);
             end
-            warning('setting reflection coefs randomly hasn''t worked well for me');
-            % TODO Test this
             
             obj.init = true;
             
