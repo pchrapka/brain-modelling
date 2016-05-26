@@ -15,7 +15,7 @@ addpath(fullfile(pwd,'external','libsvm-321','matlab'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','FEAST'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','MIToolbox'));
 
-%% check compiled files
+%% add external packages with setup steps
 % Check fEAST has been compiled
 if ~exist('FSToolboxMex.mexa64','file')
     % Compile FEAST
@@ -55,6 +55,17 @@ ft_defaults();
 addpath(fullfile(pwd,'external','fieldtrip-beamforming'));
 fb_install()
 fb_make_configs()
+
+% addpath(fullfile(pwd,'external','L1-homotopy-2.0'));
+% % TODO add subfolders
+% compile();
+
+addpath(fullfile(pwd,'external','kafbox-1.4'));
+addpath(genpath(fullfile(pwd,'external','kafbox-1.4','data')));
+addpath(genpath(fullfile(pwd,'external','kafbox-1.4','lib')));
+%addpath((fullfile(pwd,'demo')));
+
+
 
 %% add project directories
 addpath(fullfile(pwd,'methods'));
