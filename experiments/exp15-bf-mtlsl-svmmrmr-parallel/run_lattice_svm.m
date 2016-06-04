@@ -22,16 +22,16 @@ pipeline = PipelineLatticeSVM(pipedir);
 
 % add select trials
 name_brick = 'bricks.select_trials';
-opt_func = 'params_st_std_100';
+opt_func = 'params_st_std_10_consec';
 files_in = fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstd-BPatchTriallcmvmom/sourceanalysis.mat');
 [~,job_std] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
-opt_func = 'params_st_odd_100';
+opt_func = 'params_st_odd_10_consec';
 files_in = fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGodd-BPatchTriallcmvmom/sourceanalysis.mat');
 [~,job_odd] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
 
 % add lattice filter sources
 name_brick = 'bricks.lattice_filter_sources';
-opt_func = 'params_lf_1';
+opt_func = 'params_lf_mt5';
 files_in = [pipeline.pipeline.(job_std).files_out; pipeline.pipeline.(job_odd).files_out];
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
 
