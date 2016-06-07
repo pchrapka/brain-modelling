@@ -8,7 +8,7 @@
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 
 % pipeline folder
-outdir = fullfile(srcdir,'output','latticemt-svm');
+outdir = fullfile(srcdir,'output','lattice-svm');
 
 % subject specific info
 [~,subject_file,subject_name] = get_coma_data(22);
