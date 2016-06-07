@@ -82,5 +82,8 @@ save_fig_exp(mfilename('fullpath'),'tag','mse');
 %% Plot grid
 figure;
 trace{1}.plot_trace(nsamples,'mode','grid','true',kf_true,'fields',{'Kf'});
+save_fig_exp(mfilename('fullpath'),'tag','grid1');
+
 figure;
 trace{2}.plot_trace(nsamples,'mode','grid','true',kf_true,'fields',{'Kf'});
+save_fig_exp(mfilename('fullpath'),'tag','grid2');

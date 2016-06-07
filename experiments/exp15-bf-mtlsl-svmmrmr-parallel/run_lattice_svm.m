@@ -46,18 +46,18 @@ name_brick = 'bricks.features_validate';
 opt_func = 'params_fv_100';
 prev_job = job_name;
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
-% approx. ?
-% runtime: quick on 10 cores
+% approx. 85%
+% runtime: 0.01 hours on 10 cores
 
 opt_func = 'params_fv_1000';
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
-% approx. ?
-% runtime: reasonable on 10 cores
+% approx. 90%
+% runtime: 0.32 hours on 10 cores
 
 opt_func = 'params_fv_2000';
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
-% approx. ?
-% runtime: ?
+% approx. 92.5%
+% runtime: 1.23 hours on 10 cores
 
 % opt_func = 'params_fv_10000';
 % [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
