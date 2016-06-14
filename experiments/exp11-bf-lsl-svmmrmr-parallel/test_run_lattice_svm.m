@@ -70,6 +70,7 @@ prev_job = job_name;
 % pipeline options
 pipeline.options.path_logs = fullfile(pipedir, 'logs');
 pipeline.options.mode = 'session';
+pipeline.options.restart = 'st3fm_params_fm_test';
 pipeline.options.max_queued = 1; % use one thread since all stages use parfor
 
 pipeline.run();

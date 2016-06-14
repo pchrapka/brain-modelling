@@ -12,9 +12,9 @@ function [feat_common, freq] = features_select_common(feat_sel, nfeatures)
 %
 %   Output
 %   ------
-%   feat_common (matrix)
+%   feat_common (vector)
 %       indices of common features
-%   freq (matrix)
+%   freq (vector)
 %       frequency of occurrence of each feature
 
 % Count the occurrence of each feature
