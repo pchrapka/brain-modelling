@@ -92,7 +92,7 @@ temp = [ratio' (1:nfeatures)'];
 ratio_sorted = sortrows(temp,-1);
 feat_sel_fdr = ratio_sorted(1:p.Results.features_fdr,2);
 features = samples(:,feat_sel_fdr);
-feature_labels = feature_labels{feat_sel_fdr};
+feature_labels = feature_labels(feat_sel_fdr);
 
 % save data
 data = [];
