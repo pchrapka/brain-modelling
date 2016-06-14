@@ -25,7 +25,7 @@ mse_mean = zeros(nchannels,norder);
 files = {};
 
 setup_parfor();
-for i=1:nchannels
+parfor i=1:nchannels
     for j=1:norder
         %% Set up filter
         % channels from above
