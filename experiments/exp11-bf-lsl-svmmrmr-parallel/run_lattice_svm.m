@@ -44,26 +44,37 @@ opt_func = 'params_fm_1';
 prev_job = job_name;
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
 
-% add feature validation
-name_brick = 'bricks.features_validate';
-opt_func = 'params_fv_100';
-prev_job = job_name;
-[~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+ft_options = {...
+    'params_fv_20',...
+    'params_fv_40',...
+    'params_fv_60',...
+    'params_fv_100',...
+    'params_fv_1000',...
+    'params_fv_2000',...
+    ...'params_fv_10000',...
+    };
+
+for j=1:length(ft_options)
+    % add feature validation
+    name_brick = 'bricks.features_validate';
+    opt_func = ft_options{j};
+    prev_job = job_name;
+    [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+end
+
+% params_fv_100
 % approx. 63%
 % runtime: 1.8 hours
 
-opt_func = 'params_fv_1000';
-[~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+% params_fv_1000
 % approx. 78%
 % runtime: 26 hours
 
-opt_func = 'params_fv_2000';
-[~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+% params_fv_2000
 % approx. 80.5%
 % runtime: 54 hours
 
-% opt_func = 'params_fv_10000';
-% [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+% params_fv_10000
 % approx. 83%
 % runtime: approx. 7-9 days on 10 cores
 

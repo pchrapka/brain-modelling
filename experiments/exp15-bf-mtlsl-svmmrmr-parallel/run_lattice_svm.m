@@ -29,40 +29,62 @@ opt_func = 'params_st_odd_100_consec';
 files_in = fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGodd-BPatchTriallcmvmom/sourceanalysis.mat');
 [~,job_odd] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
 
-% add lattice filter sources
-name_brick = 'bricks.lattice_filter_sources';
-opt_func = 'params_lf_mt5';
-files_in = [pipeline.pipeline.(job_std).files_out; pipeline.pipeline.(job_odd).files_out];
-[~,job_name] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
+mt_options = {...
+    'params_lf_mt2',...
+    'params_lf_mt3',...
+    'params_lf_mt5',...
+    'params_lf_mt8',...
+    };
 
-% add feature matrix
-name_brick = 'bricks.lattice_features_matrix';
-opt_func = 'params_fm_1';
-prev_job = job_name;
-[~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+ft_options = {...
+    'params_fv_20',...
+    'params_fv_40',...
+    'params_fv_60',...
+    'params_fv_100',...
+    ...'params_fv_1000',...
+    ...'params_fv_2000',...
+    ...'params_fv_10000',...
+    };
 
-% add feature validation
-name_brick = 'bricks.features_validate';
-opt_func = 'params_fv_100';
-prev_job = job_name;
-[~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
-% approx. 85%
-% runtime: 0.01 hours on 10 cores
-
-opt_func = 'params_fv_1000';
-[~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
-% approx. 90%
-% runtime: 0.32 hours on 10 cores
-
-opt_func = 'params_fv_2000';
-[~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
-% approx. 92.5%
-% runtime: 1.23 hours on 10 cores
-
-% opt_func = 'params_fv_10000';
-% [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
-% approx. ?
-% runtime: approx. 7-9 days on 10 cores
+for i=1:length(mt_options)
+    % add lattice filter sources
+    name_brick = 'bricks.lattice_filter_sources';
+    opt_func = mt_options{i};
+    files_in = [pipeline.pipeline.(job_std).files_out; pipeline.pipeline.(job_odd).files_out];
+    [~,job_name] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
+    
+    % add feature matrix
+    name_brick = 'bricks.lattice_features_matrix';
+    opt_func = 'params_fm_1';
+    prev_job = job_name;
+    [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+    
+    for j=1:length(ft_options)
+        % add feature validation
+        name_brick = 'bricks.features_validate';
+        opt_func = ft_options{j};
+        prev_job = job_name;
+        [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+    end
+    
+    % 5 trials
+    % --------
+    % params_fv_100
+    % approx. 85%
+    % runtime: 0.01 hours on 10 cores
+    
+    % params_fv_1000
+    % approx. 90%
+    % runtime: 0.32 hours on 10 cores
+    
+    % params_fv_2000
+    % approx. 92.5%
+    % runtime: 1.23 hours on 10 cores
+    
+    % params_fv_10000
+    % approx. ?
+    % runtime: approx. 7-9 days on 10 cores
+end
 
 % pipeline options
 pipeline.options.path_logs = fullfile(pipedir, 'logs');
