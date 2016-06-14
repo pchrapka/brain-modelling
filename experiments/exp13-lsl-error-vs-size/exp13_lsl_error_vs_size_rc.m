@@ -75,6 +75,7 @@ parfor i=1:nchannels
             trace.trace.Kf(nsamples+1:end,:,:,:), kf_true,...
             'mode','log',...
             'labels',{trace.filter.name});
+        ylim([10^(-4) 10^2]);
         
         save_fig_exp(mfilename('fullpath'),'tag',[slug '-mse']);
         
