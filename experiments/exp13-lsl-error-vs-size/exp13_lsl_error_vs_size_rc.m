@@ -59,8 +59,8 @@ for i=1:nchannels
             
             % allocate mem for data
             x = zeros(channels(i),nsamples,ntrials);
-            for k=1:ntrials
-                [~,x(:,:,k),~] = s.simulate(nsamples);
+            for m=1:ntrials
+                [~,x(:,:,m),~] = s.simulate(nsamples);
             end
             
             kf_true = repmat(shiftdim(s.Kf,2),[1,1,1,nsamples]);
