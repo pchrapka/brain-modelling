@@ -32,7 +32,7 @@ parfor i=1:nchannels
         filter = MQRDLSL2(channels(i),order(j),lambda);
         trace = LatticeTrace(filter,'fields',{'Kf'});
         
-        slug = trace.name;
+        slug = trace.filter.name;
         slug = strrep(slug,' ','-');
 %         outfile = fullfile(outdir,[slug '.mat']);
 %         if exist(outfile,'file')
