@@ -57,10 +57,6 @@ addpath(fullfile(pwd,'external','fieldtrip-beamforming'));
 fb_install()
 fb_make_configs()
 
-% addpath(fullfile(pwd,'external','L1-homotopy-2.0'));
-% % TODO add subfolders
-% compile();
-
 addpath(fullfile(pwd,'external','kafbox-1.4'));
 addpath(genpath(fullfile(pwd,'external','kafbox-1.4','data')));
 addpath(genpath(fullfile(pwd,'external','kafbox-1.4','lib')));
