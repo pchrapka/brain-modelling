@@ -55,10 +55,10 @@ for i=1:nchannels
             [~,x(:,:,k),~] = s.simulate(nsamples);
         end
         
-        kf_true = repmat(shiftdim(s.Kf,2),1,1,1,nsamples);
+        kf_true = repmat(shiftdim(s.Kf,2),[1,1,1,nsamples]);
         kf_true = shiftdim(kf_true,3);
         
-        kb_true = repmat(shiftdim(s.Kb,2),1,1,1,nsamples);
+        kb_true = repmat(shiftdim(s.Kb,2),[1,1,1,nsamples]);
         kb_true = shiftdim(kb_true,3);
         
         % simulate data
