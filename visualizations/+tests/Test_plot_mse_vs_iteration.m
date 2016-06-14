@@ -25,16 +25,25 @@ classdef Test_plot_mse_vs_iteration < matlab.unittest.TestCase
     
     methods (Test)
         function test_plot(testCase)
+            % single data set
             figure;
             plot_mse_vs_iteration(testCase.estimate{1}, testCase.truth{1});
             title(strrep('test_plot','_',' '));
         end
         
         function test_plot2(testCase)
+            % multiple data sets
             figure;
             plot_mse_vs_iteration(testCase.estimate{1}, testCase.truth{1},...
                 testCase.estimate{2}, testCase.truth{2});
             title(strrep('test_plot2','_',' '));
+        end
+        
+        function test_plot3(testCase)
+            % multiple sims
+            figure;
+            plot_mse_vs_iteration(testCase.estimate, testCase.truth);
+            title(strrep('test_plot3','_',' '));
         end
         
         function test_plot_mode(testCase,modes)

@@ -46,35 +46,17 @@ parse(p,varargin{ndata:end});
 ndata = ndata-1;
 if iscell(data{1})
     nsims = length(data{1});
-    niter = size(data{1}{1},1);
-    nvars = numel(data{1}{1})/niter;
 else
     nsims = 1;
-    niter = size(data{1},1);
-    nvars = numel(data{1})/niter;
 end
+
 for i=1:2:ndata
-    if nsims == 1
-        estimate = reshape(data{i},niter,nvars);
-        truth = reshape(data{i+1},niter,nvars);
-        if p.Results.normalized
-            data_mse = nmse(estimate,truth,2);
-        else
-            data_mse = mse(estimate,truth,2);
-        end
-    else
-        data_mse = zeros(niter,1);
-        for j=1:nsims
-            estimate = reshape(data{i}{j},niter,nvars);
-            truth = reshape(data{i+1}{j},niter,nvars);
-            if p.Results.normalized
-                data_mse = data_mse + nmse(estimate,truth,2);
-            else
-                data_mse = data_mse + mse(estimate,truth,2);
-            end
-        end
-        data_mse = data_mse/nsims;
+    data_mse = mse_iteration(data{i},data{i+1});
+    if nsims > 1
+        data_mse = mean(data_mse,2);
     end
+    
+    niter = size(data_mse,1);
     switch p.Results.mode
         case 'log'
             semilogy(1:niter,data_mse);
