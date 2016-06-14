@@ -34,11 +34,11 @@ parfor i=1:nchannels
         
         slug = trace.name;
         slug = strrep(slug,' ','-');
-        outfile = fullfile(outdir,[slug '.mat']);
-        if exist(outfile,'file')
-            fprintf('skipping %s, already exists\n',trace.name);
-            break;
-        end
+%         outfile = fullfile(outdir,[slug '.mat']);
+%         if exist(outfile,'file')
+%             fprintf('skipping %s, already exists\n',trace.name);
+%             break;
+%         end
         
         %% generate VRC
         s = VRC(channels(i),order(j));
