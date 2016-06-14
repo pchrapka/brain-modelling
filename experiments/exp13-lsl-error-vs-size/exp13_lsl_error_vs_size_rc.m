@@ -74,7 +74,7 @@ parfor i=1:nchannels
             'mode','log',...
             'labels',{trace.filter.name});
         
-        save_fig_exp(slug,'tag','mse');
+        save_fig_exp(mfilename('fullpath'),'tag',[slug '-mse']);
         
         %% Calculate final MSE
         
@@ -83,7 +83,7 @@ parfor i=1:nchannels
         estimate = reshape(trace.trace.Kf(nsamples+1:end,:,:,:),niter,nvars);
         truth = reshape(kf_true,niter,nvars);
         mse_all = mse(estimate,truth,2);
-        mse_mean(i,j) = mean(data_mse(nsamples-nsamples_mse+1:end));
+        mse_mean(i,j) = mean(mse_all(nsamples-nsamples_mse+1:end));
         
         
 %         %% Calculate the relative error
@@ -118,9 +118,9 @@ parfor i=1:nchannels
     
 end
 
-%% Save list of data files
-outfile = 'data-files.mat';
-save(fullfile(outdir,outfile),files);
+% %% Save list of data files
+% outfile = 'data-files.mat';
+% save(fullfile(outdir,outfile),files);
 
 %% REV Plots
 % x = repmat(channels',1,norder);
@@ -148,3 +148,5 @@ title('RC Error');
 zlabel('MSE');
 xlabel('Channels');
 ylabel('Order');
+
+save_fig_exp(mfilename('fullpath'),'tag','mse-all');
