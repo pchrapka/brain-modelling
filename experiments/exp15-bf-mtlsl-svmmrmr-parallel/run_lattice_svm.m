@@ -47,6 +47,7 @@ ft_options = {...
     };
 
 for i=1:length(mt_options)
+    error('fix me');
     % add lattice filter sources
     name_brick = 'bricks.lattice_filter_sources';
     opt_func = mt_options{i};
@@ -59,12 +60,12 @@ for i=1:length(mt_options)
     prev_job = job_name;
     [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
     
+    prev_job = job_name;
     for j=1:length(ft_options)
         % add feature validation
         name_brick = 'bricks.features_validate';
         opt_func = ft_options{j};
-        prev_job = job_name;
-        [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+        pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
     end
     
     % 5 trials

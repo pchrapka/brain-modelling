@@ -54,12 +54,12 @@ ft_options = {...
     ...'params_fv_10000',...
     };
 
+prev_job = job_name;
 for j=1:length(ft_options)
     % add feature validation
     name_brick = 'bricks.features_validate';
     opt_func = ft_options{j};
-    prev_job = job_name;
-    [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+    pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
 end
 
 % params_fv_100
