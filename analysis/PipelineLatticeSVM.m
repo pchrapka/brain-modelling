@@ -81,6 +81,28 @@ classdef PipelineLatticeSVM < handle
             % create the job name
             name_job = [stage '_' opt_func];
             
+            % check if job name exists
+            name_job_orig = name_job;
+            if obj.exist_job(name_job)
+                % get the job name count
+                if isfield(obj.pipeline.(name_job),'count')
+                    count = obj.pipeline.(name_job).count + 1;
+                else
+                    count = 1;
+                end
+                
+                % add a temp number to the job name
+                name_job = [name_job_orig '_' num2str(count)];
+                % save the count
+                obj.pipeline.(name_job).count = count;
+                
+                fprintf([...
+                    '%s.add_job:\n\t'...
+                    'job name already exists\n\t'...
+                    'modified %s -> %s\n'],...
+                    mfilename, name_job_orig, name_job);
+            end
+            
             % set up path for output files
             outbrickpath = fullfile(obj.outdir, strrep(name_job,'_','-'));
             if ~exist(outbrickpath,'dir')
@@ -169,29 +191,6 @@ classdef PipelineLatticeSVM < handle
                 otherwise
                     error('unknown brick %s',brick_name);
             end
-            
-            % check if job name exists
-            name_job_orig = name_job;
-            if obj.exist_job(name_job)
-                % get the job name count
-                if isfield(obj.pipeline.(name_job),'count')
-                    count = obj.pipeline.(name_job).count + 1;
-                else
-                    count = 1;
-                end
-                
-                % add a temp number to the job name
-                name_job = [name_job_orig '_' num2str(count)];
-                % save the count
-                obj.pipeline.(name_job).count = count;
-                
-                fprintf([...
-                    '%s.add_job:\n\t'...
-                    'job name already exists\n\t'...
-                    'modified %s -> %s\n'],...
-                    mfilename, name_job_orig, name_job);
-            end
-            
             
             % add the job
             obj.pipeline = psom_add_job(obj.pipeline,name_job,name_brick,...
