@@ -113,11 +113,11 @@ for i=1:nchannels
         %% Calculate final MSE
         
         data_mse = mse_iteration(estimate,kf_true_sims);
-        data_mse = mean(data_mse,2);
+        data_mse = mean(data_mse,2,'omitnan');
         mse_mean(i,j) = mean(data_mse(nsamples-nsamples_mse+1:end));
         
         data_nmse = mse_iteration(estimate,kf_true_sims,'normalized',true);
-        data_nmse = mean(data_nmse,2);
+        data_nmse = mean(data_nmse,2,'omitnan');
         nmse_mean(i,j) = mean(data_nmse(nsamples-nsamples_mse+1:end));
         
 %         niter = nsamples;
