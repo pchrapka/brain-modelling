@@ -23,6 +23,8 @@ function lattice_filter_sources(files_in,files_out,opt)
 %       exponential weighting factor between 0 and 1
 %   trials (scalar, default = 1)
 %       number of trials to include for lattice filtering
+%   sparse (boolean, default = false)
+%       sparse lattice filter
 %   verbose (integer, default = 0)
 %       verbosity level, options: 0,1
 
@@ -32,6 +34,7 @@ addRequired(p,'files_out',@iscell);
 addParameter(p,'order',4,@isnumeric);
 addParameter(p,'lambda',0.99,@isnumeric);
 addParameter(p,'trials',1,@isnumeric);
+addParameter(p,'sparse',false,@islogical);
 addParameter(p,'verbose',0);
 parse(p,files_in,files_out,opt{:});
 
@@ -68,7 +71,14 @@ parfor i=1:ntrial_groups
     if p.Results.trials > 1
         filter = MCMTQRDLSL1(p.Results.trials, nchannels, p.Results.order, p.Results.lambda);
     else
-        filter = MQRDLSL2(nchannels, p.Results.order, p.Results.lambda);
+        if p.Results.sparse
+            sigma = 10^(-1);
+            gamma = sqrt(2*sigma^2*nsamples*log(p.Results.order*nchannels^2));
+            filter = MLOCCD_TWL(nchannels, p.Results.order,...
+                'lambda', p.Results.lambda,'gamma',gamma);
+        else
+            filter = MQRDLSL2(nchannels, p.Results.order, p.Results.lambda);
+        end
     end
     
     % initialize lattice filter with noise
