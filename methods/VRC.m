@@ -187,13 +187,12 @@ classdef VRC < handle
                 if x_max > thresh
                     if verbose
                         fprintf('unstable VRC\n');
-                        disp(abs(lambda));
+                        disp(x_max);
                     end
                     stable = false;
                 else
                     if verbose
                         fprintf('stable VRC\n');
-                        disp(abs(lambda));
                     end
                     stable = true;
                 end                

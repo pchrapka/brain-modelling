@@ -1,8 +1,16 @@
-%% exp16_mloccd_twl_rc4channel
+%% exp16_mloccd_tnwl_rc4channel
 %
-% Goal: Test the MLOCCD-TWL algorithm
+%   Goal: Test the MLOCCD-TNWL algorithm
+%
+%   Results: Not much of a difference between TNWL and TWL. Depending on a
+%   TNWL can preform worse than TWL. It seems like TWL is the upper limit.
+%
+%   NOTE
+%   There may be implementation issues with the method that computes the
+%   weight, since the papers omits the details for the online TNWL algos
 
 close all;
+clear all;
 
 do_plots = false;
 do_save = false;
@@ -23,7 +31,6 @@ while ~stable
     stable = s.coefs_stable(true);
 end
 
-
 % allocate mem for data
 x = zeros(nchannels,nsamples,ntrials);
 for i=1:ntrials
@@ -40,20 +47,19 @@ kb_true = shiftdim(kb_true,3);
 order_est = norder;
 verbosity = 2;
 count = 1;
+%a = [1.5, 3, 6, 9];
+% a = [1.5 10 20];
+a = [2 20 40];
 trace = {};
 
 sigma = 10^(-1);
-gamma = [...
-    sqrt(2*sigma^2*nsamples*log(nchannels)),...
-    sqrt(2*sigma^2*nsamples*log(norder*nchannels^2)),...
-    ];
-    
+gamma = sqrt(2*sigma^2*nsamples*log(norder*nchannels^2));
+% gamma = sqrt(2*sigma^2*nsamples*log(nchannels));
 
-%% Estimate the Reflection coefficients using MLOCCD_TWL
-
-for i=1:length(gamma)
+%% Estimate the Reflection coefficients using MLOCCD_TNWL
+for i=1:length(a)
     lambda = 0.99;
-    filter = MLOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma(i));
+    filter = MLOCCD_TNWL(nchannels,order_est,'lambda',lambda,'gamma',gamma,'a',a(i));
     trace{count} = LatticeTrace(filter,'fields',{'Kf'});
     
     % run the filter
@@ -75,11 +81,11 @@ for i=1:length(gamma)
     count = count + 1;
 end
 
-%% Compare with MQRDLSL1
-filter = MQRDLSL1(nchannels,order_est,lambda);
+%% Compare with MLOCCD_TWL
+lambda = 0.99;
+filter = MLOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
 trace{count} = LatticeTrace(filter,'fields',{'Kf'});
 
-% run the filter
 if do_plots
     figure;
     trace{count}.run(x(:,:,1),'verbosity',verbosity,'mode','plot',...
@@ -97,8 +103,8 @@ end
 
 count = count + 1;
 
-%% Compare with MQRDLSL2
-filter = MQRDLSL2(nchannels,order_est,lambda);
+%% Compare with MQRDLSL
+filter = MQRDLSL1(nchannels,order_est,lambda);
 trace{count} = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
@@ -133,15 +139,26 @@ plot_mse_vs_iteration(...
     'mode','log',...
     'labels',labels);
 
-if do_save
-    save_fig_exp(mfilename('fullpath'),'tag','mse');
-end
+figure;
+plot_mse_vs_iteration(trace{1}.trace.Kf, kf_true,'mode','log','labels',{trace{1}.filter.name});
+
+% save_fig_exp(mfilename('fullpath'),'tag','mse');
 
 %% Plot grid
-% figure;
-% trace{1}.plot_trace(nsamples,'mode','grid','true',kf_true,'fields',{'Kf'});
-% save_fig_exp(mfilename('fullpath'),'tag','grid1');
-% 
-% figure;
-% trace{2}.plot_trace(nsamples,'mode','grid','true',kf_true,'fields',{'Kf'});
-% save_fig_exp(mfilename('fullpath'),'tag','grid2');
+figure;
+trace{length(a)}.plot_trace(nsamples,'mode','grid','true',kf_true,'fields',{'Kf'});
+if do_save
+    % save_fig_exp(mfilename('fullpath'),'tag','grid1');
+end
+
+figure;
+trace{end-1}.plot_trace(nsamples,'mode','grid','true',kf_true,'fields',{'Kf'});
+if do_save
+    % save_fig_exp(mfilename('fullpath'),'tag','grid2');
+end
+
+figure;
+trace{end}.plot_trace(nsamples,'mode','grid','true',kf_true,'fields',{'Kf'});
+if do_save
+    % save_fig_exp(mfilename('fullpath'),'tag','grid2');
+end
