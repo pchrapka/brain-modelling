@@ -53,8 +53,8 @@ a = [2 20 40];
 trace = {};
 
 sigma = 10^(-1);
-gamma = sqrt(2*sigma^2*nsamples*log(norder*nchannels^2));
-% gamma = sqrt(2*sigma^2*nsamples*log(nchannels));
+% gamma = sqrt(2*sigma^2*nsamples*log(norder*nchannels^2));
+gamma = sqrt(2*sigma^2*nsamples*log(nchannels));
 
 %% Estimate the Reflection coefficients using MLOCCD_TNWL
 for i=1:length(a)
@@ -139,8 +139,8 @@ plot_mse_vs_iteration(...
     'mode','log',...
     'labels',labels);
 
-figure;
-plot_mse_vs_iteration(trace{1}.trace.Kf, kf_true,'mode','log','labels',{trace{1}.filter.name});
+% figure;
+% plot_mse_vs_iteration(trace{1}.trace.Kf, kf_true,'mode','log','labels',{trace{1}.filter.name});
 
 % save_fig_exp(mfilename('fullpath'),'tag','mse');
 
