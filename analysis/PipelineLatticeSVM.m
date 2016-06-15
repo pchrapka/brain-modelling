@@ -171,18 +171,27 @@ classdef PipelineLatticeSVM < handle
             end
             
             % check if job name exists
-            count = 1;
             name_job_orig = name_job;
-            while obj.exist_job(name_job)
+            if obj.exist_job(name_job)
+                % get the job name count
+                if isfield(obj.pipeline.(name_job),'count')
+                    count = obj.pipeline.(name_job).count + 1;
+                else
+                    count = 1;
+                end
+                
                 % add a temp number to the job name
                 name_job = [name_job_orig '_' num2str(count)];
-                count = count + 1;
+                % save the count
+                obj.pipeline.(name_job).count = count;
+                
+                fprintf([...
+                    '%s.add_job:\n\t'...
+                    'job name already exists\n\t'...
+                    'modified %s -> %s\n'],...
+                    mfilename, name_job_orig, name_job);
             end
-            fprintf([...
-                '%s.add_job:\n\t'...
-                'job name already exists\n\t'...
-                'modified %s -> %s\n'],...
-                mfilename, name_job_orig, name_job);
+            
             
             % add the job
             obj.pipeline = psom_add_job(obj.pipeline,name_job,name_brick,...
