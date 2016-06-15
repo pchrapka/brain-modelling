@@ -53,7 +53,7 @@ end
 for i=1:2:ndata
     data_mse = mse_iteration(data{i},data{i+1});
     if nsims > 1
-        data_mse = mean(data_mse,2,'omitnan');
+        data_mse = mean(data_mse,2);
     end
     
     niter = size(data_mse,1);
