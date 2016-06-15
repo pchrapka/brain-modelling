@@ -34,7 +34,7 @@ files_in = fullfile(srcdir,'../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-
 
 % add lattice filter sources
 name_brick = 'bricks.lattice_filter_sources';
-opt_func = 'params_lf_1';
+opt_func = 'params_lf_p10_l099';
 files_in = [pipeline.pipeline.(job_std).files_out; pipeline.pipeline.(job_odd).files_out];
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
 

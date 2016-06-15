@@ -1,4 +1,4 @@
-function params = params_lf_1()
+function params = params_lf_p10_l099()
 
 params = {'order', 10 , 'lambda', 0.99, 'verbose', 0};
 

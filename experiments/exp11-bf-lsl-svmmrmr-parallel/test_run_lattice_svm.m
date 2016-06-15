@@ -51,7 +51,7 @@ opt_func = 'params_st_odd_10';
 
 % add lattice filter sources
 name_brick = 'bricks.lattice_filter_sources';
-opt_func = 'params_lf_1';
+opt_func = 'params_lf_p10_l099';
 files_in = [pipeline.pipeline.(job_std).files_out; pipeline.pipeline.(job_odd).files_out];
 [~,job_name] = pipeline.add_job(name_brick,opt_func,'files_in',files_in);
 
