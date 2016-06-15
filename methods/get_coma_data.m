@@ -7,7 +7,9 @@ comp_name = get_compname();
 switch comp_name
     case sprintf('blade16.ece.mcmaster.ca\n')
         rootdir = '/home/chrapkpk/Documents';
-    case 'Valentina'
+    case sprintf('Valentina\n')
+        rootdir = '/home/phil';
+    case 'Valentina '
         rootdir = '/home/phil';
     otherwise
         error('what is the root dir for %s',comp_name);

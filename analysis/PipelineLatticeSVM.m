@@ -54,11 +54,19 @@ classdef PipelineLatticeSVM < handle
             %   
             %   bricks.select_trials
             %   --------------------
-            %   trials_file (string)
+            %   files_in (string)
             %       file containing trial data
             %
             %   bricks.lattice_filter_sources
+            %   -----------------------------
+            %   files_in (string)
+            %       input files
+            %
             %   bricks.lattice_features_matrix
+            %   ------------------------------
+            %   prev_job (struct)
+            %       parent job in pipeline
+            %
             %   bricks.features_validate
             %   ------------------------
             %   prev_job (struct)
@@ -162,10 +170,45 @@ classdef PipelineLatticeSVM < handle
                     error('unknown brick %s',brick_name);
             end
             
+            % check if job name exists
+            count = 1;
+            name_job_orig = name_job;
+            while obj.exist_job(name_job)
+                % add a temp number to the job name
+                name_job = [name_job_orig '_' num2str(count)];
+                count = count + 1;
+            end
+            fprintf([...
+                '%s.add_job:\n\t'...
+                'job name already exists\n\t'...
+                'modified %s -> %s\n'],...
+                mfilename, name_job_orig, name_job);
+            
             % add the job
             obj.pipeline = psom_add_job(obj.pipeline,name_job,name_brick,...
-                        files_in,files_out,opt,false);
+                files_in,files_out,opt,false);
             
+        end
+    
+        function out = exist_job(obj,job_name)
+            %EXIST_JOB checks if job exists
+            %   EXIST_JOB(obj, job_name) checks if a job exists in the
+            %   pipeline
+            %
+            %   Input
+            %   -----
+            %   job_name (string)
+            %       job name
+            %
+            %   Output
+            %   ------
+            %   out (logical)
+            %       true is if exists
+            
+            out = false;
+            if isfield(obj.pipeline,job_name)
+                out = true;
+            end
         end
     end
     

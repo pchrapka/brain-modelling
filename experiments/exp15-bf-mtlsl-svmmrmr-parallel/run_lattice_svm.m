@@ -47,7 +47,7 @@ ft_options = {...
     };
 
 for i=1:length(mt_options)
-    error('fix me');
+    %error('fix me');
     % add lattice filter sources
     name_brick = 'bricks.lattice_filter_sources';
     opt_func = mt_options{i};
@@ -94,7 +94,7 @@ pipeline.options.mode = 'session';
 % project and parfor setup code in each function
 pipeline.options.max_queued = 1; % use one thread since all stages use parfor
 
-pipeline.run();
+%pipeline.run();
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %% Monitor pipeline %%
