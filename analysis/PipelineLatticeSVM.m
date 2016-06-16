@@ -77,6 +77,7 @@ classdef PipelineLatticeSVM < handle
             %       parent job in pipeline
             
             pmain = inputParser;
+            pmain.KeepUnmatched = true;
             addParameter(pmain,'job_name','',@ischar);
             parse(pmain,varargin{:});
             
