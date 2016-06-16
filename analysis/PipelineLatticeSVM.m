@@ -82,7 +82,6 @@ classdef PipelineLatticeSVM < handle
             name_job = [stage '_' opt_func];
             
             % check if job name exists
-            name_job_orig = name_job;
             if obj.exist_job(name_job)
                 % get the job name count
                 if isfield(obj.pipeline.(name_job),'count')
@@ -90,11 +89,12 @@ classdef PipelineLatticeSVM < handle
                 else
                     count = 1;
                 end
-                
-                % add a temp number to the job name
-                name_job = [name_job_orig '_' num2str(count)];
                 % save the count
                 obj.pipeline.(name_job).count = count;
+                
+                % add a temp number to the job name
+                name_job_orig = name_job;
+                name_job = [name_job_orig '_' num2str(count)];
                 
                 fprintf([...
                     '%s.add_job:\n\t'...
