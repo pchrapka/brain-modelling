@@ -12,7 +12,8 @@ ft_options = {...
 
 for i=1:length(ft_options)
     
-    fprintf('%s\n\t',ft_options{i});
+    fprintf('%s\n',ft_options{i});
+    fprintf('%s\n',repmat('-',1,length(ft_options{i})));
     
     file_features = 'output/lattice-svm/P022-9913/st3fm-params-fm-1/features-matrix.mat';
     file_validated = ['output/lattice-svm/P022-9913/st4fv-'...
@@ -27,4 +28,6 @@ for i=1:length(ft_options)
     
     figure;
     plot_svmmrmr_confusion(features.class_labels, validated.predictions);
+    
+    fprintf('\n');
 end
