@@ -21,7 +21,7 @@ p = inputParser;
 addRequired(p,'labels_true',@isvector);
 addRequired(p,'labels_pred',@isvector);
 addParameter(p,'verbosity',0,@(x) x >= 0 && x <= 1);
-parse(p,labels_true,labels_pred,varargin);
+parse(p,labels_true,labels_pred,varargin{:});
 
 perf = sum(p.Results.labels_true == p.Results.labels_pred)/length(p.Results.labels_true);
 
