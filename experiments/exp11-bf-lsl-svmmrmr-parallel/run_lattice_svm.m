@@ -61,6 +61,17 @@ for j=1:length(ft_options)
     opt_func = ft_options{j};
     pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
 end
+% params_fv_20
+% approx. 57%
+% runtime: 0.54 hours
+
+% params_fv_40
+% approx. 60%
+% runtime: 0.74 hours
+
+% params_fv_60
+% approx. 61%
+% runtime: 0.93 hours
 
 % params_fv_100
 % approx. 63%
