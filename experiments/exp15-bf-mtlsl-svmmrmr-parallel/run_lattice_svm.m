@@ -47,7 +47,7 @@ ft_options = {...
     };
 
 for i=1:length(mt_options)
-    job_suffix = mt_options{1};
+    job_suffix = mt_options{i};
     job_suffix = job_suffix(end-2:end);    
     % NOTE this will only make sense if the remaining parameters remain the
     % same, if you want to add more it would be a better idea to set up a

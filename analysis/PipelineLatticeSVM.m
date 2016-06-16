@@ -128,6 +128,7 @@ classdef PipelineLatticeSVM < handle
                 case 'bricks.select_trials'
                     % varargin: trials_file
                     p = inputParser;
+                    p.KeepUnmatched = true;
                     addParameter(p,'files_in','',@ischar);
                     parse(p,varargin{:});
                     
@@ -152,6 +153,7 @@ classdef PipelineLatticeSVM < handle
                     % varargin: files_in
                     p = inputParser;
                     p.StructExpand = false;
+                    p.KeepUnmatched = true;
                     addParameter(p,'files_in','',@iscell);
                     parse(p,varargin{:});
                     
@@ -185,6 +187,7 @@ classdef PipelineLatticeSVM < handle
                     % varargin: prev_job
                     p = inputParser;
                     p.StructExpand = false;
+                    p.KeepUnmatched = true;
                     addParameter(p,'prev_job','',@ischar);
                     parse(p,varargin{:});
                     
@@ -196,6 +199,7 @@ classdef PipelineLatticeSVM < handle
                     % varargin: prev_job
                     p = inputParser;
                     p.StructExpand = false;
+                    p.KeepUnmatched = true;
                     addParameter(p,'prev_job','',@ischar);
                     parse(p,varargin{:});
                     
