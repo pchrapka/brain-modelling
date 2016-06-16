@@ -47,7 +47,12 @@ ft_options = {...
     };
 
 for i=1:length(mt_options)
-    %error('fix me');
+    job_suffix = mt_options{1};
+    job_suffix = job_suffix(end-2:end);    
+    % NOTE this will only make sense if the remaining parameters remain the
+    % same, if you want to add more it would be a better idea to set up a
+    % new experiment, since any job name changes will force recomputation
+    
     % add lattice filter sources
     name_brick = 'bricks.lattice_filter_sources';
     opt_func = mt_options{i};
@@ -58,14 +63,16 @@ for i=1:length(mt_options)
     name_brick = 'bricks.lattice_features_matrix';
     opt_func = 'params_fm_1';
     prev_job = job_name;
-    [~,job_name] = pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+    [~,job_name] = pipeline.add_job(name_brick,opt_func,...
+        'job_name',[opt_func '_' job_suffix],'prev_job',prev_job);
     
     prev_job = job_name;
     for j=1:length(ft_options)
         % add feature validation
         name_brick = 'bricks.features_validate';
         opt_func = ft_options{j};
-        pipeline.add_job(name_brick,opt_func,'prev_job',prev_job);
+        pipeline.add_job(name_brick,opt_func,...
+            'job_name',[opt_func '_' job_suffix],'prev_job',prev_job);
     end
     
     % 5 trials

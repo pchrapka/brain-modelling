@@ -50,6 +50,10 @@ classdef PipelineLatticeSVM < handle
             %
             %   Parameters
             %   ----------
+            %   job_name (string, optional)
+            %       suffix used as the job name, the default is the name of
+            %       the opt_func
+            %
             %   specific for each brick
             %   
             %   bricks.select_trials
@@ -72,6 +76,9 @@ classdef PipelineLatticeSVM < handle
             %   prev_job (struct)
             %       parent job in pipeline
             
+            pmain = inputParser;
+            addParameter(pmain,'job_name','',@ischar);
+            parse(pmain,varargin{:});
             
             % get brick options from option function
             opt = feval(opt_func);
@@ -79,28 +86,35 @@ classdef PipelineLatticeSVM < handle
             % get the brick's stage
             stage = obj.get_brick_stage(name_brick);
             % create the job name
-            name_job = [stage '_' opt_func];
+            if isempty(pmain.Results.job_name)
+                name_job = [stage '_' opt_func];
+            else
+                name_job = [stage '_' pmain.Results.job_name];
+            end
             
             % check if job name exists
             if obj.exist_job(name_job)
-                % get the job name count
-                if isfield(obj.pipeline.(name_job),'count')
-                    count = obj.pipeline.(name_job).count + 1;
-                else
-                    count = 1;
-                end
-                % save the count
-                obj.pipeline.(name_job).count = count;
-                
-                % add a temp number to the job name
-                name_job_orig = name_job;
-                name_job = [name_job_orig '_' num2str(count)];
-                
-                fprintf([...
-                    '%s.add_job:\n\t'...
-                    'job name already exists\n\t'...
-                    'modified %s -> %s\n'],...
-                    mfilename, name_job_orig, name_job);
+                % better to throw an error
+                error([mfilename ':add_job',...
+                    'job name exists in pipeline: %s',name_job);
+%                 % get the job name count
+%                 if isfield(obj.pipeline.(name_job),'count')
+%                     count = obj.pipeline.(name_job).count + 1;
+%                 else
+%                     count = 1;
+%                 end
+%                 % save the count
+%                 obj.pipeline.(name_job).count = count;
+%                 
+%                 % add a temp number to the job name
+%                 name_job_orig = name_job;
+%                 name_job = [name_job_orig '_' num2str(count)];
+%                 
+%                 fprintf([...
+%                     '%s.add_job:\n\t'...
+%                     'job name already exists\n\t'...
+%                     'modified %s -> %s\n'],...
+%                     mfilename, name_job_orig, name_job);
             end
             
             % set up path for output files
