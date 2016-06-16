@@ -95,7 +95,7 @@ classdef PipelineLatticeSVM < handle
             % check if job name exists
             if obj.exist_job(name_job)
                 % better to throw an error
-                error([mfilename ':add_job',...
+                error([mfilename ':add_job'],...
                     'job name exists in pipeline: %s',name_job);
 %                 % get the job name count
 %                 if isfield(obj.pipeline.(name_job),'count')
