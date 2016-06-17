@@ -1,5 +1,12 @@
 %% check_results.m
 
+mt_options = {...
+    'mt2',...
+    'mt3',...
+    'mt5',...
+    'mt8',...
+    };
+
 ft_options = {...
     'params_fv_20',...
     'params_fv_40',...
@@ -10,24 +17,29 @@ ft_options = {...
     ...'params_fv_10000',...
     };
 
-for i=1:length(ft_options)
-    
-    fprintf('%s\n',ft_options{i});
-    fprintf('%s\n',repmat('-',1,length(ft_options{i})));
-    
-    file_features = 'output/lattice-svm/P022-9913/st3fm-params-fm-1/features-matrix.mat';
-    file_validated = ['output/lattice-svm/P022-9913/st4fv-'...
-        strrep(ft_options{i},'_','-') '/features-validated.mat'];
-    
-    % load the data
-    features = ftb.util.loadvar(file_features);
-    validated = ftb.util.loadvar(file_validated);
-    
-    perf = svmmrmr_class_accuracy(features.class_labels, validated.predictions,...
-        'verbosity',1);
-    
-    figure;
-    plot_svmmrmr_confusion(features.class_labels, validated.predictions);
-    
-    fprintf('\n');
+for j=1:length(mt_options)
+    for i=1:length(ft_options)
+        
+        fprintf('%s %s\n',ft_options{i},mt_options{j});
+        fprintf('%s\n',repmat('-',1,length(ft_options{i})));
+        
+        file_features = ['output/lattice-svm/P022-9913/'...
+            'st3fm-params-fm-1-' mt_options{j}...
+            '/features-matrix.mat'];
+        file_validated = ['output/lattice-svm/P022-9913/'...
+            'st4fv-' strrep(ft_options{i},'_','-') '-' mt_options{j}...
+            '/features-validated.mat'];
+        
+        % load the data
+        features = ftb.util.loadvar(file_features);
+        validated = ftb.util.loadvar(file_validated);
+        
+        perf = svmmrmr_class_accuracy(features.class_labels, validated.predictions,...
+            'verbosity',1);
+        
+        figure;
+        plot_svmmrmr_confusion(features.class_labels, validated.predictions);
+        
+        fprintf('\n');
+    end
 end
