@@ -77,6 +77,15 @@ for i=1:length(mt_options)
     
     % 5 trials
     % --------
+    % params_fv_20
+    % approx. 77.5%
+    
+    % params_fv_40
+    % approx. 72.5%
+    
+    % params_fv_60
+    % approx. 82.5%
+    
     % params_fv_100
     % approx. 85%
     % runtime: 0.01 hours on 10 cores
