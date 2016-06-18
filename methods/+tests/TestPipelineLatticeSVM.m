@@ -117,6 +117,16 @@ classdef TestPipelineLatticeSVM < matlab.unittest.TestCase
             testCase.verifyTrue(pipe.exist_job(job_name));
             testCase.verifyFalse(pipe.exist_job('fakejob'));
         end
+        
+                
+        function test_config(testCase)
+            % check that config file is updated and persistent
+            pipe = PipelineLatticeSVM(testCase.pipedir);
+            job_name = pipe.add_job('bricks.select_trials','params_st_odd_10','files_in','fake.mat');
+            
+            pipe2 = PipelineLatticeSVM(testCase.pipedir);
+            testCase.verifyEqual(pipe2.config.bricks(1).params{1}.name,'params_st_odd_10');
+        end
     end
     
 end
