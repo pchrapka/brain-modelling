@@ -8,6 +8,9 @@ classdef PipelineLatticeSVM < handle
         
         % output directory
         outdir;
+        
+        config_file;
+        config;
     end
     
     properties
@@ -23,34 +26,56 @@ classdef PipelineLatticeSVM < handle
             obj.outdir = outdir;
             obj.pipeline = [];
             obj.options = [];
+            obj.options.path_logs = fullfile(obj.outdir,'logs');
             
             if ~exist(obj.outdir,'dir')
                 mkdir(obj.outdir);
             end
+            
+            obj.config_file = fullfile(obj.outdir,'config.mat');
+            if exist(obj.config_file,'file')
+                % load the config if it exists
+                obj.config = obj.load_config();
+            else
+                % create a new one
+                obj.init_config();
+            end
         end
         
-        function obj = run(obj)
+        function run(obj)
             % run the pipeline
             %
             %   pipeline options are specified by setting the
             %   options property
             %
             %   Example:
-            %       obj.options.path_logs = fullfile(outdir, 'logs');
             %       obj.options.mode = 'background';
+            %
+            %   Read only
+            %       obj.options.path_logs = fullfile(outdir, 'logs');
             
+            obj.options.path_logs = fullfile(obj.outdir,'logs');
             psom_run_pipeline(obj.pipeline,obj.options);
         end
         
-        function [obj,name_job] = add_job(obj,name_brick,opt_func,varargin)
+        function job_code = add_job(obj,brick_name,opt_func,varargin)
             %
+            %   Input
+            %   -----
+            %   brick_name (string)
+            %       name of the brick to be used for the job
             %   opt_func (string)
             %       function name that generates an option struct for the
             %       brick
             %
+            %   Output
+            %   ------
+            %   job_code (string)
+            %       unique job code for the added job
+            %
             %   Parameters
             %   ----------
-            %   job_name (string, optional)
+            %   job_code_parent (string, optional)
             %       suffix used as the job name, the default is the name of
             %       the opt_func
             %
@@ -78,55 +103,55 @@ classdef PipelineLatticeSVM < handle
             
             pmain = inputParser;
             pmain.KeepUnmatched = true;
-            addParameter(pmain,'job_name','',@ischar);
+            addParameter(pmain,'job_code_parent','',@ischar);
+            % TODO it's possible to have multiple parents
             parse(pmain,varargin{:});
             
             % get brick options from option function
             opt = feval(opt_func);
             
-            % get the brick's stage
-            stage = obj.get_brick_stage(name_brick);
-            % create the job name
-            if isempty(pmain.Results.job_name)
-                name_job = [stage '_' opt_func];
+%             % get the brick's stage
+%             stage = obj.get_brick_code(brick_name);
+%             % create the job name
+%             if isempty(pmain.Results.job_name)
+%                 job_name = [stage '_' opt_func];
+%             else
+%                 job_name = [stage '_' pmain.Results.job_name];
+%             end
+            
+            % add the parameter file
+            obj.add_params(brick_name, opt_func);
+            
+            % get the job name
+            job_code = obj.get_job_code(...
+                brick_name, opt_func, pmain.Results.job_code_parent);
+            
+            % get the job dir
+            if isfield(obj.pipeline,pmain.Results.job_code_parent)
+                job_dir_parent = obj.pipeline.(pmain.Results.job_code_parent).outdir;
             else
-                name_job = [stage '_' pmain.Results.job_name];
+                job_dir_parent = '';
             end
+            job_dir = obj.get_job_dir(...
+                brick_name, opt_func, job_dir_parent);
+            % TODO save job_dir in pipeline
             
             % check if job name exists
-            if obj.exist_job(name_job)
+            if obj.exist_job(job_code)
                 % better to throw an error
-                error([mfilename ':add_job'],...
-                    'job name exists in pipeline: %s',name_job);
-%                 % get the job name count
-%                 if isfield(obj.pipeline.(name_job),'count')
-%                     count = obj.pipeline.(name_job).count + 1;
-%                 else
-%                     count = 1;
-%                 end
-%                 % save the count
-%                 obj.pipeline.(name_job).count = count;
-%                 
-%                 % add a temp number to the job name
-%                 name_job_orig = name_job;
-%                 name_job = [name_job_orig '_' num2str(count)];
-%                 
-%                 fprintf([...
-%                     '%s.add_job:\n\t'...
-%                     'job name already exists\n\t'...
-%                     'modified %s -> %s\n'],...
-%                     mfilename, name_job_orig, name_job);
+                obj.print_error('add_job',...
+                    'job exists in pipeline: %s',job_code);
             end
             
             % set up path for output files
-            outbrickpath = fullfile(obj.outdir, strrep(name_job,'_','-'));
-            if ~exist(outbrickpath,'dir')
-                mkdir(outbrickpath);
+            job_path = fullfile(obj.outdir, job_dir);
+            if ~exist(job_path,'dir')
+                mkdir(job_path);
             end
             
-            switch name_brick
+            switch brick_name
                 case 'bricks.select_trials'
-                    % varargin: trials_file
+                    % varargin: files_in
                     p = inputParser;
                     p.KeepUnmatched = true;
                     addParameter(p,'files_in','',@ischar);
@@ -145,7 +170,7 @@ classdef PipelineLatticeSVM < handle
                     for i=1:p1.Results.trials
                         % create output file name
                         files_out{i} = fullfile(...
-                            outbrickpath,...
+                            job_path,...
                             sprintf('trial%d-%s.mat',i,p1.Results.label));
                     end
                     
@@ -172,13 +197,13 @@ classdef PipelineLatticeSVM < handle
                     for i=1:ntrial_groups
                         % create output file name
                         if p1.Results.trials > 1
-                            files_out{i} = fullfile(outbrickpath,...
+                            files_out{i} = fullfile(job_path,...
                                 sprintf('lattice%d.mat',i));
                         else
                             % use the same tag as in the previous step
                             [~,name,~] = fileparts(files_in{i});
                             tag = strrep(name,'trial','');
-                            files_out{i} = fullfile(outbrickpath,...
+                            files_out{i} = fullfile(job_path,...
                                 sprintf('lattice%s.mat',tag));
                         end
                     end
@@ -189,10 +214,11 @@ classdef PipelineLatticeSVM < handle
                     p.StructExpand = false;
                     p.KeepUnmatched = true;
                     addParameter(p,'prev_job','',@ischar);
+                    % TODO prev job is specified above
                     parse(p,varargin{:});
                     
                     files_in = obj.pipeline.(p.Results.prev_job).files_out;
-                    files_out = fullfile(outbrickpath,...
+                    files_out = fullfile(job_path,...
                         'features-matrix.mat');
                     
                 case 'bricks.features_validate'
@@ -201,20 +227,24 @@ classdef PipelineLatticeSVM < handle
                     p.StructExpand = false;
                     p.KeepUnmatched = true;
                     addParameter(p,'prev_job','',@ischar);
+                    % TODO prev job is specified above
                     parse(p,varargin{:});
                     
                     files_in = obj.pipeline.(p.Results.prev_job).files_out;
-                    files_out = fullfile(outbrickpath,...
+                    files_out = fullfile(job_path,...
                         'features-validated.mat');
 
                 otherwise
-                    error('unknown brick %s',brick_name);
+                    obj.print_error('add_job',...
+                        'unknown brick %s',brick_name);
             end
             
             % add the job
-            obj.pipeline = psom_add_job(obj.pipeline,name_job,name_brick,...
-                files_in,files_out,opt,false);
+            obj.pipeline = psom_add_job(obj.pipeline, job_code ,brick_name,...
+                files_in, files_out, opt, false);
             
+            % save the job dir
+            obj.pipeline.(job_code).outdir = job_dir;
         end
     
         function out = exist_job(obj,job_name)
@@ -237,22 +267,263 @@ classdef PipelineLatticeSVM < handle
                 out = true;
             end
         end
+        
+        function name = expand_code(obj,job_code,varargin)
+            %
+            %   Parameters
+            %   ----------
+            %   mode (string, default = names)
+            %       expands code into name or nested folder structure,
+            %       options = folders, names
+            %   expand (string, default = both)
+            %       selects parts to expand, options = bricks, params, both
+            
+            p = inputParser();
+            addRequired(p,'job_code',@ischar);
+            addParameter(p,'mode','names',...
+                @(x)any(validatestring(x,{'folders','names'})));
+            addParameter(p,'expand','both',...
+                @(x)any(validatestring(x,{'bricks','params','both'})));
+            parse(p,job_code,varargin{:});
+
+            name = '';
+            
+            % parse the job code
+            pattern = '(?<brick_code>\w{2,2})(?<param_code>\d{2,2})';
+            results = regexp(job_code, pattern, 'names');
+            if isempty(results)
+                obj.print_error('expand_code',...
+                    'unknown code %s', job_code);
+            end
+            
+            expand_bricks = false;
+            expand_params = false;
+            switch p.Results.expand
+                case 'both'
+                    expand_bricks = true;
+                    expand_params = true;
+                case 'bricks'
+                    expand_bricks = true;
+                case 'params'
+                    expand_params = true;
+            end
+            
+            % translate each brick and param group
+            for i=1:length(results)
+                brick_idx = obj.get_brick_idx(results(i).brick_code,'mode','code');
+                
+                if expand_bricks
+                    brick_name = obj.config.bricks(brick_idx).name;
+                else
+                    brick_name = results(i).brick_code;
+                end
+                
+                if expand_params
+                    params_idx = str2double(results(i).param_code);
+                    params_name = obj.config.bricks(brick_idx).params{params_idx}.name;
+                else
+                    params_name = results(i).param_code;
+                end
+                
+                if isempty(name)
+                    name = [brick_name '-' params_name];
+                else
+                    switch p.Results.mode
+                        case 'folders'
+                            name = fullfile(name,[brick_name '-' params_name]);
+                        case 'names'
+                            name = [name '-' brick_name '-' params_name];
+                    end
+                end
+                
+                if isequal(p.Results.mode,'folders')
+                    name = strrep(name,'_','-');
+                end
+            end
+        end
+    end
+    
+    methods (Access = protected)
+        function code = get_job_code(obj, brick_name, params_name, job_code_parent)
+            %GET_JOB_CODE creates job code based on the brick, parameter
+            %file and parent job
+                        
+            brick_code = obj.get_brick_code(brick_name);
+            params_code = obj.get_params_code(brick_name, params_name);
+            code = [job_code_parent brick_code params_code];
+            
+        end
+        
+        function jobdir = get_job_dir(obj, brick_name, params_name, job_dir_parent)
+            %GET_JOB_DIR creates job dir based on the brick, parameter file
+            %and parent job dir
+            
+            brick_code = obj.get_brick_code(brick_name);
+            if ~isempty(job_dir_parent)
+                jobdir = fullfile(job_dir_parent,...
+                    [brick_code '-' strrep(params_name,'_','-')]);
+            else
+                jobdir = [brick_code '-' strrep(params_name,'_','-')];
+            end
+            
+        end
+        
+        function idx = add_params(obj, brick_name, params_name)
+            %ADD_PARAMS add parameter file to the config
+            
+            brick_idx = obj.get_brick_idx(brick_name);
+            idx = obj.get_params_idx(brick_idx,params_name);
+            if idx == 0
+                if ~isfield(obj.config.bricks(brick_idx),'params')
+                    obj.config.bricks(brick_idx).params = [];
+                end
+                nparams = length(obj.config.bricks(brick_idx).params);
+                idx = nparams + 1;
+                
+                param_new = [];
+                param_new.name = params_name;
+                param_new.id = sprintf('%02d',idx);
+                obj.config.bricks(brick_idx).params{idx} = param_new;
+                
+                obj.save_config();
+            end
+        end
+        
+        function code = get_params_code(obj, brick_name, params_name)
+            %GET_PARAMS_CODE returns the 2 digit parameter file code
+            
+            code = '';
+            if ischar(brick_name)
+                brick_idx = obj.get_brick_idx(brick_name);
+            else
+                brick_idx = brick_name;
+            end
+            
+            idx = obj.get_params_idx(brick_idx,params_name);
+            if idx > 0
+                code = obj.config.bricks(brick_idx).params{idx}.id;
+            end
+
+        end
+        
+        function idx = get_params_idx(obj, brick_name, params_name)
+            %GET_PARAMS_IDX returns the index of the parameter file struct
+            %in the config
+            
+            idx = 0;
+            % set the brick index
+            if ischar(brick_name)
+                brick_idx = obj.get_brick_idx(brick_name);
+            else
+                brick_idx = brick_name;
+            end
+            
+            % get param array for our brick
+            if isfield(obj.config.bricks(brick_idx),'params')
+                params = obj.config.bricks(brick_idx).params;
+            else
+                return;
+            end
+            
+            % search the param array
+            for i=1:length(params)
+                if isequal(params{i}.name,params_name)
+                    idx = i;
+                    return
+                end
+            end
+        end
+        
+        function idx = get_brick_idx(obj, brick_name, varargin)
+            %GET_BRICK_IDX returns the index of the brick struct in the
+            %config
+            %
+            %   brick_name (string)
+            %       brick name or code, default it's the brick name
+            %
+            %   Parameters
+            %   ----------
+            %   mode (string, default = 'name')
+            %       describes content of brick_name, options = 'name' or 'code'
+            
+            p = inputParser();
+            addRequired(p,'brick_name',@ischar);
+            mode_options = {'name','code'};
+            addParameter(p,'mode','name',@(x)any(validatestring(x,mode_options)));
+            parse(p,brick_name,varargin{:});
+            
+            if isequal(p.Results.mode,'code')
+                field = 'id';
+            else
+                field = 'name';
+            end
+            
+            idx = 0;
+            for i=1:length(obj.config.bricks)
+                if isequal(obj.config.bricks(i).(field),brick_name)
+                    idx = i;
+                    return
+                end
+            end
+            
+            if idx == 0
+                % brick not found
+                obj.print_error('brick %s not found', brick_name);
+            end
+        end
+        
+        function code = get_brick_code(obj, brick_name)
+            %GET_BRICK_CODE returns 2 letter brick code
+            
+            idx = obj.get_brick_idx(brick_name);
+            code = obj.config.bricks(idx).id;
+        end
+        
+        function init_config(obj)
+            %INIT_CONFIG initializes the config file
+            
+            % create one
+            obj.config.bricks = [];
+            obj.config.bricks(1).name = 'bricks.select_trials';
+            obj.config.bricks(1).id = 'st';
+            obj.config.bricks(2).name = 'bricks.lattice_filter_sources';
+            obj.config.bricks(2).id = 'lf';
+            obj.config.bricks(3).name = 'bricks.lattice_features_matrix';
+            obj.config.bricks(3).id = 'fm';
+            obj.config.bricks(4).name = 'bricks.features_validate';
+            obj.config.bricks(4).id = 'fv';
+            
+            obj.save_config();
+        end
+        
+        
+        function config = load_config(obj)
+            %LOAD_CONFIG loads config file
+            
+            if exist(obj.config_file,'file')
+                % load it
+                din = load(obj.config_file);
+                config = din.config;
+            else
+                warning([mfilename ':load_config'],...
+                    'missing config file');
+                config = [];
+            end
+        end
+        
+        function save_config(obj)
+            %SAVE_CONFIG saves config file
+            
+            config = obj.config;
+            save(obj.config_file,'config');
+        end
+        
     end
     
     methods (Static, Access = protected)
-        function stage_name = get_brick_stage(brick_name)
-            switch brick_name
-                case 'bricks.select_trials'
-                    stage_name = 'st1st';
-                case 'bricks.lattice_filter_sources'
-                    stage_name = 'st2lf';
-                case 'bricks.lattice_features_matrix'
-                    stage_name = 'st3fm';
-                case 'bricks.features_validate'
-                    stage_name = 'st4fv';
-                otherwise
-                    error('unknown brick %s',brick_name);
-            end
+        function print_error(function_name,format,varargin)
+            error([mfilename ':' function_name],...
+                format, varargin{:});
         end
     end
 
