@@ -103,21 +103,12 @@ classdef PipelineLatticeSVM < handle
             
             pmain = inputParser;
             pmain.KeepUnmatched = true;
-            addParameter(pmain,'job_code_parent','',@ischar);
+            addParameter(pmain,'job_code_parent','',@(x) ischar(x) || iscell(x));
             % TODO it's possible to have multiple parents
             parse(pmain,varargin{:});
             
             % get brick options from option function
             opt = feval(opt_func);
-            
-%             % get the brick's stage
-%             stage = obj.get_brick_code(brick_name);
-%             % create the job name
-%             if isempty(pmain.Results.job_name)
-%                 job_name = [stage '_' opt_func];
-%             else
-%                 job_name = [stage '_' pmain.Results.job_name];
-%             end
             
             % add the parameter file
             obj.add_params(brick_name, opt_func);
@@ -128,6 +119,7 @@ classdef PipelineLatticeSVM < handle
             
             % get the job dir
             if isfield(obj.pipeline,pmain.Results.job_code_parent)
+                % FIXME two parents
                 job_dir_parent = obj.pipeline.(pmain.Results.job_code_parent).outdir;
             else
                 job_dir_parent = '';
@@ -346,7 +338,9 @@ classdef PipelineLatticeSVM < handle
         function code = get_job_code(obj, brick_name, params_name, job_code_parent)
             %GET_JOB_CODE creates job code based on the brick, parameter
             %file and parent job
-                        
+            
+            % FIXME two parents
+            
             brick_code = obj.get_brick_code(brick_name);
             params_code = obj.get_params_code(brick_name, params_name);
             code = [job_code_parent brick_code params_code];
