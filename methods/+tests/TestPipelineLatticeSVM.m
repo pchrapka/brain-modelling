@@ -69,8 +69,10 @@ classdef TestPipelineLatticeSVM < matlab.unittest.TestCase
             
             job_name_full = pipe.expand_code(job_name,'mode','folders','expand','params');
             testCase.verifyEqual(job_name_full,'st-params-st-std-10');
-            
-            % TODO add hierarchical test
+        end
+        
+        function test_expand_code_2stage(testCase)
+            testCase.verifyTrue(false);
         end
         
         function test_add_job_error(testCase)
@@ -105,6 +107,9 @@ classdef TestPipelineLatticeSVM < matlab.unittest.TestCase
             testCase.verifyEqual(job_name,'st02');
         end
         
+        function test_add_job_2stage(testCase)
+            testCase.verifyTrue(false);
+        end
         
         function test_exist_job(testCase)
             pipe = PipelineLatticeSVM(testCase.pipedir);

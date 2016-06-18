@@ -134,7 +134,6 @@ classdef PipelineLatticeSVM < handle
             end
             job_dir = obj.get_job_dir(...
                 brick_name, opt_func, job_dir_parent);
-            % TODO save job_dir in pipeline
             
             % check if job name exists
             if obj.exist_job(job_code)
