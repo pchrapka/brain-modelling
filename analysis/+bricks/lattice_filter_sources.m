@@ -54,8 +54,16 @@ data_all = ftb.util.loadvar(files_in);
 nchannels = sum(data_all(1).inside);
 nsamples = length(data_all(1).time);
 
-% set up multitrial groups
+% check how much data is available
 nout = p.Results.nout;
+if nout > length(data_all)
+    nout = length(data_all);
+    if p.Results.verbose > 0
+        fprintf('\tusing %d trials instead of %d\n',nout,p.Results.nout);
+    end
+end
+
+% set up multitrial groups
 if p.Results.trials > 1
     % determine number of groups
     ntrial_groups = floor(nout/p.Results.trials);
