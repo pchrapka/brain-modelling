@@ -52,7 +52,8 @@ for j=1:length(params_filter)
     % add select trials
     name_brick = 'bricks.partition_files';
     opt_func = 'params_pf_std_odd_tr100_te20';
-    job_pt = pipeline.add_job(name_brick,opt_func,'parent_job',job_lf);
+    % NOTE don't add parent job here, just make a not in opt_func
+    job_pt = pipeline.add_job(name_brick,opt_func,'parent_jobs',job_lf);
     
     % add feature matrix
     name_brick = 'bricks.lattice_features_matrix';
