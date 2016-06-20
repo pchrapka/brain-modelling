@@ -72,7 +72,49 @@ classdef TestPipelineLatticeSVM < matlab.unittest.TestCase
         end
         
         function test_expand_code_2stage(testCase)
-            testCase.verifyTrue(false);
+            pipe = PipelineLatticeSVM(testCase.pipedir);
+            job_name = pipe.add_job('bricks.select_trials','params_st_odd_10','files_in','fake.mat');
+            
+            job_name = pipe.add_job('bricks.lattice_filter_sources','params_lf_p10_l099',...
+                'job_code_parent',job_name);
+            
+            % mode = names
+            job_name_full = pipe.expand_code(job_name);
+            testCase.verifyEqual(job_name_full,...
+                ['bricks.select_trials-params_st_odd_10'...
+                '-bricks.lattice_filter_sources-params_lf_p10_l099']);
+            
+            job_name_full = pipe.expand_code(job_name,'expand','params');
+            testCase.verifyEqual(job_name_full,...
+                ['st-params_st_odd_10'...
+                '-lf-params_lf_p10_l099']);
+            job_name_full = pipe.expand_code(job_name,'mode','names','expand','params');
+            testCase.verifyEqual(job_name_full,...
+                ['st-params_st_odd_10'...
+                '-lf-params_lf_p10_l099']);
+            
+            job_name_full = pipe.expand_code(job_name,'expand','bricks');
+            testCase.verifyEqual(job_name_full,...
+                ['bricks.select_trials-01-'...
+                'bricks.lattice_filter_sources-01']);
+            job_name_full = pipe.expand_code(job_name,'mode','names','expand','bricks');
+            testCase.verifyEqual(job_name_full,...
+                ['bricks.select_trials-01-'...
+                'bricks.lattice_filter_sources-01']);
+            
+            % mode = folders
+            job_name_full = pipe.expand_code(job_name,'mode','folders','expand','both');
+            testCase.verifyEqual(job_name_full,...
+                fullfile('bricks.select-trials-params-st-odd-10',...
+                'bricks.lattice-filter-sources-params-lf-p10-l099'));
+            
+            job_name_full = pipe.expand_code(job_name,'mode','folders','expand','params');
+            testCase.verifyEqual(job_name_full,...
+                fullfile('st-params-st-odd-10','lf-params-lf-p10-l099'));
+            
+            job_name_full = pipe.expand_code(job_name,'mode','folders','expand','bricks');
+            testCase.verifyEqual(job_name_full,...
+                fullfile('bricks.select-trials-01','bricks.lattice-filter-sources-01'));
         end
         
         function test_add_job_error(testCase)
@@ -108,7 +150,22 @@ classdef TestPipelineLatticeSVM < matlab.unittest.TestCase
         end
         
         function test_add_job_2stage(testCase)
-            testCase.verifyTrue(false);
+            pipe = PipelineLatticeSVM(testCase.pipedir);
+            job_name = pipe.add_job('bricks.select_trials','params_st_odd_10','files_in','fake.mat');
+            
+            job_name = pipe.add_job('bricks.lattice_filter_sources','params_lf_p10_l099',...
+                'job_code_parent',job_name);
+            
+            testCase.verifyEqual(job_name,'st01lf01');
+            
+            testCase.verifyTrue(isfield(pipe.pipeline,job_name));
+            testCase.verifyTrue(isfield(pipe.pipeline.(job_name),'outdir'));
+            
+            jobdir = pipe.expand_code(job_name,'mode','folders','expand','params');
+            testCase.verifyEqual(pipe.pipeline.(job_name).outdir,jobdir);
+            
+            outdir = fullfile(pipe.outdir,jobdir);
+            testCase.verifyGreaterThan(exist(outdir,'dir'),0);
         end
         
         function test_exist_job(testCase)
