@@ -14,9 +14,6 @@ classdef PipelineLatticeSVM < Pipeline
             obj = obj@Pipeline(outdir);
            
         end
-        
-        
-    
     end
     
     methods (Access = protected)
@@ -26,14 +23,18 @@ classdef PipelineLatticeSVM < Pipeline
             
             % create one
             obj.config.bricks = [];
-            obj.config.bricks(1).name = 'bricks.select_trials';
-            obj.config.bricks(1).id = 'st';
+            obj.config.bricks(1).name = 'bricks.add_label';
+            obj.config.bricks(1).id = 'al';
             obj.config.bricks(2).name = 'bricks.lattice_filter_sources';
             obj.config.bricks(2).id = 'lf';
             obj.config.bricks(3).name = 'bricks.lattice_features_matrix';
             obj.config.bricks(3).id = 'fm';
             obj.config.bricks(4).name = 'bricks.features_validate';
             obj.config.bricks(4).id = 'fv';
+            obj.config.bricks(5).name = 'bricks.partition_files';
+            obj.config.bricks(5).id = 'pf';
+            %obj.config.bricks(6).name = 'bricks.train_test';
+            %obj.config.bricks(6).id = 'tt';
             
         end
         
@@ -61,112 +62,109 @@ classdef PipelineLatticeSVM < Pipeline
             %   ----------
             %   specific for each brick
             %   
-            %   bricks.select_trials
-            %   --------------------
-            %   files_in (string)
-            %       file containing trial data
-            %
-            %   bricks.lattice_filter_sources
+            %   bricks.add_label
             %   -----------------------------
             %   files_in (string)
             %       input files
             %
+            %   bricks.lattice_filter_sources
+            %   -----------------------------
+            %   parent_job (string)
+            %       parent job in pipeline
+            %
+            %   bricks.partition_files
+            %   -----------------------------
+            %   parent_job (string)
+            %       parent job in pipeline
+            %
             %   bricks.lattice_features_matrix
             %   ------------------------------
-            %   prev_job (struct)
+            %   parent_job (struct)
             %       parent job in pipeline
             %
             %   bricks.features_validate
             %   ------------------------
-            %   prev_job (struct)
+            %   parent_job (struct)
             %       parent job in pipeline
             
             opt = feval(opt_func);
             
             switch brick_name
-                case 'bricks.select_trials'
+                case 'bricks.add_label'
                     % varargin: files_in
                     p = inputParser;
+                    p.StructExpand = false;
                     p.KeepUnmatched = true;
-                    addParameter(p,'files_in','',@ischar);
+                    addParameter(p,'files_in',@(x) ~isempty(x));
                     parse(p,varargin{:});
                     
-                    % temp process of function inputs for number of trials
-                    p1 = inputParser;
-                    p1.KeepUnmatched = true;
-                    addParameter(p1,'trials',100,@isnumeric);
-                    addParameter(p1,'label','',@ischar);
-                    parse(p1,opt{:});
-                    
-                    % set up brick
                     files_in = p.Results.files_in;
-                    files_out = cell(p1.Results.trials,1);
-                    for i=1:p1.Results.trials
-                        % create output file name
-                        files_out{i} = fullfile(...
-                            job_path,...
-                            sprintf('trial%d-%s.mat',i,p1.Results.label));
-                    end
+                    files_out = fullfile(job_path, 'labeled.mat');
                     
                 case 'bricks.lattice_filter_sources'
-                    % varargin: files_in
+                    % varargin: parent_job
                     p = inputParser;
                     p.StructExpand = false;
                     p.KeepUnmatched = true;
-                    addParameter(p,'files_in','',@iscell);
+                    addParameter(p,'parent_job',@(x) ~isempty(x));
                     parse(p,varargin{:});
                     
-                    % temp process of function inputs for number of trials
-                    % per group
-                    p1 = inputParser;
-                    p1.KeepUnmatched = true;
-                    addParameter(p1,'trials',1,@isnumeric);
-                    parse(p1,opt{:});
+                    files_in = obj.pipeline.(p.Results.parent_job).files_out;
+                    files_out = fullfile(job_path, 'lattice-filtered-files.mat');
                     
-                    files_in = p.Results.files_in;
-                    ntrials = length(files_in);
-                    ntrial_groups = floor(ntrials/p1.Results.trials);
+                case 'bricks.partition_files'
+                    % varargin: parent_job
+                    p = inputParser;
+                    p.StructExpand = false;
+                    p.KeepUnmatched = true;
+                    addParameter(p,'parent_job',@(x) ~isempty(x));
+                    parse(p,varargin{:});
                     
-                    files_out = cell(ntrial_groups,1);
-                    for i=1:ntrial_groups
-                        % create output file name
-                        if p1.Results.trials > 1
-                            files_out{i} = fullfile(job_path,...
-                                sprintf('lattice%d.mat',i));
-                        else
-                            % use the same tag as in the previous step
-                            [~,name,~] = fileparts(files_in{i});
-                            tag = strrep(name,'trial','');
-                            files_out{i} = fullfile(job_path,...
-                                sprintf('lattice%s.mat',tag));
-                        end
+                    files_in = {};
+                    for i=1:length(p.Results.parent_job)
+                        files_in{i} = obj.pipeline.(p.Results.parent_job{i}).files_out;
                     end
+                    files_out.test = fullfile(job_path, 'test-files.mat');
+                    files_out.train = fullfile(job_path, 'train-files.mat');
                     
                 case 'bricks.lattice_features_matrix'
-                    % varargin: prev_job
+                    % varargin: parent_job
                     p = inputParser;
                     p.StructExpand = false;
                     p.KeepUnmatched = true;
-                    addParameter(p,'prev_job','',@ischar);
-                    % TODO prev job is specified above
+                    addParameter(p,'parent_job',@(x) ~isempty(x));
                     parse(p,varargin{:});
                     
-                    files_in = obj.pipeline.(p.Results.prev_job).files_out;
+                    files_in = obj.pipeline.(p.Results.parent_job).files_out.train;
                     files_out = fullfile(job_path,...
                         'features-matrix.mat');
                     
                 case 'bricks.features_validate'
-                    % varargin: prev_job
+                    % varargin: parent_job
                     p = inputParser;
                     p.StructExpand = false;
                     p.KeepUnmatched = true;
-                    addParameter(p,'prev_job','',@ischar);
-                    % TODO prev job is specified above
+                    addParameter(p,'parent_job','',@ischar);
                     parse(p,varargin{:});
                     
-                    files_in = obj.pipeline.(p.Results.prev_job).files_out;
+                    files_in = obj.pipeline.(p.Results.parent_job).files_out;
                     files_out = fullfile(job_path,...
                         'features-validated.mat');
+                    
+                case 'bricks.train_test'
+                    % varargin: parent_job
+                    p = inputParser;
+                    p.StructExpand = false;
+                    p.KeepUnmatched = true;
+                    addParameter(p,'parent_job',@(x) ~isempty(x));
+                    addParameter(p,'partition_job',@(x) ~isempty(x));
+                    parse(p,varargin{:});
+                    
+                    files_in.validated = obj.pipeline.(p.Results.parent_job).files_out;
+                    files_in.test = obj.pipeline.(p.Results.partition_job).files_out.test;
+                    files_in.train = obj.pipeline.(p.Results.partition_job).files_out.train;
+                    files_out = fullfile(job_path,...
+                        'test-results.mat');
 
                 otherwise
                     obj.print_error('add_job',...

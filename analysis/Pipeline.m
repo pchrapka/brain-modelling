@@ -76,35 +76,15 @@ classdef Pipeline < handle
             %
             %   Parameters
             %   ----------
-            %   job_code_parent (string, optional)
+            %   parent_job (string, optional)
             %       suffix used as the job name, the default is the name of
             %       the opt_func
-            %
-            %   specific for each brick
             %   
-            %   bricks.select_trials
-            %   --------------------
-            %   files_in (string)
-            %       file containing trial data
-            %
-            %   bricks.lattice_filter_sources
-            %   -----------------------------
-            %   files_in (string)
-            %       input files
-            %
-            %   bricks.lattice_features_matrix
-            %   ------------------------------
-            %   prev_job (struct)
-            %       parent job in pipeline
-            %
-            %   bricks.features_validate
-            %   ------------------------
-            %   prev_job (struct)
-            %       parent job in pipeline
+            %   You can also add specific parameter for each brick
             
             pmain = inputParser;
             pmain.KeepUnmatched = true;
-            addParameter(pmain,'job_code_parent','',@(x) ischar(x) || iscell(x));
+            addParameter(pmain,'parent_job','',@(x) ischar(x) || iscell(x));
             % TODO it's possible to have multiple parents
             parse(pmain,varargin{:});
             
@@ -116,12 +96,12 @@ classdef Pipeline < handle
             
             % get the job name
             job_code = obj.get_job_code(...
-                brick_name, opt_func, pmain.Results.job_code_parent);
+                brick_name, opt_func, pmain.Results.parent_job);
             
             % get the job dir
-            if isfield(obj.pipeline,pmain.Results.job_code_parent)
+            if isfield(obj.pipeline,pmain.Results.parent_job)
                 % FIXME two parents
-                job_dir_parent = obj.pipeline.(pmain.Results.job_code_parent).outdir;
+                job_dir_parent = obj.pipeline.(pmain.Results.parent_job).outdir;
             else
                 job_dir_parent = '';
             end

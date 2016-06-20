@@ -6,7 +6,9 @@ function lattice_filter_sources(files_in,files_out,opt)
 %   Input
 %   -----
 %   files_in (cell array)
-%       file names of trials to process, see also bricks.select_data
+%       file name of sourceanalysis file processed by
+%       ftb.BeamformerPatchTrial. the data struct needs to contain a label
+%       field
 %   files_out (cell array)
 %       file names of filtered trials
 %   opt (cell array)
@@ -14,52 +16,62 @@ function lattice_filter_sources(files_in,files_out,opt)
 %   
 %   Parameters
 %   ----------
-%   outdir (string)
-%       output directory path, each trial is saved in it's own file
-%       lattice[trial number].mat
 %   order (integer, default = 4)
 %       filter order
 %   lambda (scalar, default = 0.99)
 %       exponential weighting factor between 0 and 1
 %   trials (scalar, default = 1)
 %       number of trials to include for lattice filtering
-%   sparse (boolean, default = false)
-%       sparse lattice filter
+%   nout (scalar, default = 100)
+%       number of outputs to produce
 %   verbose (integer, default = 0)
 %       verbosity level, options: 0,1
 
 p = inputParser;
 addRequired(p,'files_in',@iscell);
 addRequired(p,'files_out',@iscell);
+addParameter(p,'filter','MQRDLSL2',@ischar);
+addParameter(p,'trials',1,@isnumeric);
+addParameter(p,'nout',100,@isnumeric);
 addParameter(p,'order',4,@isnumeric);
 addParameter(p,'lambda',0.99,@isnumeric);
-addParameter(p,'trials',1,@isnumeric);
-addParameter(p,'sparse',false,@islogical);
 addParameter(p,'verbose',0);
 parse(p,files_in,files_out,opt{:});
 
 % flag for plotting ref coefficients
 plot_ref_coefs = false;
 
-% load one data set to get dims
-data = ftb.util.loadvar(files_in{1});
-nchannels = sum(data.inside);
-nsamples = length(data.time);
-clear data
+% check filter usage
+if p.Results.trials > 1
+    if ~isequal(p.Results.filter,'MCMTQRDLSL1')
+        error('Only MCMTQRDLSL1 is available for multiple trials');
+    end
+end
+
+% load data
+data_all = ftb.util.loadvar(files_in);
+% get dims
+nchannels = sum(data_all(1).inside);
+nsamples = length(data_all(1).time);
 
 % set up multitrial groups
-ntrials = length(files_in);
+nout = p.Results.nout;
 if p.Results.trials > 1
     % determine number of groups
-    ntrial_groups = floor(ntrials/p.Results.trials);
-    ntrials = ntrial_groups*p.Results.trials;
+    ntrial_groups = floor(nout/p.Results.trials);
+    nout = ntrial_groups*p.Results.trials;
     
     % group trial files into groups, while omitting any extra trials
-    files_in_groups = reshape(files_in(1:ntrials),p.Results.trials,ntrial_groups)';
-    files_in = files_in_groups;
+    data_in_groups = reshape(data_all(1:nout),p.Results.trials,ntrial_groups)';
+    data_in = data_in_groups;
 else
-    ntrial_groups = ntrials;
+    ntrial_groups = nout;
+    data_in = data_all(1:nout);
 end
+clear data_all;
+
+[file_path,~,~] = fileparts(files_out);
+file_list = cell(ntrial_groups,1);
 
 parfor i=1:ntrial_groups
 % for i=1:ntrial_groups
@@ -68,17 +80,18 @@ parfor i=1:ntrial_groups
     end
     
     % set up lattice filter
-    if p.Results.trials > 1
-        filter = MCMTQRDLSL1(p.Results.trials, nchannels, p.Results.order, p.Results.lambda);
-    else
-        if p.Results.sparse
+    switch p.Results.filter
+        case 'MCMTQRDLSL1'
+            filter = MCMTQRDLSL1(p.Results.trials, nchannels, p.Results.order, p.Results.lambda);
+        case 'MLOCCDTWL'
             sigma = 10^(-1);
             gamma = sqrt(2*sigma^2*nsamples*log(p.Results.order*nchannels^2));
             filter = MLOCCD_TWL(nchannels, p.Results.order,...
                 'lambda', p.Results.lambda,'gamma',gamma);
-        else
+        case 'MQRDLSL2'
             filter = MQRDLSL2(nchannels, p.Results.order, p.Results.lambda);
-        end
+        otherwise
+            error('unknown filter %s',p.Results.filter)
     end
     
     % initialize lattice filter with noise
@@ -96,7 +109,7 @@ parfor i=1:ntrial_groups
     X_norm = zeros(nchannels,nsamples,p.Results.trials);
     for j=1:p.Results.trials
         % load data
-        data = ftb.util.loadvar(files_in{i,j});
+        data = data_in{i,j};
         
         % get source data
         temp = data.avg.mom(data.inside);
@@ -108,8 +121,10 @@ parfor i=1:ntrial_groups
     end
     
     % estimate the reflection coefficients
+    %warning('off','all');
     trace = LatticeTrace(filter,'fields',{'Kf'});
     trace.run(X_norm,'verbosity',p.Results.verbose,'mode','none');
+    %warning('on','all');
     
     % plot
     if plot_ref_coefs
@@ -135,7 +150,11 @@ parfor i=1:ntrial_groups
     if p.Results.verbose > 1
         fprintf('\tsaving trial group %d\n',i);
     end
-    save_parfor(files_out{i}, lattice);
+    file_list{i} = fullfile(file_path,'trial%d.mat',i);
+    save_parfor(file_list{i}, lattice);
 end
+
+% save trial list
+save(files_out, 'file_list');
 
 end
