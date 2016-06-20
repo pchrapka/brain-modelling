@@ -64,9 +64,24 @@ classdef Pipeline < handle
             %UNLOCK unlocks the pipeline
             %   UNLOCK(obj) unlocks the pipeline
             
+            warning([mfilename ':unlock'],...
+                'make sure you know what you''re doing here');
+            
+            % checks for the lock file
             lock_file = fullfile(obj.options.path_logs,'PIPE.lock');
             if exist(lock_file,'file')
                 delete(lock_file);
+            end
+            
+            % checks for running jobs
+            file_running = dir(fullfile(obj.options.path_logs,'*.running'));
+            if ~isempty(file_running)
+                for i=1:length(file_running)
+                    file_name = fullfile(obj.options.path_logs,file_running(i).name);
+                    if exist(file_name,'file')
+                        delete(file_name);
+                    end
+                end
             end
             
         end
