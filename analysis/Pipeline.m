@@ -85,7 +85,6 @@ classdef Pipeline < handle
             pmain = inputParser;
             pmain.KeepUnmatched = true;
             addParameter(pmain,'parent_job','',@(x) ischar(x) || iscell(x));
-            % TODO it's possible to have multiple parents
             parse(pmain,varargin{:});
             
             % get brick options from option function
@@ -100,8 +99,13 @@ classdef Pipeline < handle
             
             % get the job dir
             if isfield(obj.pipeline,pmain.Results.parent_job)
-                % FIXME two parents
-                job_dir_parent = obj.pipeline.(pmain.Results.parent_job).outdir;
+                if iscell(pmain.Results.parent_job)
+                    % if there's more parents pick the first one
+                    parent_job = pmain.Results.parent_job{1};
+                else
+                    parent_job = pmain.Results.parent_job;
+                end
+                job_dir_parent = obj.pipeline.(parent_job).outdir;
             else
                 job_dir_parent = '';
             end
@@ -234,10 +238,15 @@ classdef Pipeline < handle
             %GET_JOB_CODE creates job code based on the brick, parameter
             %file and parent job
             
-            % FIXME two parents
-            
             brick_code = obj.get_brick_code(brick_name);
             params_code = obj.get_params_code(brick_name, params_name);
+            if iscell(job_code_parent)
+                code_new = [];
+                for i=1:length(job_code_parent)
+                    code_new = [code_new job_code_parent{i}];
+                end
+                job_code_parent = code_new;
+            end
             code = [job_code_parent brick_code params_code];
             
         end

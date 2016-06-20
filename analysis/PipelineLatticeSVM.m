@@ -74,8 +74,8 @@ classdef PipelineLatticeSVM < Pipeline
             %
             %   bricks.partition_files
             %   -----------------------------
-            %   parent_jobs (string)
-            %       parent jobs in pipeline
+            %   parent_job (string)
+            %       parent job in pipeline
             %
             %   bricks.lattice_features_matrix
             %   ------------------------------
@@ -113,16 +113,16 @@ classdef PipelineLatticeSVM < Pipeline
                     files_out = fullfile(job_path, 'lattice-filtered-files.mat');
                     
                 case 'bricks.partition_files'
-                    % varargin: parent_jobs
+                    % varargin: parent_job
                     p = inputParser;
                     p.StructExpand = false;
                     p.KeepUnmatched = true;
-                    addParameter(p,'parent_jobs',@(x) ~isempty(x));
+                    addParameter(p,'parent_job',@(x) ~isempty(x));
                     parse(p,varargin{:});
                     
                     files_in = {};
-                    for i=1:length(p.Results.parent_jobs)
-                        files_in{i} = obj.pipeline.(p.Results.parent_jobs{i}).files_out;
+                    for i=1:length(p.Results.parent_job)
+                        files_in{i} = obj.pipeline.(p.Results.parent_job{i}).files_out;
                     end
                     files_out.test = fullfile(job_path, 'test-files.mat');
                     files_out.train = fullfile(job_path, 'train-files.mat');
