@@ -117,7 +117,7 @@ parfor i=1:ntrial_groups
     X_norm = zeros(nchannels,nsamples,p.Results.trials);
     for j=1:p.Results.trials
         % load data
-        data = data_in{i,j};
+        data = data_in(i,j);
         
         % get source data
         temp = data.avg.mom(data.inside);
