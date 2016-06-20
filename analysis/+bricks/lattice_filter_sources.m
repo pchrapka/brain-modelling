@@ -82,8 +82,8 @@ clear data_all;
 [file_path,~,~] = fileparts(files_out);
 file_list = cell(ntrial_groups,1);
 
-%parfor i=1:ntrial_groups
-for i=1:ntrial_groups
+parfor i=1:ntrial_groups
+% for i=1:ntrial_groups
     if p.Results.verbose > 1
         fprintf('trial %d\n',i);
     end
