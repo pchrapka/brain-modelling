@@ -44,7 +44,8 @@ classdef Pipeline < handle
         end
         
         function run(obj)
-            % run the pipeline
+            %RUN runs the pipeline
+            %   RUN(obj) runs the pipeline
             %
             %   pipeline options are specified by setting the
             %   options property
@@ -59,7 +60,21 @@ classdef Pipeline < handle
             psom_run_pipeline(obj.pipeline,obj.options);
         end
         
+        function unlock(obj)
+            %UNLOCK unlocks the pipeline
+            %   UNLOCK(obj) unlocks the pipeline
+            
+            lock_file = fullfile(obj.options.path_logs,'PIPE.lock');
+            if exist(lock_file,'file')
+                delete(lock_file);
+            end
+            
+        end
+        
         function job_code = add_job(obj,brick_name,opt_func,varargin)
+            %ADD_JOB adds a job to the pipeline
+            %   ADD_JOB(obj,brick_name,opt_func,...) adds a job to the
+            %   pipeline
             %
             %   Input
             %   -----
