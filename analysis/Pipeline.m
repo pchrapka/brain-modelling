@@ -256,6 +256,9 @@ classdef Pipeline < handle
             %and parent job dir
             
             brick_code = obj.get_brick_code(brick_name);
+            % remove params_[brick code] prefix
+            params_name = strrep(params_name, ['params_' brick_code '_'], '');
+            
             if ~isempty(job_dir_parent)
                 jobdir = fullfile(job_dir_parent,...
                     [brick_code '-' strrep(params_name,'_','-')]);
