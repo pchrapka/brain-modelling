@@ -39,8 +39,8 @@ for j=1:length(params_filter)
         % add data label
         name_brick = 'bricks.add_label';
         job_al = pipeline.add_job(name_brick, ...
-            params_sd.cond(i).opt_func,...
-            'files_in', params_sd.cond(i).file);
+            params_sd.conds(i).opt_func,...
+            'files_in', params_sd.conds(i).file);
     
         % add lattice filter sources
         name_brick = 'bricks.lattice_filter_sources';
