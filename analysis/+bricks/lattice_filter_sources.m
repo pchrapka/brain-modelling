@@ -75,14 +75,15 @@ if p.Results.trials > 1
 else
     ntrial_groups = nout;
     data_in = data_all(1:nout);
+    data_in = data_in(:);
 end
 clear data_all;
 
 [file_path,~,~] = fileparts(files_out);
 file_list = cell(ntrial_groups,1);
 
-parfor i=1:ntrial_groups
-% for i=1:ntrial_groups
+%parfor i=1:ntrial_groups
+for i=1:ntrial_groups
     if p.Results.verbose > 1
         fprintf('trial %d\n',i);
     end
@@ -158,7 +159,7 @@ parfor i=1:ntrial_groups
     if p.Results.verbose > 1
         fprintf('\tsaving trial group %d\n',i);
     end
-    file_list{i} = fullfile(file_path,'trial%d.mat',i);
+    file_list{i} = fullfile(file_path,sprintf('trial%d.mat',i));
     save_parfor(file_list{i}, lattice);
 end
 

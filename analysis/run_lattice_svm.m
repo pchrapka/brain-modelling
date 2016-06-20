@@ -91,7 +91,7 @@ end
 pipeline.options.mode = 'session';
 pipeline.options.max_queued = 1; % use one thread since all stages use parfor
 
-% pipeline.run();
+pipeline.run();
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%
