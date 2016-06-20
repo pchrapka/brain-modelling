@@ -5,12 +5,12 @@ function lattice_filter_sources(files_in,files_out,opt)
 %
 %   Input
 %   -----
-%   files_in (cell array)
+%   files_in (string)
 %       file name of sourceanalysis file processed by
 %       ftb.BeamformerPatchTrial. the data struct needs to contain a label
 %       field
-%   files_out (cell array)
-%       file names of filtered trials
+%   files_out (string)
+%       file name for list of filtered trials
 %   opt (cell array)
 %       function options specified as name value pairs
 %   
@@ -28,8 +28,8 @@ function lattice_filter_sources(files_in,files_out,opt)
 %       verbosity level, options: 0,1
 
 p = inputParser;
-addRequired(p,'files_in',@iscell);
-addRequired(p,'files_out',@iscell);
+addRequired(p,'files_in',@ischar);
+addRequired(p,'files_out',@ischar);
 addParameter(p,'filter','MQRDLSL2',@ischar);
 addParameter(p,'trials',1,@isnumeric);
 addParameter(p,'nout',100,@isnumeric);

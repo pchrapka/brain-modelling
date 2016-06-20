@@ -25,21 +25,25 @@ function partition_files(files_in,files_out,opt)
 
 p = inputParser;
 p.StructExpand = false;
-addRequired(p,'files_in',@iscell);
-addRequired(p,'files_out',@iscell);
+addRequired(p,'files_in',@(x) iscell(x) | ischar(x));
+addRequired(p,'files_out',@(x) isfield(x,'train') & isfield(x,'test'));
 addParameter(p,'label','',@ischar);
 addParameter(p,'train',100,@isnumeric);
 addParameter(p,'test',20,@isnumeric);
 parse(p,files_in,files_out,opt{:});
 
 nfiles = p.Results.train + p.Results.test;
-nsets = length(files_in);
+if iscell(p.Results.files_in)
+    nsets = length(p.Results.files_in);
+else
+    nsets = 1;
+end
 
 test_files = {};
 train_files = {};
 
 for i=1:nsets
-    file_list = ftb.util.loadvar(files_in{i});
+    file_list = ftb.util.loadvar(p.Results.files_in{i});
     nfiles_in = length(file_list);
     
     if nfiles_in < nfiles
