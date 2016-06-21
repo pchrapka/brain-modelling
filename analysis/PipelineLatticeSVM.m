@@ -35,8 +35,8 @@ classdef PipelineLatticeSVM < Pipeline
             obj.config.bricks(5).id = 'pf';
             obj.config.bricks(6).name = 'bricks.features_fdr';
             obj.config.bricks(6).id = 'fd';
-            %obj.config.bricks(7).name = 'bricks.train_test';
-            %obj.config.bricks(7).id = 'tt';
+            obj.config.bricks(7).name = 'bricks.train_test_common';
+            obj.config.bricks(7).id = 'tt';
             
         end
         
@@ -94,7 +94,8 @@ classdef PipelineLatticeSVM < Pipeline
             %   parent_job (struct)
             %       parent job in pipeline
             %
-            %   bricks.train_test
+            %   bricks.train_test_common
+            %   ------------------------
             %   parent_job (string)
             %       parent job in pipeline
             %   test_job (string)
@@ -178,7 +179,7 @@ classdef PipelineLatticeSVM < Pipeline
                     files_out = fullfile(job_path,...
                         'features-validated.mat');
                     
-                case 'bricks.train_test'
+                case 'bricks.train_test_common'
                     % varargin: parent_job,test_job, train_job
                     p = inputParser;
                     p.StructExpand = false;

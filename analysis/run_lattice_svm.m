@@ -52,6 +52,29 @@ params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt8_p10_l099_n400';
 params_filter(f).params_partition = 'params_pf_std_odd_tr20_te10';
 f = f+1;
 
+f = 1;
+feat_options(f).fv = 'params_fv_rbf_20';
+feat_options(f).tt = 'params_tt_rbf_10';
+f = f+1;
+feat_options(f).fv = 'params_fv_rbf_40';
+feat_options(f).tt = 'params_tt_rbf_20';
+f = f+1;
+feat_options(f).fv = 'params_fv_rbf_60';
+feat_options(f).tt = 'params_tt_rbf_30';
+f = f+1;
+feat_options(f).fv = 'params_fv_rbf_100';
+feat_options(f).tt = 'params_tt_rbf_50';
+f = f+1;
+% feat_options(f).fv = 'params_fv_rbf_1000';
+% feat_options(f).tt = 'params_tt_rbf_500';
+% f = f+1;
+% feat_options(f).fv = 'params_fv_rbf_2000';
+% feat_options(f).tt = 'params_tt_rbf_1000';
+% f = f+1;
+% feat_options(f).fv = 'params_fv_rbf_10000';
+% feat_options(f).tt = 'params_tt_rbf_5000';
+% f = f+1;
+
 job_lf = cell(length(params_sd.conds),1);
 for j=1:length(params_filter)
     for i=1:length(params_sd.conds)
@@ -83,28 +106,17 @@ for j=1:length(params_filter)
     opt_func = 'params_fd_20000';
     job_fd_train = pipeline.add_job(name_brick,opt_func,'parent_job',job_fm_train);
     
-    
-    ft_options = {...
-        'params_fv_20',...
-        'params_fv_40',...
-        'params_fv_60',...
-        'params_fv_100',...
-        ...'params_fv_1000',...
-        ...'params_fv_2000',...
-        ...'params_fv_10000',...
-        };
-    
-    for k=1:length(ft_options)
+    for k=1:length(feat_options)
         % add feature validation
         name_brick = 'bricks.features_validate';
-        opt_func = ft_options{k};
+        opt_func = feat_options(k).fv;
         job_fv = pipeline.add_job(name_brick,opt_func,'parent_job',job_fd_train);
-        
-        % TODO add new brick
-%         name_brick = 'bricks.train_test';
-%         opt_func = 'params_tt_1'; % not sure what options i'd need
-%         pipeline.add_job(name_brick,opt_func,'parent_job',job_fv,...
-%           'test_job', job_fm_test, 'train_job', job_fm_train);
+    
+        % add train test
+        name_brick = 'bricks.train_test_common';
+        opt_func = feat_options(k).tt;
+        pipeline.add_job(name_brick,opt_func,'parent_job',job_fv,...
+          'test_job', job_fm_test, 'train_job', job_fm_train);
     end
     
 end
