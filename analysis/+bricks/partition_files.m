@@ -56,7 +56,7 @@ for i=1:nsets
     
     % save test and train files
     test_files = [test_files files_sel(c.test)];
-    train_files = [train_files files_sel(c.train)];
+    train_files = [train_files files_sel(c.training)];
     
 end
 
