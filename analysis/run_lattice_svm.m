@@ -69,9 +69,20 @@ for j=1:length(params_filter)
     job_pt = pipeline.add_job(name_brick,opt_func,'parent_job',job_lf);
     
     % add feature matrix
-    name_brick = 'bricks.lattice_features_matrix';
-    opt_func = 'params_fm_1';
-    job_fm = pipeline.add_job(name_brick,opt_func,'parent_job',job_pt);
+    name_brick = 'bricks.features_matrix';
+    opt_func = 'params_fm_lattice_train';
+    job_fm_train = pipeline.add_job(name_brick,opt_func,'parent_job',job_pt);
+    
+    % add feature matrix for test data
+    name_brick = 'bricks.features_matrix';
+    opt_func = 'params_fm_lattice_test';
+    job_fm_test = pipeline.add_job(name_brick,opt_func,'parent_job',job_pt);
+    
+    % add feature matrix
+    name_brick = 'bricks.features_fdr';
+    opt_func = 'params_fd_20000';
+    job_fd_train = pipeline.add_job(name_brick,opt_func,'parent_job',job_fm_train);
+    
     
     ft_options = {...
         'params_fv_20',...
@@ -87,12 +98,13 @@ for j=1:length(params_filter)
         % add feature validation
         name_brick = 'bricks.features_validate';
         opt_func = ft_options{k};
-        job_fv = pipeline.add_job(name_brick,opt_func,'parent_job',job_fm);
+        job_fv = pipeline.add_job(name_brick,opt_func,'parent_job',job_fd_train);
         
         % TODO add new brick
 %         name_brick = 'bricks.train_test';
 %         opt_func = 'params_tt_1'; % not sure what options i'd need
-%         pipeline.add_job(name_brick,opt_func,'parent_job',job_fv,'partition_job',job_pt);
+%         pipeline.add_job(name_brick,opt_func,'parent_job',job_fv,...
+%           'test_job', job_fm_test, 'train_job', job_fm_train);
     end
     
 end
@@ -101,7 +113,7 @@ end
 pipeline.options.mode = 'session';
 pipeline.options.max_queued = 1; % use one thread since all stages use parfor
 
-pipeline.run();
+% pipeline.run();
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%

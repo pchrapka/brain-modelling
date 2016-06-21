@@ -27,14 +27,16 @@ classdef PipelineLatticeSVM < Pipeline
             obj.config.bricks(1).id = 'al';
             obj.config.bricks(2).name = 'bricks.lattice_filter_sources';
             obj.config.bricks(2).id = 'lf';
-            obj.config.bricks(3).name = 'bricks.lattice_features_matrix';
+            obj.config.bricks(3).name = 'bricks.features_matrix';
             obj.config.bricks(3).id = 'fm';
             obj.config.bricks(4).name = 'bricks.features_validate';
             obj.config.bricks(4).id = 'fv';
             obj.config.bricks(5).name = 'bricks.partition_files';
             obj.config.bricks(5).id = 'pf';
-            %obj.config.bricks(6).name = 'bricks.train_test';
-            %obj.config.bricks(6).id = 'tt';
+            obj.config.bricks(6).name = 'bricks.features_fdr';
+            obj.config.bricks(6).id = 'fd';
+            %obj.config.bricks(7).name = 'bricks.train_test';
+            %obj.config.bricks(7).id = 'tt';
             
         end
         
@@ -77,15 +79,28 @@ classdef PipelineLatticeSVM < Pipeline
             %   parent_job (string)
             %       parent job in pipeline
             %
-            %   bricks.lattice_features_matrix
+            %   bricks.features_matrix
             %   ------------------------------
-            %   parent_job (struct)
+            %   parent_job (string)
+            %       parent job in pipeline
+            %
+            %   bricks.features_fdr
+            %   ------------------------------
+            %   parent_job (string)
             %       parent job in pipeline
             %
             %   bricks.features_validate
             %   ------------------------
             %   parent_job (struct)
             %       parent job in pipeline
+            %
+            %   bricks.train_test
+            %   parent_job (string)
+            %       parent job in pipeline
+            %   test_job (string)
+            %       test feature matrix job in pipeline
+            %   train_job (string)
+            %       training feature matrix job in pipeline
             
             opt = feval(opt_func);
             
@@ -127,7 +142,7 @@ classdef PipelineLatticeSVM < Pipeline
                     files_out.test = fullfile(job_path, 'test-files.mat');
                     files_out.train = fullfile(job_path, 'train-files.mat');
                     
-                case 'bricks.lattice_features_matrix'
+                case 'bricks.features_matrix'
                     % varargin: parent_job
                     p = inputParser;
                     p.StructExpand = false;
@@ -135,9 +150,21 @@ classdef PipelineLatticeSVM < Pipeline
                     addParameter(p,'parent_job',@(x) ~isempty(x));
                     parse(p,varargin{:});
                     
-                    files_in = obj.pipeline.(p.Results.parent_job).files_out.train;
+                    files_in = obj.pipeline.(p.Results.parent_job).files_out;
                     files_out = fullfile(job_path,...
                         'features-matrix.mat');
+                    
+                case 'bricks.features_fdr'
+                    % varargin: parent_job
+                    p = inputParser;
+                    p.StructExpand = false;
+                    p.KeepUnmatched = true;
+                    addParameter(p,'parent_job',@(x) ~isempty(x));
+                    parse(p,varargin{:});
+                    
+                    files_in = obj.pipeline.(p.Results.parent_job).files_out;
+                    files_out = fullfile(job_path,...
+                        'features-fdr.mat');
                     
                 case 'bricks.features_validate'
                     % varargin: parent_job
@@ -152,17 +179,18 @@ classdef PipelineLatticeSVM < Pipeline
                         'features-validated.mat');
                     
                 case 'bricks.train_test'
-                    % varargin: parent_job
+                    % varargin: parent_job,test_job, train_job
                     p = inputParser;
                     p.StructExpand = false;
                     p.KeepUnmatched = true;
                     addParameter(p,'parent_job',@(x) ~isempty(x));
-                    addParameter(p,'partition_job',@(x) ~isempty(x));
+                    addParameter(p,'test_job',@(x) ~isempty(x));
+                    addParameter(p,'train_job',@(x) ~isempty(x));
                     parse(p,varargin{:});
                     
                     files_in.validated = obj.pipeline.(p.Results.parent_job).files_out;
-                    files_in.test = obj.pipeline.(p.Results.partition_job).files_out.test;
-                    files_in.train = obj.pipeline.(p.Results.partition_job).files_out.train;
+                    files_in.test = obj.pipeline.(p.Results.test_job).files_out;
+                    files_in.train = obj.pipeline.(p.Results.train_job).files_out;
                     files_out = fullfile(job_path,...
                         'test-results.mat');
 

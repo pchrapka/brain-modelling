@@ -59,6 +59,12 @@ classdef SVM < handle
             %   verbosity (integer, default = 0)
             %       verbosity level of function, choices 0,1,2,3
             %
+            %   matlab implementation
+            %   parameters are passed on to fitcsvm, see fitcsvm
+            %
+            %   libsvm implementation
+            %   KernelFunction (string, default = 'rbf')
+            %
             %   Output
             %   ------
             %   params.KernelScale
@@ -154,7 +160,13 @@ classdef SVM < handle
             %
             %   Parameters
             %   ----------
+            %   matlab implementation
             %   see fitcsvm
+            %
+            %   libsvm implementation
+            %   KernelFunction (string, default = 'rbf')
+            %   BoxConstraint (scalar, default = 0)
+            %   KernelScale (scalar, default = 1);
             %
             %   Output
             %   ------

@@ -3,13 +3,15 @@ function partition_files(files_in,files_out,opt)
 %   PARTITION_FILES partitions files into cross validation and test sets.
 %   formatted for use with PSOM pipeline
 %
+%   Input
+%   -----
 %   files_in (cell array)
 %       file names of file lists of lattice filter output, see output of
 %       bricks.lattice_filter_sources
 %   files_out (struct)
-%   files_out.train
+%   files_out.train (string)
 %       file name of files selected for training set
-%   files_out.test
+%   files_out.test (string)
 %       file name of files selected for test set
 %   opt (cell array)
 %       function options specified as name value pairs
