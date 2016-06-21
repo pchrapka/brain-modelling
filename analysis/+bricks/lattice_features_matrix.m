@@ -44,9 +44,12 @@ addParameter(p,'threshold','none');
 addParameter(p,'features_fdr',1000,@isnumeric);
 parse(p,files_in,files_out,opt{:});
 
+% load the file list
+file_list = ftb.util.loadvar(files_in);
+
 % get dimensions
-nsamples = length(files_in);
-lattice = ftb.util.loadvar(files_in{1});
+nsamples = length(file_list);
+lattice = ftb.util.loadvar(file_list{1});
 nfeatures = numel(lattice.Kf);
 
 % allocate mem
@@ -57,7 +60,7 @@ bad_samples = [];
 % loop over data files
 for i=1:nsamples
     % load lattice filtered data
-    lattice = ftb.util.loadvar(files_in{i});
+    lattice = ftb.util.loadvar(file_list{i});
     % reshape the data into a vector
     samples(i,:) = reshape(lattice.Kf,1,nfeatures);
     
