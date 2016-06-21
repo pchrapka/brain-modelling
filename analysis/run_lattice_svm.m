@@ -33,28 +33,38 @@ for i=1:length(params_sd.conds)
         'files_in', params_sd.conds(i).file);
 end
 
-params_filter = {...
-    'params_lf_MQRDLSL2_p10_l099_n400',...
-    ...'params_lf_MLOCCD_TWL_p10_l099_n400',...
-    'params_lf_MCMTQRDLSL1_mt2_p10_l099_n400',...
-    'params_lf_MCMTQRDLSL1_mt3_p10_l099_n400',...
-    'params_lf_MCMTQRDLSL1_mt5_p10_l099_n400',...
-    'params_lf_MCMTQRDLSL1_mt8_p10_l099_n400',...
-    };
+% TODO 'params_lf_MLOCCD_TWL_p10_l099_n400'
+f = 1;
+params_filter = [];
+params_filter(f).params_filter = 'params_lf_MQRDLSL2_p10_l099_n400';
+params_filter(f).params_partition = opt_func = 'params_pf_std_odd_tr100_te20';
+f = f+1;
+params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt2_p10_l099_n400';
+params_filter(f).params_partition = opt_func = 'params_pf_std_odd_tr100_te20';
+f = f+1;
+params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt3_p10_l099_n400';
+params_filter(f).params_partition = opt_func = 'params_pf_std_odd_tr70_te20';
+f = f+1;
+params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt5_p10_l099_n400';
+params_filter(f).params_partition = opt_func = 'params_pf_std_odd_tr30_te20';
+f = f+1;
+params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt8_p10_l099_n400';
+params_filter(f).params_partition = opt_func = 'params_pf_std_odd_tr20_te10';
+f = f+1;
 
 job_lf = cell(length(params_sd.conds),1);
 for j=1:length(params_filter)
     for i=1:length(params_sd.conds)
         % add lattice filter sources
         name_brick = 'bricks.lattice_filter_sources';
-        opt_func = params_filter{j};
+        opt_func = params_filter(j).params_filter;
         job_lf{i} = pipeline.add_job(name_brick,...
             opt_func,'parent_job',job_al{i});
     end
     
     % add select trials
     name_brick = 'bricks.partition_files';
-    opt_func = 'params_pf_std_odd_tr100_te20';
+    opt_func = params_filter(j).params_partition;
     % NOTE don't add parent job here, just make a not in opt_func
     job_pt = pipeline.add_job(name_brick,opt_func,'parent_job',job_lf);
     
