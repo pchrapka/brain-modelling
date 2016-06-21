@@ -60,6 +60,11 @@ for i=1:nsets
     
 end
 
+% reshape to vectors
+test_files = reshape(test_files,numel(test_files),1);
+train_files = reshape(train_files,numel(train_files),1);
+
+% save
 save(files_out.test,'test_files');
 save(files_out.train,'train_files');
 
