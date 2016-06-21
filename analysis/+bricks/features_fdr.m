@@ -43,23 +43,23 @@ addParameter(p,'nfeatures',1000,@isnumeric);
 parse(p,files_in,files_out,opt{:});
 
 % load the data
-data = ftb.util.loadvar(files_in);
+data_in = ftb.util.loadvar(files_in);
 
 % filter out features using fisher's discriminant ratio
-ratio = fishers_discriminant_ratio(data.samples,data.class_labels);
-nfeatures = size(data.samples,2);
+ratio = fishers_discriminant_ratio(data_in.samples,data_in.class_labels);
+nfeatures = size(data_in.samples,2);
 temp = [ratio' (1:nfeatures)'];
 ratio_sorted = sortrows(temp,-1);
 feat_sel_fdr = ratio_sorted(1:p.Results.nfeatures,2);
-features = data.samples(:,feat_sel_fdr);
-feature_labels = data.feature_labels(feat_sel_fdr);
+features = data_in.samples(:,feat_sel_fdr);
+feature_labels = data_in.feature_labels(feat_sel_fdr);
 
 % save data
 data = [];
 data.feature_labels = feature_labels;
 data.feat_sel_fdr = feat_sel_fdr;
 data.features = features;
-data.class_labels = class_labels;
+data.class_labels = data_in.class_labels;
 save(files_out, 'data');
 
 end
