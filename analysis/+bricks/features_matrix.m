@@ -19,8 +19,8 @@ function features_matrix(files_in,files_out,opt)
 %   
 %   Parameters
 %   ----------
-%   data2feature (function handle)
-%       function handle that converts a list of data files to a feature
+%   data2feature (string)
+%       function name that converts a list of data files to a feature
 %       matrix
 %
 %       [samples,class_labels,feature_labels] = data2feature(file_list); 
@@ -48,7 +48,7 @@ p = inputParser;
 p.StructExpand = false;
 addRequired(p,'files_in',@(x) ischar(x) | isstruct(x));
 addRequired(p,'files_out',@ischar);
-addParameter(p,'data2feature',@(x) isa(x,'function_handle'));
+addParameter(p,'data2feature',@ischar);
 addParameter(p,'file_in_field','',@ischar);
 parse(p,files_in,files_out,opt{:});
 
@@ -63,7 +63,8 @@ else
 end
 
 % convert data
-[samples,class_labels,feature_labels] = p.Results.data2feature(file_list);
+fh = str2func(p.Reulst.data2feature);
+[samples,class_labels,feature_labels] = fh(file_list);
 
 % save data
 data = [];
