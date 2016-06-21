@@ -6,9 +6,9 @@ function lattice_features_matrix(files_in,files_out,opt)
 %
 %   Input
 %   -----
-%   files_in (cell array)
-%       file names of samples to process, see also
-%       bricks.lattice_filter_sources
+%   files_in (string)
+%       file name of list of samples to process, see output of
+%       bricks.partition_files
 %   files_out (string)
 %       file name of feature matrix
 %   opt (cell array)
@@ -38,7 +38,7 @@ function lattice_features_matrix(files_in,files_out,opt)
 %       class labels for each sample
 
 p = inputParser;
-addRequired(p,'files_in',@iscell);
+addRequired(p,'files_in',@ischar);
 addRequired(p,'files_out',@ischar);
 addParameter(p,'threshold','none');
 addParameter(p,'features_fdr',1000,@isnumeric);
