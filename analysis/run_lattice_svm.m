@@ -37,19 +37,19 @@ end
 f = 1;
 params_filter = [];
 params_filter(f).params_filter = 'params_lf_MQRDLSL2_p10_l099_n400';
-params_filter(f).params_partition = opt_func = 'params_pf_std_odd_tr100_te20';
+params_filter(f).params_partition = 'params_pf_std_odd_tr100_te20';
 f = f+1;
 params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt2_p10_l099_n400';
-params_filter(f).params_partition = opt_func = 'params_pf_std_odd_tr100_te20';
+params_filter(f).params_partition = 'params_pf_std_odd_tr100_te20';
 f = f+1;
 params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt3_p10_l099_n400';
-params_filter(f).params_partition = opt_func = 'params_pf_std_odd_tr70_te20';
+params_filter(f).params_partition = 'params_pf_std_odd_tr70_te20';
 f = f+1;
 params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt5_p10_l099_n400';
-params_filter(f).params_partition = opt_func = 'params_pf_std_odd_tr30_te20';
+params_filter(f).params_partition = 'params_pf_std_odd_tr30_te20';
 f = f+1;
 params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt8_p10_l099_n400';
-params_filter(f).params_partition = opt_func = 'params_pf_std_odd_tr20_te10';
+params_filter(f).params_partition = 'params_pf_std_odd_tr20_te10';
 f = f+1;
 
 job_lf = cell(length(params_sd.conds),1);
