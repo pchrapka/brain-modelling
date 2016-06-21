@@ -47,7 +47,8 @@ data = ftb.util.loadvar(files_in);
 
 % filter out features using fisher's discriminant ratio
 ratio = fishers_discriminant_ratio(data.samples,data.class_labels);
-temp = [ratio' (1:p.Results.nfeatures)'];
+nfeatures = size(data.samples,2);
+temp = [ratio' (1:nfeatures)'];
 ratio_sorted = sortrows(temp,-1);
 feat_sel_fdr = ratio_sorted(1:p.Results.nfeatures,2);
 features = data.samples(:,feat_sel_fdr);
