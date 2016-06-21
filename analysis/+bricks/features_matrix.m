@@ -63,7 +63,7 @@ else
 end
 
 % convert data
-fh = str2func(p.Reulst.data2feature);
+fh = str2func(p.Results.data2feature);
 [samples,class_labels,feature_labels] = fh(file_list);
 
 % save data
