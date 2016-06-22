@@ -206,18 +206,19 @@ classdef SVM < handle
             %
             %   Input
             %   -----
-            %   test (vector)
-            %       test sample
+            %   test (matrix)
+            %       test sample, size [samples features]
             %
             %   Output
             %   ------
-            %   prediction
+            %   prediction (vector)
             %       predicted class label for test sample
             
             if isequal(obj.implementation,'matlab')
                 prediction = predict(obj.model, test);
             else
-                prediction = svmpredict(1, test, obj.model, '-q');
+                test_labels = zeros(size(test));
+                prediction = svmpredict(test_labels, test, obj.model, '-q');
             end
         end
     end

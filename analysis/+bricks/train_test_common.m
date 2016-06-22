@@ -54,6 +54,7 @@ addParameter(p,'KernelFunction','rbf',@ischar);
 addParameter(p,'BoxConstraintParams',exp(-2:2),@isvector);
 addParameter(p,'KernelScaleParams',exp(-2:2),@isvector);
 addParameter(p,'nfeatures_common',10,@isnumeric);
+addParameter(p,'verbosity',0,@isnumeric);
 parse(p,files_in,files_out,opt{:});
 
 % load data
@@ -82,7 +83,8 @@ model = SVM(train_data.samples, train_data.class_labels, 'implementation','libsv
 params = model.optimize(...
     'KernelFunction',p.Results.KernelFunction,...
     'box', p.Results.BoxConstraintParams,...
-    'scale', p.Results.KernelScaleParams);
+    'scale', p.Results.KernelScaleParams,...
+    'verbosity',p.Results.verbosity);
 % train SVM
 model.train(...
     'KernelFunction',p.Results.KernelFunction,...
@@ -93,7 +95,7 @@ model.train(...
 % TODO how are the test samples arranged?
 predictions = model.predict(test_data.samples);
 
-% TODO set up save struct
+% set up save struct
 data = [];
 data.predictions = predictions;
 data.class_labels = test_data.class_labels;
