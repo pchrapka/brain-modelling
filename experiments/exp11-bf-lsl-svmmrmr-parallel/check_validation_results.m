@@ -1,4 +1,4 @@
-%% explore_features
+%% check_validation_results.m
 
 test = false;
 
@@ -34,27 +34,28 @@ for i=1:length(jobs_desired)
     fprintf('%s\n',job_name);
     fprintf('%s\n',repmat('-',1,length(job_name)));
     
-    file_validated = pipeline.pipeline.(jobs_desired{i}).files_out;
-    fprintf('file: %s\n',file_validated);
+    % get the fm job
+    %brick_name = 'bricks.features_fdr';
+    %brick_code = pipeline.get_brick_code(brick_name);
+    %pattern = ['(.*' brick_code '\d+)'];
+    %job_fm = regexp(jobs_desired{i},pattern,'match');
     
+    %file_features = pipeline.pipeline.(job_fm{1}).files_out;
+    file_validated = pipeline.pipeline.(jobs_desired{i}).files_out;
+    %fprintf('features: %s\nvalidated: %s\n',file_features,file_validated);
+    
+    % load the data
+    %features = ftb.util.loadvar(file_features);
     if ~test
-        % load data
-        din = load(file_validated);
+        validated = ftb.util.loadvar(file_validated);
         
-        % select common features
-        ncommon = 10;
-        [feat_common, freq] = features_select_common(din.data.feat_sel,ncommon);
+        perf = svmmrmr_class_accuracy(...
+            validated.class_labels, validated.predictions,...
+            'verbosity',1);
         
-        % select corresponding labels
-        labels_mrmr = din.data.class_labels(feat_common);
-        
-        fprintf(' Index     | Frequency | Label     \n');
-        fprintf('-----------------------------------\n');
-        for j=1:ncommon
-            fprintf(' %9d | %9d | %s\n',feat_common(j), freq(j), labels_mrmr{j});
-        end
+        figure;
+        plot_svmmrmr_confusion(validated.class_labels, validated.predictions);
     end
     
     fprintf('\n');
-    
 end

@@ -1,46 +1,60 @@
 %% explore_features
 
-test = true;
+test = false;
 
-if test
-    labelfile = 'output/lattice-svm-test/st3fm-params-fm-test/features-matrix.mat';
-    outfiles = {...
-        'output/lattice-svm-test/st4fv-params-fv-100/features-validated.mat',...
-        };
-else
-    labelfile = {...
-        'output/lattice-svm/P022-9913/st3fm-params-fm-1/features-validated.mat',...
-        };
-    outfiles = {...
-        'output/lattice-svm/P022-9913/st4fv-params-fv-20/features-validated.mat',...
-        'output/lattice-svm/P022-9913/st4fv-params-fv-40/features-validated.mat',...
-        'output/lattice-svm/P022-9913/st4fv-params-fv-60/features-validated.mat',...
-        'output/lattice-svm/P022-9913/st4fv-params-fv-100/features-validated.mat',...
-        'output/lattice-svm/P022-9913/st4fv-params-fv-1000/features-validated.mat',...
-        'output/lattice-svm/P022-9913/st4fv-params-fv-2000/features-validated.mat',...
-        };
-end
+% code to run analysis pipeline
+% run_lattice_svm
+% pipeline.run();
 
-din2 = load(labelfile);
-labels = din2.data.feature_labels;
+% get pipeline
+pipeline = build_pipeline_lattice_svm();
 
-for i=1:length(outfiles)
-    fprintf('file: %s\n',outfiles{i});
+% select jobs based on filter params
+brick_name = 'bricks.lattice_filter_sources';
+brick_code = pipeline.get_brick_code(brick_name);
+params_name = 'params_lf_MLOCCDTWL_p10_l099_n400';
+param_code = pipeline.get_params_code(brick_name,params_name);
+
+% select feature validation jobs
+brick_name = 'bricks.features_validate';
+brick_code_desired = pipeline.get_brick_code(brick_name);
+
+pattern = ['.+' brick_code param_code '.*' brick_code_desired '\d+\>'];
+jobs = fieldnames(pipeline.pipeline);
+job_idx = cellfun(@(x) ~isempty(regexp(x,pattern,'match')),jobs,'UniformOutput',true);
+jobs_desired = jobs(job_idx);
+
+for i=1:length(jobs_desired)
     
-    % load data
-    din = load(outfiles{i});
+    % decrypt job code
+    pattern = [brick_code_desired '\d+\>'];
+    job_code = regexp(jobs_desired{i},pattern,'match');
+    job_name = pipeline.expand_code(job_code{1},'expand','params');
     
-    % select common features
-    ncommon = 10;
-    [feat_common, freq] = features_select_common(din.data.feat_sel,ncommon);
+    fprintf('%s\n',job_name);
+    fprintf('%s\n',repmat('-',1,length(job_name)));
     
-    % select corresponding labels
-    labels_mrmr = labels(feat_common);
+    file_validated = pipeline.pipeline.(jobs_desired{i}).files_out;
+    fprintf('file: %s\n',file_validated);
     
-    fprintf(' Index     | Frequency | Label     \n');
-    fprintf('-----------------------------------\n');
-    for j=1:ncommon
-        fprintf(' %9d | %9d | %s\n',feat_common(j), freq(j), labels_mrmr{j});
+    if ~test
+        % load data
+        din = load(file_validated);
+        
+        % select common features
+        ncommon = 10;
+        [feat_common, freq] = features_select_common(din.data.feat_sel,ncommon);
+        
+        % select corresponding labels
+        labels_mrmr = din.data.class_labels(feat_common);
+        
+        fprintf(' Index     | Frequency | Label     \n');
+        fprintf('-----------------------------------\n');
+        for j=1:ncommon
+            fprintf(' %9d | %9d | %s\n',feat_common(j), freq(j), labels_mrmr{j});
+        end
     end
+    
+    fprintf('\n');
     
 end
