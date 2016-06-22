@@ -94,6 +94,9 @@ model.train(...
 % test SVM
 % TODO how are the test samples arranged?
 predictions = model.predict(test_data.samples);
+if isempty(predictions)
+    error('something went wrong with the prediction step');
+end
 
 % set up save struct
 data = [];

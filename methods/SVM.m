@@ -217,7 +217,7 @@ classdef SVM < handle
             if isequal(obj.implementation,'matlab')
                 prediction = predict(obj.model, test);
             else
-                test_labels = zeros(size(test));
+                test_labels = zeros(size(test,1),1);
                 prediction = svmpredict(test_labels, test, obj.model, '-q');
             end
         end
