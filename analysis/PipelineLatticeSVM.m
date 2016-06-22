@@ -187,11 +187,13 @@ classdef PipelineLatticeSVM < Pipeline
                     addParameter(p,'parent_job',@(x) ~isempty(x));
                     addParameter(p,'test_job',@(x) ~isempty(x));
                     addParameter(p,'train_job',@(x) ~isempty(x));
+                    addParameter(p,'fdr_job',@(x) ~isempty(x));
                     parse(p,varargin{:});
                     
                     files_in.validated = obj.pipeline.(p.Results.parent_job).files_out;
                     files_in.test = obj.pipeline.(p.Results.test_job).files_out;
                     files_in.train = obj.pipeline.(p.Results.train_job).files_out;
+                    files_in.fdr = obj.pipeline.(p.Results.fdr_job).files_out;
                     files_out = fullfile(job_path,...
                         'test-results.mat');
 

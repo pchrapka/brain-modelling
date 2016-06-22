@@ -111,12 +111,12 @@ for j=1:length(params_filter)
         name_brick = 'bricks.features_validate';
         opt_func = feat_options(k).fv;
         job_fv = pipeline.add_job(name_brick,opt_func,'parent_job',job_fd_train);
-    
+        
         % add train test
         name_brick = 'bricks.train_test_common';
         opt_func = feat_options(k).tt;
         pipeline.add_job(name_brick,opt_func,'parent_job',job_fv,...
-          'test_job', job_fm_test, 'train_job', job_fm_train);
+            'test_job', job_fm_test, 'train_job', job_fm_train, 'fdr_job', job_fd_train);
     end
     
 end

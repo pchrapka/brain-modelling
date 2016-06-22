@@ -46,7 +46,9 @@ function train_test_common(files_in,files_out,opt)
 
 p = inputParser;
 p.StructExpand = false;
-addRequired(p,'files_in',@(x) isfield(x,'train') & isfield(x,'test') & isfield(x,'validated'));
+addRequired(p,'files_in',@(x)...
+    isfield(x,'train') & isfield(x,'test') &...
+    isfield(x,'validated') & isfield(x,'fdr'));
 addRequired(p,'files_out',@ischar);
 addParameter(p,'KernelFunction','rbf',@ischar);
 addParameter(p,'BoxConstraintParams',exp(-2:2),@isvector);
