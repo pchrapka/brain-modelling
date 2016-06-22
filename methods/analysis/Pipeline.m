@@ -261,63 +261,6 @@ classdef Pipeline < handle
                 end
             end
         end
-    end
-    
-    methods (Access = protected)
-        function code = get_job_code(obj, brick_name, params_name, job_code_parent)
-            %GET_JOB_CODE creates job code based on the brick, parameter
-            %file and parent job
-            
-            brick_code = obj.get_brick_code(brick_name);
-            params_code = obj.get_params_code(brick_name, params_name);
-            if iscell(job_code_parent)
-                code_new = [];
-                for i=1:length(job_code_parent)
-                    code_new = [code_new job_code_parent{i}];
-                end
-                job_code_parent = code_new;
-            end
-            code = [job_code_parent brick_code params_code];
-            
-        end
-        
-        function jobdir = get_job_dir(obj, brick_name, params_name, job_dir_parent)
-            %GET_JOB_DIR creates job dir based on the brick, parameter file
-            %and parent job dir
-            
-            brick_code = obj.get_brick_code(brick_name);
-            % remove params_[brick code] prefix
-            params_name = strrep(params_name, ['params_' brick_code '_'], '');
-            
-            if ~isempty(job_dir_parent)
-                jobdir = fullfile(job_dir_parent,...
-                    [brick_code '-' strrep(params_name,'_','-')]);
-            else
-                jobdir = [brick_code '-' strrep(params_name,'_','-')];
-            end
-            
-        end
-        
-        function idx = add_params(obj, brick_name, params_name)
-            %ADD_PARAMS add parameter file to the config
-            
-            brick_idx = obj.get_brick_idx(brick_name);
-            idx = obj.get_params_idx(brick_idx,params_name);
-            if idx == 0
-                if ~isfield(obj.config.bricks(brick_idx),'params')
-                    obj.config.bricks(brick_idx).params = [];
-                end
-                nparams = length(obj.config.bricks(brick_idx).params);
-                idx = nparams + 1;
-                
-                param_new = [];
-                param_new.name = params_name;
-                param_new.id = sprintf('%02d',idx);
-                obj.config.bricks(brick_idx).params{idx} = param_new;
-                
-                obj.save_config();
-            end
-        end
         
         function code = get_params_code(obj, brick_name, params_name)
             %GET_PARAMS_CODE returns the 2 digit parameter file code
@@ -407,6 +350,63 @@ classdef Pipeline < handle
             
             idx = obj.get_brick_idx(brick_name);
             code = obj.config.bricks(idx).id;
+        end
+    end
+    
+    methods (Access = protected)
+        function code = get_job_code(obj, brick_name, params_name, job_code_parent)
+            %GET_JOB_CODE creates job code based on the brick, parameter
+            %file and parent job
+            
+            brick_code = obj.get_brick_code(brick_name);
+            params_code = obj.get_params_code(brick_name, params_name);
+            if iscell(job_code_parent)
+                code_new = [];
+                for i=1:length(job_code_parent)
+                    code_new = [code_new job_code_parent{i}];
+                end
+                job_code_parent = code_new;
+            end
+            code = [job_code_parent brick_code params_code];
+            
+        end
+        
+        function jobdir = get_job_dir(obj, brick_name, params_name, job_dir_parent)
+            %GET_JOB_DIR creates job dir based on the brick, parameter file
+            %and parent job dir
+            
+            brick_code = obj.get_brick_code(brick_name);
+            % remove params_[brick code] prefix
+            params_name = strrep(params_name, ['params_' brick_code '_'], '');
+            
+            if ~isempty(job_dir_parent)
+                jobdir = fullfile(job_dir_parent,...
+                    [brick_code '-' strrep(params_name,'_','-')]);
+            else
+                jobdir = [brick_code '-' strrep(params_name,'_','-')];
+            end
+            
+        end
+        
+        function idx = add_params(obj, brick_name, params_name)
+            %ADD_PARAMS add parameter file to the config
+            
+            brick_idx = obj.get_brick_idx(brick_name);
+            idx = obj.get_params_idx(brick_idx,params_name);
+            if idx == 0
+                if ~isfield(obj.config.bricks(brick_idx),'params')
+                    obj.config.bricks(brick_idx).params = [];
+                end
+                nparams = length(obj.config.bricks(brick_idx).params);
+                idx = nparams + 1;
+                
+                param_new = [];
+                param_new.name = params_name;
+                param_new.id = sprintf('%02d',idx);
+                obj.config.bricks(brick_idx).params{idx} = param_new;
+                
+                obj.save_config();
+            end
         end
         
         function config = load_config(obj)

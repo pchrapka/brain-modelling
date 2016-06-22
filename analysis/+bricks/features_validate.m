@@ -38,14 +38,15 @@ addRequired(p,'files_out',@ischar);
 parse(p,files_in,files_out,opt{:});
 
 % load the data
-data = ftb.util.loadvar(files_in);
+data_in = ftb.util.loadvar(files_in);
 
 % create a model
-model = SVMMRMR(data.features, data.class_labels, 'implementation', 'libsvm');
+model = SVMMRMR(data_in.features, data_in.class_labels, 'implementation', 'libsvm');
 
 % validate features
 data = [];
 [data.predictions, data.feat_sel] = model.validate_features(opt{:});
+data.class_labels = data_in.class_labels;
 
 % save output
 save(files_out,'data');

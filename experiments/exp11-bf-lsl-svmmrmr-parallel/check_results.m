@@ -1,33 +1,58 @@
 %% check_results.m
 
-ft_options = {...
-    'params_fv_20',...
-    'params_fv_40',...
-    'params_fv_60',...
-    'params_fv_100',...
-    ...'params_fv_1000',...
-    ...'params_fv_2000',...
-    ...'params_fv_10000',...
-    };
+% code to run analysis pipeline
+% run_lattice_svm
+% pipeline.run();
 
-for i=1:length(ft_options)
+% get pipeline
+pipeline = build_pipeline_lattice_svm();
+
+% select jobs based on filter params
+brick_name = 'bricks.lattice_filter_sources';
+brick_code = pipeline.get_brick_code(brick_name);
+params_name = 'params_lf_MQRDLSL2_p10_l099_n400';
+param_code = pipeline.get_params_code(brick_name,params_name);
+
+% select fv jobs
+brick_name = 'bricks.features_validate';
+brick_code_desired = pipeline.get_brick_code(brick_name);
+
+pattern = ['.+' brick_code param_code '.*' brick_code_desired '\d+\>'];
+jobs = fieldnames(pipeline.pipeline);
+job_idx = cellfun(@(x) ~isempty(regexp(x,pattern,'match')),jobs,'UniformOutput',true);
+jobs_desired = jobs(job_idx);
+
+
+for i=1:length(jobs_desired)
     
-    fprintf('%s\n',ft_options{i});
-    fprintf('%s\n',repmat('-',1,length(ft_options{i})));
+    % decrypt job code
+    pattern = [brick_code_desired '\d+\>'];
+    job_code = regexp(jobs_desired{i},pattern,'match');
+    job_name = pipeline.expand_code(job_code{1},'expand','params');
     
-    file_features = 'output/lattice-svm/P022-9913/st3fm-params-fm-1/features-matrix.mat';
-    file_validated = ['output/lattice-svm/P022-9913/st4fv-'...
-        strrep(ft_options{i},'_','-') '/features-validated.mat'];
+    fprintf('%s\n',job_name);
+    fprintf('%s\n',repmat('-',1,length(job_name)));
+    
+    % get the fm job
+    %brick_name = 'bricks.features_fdr';
+    %brick_code = pipeline.get_brick_code(brick_name);
+    %pattern = ['(.*' brick_code '\d+)'];
+    %job_fm = regexp(jobs_desired{i},pattern,'match');
+    
+    %file_features = pipeline.pipeline.(job_fm{1}).files_out;
+    file_validated = pipeline.pipeline.(jobs_desired{i}).files_out;
+    %fprintf('features: %s\nvalidated: %s\n',file_features,file_validated);
     
     % load the data
-    features = ftb.util.loadvar(file_features);
+    %features = ftb.util.loadvar(file_features);
     validated = ftb.util.loadvar(file_validated);
     
-    perf = svmmrmr_class_accuracy(features.class_labels, validated.predictions,...
+    perf = svmmrmr_class_accuracy(...
+        validated.class_labels, validated.predictions,...
         'verbosity',1);
     
     figure;
-    plot_svmmrmr_confusion(features.class_labels, validated.predictions);
+    plot_svmmrmr_confusion(validated.class_labels, validated.predictions);
     
     fprintf('\n');
 end
