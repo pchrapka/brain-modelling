@@ -8,9 +8,7 @@ function pipeline = build_pipeline_lattice_svm()
 % use absolute directories
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 % pipeline folder
-outdir = fullfile(srcdir,'output','lattice-filter');
-% TODO change the directory to
-% outdir = fullfile(srcdir,'output');
+outdir = fullfile(srcdir,'output');
 
 %% set up parallel pool
 setup_parfor();
