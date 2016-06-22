@@ -1,10 +1,16 @@
 function pipeline = build_pipeline_lattice_svm()
+%BUILD_PIPELINE_LATTICE_SVM builds pipeline for the lattice filter SVM
+%analysis of P022 data
+%
+%   NOTE: depends on output from exp10_beamform_patch
 
 %% set up output folder
 % use absolute directories
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 % pipeline folder
-outdir = fullfile(srcdir,'output');
+outdir = fullfile(srcdir,'output','lattice-filter');
+% TODO change the directory to
+% outdir = fullfile(srcdir,'output');
 
 %% set up parallel pool
 setup_parfor();
