@@ -67,6 +67,7 @@ addpath(genpath(fullfile(pwd,'external','kafbox-1.4','lib')));
 %% add project directories
 addpath(fullfile(pwd,'methods'));
 addpath(fullfile(pwd,'analysis'));
+addpath(fullfile(pwd,'analysis','lattice-svm'));
 addpath(fullfile(pwd,'params'));
 addpath(fullfile(pwd,'visualizations'));
 
