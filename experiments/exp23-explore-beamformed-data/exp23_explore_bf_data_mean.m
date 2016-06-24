@@ -32,15 +32,14 @@ nrows = nsources;
 for i=1:nsources
     subaxis(nrows, ncols, i,...
         'Spacing', 0, 'SpacingVert', 0, 'Padding', 0, 'Margin', 0.05);
-    %plot(sources_mean(i,:));
     
-    h = plot_mean_and_var(1:ntime, sources_mean(i,:), sources_var(i,:), 'r');
+    h = plot_mean_and_var(1:ntime, sources_mean(i,:), sources_var(i,:),'b');
     for j=1:length(h)
         set(h(j),'FaceAlpha',0.3);
         set(h(j),'EdgeColor','None');
     end
     hold on;
-    plot(sources_mean(i,:),'-r');
+    plot(sources_mean(i,:),'-b');
     
     set(gca,'xticklabel',[]);
     xlim([1 ntime]);
