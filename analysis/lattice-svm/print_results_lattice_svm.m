@@ -14,6 +14,9 @@ parse(p,filter_params);
 
 test = false;
 
+% get pipeline
+pipeline = build_pipeline_lattice_svm();
+
 for j=1:length(filter_params)
     fprintf('%s\n', filter_params{j});
     fprintf('%s\n\n',repmat('=',1,length(filter_params{j})));
