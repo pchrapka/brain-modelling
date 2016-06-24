@@ -1,0 +1,4 @@
+lattice-filtered-files.mat
+trial1.mat
+trial2.mat
+trial3.mat

@@ -2,18 +2,7 @@ function [datadir,subject_file,subject_name] = get_coma_data(subject_num)
 
 % get the computer name
 comp_name = get_compname();
-
-% get the root dir based on the computer name
-switch comp_name
-    case sprintf('blade16.ece.mcmaster.ca\n')
-        rootdir = '/home/chrapkpk/Documents';
-    case sprintf('Valentina\n')
-        rootdir = '/home/phil';
-    case 'Valentina '
-        rootdir = '/home/phil';
-    otherwise
-        error('what is the root dir for %s',comp_name);
-end
+rootdir = get_root_dir(comp_name);
 
 % set up the data dir
 datadir = fullfile(rootdir,'projects','data-coma-richard','BC-HC-YOUTH','Cleaned');
