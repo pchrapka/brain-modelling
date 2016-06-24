@@ -10,16 +10,23 @@ function print_results_lattice_svm(filter_params)
 
 p = inputParser();
 addRequired(p,'filter_params',@iscell);
+addParameter(p,'tofile',false,@islogical);
 parse(p,filter_params);
 
 test = false;
+
+if p.Results.tofile
+    fid = fopen('results.txt','w+');
+else
+    fid = 1;
+end
 
 % get pipeline
 pipeline = build_pipeline_lattice_svm();
 
 for j=1:length(filter_params)
-    fprintf('%s\n', filter_params{j});
-    fprintf('%s\n\n',repmat('=',1,length(filter_params{j})));
+    fprinf(fid,'%s\n', filter_params{j});
+    fprinf(fid,'%s\n\n',repmat('=',1,length(filter_params{j})));
     
     % select jobs based on filter params
     brick_name = 'bricks.lattice_filter_sources';
@@ -42,8 +49,8 @@ for j=1:length(filter_params)
         job_code = regexp(jobs_desired{i},pattern,'match');
         job_name = pipeline.expand_code(job_code{1},'expand','params');
         
-        fprintf('%s\n',job_name);
-        fprintf('%s\n',repmat('-',1,length(job_name)));
+        fprinf(fid,'%s\n',job_name);
+        fprinf(fid,'%s\n',repmat('-',1,length(job_name)));
         
         % get test job
         brick_name = 'bricks.train_test_common';
@@ -66,15 +73,19 @@ for j=1:length(filter_params)
             figure;
             plot_svmmrmr_confusion(validated.class_labels, validated.predictions);
             
-            fprintf('test:\n');
+            fprinf(fid,'test:\n');
             test_result = ftb.util.loadvar(file_test);
             perf = svmmrmr_class_accuracy(...
                 test_result.class_labels, test_result.predictions,...
                 'verbosity',1);
         end
         
-        fprintf('\n');
+        fprinf(fid,'\n');
     end
+end
+
+if p.Results.tofile
+    fclose(fid);
 end
 
 end
