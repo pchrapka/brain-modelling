@@ -52,7 +52,7 @@ for j=1:length(filter_params)
         if ~test
             % load data
             validated = ftb.util.loadvar(file_validated);
-            features = ftb.util.loadvar(file_features);
+            features = ftb.util.loadvar(file_feature);
             
             % select common features
             ncommon = 10;
