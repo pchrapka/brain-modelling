@@ -72,8 +72,8 @@ for j=1:length(filter_params)
             validated = ftb.util.loadvar(file_validated);
             
             perf = svmmrmr_class_accuracy(...
-                validated.class_labels, validated.predictions,...
-                'verbosity',1);
+                validated.class_labels, validated.predictions);
+            fprintf(fid,'\tclassification accuracy: %0.2f%%\n',perf*100);
             
             figure;
             plot_svmmrmr_confusion(validated.class_labels, validated.predictions);
@@ -81,8 +81,8 @@ for j=1:length(filter_params)
             fprintf(fid,'test:\n');
             test_result = ftb.util.loadvar(file_test);
             perf = svmmrmr_class_accuracy(...
-                test_result.class_labels, test_result.predictions,...
-                'verbosity',1);
+                test_result.class_labels, test_result.predictions);
+            fprintf(fid,'\tclassification accuracy: %0.2f%%\n',perf*100);
         end
         
         fprintf(fid,'\n');
