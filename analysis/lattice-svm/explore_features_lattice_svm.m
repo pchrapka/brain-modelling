@@ -45,24 +45,26 @@ for j=1:length(filter_params)
         fprintf('%s\n',job_name);
         fprintf('%s\n',repmat('-',1,length(job_name)));
         
+        file_feature = pipeline.pipeline.(jobs_desired{i}).files_in;
         file_validated = pipeline.pipeline.(jobs_desired{i}).files_out;
         fprintf('file: %s\n',file_validated);
         
         if ~test
             % load data
             validated = ftb.util.loadvar(file_validated);
+            features = ftb.util.loadvar(file_features);
             
             % select common features
             ncommon = 10;
             [feat_common, freq] = features_select_common(validated.feat_sel,ncommon);
             
             % select corresponding labels
-            labels_mrmr = validated.feat_labels(feat_common);
+            labels_mrmr = features.feature_labels(feat_common);
             
             fprintf(' Index     | Frequency | Label     \n');
             fprintf('-----------------------------------\n');
-            for j=1:ncommon
-                fprintf(' %9d | %9d | %s\n',feat_common(j), freq(j), labels_mrmr{j});
+            for k=1:ncommon
+                fprintf(' %9d | %9d | %s\n',feat_common(k), freq(k), labels_mrmr{k});
             end
         end
         
