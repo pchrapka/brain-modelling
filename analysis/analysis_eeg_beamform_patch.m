@@ -56,8 +56,7 @@ end
 bf = ftb.BeamformerPatchTrial(params_bf,'lcmvmom');
 analysis.add(bf);
 
-%% Process pipeline
+%% init pipeline
 analysis.init();
-analysis.process();
 
 end

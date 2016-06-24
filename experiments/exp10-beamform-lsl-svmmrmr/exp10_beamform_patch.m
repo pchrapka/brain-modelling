@@ -1,5 +1,7 @@
 %% exp10_beamform_patch
 
+do_run = false;
+
 %% Analysis params
 
 % subject specific info
@@ -27,6 +29,10 @@ analysis{1} = analysis_eeg_beamform_patch(...
     'subject_name', subject_name,...
     'stimulus', stimulus);
 
+if do_run
+    analysis{1}.process();
+end
+
 stimulus = 'odd';
 analysis{2} = analysis_eeg_beamform_patch(...
     out_folder,...
@@ -34,6 +40,10 @@ analysis{2} = analysis_eeg_beamform_patch(...
     'subject_file', subject_file,...
     'subject_name', subject_name,...
     'stimulus', stimulus);
+
+if do_run
+    analysis{2}.process();
+end
 
 %% Print beamformer output files
 fprintf('Beamformer output:\n');
