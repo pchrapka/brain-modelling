@@ -12,6 +12,8 @@ p = inputParser();
 addRequired(p,'filter_params',@iscell);
 parse(p,filter_params);
 
+test = false;
+
 for j=1:length(filter_params)
     fprintf('%s\n', filter_params{j});
     fprintf('%s\n\n',repmat('=',1,length(filter_params{j})));
@@ -64,7 +66,7 @@ for j=1:length(filter_params)
             fprintf('test:\n');
             test_result = ftb.util.loadvar(file_test);
             perf = svmmrmr_class_accuracy(...
-                test_data.class_labels, test_results.predictions,...
+                test_result.class_labels, test_result.predictions,...
                 'verbosity',1);
         end
         
