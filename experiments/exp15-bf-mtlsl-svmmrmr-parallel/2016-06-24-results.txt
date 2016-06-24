@@ -1,0 +1,124 @@
+params_lf_MCMTQRDLSL1_mt2_p10_l099_n400
+=======================================
+
+fv-params_fv_rbf_20
+-------------------
+validation:
+	classification accuracy: 56.00%
+test:
+	classification accuracy: 75.00%
+
+fv-params_fv_rbf_40
+-------------------
+validation:
+	classification accuracy: 73.00%
+test:
+	classification accuracy: 57.50%
+
+fv-params_fv_rbf_60
+-------------------
+validation:
+	classification accuracy: 66.50%
+test:
+	classification accuracy: 70.00%
+
+fv-params_fv_rbf_100
+--------------------
+validation:
+	classification accuracy: 74.00%
+test:
+	classification accuracy: 72.50%
+
+params_lf_MCMTQRDLSL1_mt3_p10_l099_n400
+=======================================
+
+fv-params_fv_rbf_20
+-------------------
+validation:
+	classification accuracy: 82.14%
+test:
+	classification accuracy: 75.00%
+
+fv-params_fv_rbf_40
+-------------------
+validation:
+	classification accuracy: 80.71%
+test:
+	classification accuracy: 80.00%
+
+fv-params_fv_rbf_60
+-------------------
+validation:
+	classification accuracy: 77.86%
+test:
+	classification accuracy: 77.50%
+
+fv-params_fv_rbf_100
+--------------------
+validation:
+	classification accuracy: 85.00%
+test:
+	classification accuracy: 77.50%
+
+params_lf_MCMTQRDLSL1_mt5_p10_l099_n400
+=======================================
+
+fv-params_fv_rbf_20
+-------------------
+validation:
+	classification accuracy: 81.67%
+test:
+	classification accuracy: 80.00%
+
+fv-params_fv_rbf_40
+-------------------
+validation:
+	classification accuracy: 86.67%
+test:
+	classification accuracy: 82.50%
+
+fv-params_fv_rbf_60
+-------------------
+validation:
+	classification accuracy: 88.33%
+test:
+	classification accuracy: 77.50%
+
+fv-params_fv_rbf_100
+--------------------
+validation:
+	classification accuracy: 90.00%
+test:
+	classification accuracy: 87.50%
+
+params_lf_MCMTQRDLSL1_mt8_p10_l099_n400
+=======================================
+
+fv-params_fv_rbf_20
+-------------------
+validation:
+	classification accuracy: 75.00%
+test:
+	classification accuracy: 75.00%
+
+fv-params_fv_rbf_40
+-------------------
+validation:
+	classification accuracy: 75.00%
+test:
+	classification accuracy: 65.00%
+
+fv-params_fv_rbf_60
+-------------------
+validation:
+	classification accuracy: 77.50%
+test:
+	classification accuracy: 65.00%
+
+fv-params_fv_rbf_100
+--------------------
+validation:
+	classification accuracy: 72.50%
+test:
+	classification accuracy: 65.00%
+
