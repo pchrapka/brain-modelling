@@ -71,6 +71,7 @@ for j=1:length(filter_params)
         if ~test
             validated = ftb.util.loadvar(file_validated);
             
+            fprintf(fid,'validation:\n');
             perf = svmmrmr_class_accuracy(...
                 validated.class_labels, validated.predictions);
             fprintf(fid,'\tclassification accuracy: %0.2f%%\n',perf*100);
