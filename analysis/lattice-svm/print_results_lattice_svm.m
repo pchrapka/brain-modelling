@@ -1,17 +1,22 @@
-function print_results_lattice_svm(filter_params)
+function print_results_lattice_svm(filter_params,varargin)
 %PRINT_RESULTS_LATTICE_SVM prints lattice svm pipeline results
-%   PRINT_RESULTS_LATTICE_SVM(filter_params) prints lattice svm pipeline
+%   PRINT_RESULTS_LATTICE_SVM(filter_params,...) prints lattice svm pipeline
 %   results
 %
 %   Input
 %   -----
 %   filter_params (cell array)
 %       array of parameter file names for bricks.lattice_filter_sources
+%
+%   Parameters
+%   ----------
+%   tofile (logical, default = false)
+%       selects printing to file or to stdout
 
 p = inputParser();
 addRequired(p,'filter_params',@iscell);
 addParameter(p,'tofile',false,@islogical);
-parse(p,filter_params);
+parse(p,filter_params,varargin{:});
 
 test = false;
 
