@@ -27,34 +27,39 @@ jobs_desired = jobs(job_idx);
 for i=1:length(jobs_desired)
     
     % decrypt job code
-    pattern = [brick_code_desired '\d+\>'];
+    pattern = [brick_code_fv '\d+\>'];
     job_code = regexp(jobs_desired{i},pattern,'match');
     job_name = pipeline.expand_code(job_code{1},'expand','params');
     
     fprintf('%s\n',job_name);
     fprintf('%s\n',repmat('-',1,length(job_name)));
     
-    % get the fm job
-    %brick_name = 'bricks.features_fdr';
-    %brick_code = pipeline.get_brick_code(brick_name);
-    %pattern = ['(.*' brick_code '\d+)'];
-    %job_fm = regexp(jobs_desired{i},pattern,'match');
+    % get test job
+    brick_name = 'bricks.train_test_common';
+    brick_code_tt = pipeline.get_brick_code(brick_name);
+    pattern = [jobs_desired{i} '.*' brick_code_tt '\d+\>'];
+    job_idx = cellfun(@(x) ~isempty(regexp(x,pattern,'match')),jobs,'UniformOutput',true);
+    job_test = jobs(job_idx);
     
-    %file_features = pipeline.pipeline.(job_fm{1}).files_out;
     file_validated = pipeline.pipeline.(jobs_desired{i}).files_out;
-    %fprintf('features: %s\nvalidated: %s\n',file_features,file_validated);
+    file_test = pipeline.pipeline.(job_test{1}).files_out;
     
-    % load the data
-    %features = ftb.util.loadvar(file_features);
     if ~test
         validated = ftb.util.loadvar(file_validated);
         
+        fprintf('validation:\n');
         perf = svmmrmr_class_accuracy(...
             validated.class_labels, validated.predictions,...
             'verbosity',1);
         
         figure;
         plot_svmmrmr_confusion(validated.class_labels, validated.predictions);
+        
+        fprintf('test:\n');
+        test_result = ftb.util.loadvar(file_test);
+        perf = svmmrmr_class_accuracy(...
+            test_data.class_labels, test_results.predictions,...
+            'verbosity',1);
     end
     
     fprintf('\n');
