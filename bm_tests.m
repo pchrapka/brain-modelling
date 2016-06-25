@@ -20,7 +20,14 @@ verbosity = 1;
 % end
 % result = run(suite);
 
-suite = TestSuite.fromClass(?tests.TestSVM);
+% suite = TestSuite.fromClass(?tests.TestSVM);
+% if verbosity > 0
+%     disp({suite.Name}');
+% end
+% result = run(suite);
+
+[srcdir,~,~] = fileparts(mfilename('fullpath'));
+suite = TestSuite.fromFolder(fullfile(srcdir,'analysis'),'IncludingSubfolders',true);
 if verbosity > 0
     disp({suite.Name}');
 end

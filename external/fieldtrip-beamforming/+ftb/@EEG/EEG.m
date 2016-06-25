@@ -126,7 +126,7 @@ classdef EEG < ftb.AnalysisStep
         
         function plot_data(obj,mode,varargin)
             %   mode (string)
-            %       selects data to plot: 'preprocessed'
+            %       selects data to plot: 'preprocessed' or 'timelock'
             
             if nargin > 2
                 cfgin = varargin{1};
