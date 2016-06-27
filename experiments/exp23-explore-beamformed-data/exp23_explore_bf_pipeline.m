@@ -1,6 +1,7 @@
 %% exp23_explore_bf_pipeline
 %   Goal:
-%       plots timelocked eeg data
+%       plots timelocked eeg data as well as the difference between std and
+%       odd
 
 % clear all;
 % close all;
@@ -37,6 +38,9 @@ cfgin.baseline = [0 0.4];
 ft_multiplotER(cfgin, data{1}, data{2});
 
 data_diff = data{2};
+data_diff = rmfield(data_diff,'trial');
+data_diff = rmfield(data_diff,'cov');
+data_diff.dimord = 'chan_time';
 nsamples = size(data{2}.avg,2);
 data{1}.avg = data{1}.avg(:,1:nsamples);
 data_diff.avg = data{1}.avg - data{2}.avg;
