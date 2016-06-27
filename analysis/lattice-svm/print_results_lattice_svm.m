@@ -1,4 +1,4 @@
-function print_results_lattice_svm(filter_params,varargin)
+function print_results_lattice_svm(params_subject,filter_params,varargin)
 %PRINT_RESULTS_LATTICE_SVM prints lattice svm pipeline results
 %   PRINT_RESULTS_LATTICE_SVM(filter_params,...) prints lattice svm pipeline
 %   results
@@ -14,9 +14,10 @@ function print_results_lattice_svm(filter_params,varargin)
 %       selects printing to file or to stdout
 
 p = inputParser();
+addRequired(p,'params_subject',@ischar);
 addRequired(p,'filter_params',@iscell);
 addParameter(p,'tofile',false,@islogical);
-parse(p,filter_params,varargin{:});
+parse(p,params_subject,filter_params,varargin{:});
 
 test = false;
 
@@ -27,7 +28,7 @@ else
 end
 
 % get pipeline
-pipeline = build_pipeline_lattice_svm();
+pipeline = build_pipeline_lattice_svm(params_subject);
 
 for j=1:length(filter_params)
     fprintf(fid,'%s\n', filter_params{j});

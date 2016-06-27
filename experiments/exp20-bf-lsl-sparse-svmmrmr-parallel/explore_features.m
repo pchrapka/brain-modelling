@@ -7,7 +7,7 @@ test = false;
 % pipeline.run();
 
 % get pipeline
-pipeline = build_pipeline_lattice_svm();
+pipeline = build_pipeline_lattice_svm('params_sd_22');
 
 % select jobs based on filter params
 brick_name = 'bricks.lattice_filter_sources';

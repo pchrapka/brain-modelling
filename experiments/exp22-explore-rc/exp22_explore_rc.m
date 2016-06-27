@@ -1,6 +1,6 @@
 %% exp22_explore_rc
 
-pipeline = build_pipeline_lattice_svm();
+pipeline = build_pipeline_lattice_svm('params_sd_22');
 
 % filter_params = 'params_lf_MQRDLSL2_p10_l099_n400';
 filter_params = 'params_lf_MCMTQRDLSL1_mt3_p10_l099_n400';

@@ -1,21 +1,24 @@
-function explore_features_lattice_svm(filter_params)
+function explore_features_lattice_svm(params_subject,filter_params)
 %EXPLORE_FEATURES_LATTICE_SVM explores features selected by pipeline
 %   EXPLORE_FEATURES_LATTICE_SVM(filter_params) explores features selected
 %   by pipeline
 %
 %   Input
 %   -----
+%   params_subject (string)
+%       parameter file name of subject data
 %   filter_params (cell array)
 %       array of parameter file names for bricks.lattice_filter_sources
 
 p = inputParser();
-addRequired(p,'filter_params',@iscell);
-parse(p,filter_params);
+p.addRequired('params_subject',@ischar);
+p.addRequired('filter_params',@iscell);
+p.parse(params_subject,filter_params);
 
 test = false;
 
 % get pipeline
-pipeline = build_pipeline_lattice_svm();
+pipeline = build_pipeline_lattice_svm(params_subject);
 
 for j=1:length(filter_params)
     fprintf('%s\n', filter_params{j});

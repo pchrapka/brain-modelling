@@ -1,9 +1,9 @@
-%% run_lattice_svm
+%% run_lattice_svm_consec
 % Goal:
 %   Run lattice svm alg on P022 data, depends on output from
 %   exp10_beamform_patch
 
-pipeline = build_pipeline_lattice_svm('params_sd_22');
+pipeline = build_pipeline_lattice_svm('params_sd_22_consec');
 
 % pipeline options
 pipeline.options.mode = 'session';
