@@ -1,4 +1,5 @@
 %% exp23_explore_bf_data_diff
+% plots difference in mean of patch time series between std and odd conditions
 
 clear all;
 close all;

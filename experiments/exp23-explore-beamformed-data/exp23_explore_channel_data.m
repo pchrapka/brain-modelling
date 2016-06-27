@@ -1,8 +1,15 @@
 %% exp23_explore_channel_data
+%   Goal:
+%       plot mean of all trials
+%   Notes:
+%       a bit dense to show 64 channels
 
 data_file = {};
 data_file{1} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstd/timelock.mat';
 data_file{2} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGodd/timelock.mat';
+
+% data_file{1} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstdconsec/timelock.mat';
+% data_file{2} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGoddconsec/timelock.mat';
 
 result = cell(length(data_file),1);
 for i=1:length(data_file)
@@ -21,7 +28,7 @@ trial_mean_diff = result{1}.trial_mean - result{2}.trial_mean;
 
 %% plot
 
-[ntrials,nchannels,ntime] = size(result{1}.trials);
+[nchannels,ntime] = size(result{1}.trial_mean);
 ncols = 1;
 nrows = nchannels;
 figure;
