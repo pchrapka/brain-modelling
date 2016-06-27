@@ -25,7 +25,7 @@ params_sd = params_func();
 
 %% set up lattice filter pipeline
 
-pipedir = fullfile(outdir,subject_name);
+pipedir = fullfile(outdir,params_subject);
 pipeline = PipelineLatticeSVM(pipedir);
 
 % TODO in beamforming step select only consecutive std dev pairs
