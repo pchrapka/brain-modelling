@@ -28,8 +28,6 @@ params_sd = params_func();
 pipedir = fullfile(outdir,params_subject);
 pipeline = PipelineLatticeSVM(pipedir);
 
-% TODO in beamforming step select only consecutive std dev pairs
-
 job_al = cell(length(params_sd.conds),1);
 for i=1:length(params_sd.conds)
     % add data label
@@ -44,9 +42,9 @@ params_filter = [];
 params_filter(f).params_filter = 'params_lf_MQRDLSL2_p10_l099_n400';
 params_filter(f).params_partition = 'params_pf_std_odd_tr100_te20';
 f = f+1;
-params_filter(f).params_filter = 'params_lf_MLOCCDTWL_p10_l099_n400';
-params_filter(f).params_partition = 'params_pf_std_odd_tr100_te20';
-f = f+1;
+% params_filter(f).params_filter = 'params_lf_MLOCCDTWL_p10_l099_n400';
+% params_filter(f).params_partition = 'params_pf_std_odd_tr100_te20';
+% f = f+1;
 params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt2_p10_l099_n400';
 params_filter(f).params_partition = 'params_pf_std_odd_tr100_te20';
 f = f+1;
