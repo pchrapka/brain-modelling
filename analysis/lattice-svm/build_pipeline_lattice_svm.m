@@ -34,10 +34,12 @@ for i=1:length(params_sd.conds)
         'files_in', params_sd.conds(i).file);
 end
 
-% TODO 'params_lf_MLOCCD_TWL_p10_l099_n400'
 f = 1;
 params_filter = [];
 params_filter(f).params_filter = 'params_lf_MQRDLSL2_p10_l099_n400';
+params_filter(f).params_partition = 'params_pf_std_odd_tr100_te20';
+f = f+1;
+params_filter(f).params_filter = 'params_lf_MLOCCDTWL_p10_l099_n400';
 params_filter(f).params_partition = 'params_pf_std_odd_tr100_te20';
 f = f+1;
 params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt2_p10_l099_n400';
