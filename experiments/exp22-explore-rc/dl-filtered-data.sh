@@ -1,7 +1,7 @@
 #!/bin/bash
 # Download a tiny set of filtered files to laptop
 
-DIR=projects/brain-modelling/analysis/lattice-svm/output/P022-9913/al-std/lf-MQRDLSL2-p10-l099-n400/
+DIR=projects/brain-modelling/analysis/lattice-svm/output/params_sd_22/al-std/lf-MQRDLSL2-p10-l099-n400/
 
 # declare an array variable
 declare -a FILES=("trial1.mat" "trial2.mat" "trial3.mat")
