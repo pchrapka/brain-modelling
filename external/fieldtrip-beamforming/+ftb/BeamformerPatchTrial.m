@@ -77,7 +77,7 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                 source_all_file = obj.sourceanalysis;
                 obj.sourceanalysis = strrep(obj.sourceanalysis,'.mat','-trial.mat');
                     
-                ntrials = size(timelock_all.trialinfo,1);
+                ntrials = size(timelock_all.trial,1);
                 for i=1:ntrials
                     % trial
                     % -------
@@ -87,7 +87,9 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                     timelock.dimord = 'chan_time';
                     timelock.trial = squeeze(timelock_all.trial(i,:,:));
                     timelock.cov = squeeze(timelock_all.cov(i,:,:));
-                    timelock.trialinfo = timelock_all.trialinfo(i,:);
+                    if isfield(timelock,'trialinfo')
+                        timelock.trialinfo = timelock_all.trialinfo(i,:);
+                    end
                     
                     % save
                     tmp_timelock_file = fullfile(out_folder,'temp.mat');

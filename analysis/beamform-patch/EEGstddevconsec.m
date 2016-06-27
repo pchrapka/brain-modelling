@@ -34,9 +34,9 @@ switch stimulus
     case 'std'
         params_eeg.ft_definetrial.trialfun = 'ft_trialfun_preceed';
         params_eeg.ft_definetrial.trialdef.eventtype = 'Stimulus';
-        params_eeg.ft_definetrial.trialdef.eventvalue = {'S 11'}; % standard
+        params_eeg.ft_definetrial.trialdef.eventvalue = 'S 11'; % standard
         params_eeg.ft_definetrial.trialpost.eventtype = 'Stimulus';
-        params_eeg.ft_definetrial.trialpost.eventvalue = {'S 16'}; % deviant
+        params_eeg.ft_definetrial.trialpost.eventvalue = 'S 16'; % deviant
     case 'odd'
         params_eeg.ft_definetrial.trialdef.eventtype = 'Stimulus';
         params_eeg.ft_definetrial.trialdef.eventvalue = {'S 16'}; % deviant
