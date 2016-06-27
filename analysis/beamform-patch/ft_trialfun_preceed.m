@@ -54,16 +54,14 @@ end
 
 pre_event = pre_event_temp(pre_event_temp > 0);
 
-PreTrig   = round(cfg.trialdef.prestim * hdr.Fs);
-PostTrig  = round(cfg.trialdef.poststim * hdr.Fs);
-
-begsample = EVsample(pre_event) - PreTrig;
-endsample = EVsample(pre_event) + PostTrig;
-
-offset = -PreTrig*ones(size(endsample));
+trloff = round(-cfg.trialdef.prestim * hdr.Fs);
+trloff = repmat(trloff,length(pre_event),1);
+trldur = round((cfg.trialdef.prestim + cfg.trialdef.poststim)*hdr.Fs) - 1;
+trlbeg = EVsample(pre_event) + trloff;
+trlend = trlbeg + trldur;
 
 %% the last part is again common to all trial functions
 % return the trl matrix (required)
-trl = [begsample endsample offset];
+trl = [trlbeg trlend trloff];
 
 end

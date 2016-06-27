@@ -1,6 +1,6 @@
 function analysis = build_analysis_beamform_patch_consec()
-%BUILD_ANALYSIS_BEAMFORM_PATCH builds analysis pipeline for patch
-%beamforming
+%BUILD_ANALYSIS_BEAMFORM_PATCH_CONSEC builds analysis pipeline for patch
+%beamforming with consecutive std, odd pairs
 
 do_run = false;
 
