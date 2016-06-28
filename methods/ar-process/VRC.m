@@ -1,4 +1,4 @@
-classdef VRC < handle
+classdef VRC < VARProcess
     %VRC Vector Reflection Coefficient
     %   Detailed explanation goes here
     

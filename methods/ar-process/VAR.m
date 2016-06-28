@@ -1,4 +1,4 @@
-classdef VAR < handle
+classdef VAR < VARProcess
     %VAR Summary of this class goes here
     %   Detailed explanation goes here
     

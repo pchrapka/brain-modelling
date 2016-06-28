@@ -1,4 +1,4 @@
-%% exp25_sta_vs_dyn
+%% exp25_sta_vs_dyn_eeg
 
 trial_idx = 1:5;
 ntrials = length(trial_idx);
@@ -103,9 +103,10 @@ k = 1;
 
 order_est = 10;
 verbosity = 0;
+% lambda = 0.99;
+lambda = 0.95;
 
 %% estimate connectivity with RC
-lambda = 0.99;
 
 filter = MQRDLSL1(nchannels,order_est,lambda);
 trace{k} = LatticeTrace(filter,'fields',{'Kf'});
@@ -173,6 +174,26 @@ trace{k}.run(sources(:,:,1),'verbosity',verbosity,'mode','none');
 trace{k}.name = ['noise warmup ' trace{k}.filter.name];
 k = k+1;
 
+mt = 5;
+filter = MCMTQRDLSL1(mt,nchannels,order_est,lambda);
+
+mu = zeros(nchannels,1);
+sigma = eye(nchannels);
+noise = zeros(nchannels,nsamples,mt);
+for j=1:mt
+    noise(:,:,j) = mvnrnd(mu,sigma,nsamples)';
+end
+
+% run the filter on noise
+trace_noise = LatticeTrace(filter,'fields',{'Kf'});
+trace_noise.run(noise,'verbosity',verbosity,'mode','none');
+
+% run the filter on data
+trace{k} = LatticeTrace(filter,'fields',{'Kf'});
+trace{k}.run(sources(:,:,1:mt),'verbosity',verbosity,'mode','none');
+trace{k}.name = ['noise warmup ' trace{k}.filter.name];
+k = k+1;
+
 %% estimate connectivity with Nuttall Strand
 
 % prep data
@@ -184,10 +205,11 @@ method = 13;
 
 % transform estimates into common data struct
 kest = zeros(order_est, nchannels, nchannels);
+aest = zeros(order_est, nchannels, nchannels);
 for i=1:order_est
     idx_start = (i-1)*nchannels+1;
     idx_end = i*nchannels; 
-    %Aest(:,:,i) = AR(:,idx_start:idx_end);
+    aest(i,:,:) = AR(:,idx_start:idx_end);
     kest(i,:,:) = RC(:,idx_start:idx_end);
 end
 kest_time = repmat(kest,1,1,1,nsamples);
@@ -196,17 +218,56 @@ trace{k}.name = 'Nuttall Strand';
 trace{k}.trace.Kf = kest_time;
 k = k+1;
 
+aest_time = repmat(aest,1,1,1,nsamples);
+aest_time = shiftdim(aest_time,3);
+trace{k}.name = 'Nuttall Strand AR';
+trace{k}.trace.Kf = aest_time;
+k = k+1;
+
 %% estimate connectivity with mscohere
+nfreq = 129;
+cxy = zeros(nchannels, nchannels, nfreq);
+for i=1:nchannels
+    for j=1:nchannels
+        cxy(i,j,:) = mscohere(sources(i,:,1), sources(j,:,1),[]);
+    end
+end
+cxy = shiftdim(cxy,-1);
+cxy_time = shiftdim(cxy,3);
+trace{k}.name = 'Coherence';
+trace{k}.trace.Kf = cxy_time;
+k = k+1;
 
 %% plot traces
 mode = 'image-order';
 for i=1:length(trace)
-    fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
-    figure('Name',fig_name,'NumberTitle','off')
-    plot_rc(trace{i}.trace,'mode',mode,'clim','none','abs',true,'threshold','none');
     
+    switch mode
+        case 'image-order'
+            %fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
+            %figure('Name',fig_name,'NumberTitle','off')
+            %plot_rc(trace{i}.trace,'mode',mode,'clim','none','abs',true,'threshold','none');
+            
+            fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
+            figure('Name',fig_name,'NumberTitle','off')
+            plot_rc(trace{i}.trace,'mode',mode,'clim',[0 1.5],'abs',true,'threshold',1.5);
+    end
+end
+
+%% movie
+do_movie = true;
+
+if do_movie
+    %i = 1;
+    %i = 4; % mt5
+    %i = 5; % sparse
+    %i = 7; % mqrdlsl noise warmup
+    %i = 8; % mt5 noise warmup
+    %i = 9; % nuttall strand
+    i = 10; % nuttall strand AR
+    %i = 11; % coherence
     fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
     figure('Name',fig_name,'NumberTitle','off')
-    plot_rc(trace{i}.trace,'mode',mode,'clim',[0 1.5],'abs',true,'threshold',1.5);
+    plot_rc(trace{i}.trace,'mode','movie-order','clim',[0 1.5],'abs',true,'threshold',1.5);
 end
 

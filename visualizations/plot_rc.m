@@ -92,6 +92,8 @@ switch p.Results.mode
             
             if j==norder
                 colorbar;
+                % TODO fix colorbar, only displays color scale for current
+                % plot, either standardize or do for all
                 xlabel('Time');
             end
         end
@@ -123,7 +125,9 @@ switch p.Results.mode
         ncols = ceil(nplots/nrows);
         for k=1:niters
             for j=1:norder
-                subplot(nrows,ncols,j);
+                %subplot(nrows,ncols,j);
+                subaxis(nrows, ncols, j,...
+                    'Spacing', 0.05, 'SpacingVert', 0.05, 'Padding', 0, 'Margin', 0.05);
                 rc = squeeze(data.Kf(k,j,:,:));
                 rc = transform_data(rc,p.Results);
                 
@@ -134,6 +138,8 @@ switch p.Results.mode
                 end
                 axis square;
                 ylabel(sprintf('P=%d',j));
+                set(gca,'yticklabel',[]);
+                set(gca,'xticklabel',[]);
                 
                 if j==1
                     title(sprintf('Time = %d/%d',k,niters));
