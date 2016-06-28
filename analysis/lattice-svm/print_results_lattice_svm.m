@@ -22,7 +22,8 @@ parse(p,params_subject,filter_params,varargin{:});
 test = false;
 
 if p.Results.tofile
-    fid = fopen([datestr(now, 'yyyy-mm-dd') '-results.txt'],'w+');
+    fid = fopen([datestr(now, 'yyyy-mm-dd')...
+        '-' strrep(params_subject,'_','-') '-results.txt'],'w+');
 else
     fid = 1;
 end
