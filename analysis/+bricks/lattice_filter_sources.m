@@ -121,9 +121,7 @@ parfor i=1:ntrial_groups
         data = data_in(i,j);
         
         % get source data
-        temp = data.avg.mom(data.inside);
-        % convert to matrix [patches x time]
-        sources = cell2mat(temp);
+        sources = bf_get_sources(data);
         
         % normalize variance of each channel to unit variance
         X_norm(:,:,j) = sources./repmat(std(sources,0,2),1,nsamples);

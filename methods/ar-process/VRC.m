@@ -179,9 +179,9 @@ classdef VRC < handle
             
             if obj.init
                 % simulate some data
-                [x,~,~] = obj.simulate(200);
+                [x,~,~] = obj.simulate(1000);
                 x_max = max(abs(x(1,:)));
-                thresh = 10000;
+                thresh = 5;
                 
                 % check signal max
                 if x_max > thresh

@@ -69,6 +69,7 @@ addpath(fullfile(pwd,'methods'));
 addpath(fullfile(pwd,'methods','ar-process'));
 addpath(fullfile(pwd,'methods','adaptive-filter'));
 addpath(fullfile(pwd,'methods','analysis'));
+addpath(fullfile(pwd,'methods','beamformer'));
 addpath(fullfile(pwd,'methods','classification'));
 addpath(fullfile(pwd,'methods','modelling'));
 addpath(fullfile(pwd,'methods','stats'));

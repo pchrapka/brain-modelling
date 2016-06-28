@@ -2,6 +2,10 @@ classdef LatticeTrace < handle
     %LatticeStats Summary of this class goes here
     %   Detailed explanation goes here
     
+    properties
+        name;
+    end
+    
     properties (SetAccess = protected)
         % lattice filter object
         filter;
