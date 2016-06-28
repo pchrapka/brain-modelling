@@ -1,0 +1,31 @@
+params_lf_MQRDLSL2_p10_l099_n400
+================================
+
+fv-params_fv_rbf_20
+-------------------
+validation:
+	classification accuracy: 62.50%
+test:
+	classification accuracy: 55.00%
+
+fv-params_fv_rbf_40
+-------------------
+validation:
+	classification accuracy: 61.00%
+test:
+	classification accuracy: 60.00%
+
+fv-params_fv_rbf_60
+-------------------
+validation:
+	classification accuracy: 66.00%
+test:
+	classification accuracy: 52.50%
+
+fv-params_fv_rbf_100
+--------------------
+validation:
+	classification accuracy: 65.00%
+test:
+	classification accuracy: 62.50%
+
