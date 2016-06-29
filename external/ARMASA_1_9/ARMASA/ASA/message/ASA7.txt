@@ -1,0 +1,2 @@
+??? ARMASA error 7
+This function is meaningless if called from the base workspace.

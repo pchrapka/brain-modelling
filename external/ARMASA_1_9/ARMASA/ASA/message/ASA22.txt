@@ -1,0 +1,3 @@
+??? ARMASA error 22
+ARMASA version check failed, since one, or both, of the variables 
+'ASAcontrol.is_version' and 'ASAcontrol.comp_version' are undefined.

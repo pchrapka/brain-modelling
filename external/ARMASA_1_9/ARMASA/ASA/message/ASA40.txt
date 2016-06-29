@@ -1,0 +1,3 @@
+??? ARMASA error 40
+Argument 'ASAsubst' must be a character string.
+

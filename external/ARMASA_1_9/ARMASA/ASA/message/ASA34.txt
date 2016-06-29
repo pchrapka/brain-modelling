@@ -1,0 +1,4 @@
+??? ARMASA error 34
+The maximum of frequency samples in argument 'ASAsubst' exceeds 
+ASAsubst Hz, which is the theoretical upper limit, given by half the 
+sampling frequency.

@@ -1,0 +1,3 @@
+??? ARMASA error 38
+The determined order bounderies are not covered by the set of 
+provided candidate orders; this function cannot proceed.

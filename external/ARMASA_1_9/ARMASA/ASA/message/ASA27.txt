@@ -1,0 +1,3 @@
+??? ARMASA error 27
+The maximum candidate order in argument 'ASAsubst' exceeds the number 
+of provided residual variance estimates in argument 'ASAsubst'.

@@ -1,0 +1,2 @@
+??? ARMASA error 17
+Argument 'ASAsubst' must be a positive integer scalar.

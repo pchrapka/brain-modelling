@@ -1,0 +1,4 @@
+ARMASA warning 9
+The function 'ASAsubst' has been instructed to skip its 
+computational kernel. It will return the variable 'ASAcontrol' 
+only, as its first output argument.

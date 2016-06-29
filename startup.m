@@ -15,6 +15,7 @@ addpath(fullfile(pwd,'external','libsvm-321','matlab'));
 addpath(fullfile(pwd,'external','LSPC'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','FEAST'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','MIToolbox'));
+addpath(genpath(fullfile(pwd,'external','AutomaticSpectra')));
 
 %% add external packages with setup steps
 % Check fEAST has been compiled
@@ -61,6 +62,11 @@ addpath(fullfile(pwd,'external','kafbox-1.4'));
 addpath(genpath(fullfile(pwd,'external','kafbox-1.4','data')));
 addpath(genpath(fullfile(pwd,'external','kafbox-1.4','lib')));
 %addpath((fullfile(pwd,'demo')));
+
+curdir = pwd;
+cd(fullfile(pwd,'external','ARMASA_1_9','ARMASA'));
+ASAaddpath();
+cd(curdir);
 
 
 

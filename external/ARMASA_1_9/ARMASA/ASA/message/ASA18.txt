@@ -1,0 +1,4 @@
+??? ARMASA error 18
+The difference between AR and MA orders for ARMA estimation, as 
+specified in argument 'ASAsubst', is invalid.
+It must be >= ASAsubst and <= ASAsubst

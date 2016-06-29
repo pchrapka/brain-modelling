@@ -1,0 +1,3 @@
+??? ARMASA error 37
+The maximum of candidate order(s) in argument 'ASAsubst' must be less 
+than the signal length.

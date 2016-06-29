@@ -1,0 +1,2 @@
+??? ARMASA error 30
+The first element of argument 'ASAsubst' must be non-zero.

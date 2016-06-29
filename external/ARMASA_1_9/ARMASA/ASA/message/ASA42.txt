@@ -1,0 +1,42 @@
+
+Note for software developers using ARMASA functions in their own programs
+-------------------------------------------------------------------------
+
+This toolbox consists of a set of modular programs, referred to as ARMASA 
+main functions. The performance of one program in the set often relies on 
+other members of the set. When ARMASA functions evolve in time, for 
+example when programs are revised to add new functionality in future 
+releases, conflicts among program calls could easily arise when unrevised 
+(third party) programs call the renewed ARMASA functions. To prevent such 
+inconsistencies, ARMASA main functions are supplied with a version 
+control system. What it comes down to is that one function checks the 
+version identification of another function that it calls, to make sure 
+that the called function meets the requirements. Although consistency 
+among calls of ARMASA main functions is guaranteed this way, it depends 
+on a program developer, using ARMASA main functions in his or her own 
+programs, whether these programs will also notify a user if inconsistency 
+is detected when calling updated versions of ARMASA main functions. By 
+implementing the same version check system in such third party programs, 
+these programs will also become reliable. Therefore it is recommended to 
+do so.
+
+To support the developer by implementing version check features, the 
+ARMASA functions are able to warn the user whenever these functions are 
+called without checking their versions. A message is printed that shows 
+the user how to implement the version check. Ordinarily, this warning 
+message will be suppressed, not to annoy people using ARMASA 
+occasionally. To enable printing warning messages, edit the m-file 
+'ASAversionchk' and make 'show_warn' equal to one, according to the 
+comments in that file. Examples of operable version check procedures can 
+be found in ARMASA main function m-files, like 'sig2ar'. Typing 'help' 
+followed by 'ASAcontrol', 'ASAversionchk' or 'ASAversion2numstr', at the 
+command prompt, shows information on variables and functions, involved in 
+version checking.
+
+Last but not least: Only if a user maintains version identifiers, the 
+versions check system will not loose its functionality. That is: 
+- Update a function's version identifier (ASAcontrol.is_version) to  
+  the current date, if the function has been modified. 
+- Update a function's downward compatibility identifier
+  (ASAcontrol.comp_version) to the current date, if the modification
+  caused the function to be incompatible with its former version.

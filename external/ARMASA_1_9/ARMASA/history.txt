@@ -1,0 +1,118 @@
+ARMASA version history
+======================
+
+0.1 / 20 November 2000 
+----------------------
+
+Beta-release of educational version
+
+1.0 / 12 February 2001
+----------------------
+
+First official release
+
+1.1 / 9 March 2001
+------------------
+
+Fixes:
+
+- ARMA2COR(1,1,SHIFT) returned the zero-lag autocorrelation only. In
+  addition to this element it now returns the correct number of SHIFT
+  additional lags (that are all equal to zero).
+
+1.2 / 5 April 2001
+------------------
+
+Fixes:
+
+- ARMA2PSD(AR,MA,SAMPLE) returned incorrect values if the AR or MA
+  process order was so great that 0.5*MAX(LENGTH(AR),LENGTH(MA))+1
+  exceeded the number of PSD values requested by SAMPLE. This problem  
+  was caused by the computation of an incomplete FFT, and has now 
+  been corrected by the use of direct polynomial evaluation of the 
+  PSD values at the requested frequencies.
+- Help texts on ASAglob_subtr_mean, ASAglob_mean_adj and
+  ASAglob_ar_cond are now available at the command prompt.
+
+Modifications:
+
+- The display of warning message ASA8 has been disabled. This message
+  was showed if ARMASA main functions were called from other 
+  functions without performing a version check. Instead, an
+  explanation of the version control system will be provided when the
+  function 'ASAaddpath' is invoked. This text also informs a user how
+  to enable displaying of the ASA8 message.  
+
+Additions:
+
+- A function 'demo_armasa' has been added, showing some ARMASA toolbox
+  features.
+
+1.3 / 2 April 2003
+------------------
+
+Fixes:
+
+- DEMO_ARMASA, SIG2ARMA and SIG2ARMA_E did not run properly in Matlab
+  6.5, R13. A call to the modified WARNING function in R13, requesting
+  an output argument, returns a structure instead of a character
+  string. The mentioned ARMASA functions have been modified to work
+  properly with R13 and previous releases.
+
+1.4 / 12 July 2004
+------------------
+
+Modifications:
+
+- 'demo_armasa' has been improved by correctly generating data.
+
+Additions:
+
+- arma2pred.m for predictions
+- simuarma.m to generate data
+- simple_demo.m 
+- ARMASA info with list of ARMASA relevant literature
+
+
+1.5 / 11 November 2004
+----------------------
+- release 7 of Matlab has problems with functions and variables with the 
+  same name. In sig2ar.m the variable cic has been renamed cicar
+
+- educational routines have been removed  
+
+
+1.6 /  8 May 2006
+_________________
+
+- minor modifications
+- announcement of Book on the background of ARMAsel:
+   
+   Piet M.T. Broersen
+   Automatic Autocorrelation and Spectral Analysis
+   Springer-Verlag,London, 2006.
+   ISBN 1-84628-328.
+
+
+1.7 /  12 June 2006
+_________________
+
+- improved readme.txt file
+
+
+1.8 /  20 November 2007
+_________________
+
+- renaming of some programs to avoid error messages in new Matlab release R2006b or 7.3.0
+  e.g. isavector.m and isascalar.m
+- improving demo programs
+- ARMASA info has a longer list with recent ARMASA-relevant literature
+
+
+1.9 /  20 May 2009
+_________________
+
+- license info added
+- longest AR model reflection coefficients added to log file
+- update of Journal references
+

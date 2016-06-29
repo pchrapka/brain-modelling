@@ -1,0 +1,2 @@
+??? ARMASA m-file version incompatibility detected
+A more recent version of 'ASAsubst' needs to be installed.

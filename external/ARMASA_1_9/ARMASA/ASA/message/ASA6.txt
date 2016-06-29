@@ -1,0 +1,3 @@
+??? ARMASA m-file version incompatibility detected
+Calls to 'ASAsubst' in 'ASAsubst' need to be revised, to guarantee 
+consistency.

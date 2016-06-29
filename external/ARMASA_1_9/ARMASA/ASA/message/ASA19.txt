@@ -1,0 +1,3 @@
+??? ARMASA error 19
+The requested number of shifts exceeds the maximum of ASAsubst shifts 
+that can be determined.

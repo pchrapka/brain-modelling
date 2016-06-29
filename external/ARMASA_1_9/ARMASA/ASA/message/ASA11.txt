@@ -1,0 +1,3 @@
+??? ARMASA error 11
+Argument 'ASAsubst' must be an array of class double, containing true 
+numbers only.

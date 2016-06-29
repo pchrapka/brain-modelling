@@ -1,0 +1,11 @@
+ARMASA warning 8
+Compatibility check skipped, while 'ASAsubst' called 'ASAsubst'
+
+Place the following line of Matlab code in the header section of 
+the function 'ASAsubst':
+ASAcontrol.req_version.ASAsubst = [ASAsubst];
+Calls to 'ASAsubst' in 'ASAsubst' must be revised, by adding the 
+variable 'ASAcontrol' to the end of the input argument list.
+
+To permanently suppress this warning message edit 'ASAversionchk' 
+according to the comments in that file.

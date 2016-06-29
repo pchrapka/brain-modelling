@@ -1,0 +1,3 @@
+??? ARMASA error 23
+The first element of 'ASAsubst', the zero-order ASAsubst, must be 
+equal to one.

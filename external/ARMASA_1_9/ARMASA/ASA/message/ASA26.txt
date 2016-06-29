@@ -1,0 +1,4 @@
+??? ARMASA error 26
+The provided number of residual variance estimates in argument 
+'ASAsubst' exceeds the number of observations as specified in 
+argument 'ASAsubst'.

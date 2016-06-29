@@ -1,0 +1,2 @@
+??? ARMASA error 13
+This function currently does not support complex valued input data.

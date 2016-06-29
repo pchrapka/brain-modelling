@@ -1,0 +1,2 @@
+??? ARMASA error 15
+Argument 'ASAsubst' must be a vector.

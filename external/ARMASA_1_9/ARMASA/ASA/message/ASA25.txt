@@ -1,0 +1,3 @@
+ARMASA warning 25
+The error check procedure transposed the invalid ASAsubst format 
+of vector 'ASAsubst' into a ASAsubst format.

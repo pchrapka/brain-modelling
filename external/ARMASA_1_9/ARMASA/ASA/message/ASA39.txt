@@ -1,0 +1,3 @@
+??? ARMASA argument arrangement failed
+Input argument 'ASAcontrol' must be a structure.
+

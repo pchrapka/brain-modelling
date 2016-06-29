@@ -1,0 +1,3 @@
+??? ARMASA error 28
+The forward and backward residual vectors in arguments 'ASAsubst' and 
+'ASAsubst' must have equal lengths.

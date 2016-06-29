@@ -1,0 +1,3 @@
+??? ARMASA error 14
+Simultaneously processing multiple segments of data is currently not 
+supported by this function.

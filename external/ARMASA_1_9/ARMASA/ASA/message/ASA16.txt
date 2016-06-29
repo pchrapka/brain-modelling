@@ -1,0 +1,7 @@
+ARMASA warning 16
+No meaningful ARMA estimation can be performed with the maximum 
+of specified candidate orders. Instead, the AR and MA estimation 
+orders are bounded to their theoretical upper limits, while 
+preserving their difference:
+max. AR order:  ASAsubst
+max. MA order:  ASAsubst

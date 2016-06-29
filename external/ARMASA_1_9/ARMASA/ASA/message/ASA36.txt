@@ -1,0 +1,4 @@
+ARMASA warning 36
+This function has entered the operation mode that supports 
+simultaneously processing multiple segments of data.
+

@@ -1,0 +1,4 @@
+??? ARMASA error 31
+The ASAsubst in argument 'ASAsubst' must be arranged in a vector of 
+class double, containing either a sequence of ascending positive 
+numbers, or a single positive number.

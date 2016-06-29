@@ -1,0 +1,2 @@
+??? ARMASA error 32
+Argument 'ASAsubst' must be a positive scalar.
