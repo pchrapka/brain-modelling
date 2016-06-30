@@ -142,8 +142,9 @@ n = 1;
 data_coh = {};
 
 verbosity = 0;
-lambda = 0.99;
+% lambda = 0.99;
 % lambda = 0.95;
+lambda = 0.9;
 
 %% estimate connectivity with RC
 
@@ -333,14 +334,14 @@ if do_traces
         figure('Name',fig_name,'NumberTitle','off')
         plot_rc(trace{i}.trace,'mode','image-order','clim',[0 1.5],'abs',true,'threshold',1.5);
         
-        fig_name = sprintf('Trace %d: %s (Max)',i,trace{i}.name);
-        figure('Name',fig_name,'NumberTitle','off')
-        plot_rc(trace{i}.trace,'mode','image-max','clim','none','abs',true,'threshold',1.5);
+%         fig_name = sprintf('Trace %d: %s (Max)',i,trace{i}.name);
+%         figure('Name',fig_name,'NumberTitle','off')
+%         plot_rc(trace{i}.trace,'mode','image-max','clim','none','abs',true,'threshold',1.5);
     end
 end
 
 %% plot stationary data
-do_stationary = true;
+do_stationary = false;
 if do_stationary
     for i=1:length(data_sta)
         fig_name = sprintf('Trace %d: %s',i,data_sta{i}.name);
@@ -370,8 +371,8 @@ if do_movie
     %i = 1;
     %i = 4; % mt5
     %i = 5; % sparse
-    i = 7; % mqrdlsl noise warmup
-    %i = 8; % mt5 noise warmup
+    %i = 7; % mqrdlsl noise warmup
+    i = 8; % mt5 noise warmup
     %i = 9; % nuttall strand
     %i = 10; % nuttall strand AR
     %i = 11; % coherence

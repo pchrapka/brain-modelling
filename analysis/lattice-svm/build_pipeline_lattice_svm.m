@@ -58,6 +58,15 @@ params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt8_p10_l099_n400';
 params_filter(f).params_partition = 'params_pf_std_odd_tr20_te10';
 f = f+1;
 
+% lambda 0.9
+params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt2_p10_l09_n400';
+params_filter(f).params_partition = 'params_pf_std_odd_tr100_te20';
+f = f+1;
+params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt5_p10_l09_n400';
+params_filter(f).params_partition = 'params_pf_std_odd_tr30_te20';
+f = f+1;
+
+
 f = 1;
 feat_options(f).fv = 'params_fv_rbf_20';
 feat_options(f).tt = 'params_tt_rbf_10';
