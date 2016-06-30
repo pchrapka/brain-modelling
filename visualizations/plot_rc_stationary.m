@@ -43,6 +43,29 @@ if length(size(data.coef)) > 3
 end
 
 switch p.Results.mode
+    
+    case 'image-all'
+        norder = size(data.coef,1);
+        nchannels = size(data.coef,2);
+        rc = zeros(nchannels,nchannels*norder);
+        for j=1:norder
+            idx_start = (j-1)*nchannels + 1;
+            idx_end = idx_start + nchannels - 1;
+            rc(:,idx_start:idx_end) = data.coef(j,:,:);
+        end
+        
+        rc = transform_data(rc,p.Results);
+
+        if isequal(p.Results.clim,'none')
+            imagesc(rc);
+        else
+            imagesc(rc,p.Results.clim);
+        end
+        colorbar;
+        title('Reflection Coefficients');
+        set(gca,'yticklabel',[]);
+        set(gca,'xticklabel',[]);
+        
         
     case 'image-order'
         norder = size(data.coef,1);

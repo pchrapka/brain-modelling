@@ -80,6 +80,8 @@ k=1;
 data = {};
 m=1;
 trace = {};
+n=1;
+data_coh = {};
 
 %% estimate model order
 
@@ -95,6 +97,7 @@ data{k}.coef = shiftdim(pc(:,:,2:end),2);
 data{k}.name = 'PC Burgv';
 k = k+1;
 
+% convert parcor to rc
 [rcf,rcb,~,~] = pc2rcv(pc,R0);
 
 data{k}.coef = shiftdim(rcf(:,:,2:end),2);
@@ -103,6 +106,12 @@ k = k+1;
 
 data{k}.coef = shiftdim(rcb(:,:,2:end),2);
 data{k}.name = 'RCB Burgv';
+k = k+1;
+
+% convert parcor to ar
+[arest,~] = pc2arset(pc,R0);
+data{k}.coef = shiftdim(arest(:,:,2:end),2);
+data{k}.name = 'AR Burgv';
 k = k+1;
 
 %% convert to RC
@@ -183,23 +192,27 @@ for i=1:nchannels
         b(j) = 1;
         
         [hab, fs] = pc2xspecv(pc,R0,a,b);
-        pxy(i,j,:) = abs(hab);
+        pxy(i,j,:) = hab;
     end
 end
-pxy = shiftdim(pxy,-1);
-pxy_time = shiftdim(pxy,3);
+pxy_time = shiftdim(shiftdim(pxy,-1),3);
 
 trace{m}.name = 'PC PSD';
-trace{m}.trace.Kf = pxy_time;
+trace{m}.trace.Kf = abs(pxy_time);
 m = m+1;
 
-data{k}.name = 'PC PSD (Mean)';
-data{k}.coef = mean(pxy,4);
-k = k+1;
+data_coh{n}.name = 'PC PSD';
+data_coh{n}.coef = db(pxy,'power');
+data_coh{n}.f = fs;
+n = n+1;
 
-data{k}.name = 'PC PSD (Max)';
-data{k}.coef = max(pxy,[],4);
-k = k+1;
+% data{k}.name = 'PC PSD (Mean)';
+% data{k}.coef = mean(shiftdim(abs(pxy),-1),4);
+% k = k+1;
+% 
+% data{k}.name = 'PC PSD (Max)';
+% data{k}.coef = max(shiftdim(abs(pxy),-1),[],4);
+% k = k+1;
 
 
 %% convert to coherence function
@@ -214,48 +227,65 @@ for i=1:nchannels
         b(j) = 1;
         
         [fiab, fs] = pc2cohv(pc,R0,a,b);
-        cxy(i,j,:) = abs(fiab);
+        cxy(i,j,:) = fiab;
     end
 end
-cxy = shiftdim(cxy,-1);
-cxy_time = shiftdim(cxy,3);
+cxy_time = shiftdim(shiftdim(cxy,-1),3);
 
 trace{m}.name = 'PC Coh';
-trace{m}.trace.Kf = cxy_time;
+trace{m}.trace.Kf = abs(cxy_time);
 m = m+1;
 
-data{k}.name = 'PC Coh (Mean)';
-data{k}.coef = mean(cxy,4);
-k = k+1;
+data_coh{n}.name = 'PC Coh';
+data_coh{n}.coef = cxy;
+data_coh{n}.f = fs;
+n = n+1;
 
-%% estimate connectivity with mscohere
-% nfreq = 129;
-% cxy = zeros(nchannels, nchannels, nfreq);
-% for i=1:nchannels
-%     for j=1:nchannels
-%         cxy(i,j,:) = mscohere(sources(i,:,1), sources(j,:,1),[]);
-%     end
-% end
-% cxy = shiftdim(cxy,-1);
-% cxy_time = shiftdim(cxy,3);
-% trace{k}.name = 'Coherence';
-% trace{k}.trace.Kf = cxy_time;
+% data{k}.name = 'PC Coh (Mean)';
+% data{k}.coef = mean(shiftdim(abs(cxy),-1),4);
 % k = k+1;
 
+%% estimate connectivity with mscohere
+% nfreq = nsamples/2;
+% nfreq = 257;
+nfreq = 129;
+cxy = zeros(nchannels, nchannels, nfreq);
+for i=1:nchannels
+    for j=1:nchannels
+        cxy(i,j,:) = mscohere(sources(i,:,1), sources(j,:,1));
+    end
+end
+cxy_time = shiftdim(shiftdim(cxy,-1),3);
+trace{k}.name = 'mscohere';
+trace{k}.trace.Kf = cxy_time;
+k = k+1;
+
+data_coh{n}.name = 'mscohere';
+data_coh{n}.coef = cxy;
+data_coh{n}.f = linspace(0,0.5,nfreq);
+n = n+1;
+
 %% plot the datas
-for i=1:length(data)
-    
-    fig_name = sprintf('Trace %d: %s (No thresh)',i,data{i}.name);
-    figure('Name',fig_name,'NumberTitle','off')
-    plot_rc_stationary(data{i},'mode','image-order','clim','none','abs',true,'threshold','none');
-    
-    fig_name = sprintf('Trace %d: %s',i,data{i}.name);
-    figure('Name',fig_name,'NumberTitle','off')
-    plot_rc_stationary(data{i},'mode','image-order','clim',[0 1.5],'abs',true,'threshold',1.5);
-    
-    fig_name = sprintf('Trace %d: %s (Max)',i,data{i}.name);
-    figure('Name',fig_name,'NumberTitle','off')
-    plot_rc_stationary(data{i},'mode','image-max','clim','none','abs',true,'threshold','none');
+do_data = true;
+if do_data
+    for i=1:length(data)
+        
+        %     fig_name = sprintf('Trace %d: %s (No thresh)',i,data{i}.name);
+        %     figure('Name',fig_name,'NumberTitle','off')
+        %     plot_rc_stationary(data{i},'mode','image-order','clim','none','abs',true,'threshold','none');
+        %
+        fig_name = sprintf('Trace %d: %s',i,data{i}.name);
+        figure('Name',fig_name,'NumberTitle','off')
+        plot_rc_stationary(data{i},'mode','image-order','clim',[0 1.5],'abs',true,'threshold',1.5);
+        
+%         fig_name = sprintf('Trace %d: %s (All)',i,data{i}.name);
+%         figure('Name',fig_name,'NumberTitle','off')
+%         plot_rc_stationary(data{i},'mode','image-all','clim',[0 1.5],'abs',true,'threshold',1.5);
+        
+        fig_name = sprintf('Trace %d: %s (Max)',i,data{i}.name);
+        figure('Name',fig_name,'NumberTitle','off')
+        plot_rc_stationary(data{i},'mode','image-max','clim','none','abs',true,'threshold','none');
+    end
 end
 
 %% plot traces
@@ -269,6 +299,17 @@ if do_traces
         fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
         figure('Name',fig_name,'NumberTitle','off')
         plot_rc(trace{i}.trace,'mode','image-order','clim',[0 1.5],'abs',true,'threshold',1.5);
+        
+    end
+end
+
+%% plot coh
+do_coh = true;
+if do_coh
+    for i=1:length(data_coh)
+        fig_name = sprintf('Trace %d: %s',i,data_coh{i}.name);
+        figure('Name',fig_name,'NumberTitle','off')
+        plot_coherence(data_coh{i});
     end
 end
 

@@ -261,10 +261,10 @@ if do_movie
     %i = 1;
     %i = 4; % mt5
     %i = 5; % sparse
-    %i = 7; % mqrdlsl noise warmup
+    i = 7; % mqrdlsl noise warmup
     %i = 8; % mt5 noise warmup
     %i = 9; % nuttall strand
-    i = 10; % nuttall strand AR
+    %i = 10; % nuttall strand AR
     %i = 11; % coherence
     fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
     figure('Name',fig_name,'NumberTitle','off')
