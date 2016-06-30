@@ -59,6 +59,7 @@ switch p.Results.mode
         colorbar;
         xlabel('Time');
         ylabel('Reflection Coefficients');
+        
     case 'image-order'
         norder = size(data.Kf,2);
         niters = size(data.Kf,1);
@@ -82,8 +83,12 @@ switch p.Results.mode
             
             if isequal(p.Results.clim,'none')
                 imagesc(rc);
+                colorbar;
             else
                 imagesc(rc,p.Results.clim);
+                if j==norder
+                    colorbar;
+                end
             end
             axis square;
             ylabel(sprintf('P=%d',j));
@@ -91,9 +96,6 @@ switch p.Results.mode
             set(gca,'xticklabel',[]);
             
             if j==norder
-                colorbar;
-                % TODO fix colorbar, only displays color scale for current
-                % plot, either standardize or do for all
                 xlabel('Time');
             end
         end
@@ -133,8 +135,12 @@ switch p.Results.mode
                 
                 if isequal(p.Results.clim,'none')
                     imagesc(rc);
+                    colorbar;
                 else
                     imagesc(rc,p.Results.clim);
+                    if j==norder
+                        colorbar;
+                    end
                 end
                 axis square;
                 ylabel(sprintf('P=%d',j));
@@ -143,11 +149,6 @@ switch p.Results.mode
                 
                 if j==1
                     title(sprintf('Time = %d/%d',k,niters));
-                end
-                
-                if j==norder
-                    colorbar;
-                    xlabel('Time');
                 end
             end
             drawnow();
@@ -167,13 +168,12 @@ switch p.Results.mode
                 imagesc(data_max,p.Results.clim);
             end        
             axis square;
-            title(sprintf('Time = %d/%d',k,niters));
             
             colorbar;
-            xlabel('Time');
-            ylabel('Reflection Coefficients');
             title({'Max Reflection Coefficient',...
                 sprintf('Time = %d/%d',k,niters)});
+            set(gca,'yticklabel',[]);
+            set(gca,'xticklabel',[]);
             drawnow();
             %pause(0.005);
         end

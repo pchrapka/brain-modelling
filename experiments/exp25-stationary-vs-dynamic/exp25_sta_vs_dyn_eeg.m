@@ -3,84 +3,119 @@
 trial_idx = 1:5;
 ntrials = length(trial_idx);
 
-simulated = false;
+% data_source = 'simulated';
+data_source = 'beamformed';
+% data_source = 'eeg';
 
 %% get data
 
-if simulated
-    % PROBLEMS difficult to simulate a stable sparse process
-    
-    nchannels = 13;
-    nsamples = 358;
-    norder = 5;
-    
-    %s = VRC(nchannels,norder);
-    s = VAR(nchannels,norder);
-    % PROBLEM can't reliably simulate a stable sparse process
-    stable = false;
-    
-    ncoefs = nchannels^2*norder;
-    sparsity = 0.1;
-    ncoefs_sparse = ceil(ncoefs*sparsity);
-    while ~stable
-        %s.coefs_gen_sparse('mode','exact','ncoefs',ncoefs_sparse);
-        s.coefs_gen(); % PROBLEM not the best model either
-        stable = s.coefs_stable(true);
-    
-        if stable
-            sources = zeros(nchannels,nsamples,ntrials);
-            [~,sources(:,:,1),~] = s.simulate(nsamples);
-            
-            h = figure;
-            nrows = nchannels;
-            ncols = 1;
-            for i=1:nchannels
-                subaxis(nrows, ncols, i,...
-                    'Spacing', 0, 'SpacingVert', 0, 'Padding', 0, 'Margin', 0.05);
-                
-                plot(squeeze(sources(i,:,1)));
-                set(gca,'xticklabel',[]);
-                xlim([1 nsamples]);
-                
-                hold off;
-            end
-            
-            prompt = 'Accept VRC? (y)';
-            response = input(prompt,'s');
-            switch response
-                case 'y'
-                    close(h);
-                otherwise
-                    stable = false;
-            end
-        end
-
-    end
-    
-    % allocate mem for data
-    sources = zeros(nchannels,nsamples,ntrials);
-    for i=1:ntrials
-        [~,sources(:,:,i),~] = s.simulate(nsamples);
-    end
-    
-else
-    
-    % load bf filtered data
-    params = params_sd_22_consec();
-    data = ftb.util.loadvar(params.conds(1).file);
-    
-    % get source data
-    sources = bf_get_sources(data(1));
-    [nchannels, nsamples] = size(sources);
-    
-    sources = zeros(nchannels, nsamples, ntrials);
-    for i=1:ntrials
-        m = trial_idx(i);
-        sources(:,:,i) = bf_get_sources(data(m));
+switch data_source
+    case 'simulated'
+        % PROBLEMS difficult to simulate a stable sparse process
         
-        % normalize variance of each channel to unit variance
-        sources(:,:,i) = sources(:,:,i)./repmat(std(sources(:,:,i),0,2),1,nsamples);
-    end
+        nchannels = 13;
+        nsamples = 358;
+        norder = 5;
+        order_est = 5;
+        
+        %s = VRC(nchannels,norder);
+        s = VAR(nchannels,norder);
+        % PROBLEM can't reliably simulate a stable sparse process
+        stable = false;
+        
+        ncoefs = nchannels^2*norder;
+        sparsity = 0.1;
+        ncoefs_sparse = ceil(ncoefs*sparsity);
+        while ~stable
+            %s.coefs_gen_sparse('mode','exact','ncoefs',ncoefs_sparse);
+            s.coefs_gen(); % PROBLEM not the best model either
+            stable = s.coefs_stable(true);
+            
+            if stable
+                sources = zeros(nchannels,nsamples,ntrials);
+                [~,sources(:,:,1),~] = s.simulate(nsamples);
+                
+                h = figure;
+                nrows = nchannels;
+                ncols = 1;
+                for i=1:nchannels
+                    subaxis(nrows, ncols, i,...
+                        'Spacing', 0, 'SpacingVert', 0, 'Padding', 0, 'Margin', 0.05);
+                    
+                    plot(squeeze(sources(i,:,1)));
+                    set(gca,'xticklabel',[]);
+                    xlim([1 nsamples]);
+                    
+                    hold off;
+                end
+                
+                prompt = 'Accept VRC? (y)';
+                response = input(prompt,'s');
+                switch response
+                    case 'y'
+                        close(h);
+                    otherwise
+                        stable = false;
+                end
+            end
+            
+        end
+        
+        % allocate mem for data
+        sources = zeros(nchannels,nsamples,ntrials);
+        for i=1:ntrials
+            [~,sources(:,:,i),~] = s.simulate(nsamples);
+        end
+    
+    case 'beamformed'
+        
+        order_est = 11;
+        
+        % load bf filtered data
+        params = params_sd_22_consec();
+        data = ftb.util.loadvar(params.conds(1).file);
+        
+        % get source data
+        sources = bf_get_sources(data(1));
+        [nchannels, nsamples] = size(sources);
+        
+        sources = zeros(nchannels, nsamples, ntrials);
+        for i=1:ntrials
+            m = trial_idx(i);
+            sources(:,:,i) = bf_get_sources(data(m));
+            
+            % normalize variance of each channel to unit variance
+            sources(:,:,i) = sources(:,:,i)./repmat(std(sources(:,:,i),0,2),1,nsamples);
+        end
+        
+    case 'eeg'
+        order_est = 10;
+        
+        % get preprocessed data file
+        analysis = build_analysis_beamform_patch_consec();
+        eegobj = analysis{1}.steps{end}.get_dep('ftb.EEG');
+        
+        % load data
+        data = ftb.util.loadvar(eegobj.preprocessed);
+        
+        % TODO should i limit the number of channels??
+        idx_channel = 1:16;
+        
+        [~, nsamples] = size(data.trial{1});
+        nchannels = length(idx_channel);
+        sources = zeros(nchannels, nsamples, ntrials);
+        
+        for i=1:ntrials
+            m = trial_idx(i);
+            temp = data.trial{m};
+            sources(:,:,i) = temp(idx_channel,:);
+            
+            % normalize variance of each channel to unit variance
+            sources(:,:,i) = sources(:,:,i)./repmat(std(sources(:,:,i),0,2),1,nsamples);
+        end
+       
+    otherwise
+        error('unknown data source');
 end
 
 figure;
@@ -100,11 +135,15 @@ end
 
 %% estimate connectivity
 k = 1;
+trace = {};
+m = 1;
+data_sta = {};
+n = 1;
+data_coh = {};
 
-order_est = 10;
 verbosity = 0;
-% lambda = 0.99;
-lambda = 0.95;
+lambda = 0.99;
+% lambda = 0.95;
 
 %% estimate connectivity with RC
 
@@ -212,17 +251,55 @@ for i=1:order_est
     aest(i,:,:) = AR(:,idx_start:idx_end);
     kest(i,:,:) = RC(:,idx_start:idx_end);
 end
-kest_time = repmat(kest,1,1,1,nsamples);
-kest_time = shiftdim(kest_time,3);
-trace{k}.name = 'Nuttall Strand';
-trace{k}.trace.Kf = kest_time;
-k = k+1;
+% kest_time = repmat(kest,1,1,1,nsamples);
+% kest_time = shiftdim(kest_time,3);
+% trace{k}.name = 'Nuttall Strand';
+% trace{k}.trace.Kf = kest_time;
+% k = k+1;
+% 
+% aest_time = repmat(aest,1,1,1,nsamples);
+% aest_time = shiftdim(aest_time,3);
+% trace{k}.name = 'Nuttall Strand AR';
+% trace{k}.trace.Kf = aest_time;
+% k = k+1;
 
-aest_time = repmat(aest,1,1,1,nsamples);
-aest_time = shiftdim(aest_time,3);
-trace{k}.name = 'Nuttall Strand AR';
-trace{k}.trace.Kf = aest_time;
-k = k+1;
+% data_sta{m}.name = 'TVAR NS';
+% data_sta{m}.coef = kest;
+% m = m+1;
+
+% data_sta{m}.name = 'TVAR NS AR';
+% data_sta{m}.coef = aest;
+% m = m+1;
+
+%% estimate connectivity with Burgv
+
+x = permute(sources(:,:,1),[1 3 2]);
+Lmax = 20;
+[pcsel,R0] = ARselv(x,Lmax);
+fprintf('Estimated model order: %d\n', size(pcsel,3));
+
+[pc, R0] = burgv(x,order_est);
+
+data_sta{m}.coef = shiftdim(pc(:,:,2:end),2);
+data_sta{m}.name = 'PC Burgv';
+m = m+1;
+
+% convert parcor to rc
+[rcf,rcb,~,~] = pc2rcv(pc,R0);
+
+data_sta{m}.coef = shiftdim(rcf(:,:,2:end),2);
+data_sta{m}.name = 'RCF Burgv';
+m = m+1;
+
+data_sta{m}.coef = shiftdim(rcb(:,:,2:end),2);
+data_sta{m}.name = 'RCB Burgv';
+m = m+1;
+
+% convert parcor to ar
+[arest,~] = pc2arset(pc,R0);
+data_sta{m}.coef = shiftdim(arest(:,:,2:end),2);
+data_sta{m}.name = 'AR Burgv';
+m = m+1;
 
 %% estimate connectivity with mscohere
 nfreq = 129;
@@ -232,25 +309,57 @@ for i=1:nchannels
         cxy(i,j,:) = mscohere(sources(i,:,1), sources(j,:,1),[]);
     end
 end
-cxy = shiftdim(cxy,-1);
-cxy_time = shiftdim(cxy,3);
-trace{k}.name = 'Coherence';
-trace{k}.trace.Kf = cxy_time;
-k = k+1;
+% cxy_time = shiftdim(shiftdim(cxy,-1),3);
+% trace{k}.name = 'mscohere';
+% trace{k}.trace.Kf = cxy_time;
+% k = k+1;
+
+data_coh{n}.name = 'mscohere';
+data_coh{n}.coef = cxy;
+data_coh{n}.f = linspace(0,0.5,nfreq);
+n = n+1;
 
 %% plot traces
-mode = 'image-order';
-for i=1:length(trace)
-    
-    switch mode
-        case 'image-order'
-            %fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
-            %figure('Name',fig_name,'NumberTitle','off')
-            %plot_rc(trace{i}.trace,'mode',mode,'clim','none','abs',true,'threshold','none');
-            
-            fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
-            figure('Name',fig_name,'NumberTitle','off')
-            plot_rc(trace{i}.trace,'mode',mode,'clim',[0 1.5],'abs',true,'threshold',1.5);
+do_traces = true;
+if do_traces
+    for i=1:length(trace)
+        
+        % image-order
+        %fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
+        %figure('Name',fig_name,'NumberTitle','off')
+        %plot_rc(trace{i}.trace,'mode','image-order','clim','none','abs',true,'threshold','none');
+        
+        fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
+        figure('Name',fig_name,'NumberTitle','off')
+        plot_rc(trace{i}.trace,'mode','image-order','clim',[0 1.5],'abs',true,'threshold',1.5);
+        
+        fig_name = sprintf('Trace %d: %s (Max)',i,trace{i}.name);
+        figure('Name',fig_name,'NumberTitle','off')
+        plot_rc(trace{i}.trace,'mode','image-max','clim','none','abs',true,'threshold',1.5);
+    end
+end
+
+%% plot stationary data
+do_stationary = true;
+if do_stationary
+    for i=1:length(data_sta)
+        fig_name = sprintf('Trace %d: %s',i,data_sta{i}.name);
+        figure('Name',fig_name,'NumberTitle','off')
+        plot_rc_stationary(data_sta{i},'mode','image-order','clim',[0 1.5],'abs',true,'threshold',1.5);
+        
+        fig_name = sprintf('Trace %d: %s (Max)',i,data_sta{i}.name);
+        figure('Name',fig_name,'NumberTitle','off')
+        plot_rc_stationary(data_sta{i},'mode','image-max','clim','none','abs',true,'threshold','none');
+    end
+end
+
+%% plot coh
+do_coh = false;
+if do_coh
+    for i=1:length(data_coh)
+        fig_name = sprintf('Trace %d: %s',i,data_coh{i}.name);
+        figure('Name',fig_name,'NumberTitle','off')
+        plot_coherence(data_coh{i});
     end
 end
 
@@ -266,8 +375,12 @@ if do_movie
     %i = 9; % nuttall strand
     %i = 10; % nuttall strand AR
     %i = 11; % coherence
+    
+    mode = 'movie-order';
+%     mode = 'movie-max';
+    
     fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
     figure('Name',fig_name,'NumberTitle','off')
-    plot_rc(trace{i}.trace,'mode','movie-order','clim',[0 1.5],'abs',true,'threshold',1.5);
+    plot_rc(trace{i}.trace,'mode',mode,'clim',[0 1.5],'abs',true,'threshold',1.5);
 end
 

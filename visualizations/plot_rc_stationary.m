@@ -87,21 +87,17 @@ switch p.Results.mode
             
             if isequal(p.Results.clim,'none')
                 imagesc(rc);
+                colorbar;
             else
                 imagesc(rc,p.Results.clim);
+                if j==norder
+                    colorbar;
+                end
             end
             axis square;
             ylabel(sprintf('P=%d',j));
             set(gca,'yticklabel',[]);
             set(gca,'xticklabel',[]);
-            
-            colorbar;
-            % TODO fix colorbar, only displays color scale for current
-            % plot, either standardize or do for all
-            
-            if j==norder
-                xlabel('Time');
-            end
         end
         
     case 'image-max'
@@ -116,8 +112,7 @@ switch p.Results.mode
         end
         axis square;
         colorbar;
-        xlabel('Reflection Coefficients');
-        ylabel('Reflection Coefficients');
+        title('Reflection Coefficients');
         set(gca,'yticklabel',[]);
         set(gca,'xticklabel',[]);
     
