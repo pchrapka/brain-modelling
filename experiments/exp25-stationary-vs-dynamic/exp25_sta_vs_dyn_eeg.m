@@ -292,9 +292,9 @@ data_sta{m}.coef = shiftdim(rcf(:,:,2:end),2);
 data_sta{m}.name = 'RCF Burgv';
 m = m+1;
 
-data_sta{m}.coef = shiftdim(rcb(:,:,2:end),2);
-data_sta{m}.name = 'RCB Burgv';
-m = m+1;
+% data_sta{m}.coef = shiftdim(rcb(:,:,2:end),2);
+% data_sta{m}.name = 'RCB Burgv';
+% m = m+1;
 
 % convert parcor to ar
 [arest,~] = pc2arset(pc,R0);
@@ -341,7 +341,7 @@ if do_traces
 end
 
 %% plot stationary data
-do_stationary = false;
+do_stationary = true;
 if do_stationary
     for i=1:length(data_sta)
         fig_name = sprintf('Trace %d: %s',i,data_sta{i}.name);

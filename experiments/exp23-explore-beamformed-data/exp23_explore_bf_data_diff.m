@@ -1,12 +1,21 @@
 %% exp23_explore_bf_data_diff
 % plots difference in mean of patch time series between std and odd conditions
 
-clear all;
-close all;
+% clear all;
+% close all;
+
+% data_source = 'all-trials';
+data_source = 'consecutive-trials';
 
 data_file = {};
-data_file{1} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstd-BPatchTriallcmvmom/sourceanalysis.mat';
-data_file{2} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGodd-BPatchTriallcmvmom/sourceanalysis.mat';
+switch data_source
+    case 'all-trials'
+        data_file{1} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstd-BPatchTriallcmvmom/sourceanalysis.mat';
+        data_file{2} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGodd-BPatchTriallcmvmom/sourceanalysis.mat';
+    case 'consecutive-trials'
+        data_file{1} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstdconsec-BPatchTriallcmvmom/sourceanalysis.mat';
+        data_file{2} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGoddconsec-BPatchTriallcmvmom/sourceanalysis.mat';
+end
 
 %% get data
 result = cell(length(data_file),1);
@@ -55,6 +64,10 @@ for k=1:2
         
         set(gca,'xticklabel',[]);
         xlim([1 ntime]);
+        
+        if i==1 && k==1
+            title('Averaged std and odd');
+        end
     end
 end
 
@@ -67,4 +80,8 @@ for i=1:nsources
     
     set(gca,'xticklabel',[]);
     xlim([1 ntime]);
+    
+    if i==1
+        title('MMN');
+    end
 end

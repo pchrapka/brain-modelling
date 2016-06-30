@@ -4,12 +4,18 @@
 %   Notes:
 %       a bit dense to show 64 channels
 
-data_file = {};
-data_file{1} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstd/timelock.mat';
-data_file{2} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGodd/timelock.mat';
+% data_source = 'all-trials';
+data_source = 'consecutive-trials';
 
-% data_file{1} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstdconsec/timelock.mat';
-% data_file{2} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGoddconsec/timelock.mat';
+data_file = {};
+switch data_source
+    case 'all-trials'
+        data_file{1} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstd/timelock.mat';
+        data_file{2} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGodd/timelock.mat';
+    case 'consecutive-trials'
+        data_file{1} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGstdconsec/timelock.mat';
+        data_file{2} = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGoddconsec/timelock.mat';
+end
 
 result = cell(length(data_file),1);
 for i=1:length(data_file)
@@ -43,6 +49,10 @@ for k=1:length(result)
         
         set(gca,'xticklabel',[]);
         xlim([1 ntime]);
+        
+        if i==1 && k==1
+            title('Averaged std and odd');
+        end
     end
 end
 
@@ -56,4 +66,8 @@ for i=1:nchannels
     
     set(gca,'xticklabel',[]);
     xlim([1 ntime]);
+    
+    if i==1
+        title('MMN');
+    end
 end
