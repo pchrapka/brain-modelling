@@ -97,8 +97,7 @@ classdef SVM < handle
                     
                     % Train the SVM
                     if isequal(implementation_cpy,'matlab')
-                        svm_params = [fieldnames(p.Unmatched) struct2cell(p.Unmatched)];
-                        svm_params = reshape(svm_params',1,numel(svm_params));
+                        svm_params = struct2namevalue(p.Unmatched);
                         svm_params = [svm_params...
                             'BoxConstraint', p.Results.box(i),...
                             'KernelScale', p.Results.scale(j),...

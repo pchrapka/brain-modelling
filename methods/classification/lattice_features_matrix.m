@@ -1,15 +1,14 @@
-function [samples,class_labels,feature_labels] = lattice_features_matrix(file_list)
+function [samples,class_labels,feature_labels] = lattice_features_matrix(file_list,varargin)
 %LATTICE_FEATURES_MATRIX creates feature matrix from samples
-%   LATTICE_FEATURES_MATRIX creates feature matrix from samples. formatted
-%   for use with PSOM pipeline
+%   [samples,class_labels,feature_labels] =
+%   LATTICE_FEATURES_MATRIX(file_list,...) creates feature matrix from
+%   samples. formatted for use with PSOM pipeline
 %
 %   Input
 %   -----
-%   files_in (string)
-%       file name of list of samples to process, see output of
+%   file_list (string)
+%       list of sample fles to process, see output of
 %       bricks.partition_files or bricks.lattice_filter_sources
-%   files_out (string)
-%       output file name
 %   opt (cell array)
 %       function options specified as name value pairs
 %   
@@ -36,7 +35,7 @@ function [samples,class_labels,feature_labels] = lattice_features_matrix(file_li
 p = inputParser;
 addRequired(p,'file_list',@iscell);
 addParameter(p,'threshold','none',@(x) x > 0);
-parse(p,file_list);
+parse(p,file_list,varargin{:});
 
 % get dimensions
 nsamples = length(file_list);

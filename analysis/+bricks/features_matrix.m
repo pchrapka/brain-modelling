@@ -45,6 +45,7 @@ function features_matrix(files_in,files_out,opt)
 %       class labels for each sample
 
 p = inputParser;
+p.KeepUnmatched = true;
 p.StructExpand = false;
 addRequired(p,'files_in',@(x) ischar(x) | isstruct(x));
 addRequired(p,'files_out',@ischar);
@@ -64,7 +65,8 @@ end
 
 % convert data
 fh = str2func(p.Results.data2feature);
-[samples,class_labels,feature_labels] = fh(file_list);
+opt_fh = struct2namevalue(p.Unmatched);
+[samples,class_labels,feature_labels] = fh(file_list,opt_fh{:});
 
 % save data
 data = [];
