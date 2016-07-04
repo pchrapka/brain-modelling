@@ -15,9 +15,12 @@ function [samples,class_labels,feature_labels] = lattice_features_matrix(file_li
 %   
 %   Parameters
 %   ----------
-%   DEPRECATED? threshold (scalar, default = 'none')
+%   threshold (scalar, default = 'none')
 %       threshold for lattice coefficient values, samples containing
-%       coefficents above this value are removed
+%       coefficents above this value are set to zero
+%
+%       NOTE better classification accuracy results if the same threshold
+%       is used for both train and test sets
 %
 %   Output
 %   ------
@@ -32,7 +35,7 @@ function [samples,class_labels,feature_labels] = lattice_features_matrix(file_li
 
 p = inputParser;
 addRequired(p,'file_list',@iscell);
-%addParameter(p,'threshold','none');
+addParameter(p,'threshold','none',@(x) x > 0);
 parse(p,file_list);
 
 % get dimensions
@@ -60,18 +63,21 @@ for i=1:nsamples
             class_labels(i) = 0;
     end
     
-    % % check if we have bad samples
-    % NOTE Can remove every sample, this is not a good approach
-    %if ~isequal(p.Results.threshold,'none')
-    %    if any(abs(samples(i,:)) > p.Results.threshold)
-    %        bad_samples(end+1,1) = i;
-    %    end
-    %end
 end
 
-% % remove bad samples
-%samples(bad_samples,:) = [];
-%class_labels(bad_samples,:) = [];
+% threshold bad samples
+if ~isequal(p.Results.threshold,'none')
+    % zero large samples to zero
+    samples(abs(samples) > p.Results.threshold) = 0;
+end
+
+% scale samples to [-1,1]
+if ~isequal(p.Results.threshold,'none')
+    samples = samples/p.Results.threshold;
+else
+    warning(['not scaling feature matrix\n'...
+        'this could result in bad classification accuracy']);
+end
 
 % get all feature labels
 feature_labels = lattice_feature_labels(size(lattice.Kf));

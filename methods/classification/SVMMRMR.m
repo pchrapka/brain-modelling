@@ -78,6 +78,8 @@ classdef SVMMRMR < SVM
             %       Unifying Framework for Information Theoretic Feature
             %       Selection")
             %
+            %   discretize (logical, default = false)
+            %       flag for discretizing samples for mRMR step
             %   verbosity (integer, default = 0)
             %       verbosity level of function, choices 0,1,2
             %
@@ -96,14 +98,19 @@ classdef SVMMRMR < SVM
             addParameter(p,'KernelScaleParams',exp(-2:2),@isvector);
             addParameter(p,'nfeatures',10,@isnumeric);
             addParameter(p,'nbins',10,@isnumeric);
+            addParameter(p,'discretize',false,@islogical);
             params_verbosity = [0 1 2];
             addParameter(p,'verbosity',0,@(x) any(find(params_verbosity == x)));
             parse(p,varargin{:});
             
             % discretize features
-            samples_discrete = discretize_reflection_coefs(...
-                obj.samples, 'bins', p.Results.nbins,...
-                'min', -1.5, 'max', 1.5);
+            if p.Results.discretize
+                samples = discretize_reflection_coefs(...
+                    obj.samples, 'bins', p.Results.nbins,...
+                    'min', -1.5, 'max', 1.5);
+            else
+                samples = obj.samples;
+            end
             
             nsamples = size(obj.samples,1);
             
@@ -126,7 +133,7 @@ classdef SVMMRMR < SVM
                 
                 [feat_sel(:,i)] = feast('mrmr',...
                     nfeatures,...
-                    samples_discrete(~testidx,:),...
+                    samples(~testidx,:),...
                     obj.class_labels(~testidx));
                 
                 if verbosity > 1 
