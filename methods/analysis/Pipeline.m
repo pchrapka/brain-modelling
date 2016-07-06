@@ -249,6 +249,11 @@ classdef Pipeline < handle
                     params_name = results(i).param_code;
                 end
                 
+                if isequal(p.Results.mode,'folders')
+                    % remove params_[brick code] prefix
+                    params_name = strrep(params_name, ['params_' brick_name '_'], '');
+                end
+                
                 if isempty(name)
                     name = [brick_name '-' params_name];
                 else
@@ -358,6 +363,11 @@ classdef Pipeline < handle
         
         function idx = add_params(obj, brick_name, params_name)
             %ADD_PARAMS add parameter file to the bricks config
+            
+            p = inputParser();
+            p.addRequired('brick_name',@ischar);
+            p.addRequired('params_name',@ischar);
+            p.parse(brick_name,params_name);
             
             brick_idx = obj.get_brick_idx(brick_name);
             idx = obj.get_params_idx(brick_idx,params_name);

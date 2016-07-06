@@ -94,7 +94,7 @@ f = f+1;
 
 for i=1:length(params_setup)
     for j=1:length(params_setup(i).param_files)
-        pipeline.add_params(params_setup(i).brick, params_setup(i).param_files(j));
+        pipeline.add_params(params_setup(i).brick, params_setup(i).param_files{j});
     end
 end
 

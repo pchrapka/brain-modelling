@@ -26,11 +26,31 @@ classdef TestPipelineLatticeSVM < matlab.unittest.TestCase
             pipe = PipelineLatticeSVM(testCase.pipedir);
             
             testCase.verifyGreaterThan(exist(pipe.outdir,'dir'),0);
-            testCase.verifyGreaterThan(exist(pipe.config_file,'file'),0);
+            testCase.verifyGreaterThan(exist(pipe.bricks_file,'file'),0);
             
-            testCase.verifyEqual(length(pipe.config.bricks),5);
-            testCase.verifyEqual(pipe.config.bricks(4).name,'bricks.features_validate');
-            testCase.verifyEqual(pipe.config.bricks(4).id,'fv');
+            testCase.verifyEqual(length(pipe.bricks),7);
+            testCase.verifyEqual(pipe.bricks(4).name,'bricks.features_validate');
+            testCase.verifyEqual(pipe.bricks(4).id,'fv');
+        end
+        
+        function test_add_params(testCase)
+            pipe = PipelineLatticeSVM(testCase.pipedir);
+            
+            pipe.add_params('bricks.add_label','params_al_odd');
+            testCase.verifyEqual(length(pipe.bricks(1).params),1);
+            
+            % try adding again
+            pipe.add_params('bricks.add_label','params_al_odd');
+            testCase.verifyEqual(length(pipe.bricks(1).params),1);
+            
+            % try adding not a string
+            testCase.verifyError(...
+                @() pipe.add_params('bricks.add_label',{'params_al_odd'}),...
+                'MATLAB:InputParser:ArgumentFailedValidation');
+            
+            testCase.verifyError(...
+                @() pipe.add_params({'bricks.add_label'},'params_al_odd'),...
+                'MATLAB:InputParser:ArgumentFailedValidation');
         end
         
         function test_expand_code(testCase)
@@ -56,7 +76,7 @@ classdef TestPipelineLatticeSVM < matlab.unittest.TestCase
             testCase.verifyEqual(job_name_full,'bricks.add-label-params-al-odd');
             
             job_name_full = pipe.expand_code(job_name,'mode','folders','expand','params');
-            testCase.verifyEqual(job_name_full,'al-params-al-odd');
+            testCase.verifyEqual(job_name_full,'al-odd');
             
             job_name_full = pipe.expand_code(job_name,'mode','folders','expand','bricks');
             testCase.verifyEqual(job_name_full,'bricks.add-label-01');
@@ -68,7 +88,7 @@ classdef TestPipelineLatticeSVM < matlab.unittest.TestCase
             testCase.verifyEqual(job_name_full,'al-params_al_std');
             
             job_name_full = pipe.expand_code(job_name,'mode','folders','expand','params');
-            testCase.verifyEqual(job_name_full,'al-params-al-std');
+            testCase.verifyEqual(job_name_full,'al-std');
         end
         
         function test_expand_code_2stage(testCase)
@@ -110,7 +130,7 @@ classdef TestPipelineLatticeSVM < matlab.unittest.TestCase
             
             job_name_full = pipe.expand_code(job_name,'mode','folders','expand','params');
             testCase.verifyEqual(job_name_full,...
-                fullfile('al-params-al-odd','lf-params-lf-MQRDLSL2-p10-l099-n400'));
+                fullfile('al-odd','lf-MQRDLSL2-p10-l099-n400'));
             
             job_name_full = pipe.expand_code(job_name,'mode','folders','expand','bricks');
             testCase.verifyEqual(job_name_full,...
@@ -182,7 +202,7 @@ classdef TestPipelineLatticeSVM < matlab.unittest.TestCase
             job_name = pipe.add_job('bricks.add_label','params_al_odd','files_in','fake.mat');
             
             pipe2 = PipelineLatticeSVM(testCase.pipedir);
-            testCase.verifyEqual(pipe2.config.bricks(1).params{1}.name,'params_al_odd');
+            testCase.verifyEqual(pipe2.bricks(1).params{1}.name,'params_al_odd');
         end
     end
     
