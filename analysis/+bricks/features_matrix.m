@@ -65,10 +65,11 @@ elseif iscell(files_in)
     % concatenate the file lists
     for i=1:length(files_in)
         file_list_temp = loadfile(files_in{i});
-        file_list = [file_list file_list_temp];
+        % reshape to a vector
+        file_list_temp = reshape(file_list_temp,numel(file_list_temp),1);
+        % concatenate to list
+        file_list = [file_list; file_list_temp];
     end
-    % reshape to a vector
-    file_list = repmat(file_list,numel(file_list),1);
 else
     file_list = loadfile(files_in);
 end

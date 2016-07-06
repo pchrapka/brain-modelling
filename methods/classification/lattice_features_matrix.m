@@ -45,10 +45,11 @@ nfeatures = numel(lattice.Kf);
 % allocate mem
 samples = zeros(nsamples, nfeatures);
 class_labels = zeros(nsamples,1);
-bad_samples = [];
+% bad_samples = [];
 
 % loop over data files
-for i=1:nsamples
+parfor i=1:nsamples
+    %fprintf('samples %d\n',i);
     % load lattice filtered data
     lattice = loadfile(file_list{i});
     % reshape the data into a vector
@@ -79,6 +80,7 @@ else
 end
 
 % get all feature labels
+lattice = loadfile(file_list{1});
 feature_labels = lattice_feature_labels(size(lattice.Kf));
 feature_labels = reshape(feature_labels,1,numel(lattice.Kf));
 
