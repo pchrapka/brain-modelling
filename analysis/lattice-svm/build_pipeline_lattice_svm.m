@@ -191,12 +191,12 @@ for j=1:length(params_sd.analysis)
     for k=1:length(params_sd.analysis(j).fv)
         % add feature validation
         name_brick = 'bricks.features_validate';
-        opt_func = params_sd.analysis(j).fv(k);
+        opt_func = params_sd.analysis(j).fv{k};
         job_fv = pipeline.add_job(name_brick,opt_func,'parent_job',job_fd_train);
         
         % add train test
         name_brick = 'bricks.train_test_common';
-        opt_func = params_sd.analysis(j).tt(k);
+        opt_func = params_sd.analysis(j).tt{k};
         pipeline.add_job(name_brick,opt_func,'parent_job',job_fv,...
             'partition_job', job_pt, 'fdr_job', job_fd_train);
     end

@@ -114,8 +114,10 @@ classdef Pipeline < handle
             
             pmain = inputParser;
             pmain.KeepUnmatched = true;
+            addRequired(pmain,'brick_name',@ischar);
+            addRequired(pmain,'opt_func',@ischar);
             addParameter(pmain,'parent_job','',@(x) ischar(x) || iscell(x));
-            parse(pmain,varargin{:});
+            parse(pmain,brick_name,opt_func,varargin{:});
             
             % add the parameter file
             obj.add_params(brick_name, opt_func);
@@ -395,8 +397,9 @@ classdef Pipeline < handle
             end
             
             % add if no errors were thrown
-            obj.bricks(i).name = brick_name;
-            obj.bricks(i).id = brick_id;
+            idx = length(obj.bricks) + 1;
+            obj.bricks(idx).name = brick_name;
+            obj.bricks(idx).id = brick_id;
             
             obj.save_bricks();
         end
