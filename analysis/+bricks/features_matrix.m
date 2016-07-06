@@ -48,7 +48,7 @@ function features_matrix(files_in,files_out,opt)
 p = inputParser;
 p.KeepUnmatched = true;
 p.StructExpand = false;
-addRequired(p,'files_in',@(x) ischar(x) | isstruct(x));
+addRequired(p,'files_in',@(x) ischar(x) | isstruct(x) | iscell(x));
 addRequired(p,'files_out',@ischar);
 addParameter(p,'data2feature',@ischar);
 addParameter(p,'file_in_field','',@ischar);
