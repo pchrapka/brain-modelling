@@ -6,8 +6,7 @@ function partition_data(files_in,files_out,opt)
 %   Input
 %   -----
 %   files_in (cell array)
-%       file names of file lists of lattice filter output, see output of
-%       bricks.lattice_filter_sources
+%       file name of feature matrix, see output of bricks.feature_matrix
 %   files_out (struct)
 %   files_out.train (string)
 %       file name of files selected for training set
@@ -28,7 +27,7 @@ function partition_data(files_in,files_out,opt)
 
 p = inputParser;
 p.StructExpand = false;
-addRequired(p,'files_in',@iscell);
+addRequired(p,'files_in',@ischar);
 addRequired(p,'files_out',@(x) isfield(x,'train') & isfield(x,'test'));
 addParameter(p,'train',100,@isnumeric);
 addParameter(p,'test',20,@isnumeric);
