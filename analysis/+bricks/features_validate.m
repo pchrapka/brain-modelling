@@ -38,7 +38,7 @@ addRequired(p,'files_out',@ischar);
 parse(p,files_in,files_out,opt{:});
 
 % load the data
-data_in = ftb.util.loadvar(files_in);
+data_in = loadfile(files_in);
 
 % create a model
 model = SVMMRMR(data_in.features, data_in.class_labels, 'implementation', 'libsvm');

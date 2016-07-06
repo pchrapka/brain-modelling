@@ -24,7 +24,7 @@ addParameter(p,'label',@(x) ~isempty(x) && ischar(x));
 parse(p,files_in,files_out,opt{:});
 
 % load data
-data = ftb.util.loadvar(files_in);
+data = loadfile(files_in);
 % add label
 [data.label] = deal(p.Results.label);
 

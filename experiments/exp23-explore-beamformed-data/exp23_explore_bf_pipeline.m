@@ -25,7 +25,7 @@ end
 
 data = {};
 for i=1:length(analysis)
-    data{i} = ftb.util.loadvar(analysis{i}.steps{5}.timelock);
+    data{i} = loadfile(analysis{i}.steps{5}.timelock);
 end
 
 % plot data

@@ -115,7 +115,7 @@ e.force = false;
 
 % Manually rename channel
 % NOTE This is why the electrodes are processed ahead of time
-elec = ftb.util.loadvar(e.elec_aligned);
+elec = loadfile(e.elec_aligned);
 idx = cellfun(@(x) isequal(x,'Afz'),elec.label);
 if any(idx)
     elec.label{idx} = 'AFz';
@@ -252,5 +252,5 @@ analysis.process();
 % ft_databrowser(cfg);
 
 % figure;
-% cfg = ftb.util.loadvar(eeg_std.definetrial);
+% cfg = loadfile(eeg_std.definetrial);
 % ft_databrowser(cfg);

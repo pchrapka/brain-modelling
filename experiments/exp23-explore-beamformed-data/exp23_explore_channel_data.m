@@ -21,7 +21,7 @@ result = cell(length(data_file),1);
 for i=1:length(data_file)
 
     % load data
-    data = ftb.util.loadvar(data_file{i});
+    data = loadfile(data_file{i});
     
     result{i}.trial_mean = data.avg;
     result{i}.label = data.label;

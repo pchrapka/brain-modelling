@@ -147,7 +147,7 @@ e.force = false;
 if subject_specific
     % Manually rename channel
     % NOTE This is why the electrodes are processed ahead of time
-    elec = ftb.util.loadvar(e.elec_aligned);
+    elec = loadfile(e.elec_aligned);
     idx = cellfun(@(x) isequal(x,'Afz'),elec.label);
     if any(idx)
         elec.label{idx} = 'AFz';

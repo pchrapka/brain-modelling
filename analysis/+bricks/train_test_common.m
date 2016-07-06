@@ -58,10 +58,10 @@ addParameter(p,'verbosity',0,@isnumeric);
 parse(p,files_in,files_out,opt{:});
 
 % load data
-train_data = ftb.util.loadvar(files_in.train);
-test_data = ftb.util.loadvar(files_in.test);
-validated_data = ftb.util.loadvar(files_in.validated);
-fdr_data = ftb.util.loadvar(files_in.fdr);
+train_data = loadfile(files_in.train);
+test_data = loadfile(files_in.test);
+validated_data = loadfile(files_in.validated);
+fdr_data = loadfile(files_in.fdr);
 
 % filter train and test data by fdr indices
 train_data = features_filter(train_data, fdr_data.feat_sel_fdr);

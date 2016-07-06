@@ -37,7 +37,7 @@ if length(files_out) ~= p.Results.trials
 end
 
 % load data
-temp = ftb.util.loadvar(files_in);
+temp = loadfile(files_in);
 
 switch p.Results.mode
     case 'random'

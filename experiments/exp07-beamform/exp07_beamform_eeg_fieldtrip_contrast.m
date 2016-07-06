@@ -76,7 +76,7 @@ e.force = false;
 
 % % Manually rename channel
 % % NOTE This is why the electrodes are processed ahead of time
-% elec = ftb.util.loadvar(e.elec_aligned);
+% elec = loadfile(e.elec_aligned);
 % idx = cellfun(@(x) isequal(x,'Afz'),elec.label);
 % if any(idx)
 %     elec.label{idx} = 'AFz';
@@ -89,7 +89,7 @@ e.plot({'scalp','fiducials','electrodes-aligned','electrodes-labels'});
 %% Create the rest of the pipeline
 
 % load preprocessed ft data
-datapre = ftb.util.loadvar(fullfile(datadir,datapreprocessed));
+datapre = loadfile(fullfile(datadir,datapreprocessed));
 datapre = rmfield(datapre,'grad');
 % display channels labels
 % disp(datapre.label); 
@@ -255,7 +255,7 @@ analysis.process();
 % ft_databrowser(cfg);
 
 % figure;
-% cfg = ftb.util.loadvar(eeg_std.definetrial);
+% cfg = loadfile(eeg_std.definetrial);
 % ft_databrowser(cfg);
 
 %% EEG plots

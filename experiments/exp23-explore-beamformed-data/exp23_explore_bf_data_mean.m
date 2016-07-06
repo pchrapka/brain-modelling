@@ -5,7 +5,7 @@
 data_file = '../output-common/fb/MRIstd-HMstd-cm-EP022-9913-L1cm-norm-tight-EEGodd-BPatchTriallcmvmom/sourceanalysis.mat';
 
 % load data
-data = ftb.util.loadvar(data_file);
+data = loadfile(data_file);
 
 ntrials = length(data);
 % load one trial for memory allocation

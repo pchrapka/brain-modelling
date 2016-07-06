@@ -5,7 +5,7 @@ lattice_folder = fullfile(srcdir,'output','lattice');
 
 trial = 1;
 lattice_file = sprintf('lattice%d.mat',trial);
-lattice = ftb.util.loadvar(fullfile(lattice_folder,lattice_file));
+lattice = loadfile(fullfile(lattice_folder,lattice_file));
 lattice.Kb = lattice.Kf;
 
 %%

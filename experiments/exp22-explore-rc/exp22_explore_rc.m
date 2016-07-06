@@ -17,7 +17,7 @@ jobs_desired = jobs(job_idx);
 
 % load file list of filtered data
 file_filtered_data = pipeline.pipeline.(jobs_desired{1}).files_out;
-filtered_list = ftb.util.loadvar(file_filtered_data);
+filtered_list = loadfile(file_filtered_data);
 
 % select a few
 nfiles = 3;
@@ -38,7 +38,7 @@ for i=1:1%length(filtered_list)
             get_root_dir('blade16.ece.mcmaster.ca'),...
             get_root_dir('Valentina'));
     end
-    data = ftb.util.loadvar(filtered_list{i});
+    data = loadfile(filtered_list{i});
     
     % TODO do stuff
     plot_rc(data,'mode',mode);

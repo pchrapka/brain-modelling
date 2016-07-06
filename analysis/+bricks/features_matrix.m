@@ -59,18 +59,18 @@ if isstruct(files_in)
     if isempty(p.Results.file_in_field)
         error('file_in_field parameter is required');
     end
-    file_list = ftb.util.loadvar(files_in.(p.Results.file_in_field));
+    file_list = loadfile(files_in.(p.Results.file_in_field));
 elseif iscell(files_in)
     file_list = {};
     % concatenate the file lists
     for i=1:length(files_in)
-        file_list_temp = ftb.util.loadvar(files_in{i});
+        file_list_temp = loadfile(files_in{i});
         file_list = [file_list file_list_temp];
     end
     % reshape to a vector
     file_list = repmat(file_list,numel(file_list),1);
 else
-    file_list = ftb.util.loadvar(files_in);
+    file_list = loadfile(files_in);
 end
 
 % convert data

@@ -42,7 +42,7 @@ test_files = {};
 train_files = {};
 
 for i=1:nsets
-    file_list = ftb.util.loadvar(p.Results.files_in{i});
+    file_list = loadfile(p.Results.files_in{i});
     nfiles_in = length(file_list);
     
     if nfiles_in < nfiles

@@ -21,7 +21,7 @@ end
 result = cell(length(data_file),1);
 for k=1:length(data_file)
     % load data
-    data = ftb.util.loadvar(data_file{k});
+    data = loadfile(data_file{k});
     
     ntrials = length(data);
     % load one trial for memory allocation

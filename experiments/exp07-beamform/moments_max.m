@@ -32,7 +32,7 @@ addParameter(p,'NoiseThresh',0,@isnumeric);
 parse(p,datafile,varargin{:});
 
 % load beamformed data
-bfdata = ftb.util.loadvar(datafile);
+bfdata = loadfile(datafile);
 
 % get power
 sources_pow = bfdata.avg.pow;

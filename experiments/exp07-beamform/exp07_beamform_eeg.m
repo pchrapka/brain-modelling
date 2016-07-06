@@ -55,7 +55,7 @@ analysis.process();
 e.force = false;
 
 % Manually rename channel
-elec = ftb.util.loadvar(e.elec_aligned);
+elec = loadfile(e.elec_aligned);
 idx = cellfun(@(x) isequal(x,'Afz'),elec.label);
 if any(idx)
     elec.label{idx} = 'AFz';
@@ -133,7 +133,7 @@ bf.remove_outlier(10);
 % ft_databrowser(cfg);
 
 % figure;
-% cfg = ftb.util.loadvar(eeg.definetrial);
+% cfg = loadfile(eeg.definetrial);
 % ft_databrowser(cfg);
 
 % eegObj = eeg;

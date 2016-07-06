@@ -73,7 +73,7 @@ switch data_source
         
         % load bf filtered data
         params = params_sd_22_consec();
-        data = ftb.util.loadvar(params.conds(1).file);
+        data = loadfile(params.conds(1).file);
         
         % get source data
         sources = bf_get_sources(data(1));
@@ -96,7 +96,7 @@ switch data_source
         eegobj = analysis{1}.steps{end}.get_dep('ftb.EEG');
         
         % load data
-        data = ftb.util.loadvar(eegobj.preprocessed);
+        data = loadfile(eegobj.preprocessed);
         
         % TODO should i limit the number of channels??
         idx_channel = 1:16;

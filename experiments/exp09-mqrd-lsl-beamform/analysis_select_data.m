@@ -29,7 +29,7 @@ parse(p,analysis,labels,varargin{:});
 data = [];
 for i=1:length(analysis)
     % load data
-    temp = ftb.util.loadvar(analysis{i}.steps{6}.sourceanalysis);
+    temp = loadfile(analysis{i}.steps{6}.sourceanalysis);
     
     % select trials from each analysis randomly
     idx_rand = randsample(1:length(temp), p.Results.trials);

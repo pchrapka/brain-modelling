@@ -49,7 +49,7 @@ if p.Results.trials > 1
 end
 
 % load data
-data_all = ftb.util.loadvar(files_in);
+data_all = loadfile(files_in);
 % get dims
 nchannels = sum(data_all(1).inside);
 nsamples = length(data_all(1).time);

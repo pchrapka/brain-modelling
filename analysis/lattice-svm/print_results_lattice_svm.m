@@ -71,7 +71,7 @@ for j=1:length(filter_params)
         
         % load the data
         if ~test
-            validated = ftb.util.loadvar(file_validated);
+            validated = loadfile(file_validated);
             
             fprintf(fid,'validation:\n');
             perf = svmmrmr_class_accuracy(...
@@ -82,7 +82,7 @@ for j=1:length(filter_params)
             plot_svmmrmr_confusion(validated.class_labels, validated.predictions);
             
             fprintf(fid,'test:\n');
-            test_result = ftb.util.loadvar(file_test);
+            test_result = loadfile(file_test);
             perf = svmmrmr_class_accuracy(...
                 test_result.class_labels, test_result.predictions);
             fprintf(fid,'\tclassification accuracy: %0.2f%%\n',perf*100);
