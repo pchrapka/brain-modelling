@@ -34,7 +34,7 @@ function [samples,class_labels,feature_labels] = lattice_features_matrix(file_li
 
 p = inputParser;
 addRequired(p,'file_list',@iscell);
-addParameter(p,'threshold','none',@(x) x > 0);
+addParameter(p,'threshold','none',@(x) x > 0 || isequal(x,'none'));
 parse(p,file_list,varargin{:});
 
 % get dimensions
