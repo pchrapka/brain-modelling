@@ -29,7 +29,7 @@ function [samples,class_labels,feature_labels] = lattice_features_matrix(file_li
 %       feature labels
 %   samples (matrix)
 %       feature matrix with size [samples features]
-%   class_labels (cell array)
+%   class_labels (vector)
 %       class labels for each sample
 
 p = inputParser;

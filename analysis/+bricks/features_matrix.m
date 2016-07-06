@@ -5,9 +5,9 @@ function features_matrix(files_in,files_out,opt)
 %
 %   Input
 %   -----
-%   files_in (string/struct)
-%       file name of list of samples to process, see output of
-%       bricks.partition_files or bricks.lattice_filter_sources
+%   files_in (string/cell/struct)
+%       file name(s) of list of samples to process, see output of
+%       bricks.lattice_filter_sources
 %       
 %       struct version
 %       contains fields test and train each containing a file name of a
@@ -15,7 +15,8 @@ function features_matrix(files_in,files_out,opt)
 %   files_out (string)
 %       output file name
 %   opt (cell array)
-%       function options specified as name value pairs
+%       function options specified as name value pairs. unmatched name
+%       value pairs are passed onto the data2feature function
 %   
 %   Parameters
 %   ----------
@@ -41,7 +42,7 @@ function features_matrix(files_in,files_out,opt)
 %       feature labels
 %   samples (matrix)
 %       feature matrix with size [samples features]
-%   class_labels (cell array)
+%   class_labels (vector)
 %       class labels for each sample
 
 p = inputParser;
@@ -59,6 +60,15 @@ if isstruct(files_in)
         error('file_in_field parameter is required');
     end
     file_list = ftb.util.loadvar(files_in.(p.Results.file_in_field));
+elseif iscell(files_in)
+    file_list = {};
+    % concatenate the file lists
+    for i=1:length(files_in)
+        file_list_temp = ftb.util.loadvar(files_in{i});
+        file_list = [file_list file_list_temp];
+    end
+    % reshape to a vector
+    file_list = repmat(file_list,numel(file_list),1);
 else
     file_list = ftb.util.loadvar(files_in);
 end

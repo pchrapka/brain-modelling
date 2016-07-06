@@ -31,8 +31,8 @@ classdef PipelineLatticeSVM < Pipeline
             obj.config.bricks(3).id = 'fm';
             obj.config.bricks(4).name = 'bricks.features_validate';
             obj.config.bricks(4).id = 'fv';
-            obj.config.bricks(5).name = 'bricks.partition_files';
-            obj.config.bricks(5).id = 'pf';
+            obj.config.bricks(5).name = 'bricks.partition_data';
+            obj.config.bricks(5).id = 'pd';
             obj.config.bricks(6).name = 'bricks.features_fdr';
             obj.config.bricks(6).id = 'fd';
             obj.config.bricks(7).name = 'bricks.train_test_common';
@@ -74,7 +74,7 @@ classdef PipelineLatticeSVM < Pipeline
             %   parent_job (string)
             %       parent job in pipeline
             %
-            %   bricks.partition_files
+            %   bricks.partition_data
             %   -----------------------------
             %   parent_job (string)
             %       parent job in pipeline
@@ -128,7 +128,7 @@ classdef PipelineLatticeSVM < Pipeline
                     files_in = obj.pipeline.(p.Results.parent_job).files_out;
                     files_out = fullfile(job_path, 'lattice-filtered-files.mat');
                     
-                case 'bricks.partition_files'
+                case 'bricks.features_matrix'
                     % varargin: parent_job
                     p = inputParser;
                     p.StructExpand = false;
@@ -140,10 +140,9 @@ classdef PipelineLatticeSVM < Pipeline
                     for i=1:length(p.Results.parent_job)
                         files_in{i} = obj.pipeline.(p.Results.parent_job{i}).files_out;
                     end
-                    files_out.test = fullfile(job_path, 'test-files.mat');
-                    files_out.train = fullfile(job_path, 'train-files.mat');
+                    files_out = fullfile(job_path, 'features-matrix.mat');
                     
-                case 'bricks.features_matrix'
+                case 'bricks.partition_data'
                     % varargin: parent_job
                     p = inputParser;
                     p.StructExpand = false;
@@ -152,8 +151,8 @@ classdef PipelineLatticeSVM < Pipeline
                     parse(p,varargin{:});
                     
                     files_in = obj.pipeline.(p.Results.parent_job).files_out;
-                    files_out = fullfile(job_path,...
-                        'features-matrix.mat');
+                    files_out.test = fullfile(job_path, 'test-feature-matrix.mat');
+                    files_out.train = fullfile(job_path, 'train-feature-matrix.mat');
                     
                 case 'bricks.features_fdr'
                     % varargin: parent_job
@@ -163,7 +162,7 @@ classdef PipelineLatticeSVM < Pipeline
                     addParameter(p,'parent_job',@(x) ~isempty(x));
                     parse(p,varargin{:});
                     
-                    files_in = obj.pipeline.(p.Results.parent_job).files_out;
+                    files_in = obj.pipeline.(p.Results.parent_job).files_out.train;
                     files_out = fullfile(job_path,...
                         'features-fdr.mat');
                     
@@ -185,14 +184,13 @@ classdef PipelineLatticeSVM < Pipeline
                     p.StructExpand = false;
                     p.KeepUnmatched = true;
                     addParameter(p,'parent_job',@(x) ~isempty(x));
-                    addParameter(p,'test_job',@(x) ~isempty(x));
-                    addParameter(p,'train_job',@(x) ~isempty(x));
+                    addParameter(p,'pt_job',@(x) ~isempty(x));
                     addParameter(p,'fdr_job',@(x) ~isempty(x));
                     parse(p,varargin{:});
                     
                     files_in.validated = obj.pipeline.(p.Results.parent_job).files_out;
-                    files_in.test = obj.pipeline.(p.Results.test_job).files_out;
-                    files_in.train = obj.pipeline.(p.Results.train_job).files_out;
+                    files_in.test = obj.pipeline.(p.Results.pt_job).files_out.test;
+                    files_in.train = obj.pipeline.(p.Results.pt_job).files_out.train;
                     files_in.fdr = obj.pipeline.(p.Results.fdr_job).files_out;
                     files_out = fullfile(job_path,...
                         'test-results.mat');

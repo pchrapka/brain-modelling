@@ -40,30 +40,30 @@ end
 f = 1;
 params_filter = [];
 params_filter(f).params_filter = 'params_lf_MQRDLSL2_p10_l099_n400';
-params_filter(f).params_partition = 'params_pf_std_odd_tr100_te20';
+params_filter(f).params_partition = 'params_pd_std_odd_tr100_te20';
 f = f+1;
 % params_filter(f).params_filter = 'params_lf_MLOCCDTWL_p10_l099_n400';
-% params_filter(f).params_partition = 'params_pf_std_odd_tr100_te20';
+% params_filter(f).params_partition = 'params_pd_std_odd_tr100_te20';
 % f = f+1;
 params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt2_p10_l099_n400';
-params_filter(f).params_partition = 'params_pf_std_odd_tr100_te20';
+params_filter(f).params_partition = 'params_pd_std_odd_tr100_te20';
 f = f+1;
 params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt3_p10_l099_n400';
-params_filter(f).params_partition = 'params_pf_std_odd_tr70_te20';
+params_filter(f).params_partition = 'params_pd_std_odd_tr70_te20';
 f = f+1;
 params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt5_p10_l099_n400';
-params_filter(f).params_partition = 'params_pf_std_odd_tr30_te20';
+params_filter(f).params_partition = 'params_pd_std_odd_tr30_te20';
 f = f+1;
 params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt8_p10_l099_n400';
-params_filter(f).params_partition = 'params_pf_std_odd_tr20_te10';
+params_filter(f).params_partition = 'params_pd_std_odd_tr20_te10';
 f = f+1;
 
 % lambda 0.9
 params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt2_p10_l09_n400';
-params_filter(f).params_partition = 'params_pf_std_odd_tr100_te20';
+params_filter(f).params_partition = 'params_pd_std_odd_tr100_te20';
 f = f+1;
 params_filter(f).params_filter = 'params_lf_MCMTQRDLSL1_mt5_p10_l09_n400';
-params_filter(f).params_partition = 'params_pf_std_odd_tr30_te20';
+params_filter(f).params_partition = 'params_pd_std_odd_tr30_te20';
 f = f+1;
 
 
@@ -100,26 +100,21 @@ for j=1:length(params_filter)
             opt_func,'parent_job',job_al{i});
     end
     
+    % add feature matrix
+    name_brick = 'bricks.features_matrix';
+    opt_func = 'params_fm_lattice';
+    job_fm = pipeline.add_job(name_brick,opt_func,'parent_job',job_lf);
+    
     % add select trials
-    name_brick = 'bricks.partition_files';
+    name_brick = 'bricks.partition_data';
     opt_func = params_filter(j).params_partition;
     % NOTE don't add parent job here, just make a not in opt_func
-    job_pt = pipeline.add_job(name_brick,opt_func,'parent_job',job_lf);
+    job_pt = pipeline.add_job(name_brick,opt_func,'parent_job',job_fm);
     
-    % add feature matrix
-    name_brick = 'bricks.features_matrix';
-    opt_func = 'params_fm_lattice_train';
-    job_fm_train = pipeline.add_job(name_brick,opt_func,'parent_job',job_pt);
-    
-    % add feature matrix for test data
-    name_brick = 'bricks.features_matrix';
-    opt_func = 'params_fm_lattice_test';
-    job_fm_test = pipeline.add_job(name_brick,opt_func,'parent_job',job_pt);
-    
-    % add feature matrix
+    % add feature selection 1
     name_brick = 'bricks.features_fdr';
     opt_func = 'params_fd_20000';
-    job_fd_train = pipeline.add_job(name_brick,opt_func,'parent_job',job_fm_train);
+    job_fd_train = pipeline.add_job(name_brick,opt_func,'parent_job',job_pt);
     
     for k=1:length(feat_options)
         % add feature validation
@@ -131,7 +126,7 @@ for j=1:length(params_filter)
         name_brick = 'bricks.train_test_common';
         opt_func = feat_options(k).tt;
         pipeline.add_job(name_brick,opt_func,'parent_job',job_fv,...
-            'test_job', job_fm_test, 'train_job', job_fm_train, 'fdr_job', job_fd_train);
+            'partition_job', job_pt, 'fdr_job', job_fd_train);
     end
     
 end
