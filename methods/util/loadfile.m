@@ -19,7 +19,7 @@ if ~isempty(p.Results.varname)
 else
     % load everything
     filecontent = load(p.Results.filename);
-    fields = filenames(filecontent);
+    fields = fieldnames(filecontent);
     % make sure there is only one variable
     if length(fields) > 1
         error('there are %d variables in the file',length(fields));
