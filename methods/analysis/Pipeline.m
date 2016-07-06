@@ -2,15 +2,15 @@ classdef Pipeline < handle
     %Pipeline Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties (SetAccess = protected)
+    properties (SetAccess = private)
         % PSOM pipeline
         pipeline;
         
         % output directory
         outdir;
         
-        config_file;
-        config;
+        bricks_file;
+        bricks;
     end
     
     properties
@@ -32,14 +32,14 @@ classdef Pipeline < handle
                 mkdir(obj.outdir);
             end
             
-            obj.config_file = fullfile(obj.outdir,'config.mat');
-            if exist(obj.config_file,'file')
-                % load the config if it exists
-                obj.config = obj.load_config();
+            obj.bricks_file = fullfile(obj.outdir,'bricks.mat');
+            if exist(obj.bricks_file,'file')
+                % load the bricks if it exists
+                obj.bricks = obj.load_bricks();
             else
                 % create a new one
-                obj.init_config();
-                obj.save_config();
+                obj.init_bricks();
+                obj.save_bricks();
             end
         end
         
@@ -117,13 +117,11 @@ classdef Pipeline < handle
             addParameter(pmain,'parent_job','',@(x) ischar(x) || iscell(x));
             parse(pmain,varargin{:});
             
-            % get brick options from option function
-            opt = feval(opt_func);
-            
             % add the parameter file
             obj.add_params(brick_name, opt_func);
             
             % get the job name
+            % NOTE abstract function
             job_code = obj.get_job_code(...
                 brick_name, opt_func, pmain.Results.parent_job);
             
@@ -156,8 +154,12 @@ classdef Pipeline < handle
             end
             
             % get job params
+            % 
             [files_in,files_out] = obj.get_job_params(...
                 brick_name, opt_func, job_path, varargin{:});
+            
+            % get brick options from option function
+            opt = feval(opt_func);
             
             % add the job
             obj.pipeline = psom_add_job(obj.pipeline, job_code ,brick_name,...
@@ -233,14 +235,14 @@ classdef Pipeline < handle
                 brick_idx = obj.get_brick_idx(results(i).brick_code,'mode','code');
                 
                 if expand_bricks
-                    brick_name = obj.config.bricks(brick_idx).name;
+                    brick_name = obj.bricks(brick_idx).name;
                 else
                     brick_name = results(i).brick_code;
                 end
                 
                 if expand_params
                     params_idx = str2double(results(i).param_code);
-                    params_name = obj.config.bricks(brick_idx).params{params_idx}.name;
+                    params_name = obj.bricks(brick_idx).params{params_idx}.name;
                 else
                     params_name = results(i).param_code;
                 end
@@ -274,14 +276,14 @@ classdef Pipeline < handle
             
             idx = obj.get_params_idx(brick_idx,params_name);
             if idx > 0
-                code = obj.config.bricks(brick_idx).params{idx}.id;
+                code = obj.bricks(brick_idx).params{idx}.id;
             end
 
         end
         
         function idx = get_params_idx(obj, brick_name, params_name)
             %GET_PARAMS_IDX returns the index of the parameter file struct
-            %in the config
+            %in the bricks config
             
             idx = 0;
             % set the brick index
@@ -292,8 +294,8 @@ classdef Pipeline < handle
             end
             
             % get param array for our brick
-            if isfield(obj.config.bricks(brick_idx),'params')
-                params = obj.config.bricks(brick_idx).params;
+            if isfield(obj.bricks(brick_idx),'params')
+                params = obj.bricks(brick_idx).params;
             else
                 return;
             end
@@ -309,7 +311,7 @@ classdef Pipeline < handle
         
         function idx = get_brick_idx(obj, brick_name, varargin)
             %GET_BRICK_IDX returns the index of the brick struct in the
-            %config
+            %bricks config
             %
             %   brick_name (string)
             %       brick name or code, default it's the brick name
@@ -332,8 +334,8 @@ classdef Pipeline < handle
             end
             
             idx = 0;
-            for i=1:length(obj.config.bricks)
-                if isequal(obj.config.bricks(i).(field),brick_name)
+            for i=1:length(obj.bricks)
+                if isequal(obj.bricks(i).(field),brick_name)
                     idx = i;
                     return
                 end
@@ -349,7 +351,54 @@ classdef Pipeline < handle
             %GET_BRICK_CODE returns 2 letter brick code
             
             idx = obj.get_brick_idx(brick_name);
-            code = obj.config.bricks(idx).id;
+            code = obj.bricks(idx).id;
+        end
+        
+        function idx = add_params(obj, brick_name, params_name)
+            %ADD_PARAMS add parameter file to the bricks config
+            
+            brick_idx = obj.get_brick_idx(brick_name);
+            idx = obj.get_params_idx(brick_idx,params_name);
+            if idx == 0
+                if ~isfield(obj.bricks(brick_idx),'params')
+                    obj.bricks(brick_idx).params = [];
+                end
+                nparams = length(obj.bricks(brick_idx).params);
+                idx = nparams + 1;
+                
+                param_new = [];
+                param_new.name = params_name;
+                param_new.id = sprintf('%02d',idx);
+                obj.bricks(brick_idx).params{idx} = param_new;
+                
+                obj.save_bricks();
+            end
+        end
+        
+        function add_brick(obj, brick_name, brick_id)
+            %ADD_BRICK add brick to the bricks config
+            
+            % check id
+            if length(brick_id) > 2
+                obj.print_error('add_brick','brick id is too long, should be 2 characters');
+            end
+            
+            % check if it exists
+            for i=1:length(obj.bricks)
+                if isequal(obj.bricks(i).id, brick_id)
+                    obj.print_error('add_brick','brick id already exists %s',brick_id);
+                end
+                
+                if isequal(obj.bricks(i).name, brick_name)
+                    obj.print_error('add_brick','brick name already exists %s',brick_name);
+                end
+            end
+            
+            % add if no errors were thrown
+            obj.bricks(i).name = brick_name;
+            obj.bricks(i).id = brick_id;
+            
+            obj.save_bricks();
         end
     end
     
@@ -388,46 +437,25 @@ classdef Pipeline < handle
             
         end
         
-        function idx = add_params(obj, brick_name, params_name)
-            %ADD_PARAMS add parameter file to the config
+        function bricks = load_bricks(obj)
+            %LOAD_BRICKS loads bricks file
             
-            brick_idx = obj.get_brick_idx(brick_name);
-            idx = obj.get_params_idx(brick_idx,params_name);
-            if idx == 0
-                if ~isfield(obj.config.bricks(brick_idx),'params')
-                    obj.config.bricks(brick_idx).params = [];
-                end
-                nparams = length(obj.config.bricks(brick_idx).params);
-                idx = nparams + 1;
-                
-                param_new = [];
-                param_new.name = params_name;
-                param_new.id = sprintf('%02d',idx);
-                obj.config.bricks(brick_idx).params{idx} = param_new;
-                
-                obj.save_config();
-            end
-        end
-        
-        function config = load_config(obj)
-            %LOAD_CONFIG loads config file
-            
-            if exist(obj.config_file,'file')
+            if exist(obj.bricks_file,'file')
                 % load it
-                din = load(obj.config_file);
-                config = din.config;
+                din = load(obj.bricks_file);
+                bricks = din.bricks;
             else
-                warning([mfilename ':load_config'],...
-                    'missing config file');
-                config = [];
+                warning([mfilename ':load_bricks'],...
+                    'missing bricks file');
+                bricks = [];
             end
         end
         
-        function save_config(obj)
-            %SAVE_CONFIG saves config file
+        function save_bricks(obj)
+            %SAVE_BRICKS saves bricks file
             
-            config = obj.config;
-            save(obj.config_file,'config');
+            bricks = obj.bricks;
+            save(obj.bricks_file,'bricks');
         end
     
         function print_error(obj,function_name,format,varargin)
@@ -438,8 +466,8 @@ classdef Pipeline < handle
     end
     
     methods (Abstract, Access = protected)
-        init_config(obj)
-        %INIT_CONFIG initializes the config file with brick names
+        init_bricks(obj)
+        %INIT_BRICKS initializes the bricks file with brick names
         
         [files_in,files_out] = get_job_params(obj,brick_name,opt_func,job_path,varargin)
         %GET_JOB_PARAMS returns job parameters

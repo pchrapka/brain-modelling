@@ -18,25 +18,17 @@ classdef PipelineLatticeSVM < Pipeline
     
     methods (Access = protected)
         
-        function init_config(obj)
-            %INIT_CONFIG initializes the config file
+        function init_bricks(obj)
+            %INIT_BRICKS initializes the bricks file
             
-            % create one
-            obj.config.bricks = [];
-            obj.config.bricks(1).name = 'bricks.add_label';
-            obj.config.bricks(1).id = 'al';
-            obj.config.bricks(2).name = 'bricks.lattice_filter_sources';
-            obj.config.bricks(2).id = 'lf';
-            obj.config.bricks(3).name = 'bricks.features_matrix';
-            obj.config.bricks(3).id = 'fm';
-            obj.config.bricks(4).name = 'bricks.features_validate';
-            obj.config.bricks(4).id = 'fv';
-            obj.config.bricks(5).name = 'bricks.partition_data';
-            obj.config.bricks(5).id = 'pd';
-            obj.config.bricks(6).name = 'bricks.features_fdr';
-            obj.config.bricks(6).id = 'fd';
-            obj.config.bricks(7).name = 'bricks.train_test_common';
-            obj.config.bricks(7).id = 'tt';
+            % add bricks
+            obj.add_brick('bricks.add_label','al');
+            obj.add_brick('bricks.lattice_filter_sources','lf');
+            obj.add_brick('bricks.features_matrix','fm');
+            obj.add_brick('bricks.features_validate','fv');
+            obj.add_brick('bricks.partition_data','pd');
+            obj.add_brick('bricks.features_fdr','fd');
+            obj.add_brick('bricks.train_test_common','tt');
             
         end
         
@@ -184,13 +176,13 @@ classdef PipelineLatticeSVM < Pipeline
                     p.StructExpand = false;
                     p.KeepUnmatched = true;
                     addParameter(p,'parent_job',@(x) ~isempty(x));
-                    addParameter(p,'pt_job',@(x) ~isempty(x));
+                    addParameter(p,'partition_job',@(x) ~isempty(x));
                     addParameter(p,'fdr_job',@(x) ~isempty(x));
                     parse(p,varargin{:});
                     
                     files_in.validated = obj.pipeline.(p.Results.parent_job).files_out;
-                    files_in.test = obj.pipeline.(p.Results.pt_job).files_out.test;
-                    files_in.train = obj.pipeline.(p.Results.pt_job).files_out.train;
+                    files_in.test = obj.pipeline.(p.Results.partition_job).files_out.test;
+                    files_in.train = obj.pipeline.(p.Results.partition_job).files_out.train;
                     files_in.fdr = obj.pipeline.(p.Results.fdr_job).files_out;
                     files_out = fullfile(job_path,...
                         'test-results.mat');
