@@ -144,9 +144,9 @@ classdef Pipeline < handle
             
             % check if job name exists
             if obj.exist_job(job_code)
-                % better to throw an error
-                obj.print_error('add_job',...
+                warning([mfilename ':add_job'],...
                     'job exists in pipeline: %s',job_code);
+                return;
             end
             
             % set up path for output files
