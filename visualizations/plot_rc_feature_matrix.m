@@ -43,6 +43,7 @@ function plot_rc_feature_matrix(data,varargin)
 %       reflection coefficients outside of this range are set to NaNs
 
 p = inputParser();
+p.KeepUnmatched = true;
 p.addRequired('data',@isstruct);
 p.addParameter('mode','boxplot',@ischar);
 % p.addParameter('clim',[-1.5 1.5],@(x) isvector(x) || isequal(x,'none'));
@@ -52,7 +53,8 @@ p.parse(data,varargin{:});
 
 switch p.Results.mode
     case 'boxplot'
-        plot_rc_feature_matrix_boxplot(data);
+        params = struct2namevalue(p.Unmatched);
+        plot_rc_feature_matrix_boxplot(data,params{:});
     otherwise
         error('unknwon plot mode %s',p.Results.mode);
 end

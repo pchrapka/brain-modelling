@@ -37,7 +37,7 @@ data = loadfile(file_name);
 
 %%
 % plot data
-plot_rc_feature_matrix(data);
+plot_rc_feature_matrix(data,'interactive',true);
 
 % %%
 % % load file list of filtered data

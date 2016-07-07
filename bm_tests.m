@@ -29,6 +29,12 @@ result = run(suite);
 % end
 % result = run(suite);
 
+% suite = TestSuite.fromClass(?tests.Test_plot_rc_feature_matrix_boxplot);
+% if verbosity > 0
+%     disp({suite.Name}');
+% end
+% result = run(suite);
+
 %% Not included in all
 % Test_ft_trialfun_preceed
 
