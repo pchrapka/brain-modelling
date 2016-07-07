@@ -126,6 +126,37 @@ classdef VRCStep < VARProcess
                 obj.process2.coefs_stable(verbose);
         end
         
+        function rc_time = get_rc_time(obj, nsamples, coefs)
+            %   Input
+            %   -----
+            %   nsamples (integer)
+            %       number of samples
+            %   coefs (string)
+            %       Kf or Kb
+            %
+            %   Output
+            %   ------
+            %   rc_time (matrix)
+            %       reflection coefficients over time [samples P K K]
+            
+            p = inputParser();
+            p.addRequired('nsamples', @(x) x > 0);
+            p.addRequired('coefs',@(x) any(validatestring(x,{'Kf','Kb'})));
+            p.parse(nsamples,coefs);
+            
+            if nsamples < obj.changepoint
+                rc_time = repmat(shiftdim(obj.process1.(coefs),2),1,1,1,nsamples);
+                rc_time = shiftdim(rc_time,3);
+            else
+                rc_time1 = repmat(shiftdim(obj.process1.(coefs),2),1,1,1,obj.changepoint);
+                rc_time1 = shiftdim(rc_time1,3);
+                rc_time2 = repmat(shiftdim(obj.process2.(coefs),2),1,1,1,nsamples - obj.changepoint);
+                rc_time2 = shiftdim(rc_time2,3);
+                rc_time = cat(1, rc_time1, rc_time2);
+            end
+            
+        end
+        
         function [Y,Y_norm,noise] = simulate(obj, nsamples, varargin)
             %SIMULATE simulate VRC process
             %   [Y,Y_norm,noise] = SIMULATE(obj, nsamples, ...)

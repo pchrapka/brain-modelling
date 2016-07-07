@@ -59,9 +59,9 @@ for i=1:2:ndata
     niter = size(data_mse,1);
     switch p.Results.mode
         case 'log'
-            semilogy(1:niter,data_mse);
+            semilogy(1:niter,data_mse,'LineWidth',2);
         case 'plot'
-            plot(1:niter,data_mse);
+            plot(1:niter,data_mse,'LineWidth',2);
     end
     hold on;
 end
