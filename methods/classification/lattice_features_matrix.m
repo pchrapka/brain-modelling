@@ -21,6 +21,27 @@ function [samples,class_labels,feature_labels] = lattice_features_matrix(file_li
 %       NOTE better classification accuracy results if the same threshold
 %       is used for both train and test sets
 %
+%   threshold_method (string, default = 'zero')
+%       selects thresholding method, only needed if threshold ~= 'none'
+%       options: zero, clamp
+%
+%       zero
+%           coefficients that exceed the threshold are set to zero
+%       clamp
+%           coefficients that exceed the threshold are clamped to the
+%           threshold
+%
+%   scaling (string, default = 'featurewise')
+%       scaling mode for coefficients, 
+%       options: none, threshold, featurewise
+%
+%       threshold
+%           scales by the threshold parameter, so that coefficients range
+%           between [-1 1]
+%       featurewise
+%           scales the range of each feature independently to [-1 1]
+%   
+%
 %   Output
 %   ------
 %   output data contains the following fields
@@ -34,6 +55,10 @@ function [samples,class_labels,feature_labels] = lattice_features_matrix(file_li
 
 p = inputParser;
 addRequired(p,'file_list',@iscell);
+addParameter(p,'scaling','featurewise',...
+    @(x) any(validatestring(x,{'none','threshold','featurewise'})));
+addParameter(p,'threshold_method','zero',...
+    @(x) any(validatestring(x,{'zero','clamp'})));
 addParameter(p,'threshold','none',@(x) x > 0 || isequal(x,'none'));
 parse(p,file_list,varargin{:});
 
@@ -67,16 +92,33 @@ end
 
 % threshold bad samples
 if ~isequal(p.Results.threshold,'none')
-    % zero large samples to zero
-    samples(abs(samples) > p.Results.threshold) = 0;
+    switch p.Results.threshold_method
+        case 'zero'
+            % set large samples to zero
+            samples(abs(samples) > p.Results.threshold) = 0;
+        case 'clamp'
+            % set large samples to the threshold
+            samples(samples > p.Results.threshold) = p.Results.threshold;
+            samples(samples < p.Results.threshold) = -p.Results.threshold;
+    end
 end
 
 % scale samples to [-1,1]
-if ~isequal(p.Results.threshold,'none')
-    samples = samples/p.Results.threshold;
-else
-    warning(['not scaling feature matrix\n'...
-        'this could result in bad classification accuracy']);
+switch p.Results.scaling
+    case 'featurewise'
+        % shift range to [0 max]
+        samples_min = min(samples,1);
+        samples = samples - repmat(samples_min,nsamples,1);
+        % scale by max [0 1]
+        samples_max = max(samples,1);
+        samples = samples./repmat(samples_max,nsamples,1);
+        % mult by 2 [0 2] and shift down [-1 1]
+        samples = 2*samples - 1;
+    case 'threshold'
+        samples = samples/p.Results.threshold;
+    case 'none'
+        warning(['not scaling feature matrix\n'...
+            'this could result in bad classification accuracy']);
 end
 
 % get all feature labels
