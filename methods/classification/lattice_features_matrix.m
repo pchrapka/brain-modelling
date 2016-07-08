@@ -107,10 +107,10 @@ end
 switch p.Results.scaling
     case 'featurewise'
         % shift range to [0 max]
-        samples_min = min(samples,1);
+        samples_min = min(samples,[],1);
         samples = samples - repmat(samples_min,nsamples,1);
         % scale by max [0 1]
-        samples_max = max(samples,1);
+        samples_max = max(samples,[],1);
         samples = samples./repmat(samples_max,nsamples,1);
         % mult by 2 [0 2] and shift down [-1 1]
         samples = 2*samples - 1;
