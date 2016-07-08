@@ -5,7 +5,7 @@ function plot_rc_feature_matrix_boxplot(data,varargin)
 %   coefficients from feature matrix
 
 p = inputParser();
-p.addParameter('interactive',true,@islogical);
+addParameter(p,'interactive',true,@islogical);
 p.parse(varargin{:});
 
 [nsamples,nfeatures] = size(data.samples);

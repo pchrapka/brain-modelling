@@ -3,8 +3,8 @@
 pipeline = build_pipeline_lattice_svm('params_sd_22_consec');
 
 %% get codes for filter
-% filter_params = 'params_lf_MQRDLSL2_p10_l099_n400';
-filter_params = 'params_lf_MCMTQRDLSL1_mt3_p10_l099_n400';
+filter_params = 'params_lf_MQRDLSL2_p10_l099_n400';
+% filter_params = 'params_lf_MCMTQRDLSL1_mt3_p10_l099_n400';
 
 % select jobs based on filter params
 brick_name = 'bricks.lattice_filter_sources';

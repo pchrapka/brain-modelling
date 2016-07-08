@@ -44,8 +44,8 @@ function plot_rc_feature_matrix(data,varargin)
 
 p = inputParser();
 p.KeepUnmatched = true;
-p.addRequired('data',@isstruct);
-p.addParameter('mode','boxplot',@ischar);
+addRequired(p,'data',@isstruct);
+addParameter(p,'mode','boxplot',@ischar);
 % p.addParameter('clim',[-1.5 1.5],@(x) isvector(x) || isequal(x,'none'));
 % p.addParameter('abs',false,@islogical);
 % p.addParameter('threshold','none',@(x) isnumeric(x) || isequal(x,'none'));
