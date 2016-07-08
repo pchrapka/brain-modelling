@@ -7,7 +7,7 @@ time = zeros(nfeatures,1);
 order = zeros(nfeatures,1);
 channel1 = zeros(nfeatures,1);
 channel2 = zeros(nfeatures,1);
-for i=1:nfeatures
+parfor i=1:nfeatures
     % figure out number of time points, filter orders, and channels
     pattern = 't(\d+)-p(\d+)-c(\d+)-c(\d+)';
     results = regexp(labels{i}, pattern, 'tokens');
