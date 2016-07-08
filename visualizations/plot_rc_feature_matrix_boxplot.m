@@ -32,9 +32,10 @@ spacing = 0.3;
 for i=time_points
     
     % get coefficients for current time point
-    pattern = sprintf('.*t%d.*',i);
-    idx_coef = cellfun(@(x) ~isempty(regexp(x, pattern, 'tokens')),...
-        data.feature_labels, 'UniformOutput', true);
+    %pattern = sprintf('.*t%d.*',i);
+    %idx_coef = cellfun(@(x) ~isempty(regexp(x, pattern, 'tokens')),...
+    %    data.feature_labels, 'UniformOutput', true);
+    idx_coef = (time_points_all == i);
     
     box_data = data.samples(:,idx_coef);
     nboxes = size(box_data,2);
