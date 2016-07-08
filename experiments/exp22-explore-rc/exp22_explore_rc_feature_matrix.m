@@ -37,7 +37,15 @@ data = loadfile(file_name);
 
 %%
 % plot data
-plot_rc_feature_matrix(data,'interactive',true);
+% plot_rc_feature_matrix(data,'mode','boxplot','interactive',true); % TMI
+figure;
+plot_rc_feature_matrix(data,'mode','mean');
+
+figure;
+plot_rc_feature_matrix(data,'mode','std');
+
+figure;
+plot_rc_feature_matrix(data,'mode','mean-diff');
 
 % %%
 % % load file list of filtered data

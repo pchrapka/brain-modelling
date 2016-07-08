@@ -18,20 +18,15 @@ function plot_rc_feature_matrix(data,varargin)
 %
 %   Parameters
 %   ----------
-%   mode (string, default = 'image-all')
+%   mode (string, default = 'mean')
 %       plotting mode
-%       image-all
-%           plots all reflection coefficients vs time
-%       image-order
-%           plots reflection coefficients vs time, where each order is
-%           plotted in its own subplot
-%       image-max
-%           plots the max reflection coefficient from all orders vs time
-%       movie-order
-%           plots reflection coefficients at each time step, where each
-%           order is plotted in its own subplot
-%       movie-max
-%           plots the max reflection coefficient at each time step
+%       mean
+%           plots mean of all reflection coefficients vs time
+%       std
+%           plots std of all reflection coefficients vs time
+%       boxplot
+%           plots boxplot for all reflection coefficients at each time
+%           point
 %
 %   clim (vector or 'none', default = [-1.5 1.5])
 %       color limits for image plots
@@ -45,7 +40,7 @@ function plot_rc_feature_matrix(data,varargin)
 p = inputParser();
 p.KeepUnmatched = true;
 addRequired(p,'data',@isstruct);
-addParameter(p,'mode','boxplot',@ischar);
+addParameter(p,'mode','mean',@ischar);
 % p.addParameter('clim',[-1.5 1.5],@(x) isvector(x) || isequal(x,'none'));
 % p.addParameter('abs',false,@islogical);
 % p.addParameter('threshold','none',@(x) isnumeric(x) || isequal(x,'none'));
@@ -55,6 +50,10 @@ switch p.Results.mode
     case 'boxplot'
         params = struct2namevalue(p.Unmatched);
         plot_rc_feature_matrix_boxplot(data,params{:});
+    case {'mean','std'}
+        plot_rc_feature_matrix_stat(data,'stat',p.Results.mode);
+    case 'mean-diff'
+        plot_rc_feature_matrix_mean_diff(data);
     otherwise
         error('unknwon plot mode %s',p.Results.mode);
 end

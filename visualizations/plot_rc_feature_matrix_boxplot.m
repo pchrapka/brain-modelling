@@ -3,6 +3,24 @@ function plot_rc_feature_matrix_boxplot(data,varargin)
 %feature matrix
 %   PLOT_RC_FEATURE_MATRIX_BOXPLOT(data,...) boxplot with reflection
 %   coefficients from feature matrix
+%
+%   Input
+%   -----
+%   data (struct)
+%       data struct from bricks.features_matrix step, requires the
+%       following fields:
+%
+%       feature_labels (cell array) 
+%           feature labels
+%       samples (matrix)
+%           feature matrix with size [samples features]
+%       class_labels (vector)
+%           class labels for each sample
+%
+%   Parameters
+%   ----------
+%   interactive (logcial, default = true)
+%       selects interactive mode for displaying data at each time step
 
 p = inputParser();
 addParameter(p,'interactive',true,@islogical);

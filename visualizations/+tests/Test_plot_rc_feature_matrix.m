@@ -1,5 +1,5 @@
-classdef Test_plot_rc_feature_matrix_boxplot < matlab.unittest.TestCase
-    %Test_plot_rc_feature_matrix_boxplot Summary of this class goes here
+classdef Test_plot_rc_feature_matrix < matlab.unittest.TestCase
+    %Test_plot_rc_feature_matrix Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
@@ -29,10 +29,22 @@ classdef Test_plot_rc_feature_matrix_boxplot < matlab.unittest.TestCase
     end
     
     methods (Test)
-        function test_vanilla(testCase)
-            plot_rc_feature_matrix_boxplot(testCase.data,'interactive',false);
+        
+        function test_stat_mean(testCase)
+            plot_rc_feature_matrix(testCase.data,'mode','mean');
         end
         
+        function test_stat_std(testCase)
+            plot_rc_feature_matrix(testCase.data,'mode','std');
+        end
+        
+        function test_stat_mean_diff(testCase)
+            plot_rc_feature_matrix(testCase.data,'mode','mean-diff');
+        end
+        
+        function test_boxplot(testCase)
+            plot_rc_feature_matrix(testCase.data,'mode','boxplot','interactive',false);
+        end
     end
     
 end
