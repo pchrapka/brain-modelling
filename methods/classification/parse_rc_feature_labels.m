@@ -14,8 +14,8 @@ for i=1:nfeatures
     
     time(i) = str2double(results{1}{1});
     order(i) = str2double(results{1}{2});
-    channel1(i) = results{1}{3};
-    channel2(i) = results{1}{4};
+    channel1(i) = str2double(results{1}{3});
+    channel2(i) = str2double(results{1}{4});
 end
 
 end
