@@ -14,18 +14,14 @@ time_points_all = zeros(nfeatures,1);
 order_all = zeros(nfeatures,1);
 short_labels = cell(nfeatures,1);
 for i=1:nfeatures
-    % figure number of time points
+    % figure number of time points, filter orders, and use channels as
+    % short labels
     pattern = '.*t(\d+).*p(\d+)-(c.*)';
     results = regexp(data.feature_labels{i}, pattern, 'tokens');
     time_points_all(i) = str2double(results{1}{1});
     
     % similarly for filter orders
-    %pattern = '.*p(\d+).*';
-    %results = regexp(data.feature_labels{i}, pattern, 'tokens');
     order_all(i) = str2double(results{1}{2});
-    
-    %pattern = '.*-(c.*)';
-    %results = regexp(data.feature_labels{i}, pattern, 'tokens');
     short_labels{i} = results{1}{3};
 end
 
@@ -90,6 +86,11 @@ for i=time_points
                 boxplot(box_data(class_idx(:,j),:),'Labels',empty_labels,...
                     'plotstyle','compact','colors',colors(j),'positions', positions);
                 hold on;
+            end
+            
+            ylabel(sprintf('P %d',k));
+            if idx_plot == 1
+                title(sprintf('Time %d',i));
             end
         end
     end
