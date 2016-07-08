@@ -75,6 +75,7 @@ for k=orders
     data_plot = squeeze(data_diff(:,k,:,:));
     data_plot = reshape(data_plot,ntime,numel(data_plot)/ntime)';
     imagesc(data_plot);
+    colorbar;
     
     ylabel(sprintf('P %d',k));
     if idx_plot == 1
