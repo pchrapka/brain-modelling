@@ -59,7 +59,7 @@ addParameter(p,'scaling','featurewise',...
     @(x) any(validatestring(x,{'none','threshold','featurewise'})));
 addParameter(p,'threshold_method','zero',...
     @(x) any(validatestring(x,{'zero','clamp'})));
-addParameter(p,'threshold','none',@(x) x > 0 || isequal(x,'none'));
+addParameter(p,'threshold','none',@(x) (ischar(x) && isequal(x,'none')) || x > 0);
 parse(p,file_list,varargin{:});
 
 % get dimensions
