@@ -59,8 +59,8 @@ orders = reshape(orders,1,numel(orders));
 data_diff = data_mean(1,:) - data_mean(2,:);
 
 % set up subplot settings
-nrows = 1;
-ncols = norders;
+nrows = norders;
+ncols = 1;
 
 % clear figure
 clf;
