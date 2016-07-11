@@ -20,6 +20,8 @@ function plot_rc_feature_matrix(data,varargin)
 %   ----------
 %   mode (string, default = 'mean')
 %       plotting mode
+%       raw
+%           plots raw reflection coefficients feature matrix
 %       mean
 %           plots mean of all reflection coefficients vs time
 %       std
@@ -51,6 +53,8 @@ addParameter(p,'mode','mean',@ischar);
 p.parse(data,varargin{:});
 
 switch p.Results.mode
+    case 'raw'
+        plot_rc_feature_matrix_raw(data);
     case 'boxplot'
         params = struct2namevalue(p.Unmatched);
         plot_rc_feature_matrix_boxplot(data,params{:});
