@@ -38,19 +38,19 @@ data = loadfile(file_name);
 %%
 % plot data
 % plot_rc_feature_matrix(data,'mode','boxplot','interactive',true); % TMI
-figure;
+figure('Position', [100, 100, 600, 800])
 plot_rc_feature_matrix(data,'mode','mean');
 
-figure;
+figure('Position', [100, 100, 600, 800])
 plot_rc_feature_matrix(data,'mode','median');
 
-figure;
+figure('Position', [100, 100, 600, 800])
 plot_rc_feature_matrix(data,'mode','std');
 
-figure;
+figure('Position', [100, 100, 600, 800])
 plot_rc_feature_matrix(data,'mode','diff-mean');
 
-figure;
+figure('Position', [100, 100, 600, 800])
 plot_rc_feature_matrix(data,'mode','diff-median');
 
 % %%
