@@ -24,7 +24,7 @@ function plot_rc_feature_matrix_stat(data,varargin)
 
 
 p = inputParser();
-addParameter(p,'stat','mean',@(x) any(validatestring(x,{'mean','std'})));
+addParameter(p,'stat','mean',@(x) any(validatestring(x,{'mean','std','median'})));
 p.parse(varargin{:});
 
 [nsamples,nfeatures] = size(data.samples);
