@@ -2,13 +2,24 @@
 *.mat
 *.dat
 *.nii
+
+# no images, except for experiment related ones
 *.png
 *.eps
+!experiments/**/*.png
+!experiments/**/*.eps
+
 **/output
 **/auto
 **/.ipynb_checkpoints
+
+# no external git projects
 external/fieldtrip-beamforming/.git
 external/lumberjack/.git
+
+# no compiled code
 external/libsvm*/matlab/*.mex*
 external/FEAST*/**/*.mex*
+
+# no large data files
 !external/fieldtrip-20160128/template/atlas/**/*.nii
