@@ -104,13 +104,13 @@ k = k+1;
 %     };
 % k = k+1;
 
-% params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l099_n400';
-% params.analysis(k).fm = 'params_fm_lattice_nothresh';
-% params.analysis(k).pd = '';
-% params.analysis(k).fd = '';
-% params.analysis(k).fv = {};
-% params.analysis(k).tt = {};
-% k = k+1;
+params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l099_n400';
+params.analysis(k).fm = 'params_fm_lattice_nothresh';
+params.analysis(k).pd = '';
+params.analysis(k).fd = '';
+params.analysis(k).fv = {};
+params.analysis(k).tt = {};
+k = k+1;
 
 %% params_lf_MLOCCDTWL_p10_l098_n400
 
@@ -150,13 +150,13 @@ k = k+1;
 %     };
 % k = k+1;
 
-% params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l098_n400';
-% params.analysis(k).fm = 'params_fm_lattice_nothresh';
-% params.analysis(k).pd = '';
-% params.analysis(k).fd = '';
-% params.analysis(k).fv = {};
-% params.analysis(k).tt = {};
-% k = k+1;
+params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l098_n400';
+params.analysis(k).fm = 'params_fm_lattice_nothresh';
+params.analysis(k).pd = '';
+params.analysis(k).fd = '';
+params.analysis(k).fv = {};
+params.analysis(k).tt = {};
+k = k+1;
 
 %% params_lf_MCMTQRDLSL1_mt2_p10_l099_n400
 
