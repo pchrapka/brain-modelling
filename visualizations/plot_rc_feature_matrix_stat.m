@@ -68,6 +68,8 @@ for j=1:nclasses
     switch p.Results.stat
         case 'mean'
             data_stat = mean(data.samples(class_idx(:,j),:),1);
+        case 'median'
+            data_stat = median(data.samples(class_idx(:,j),:),1);
         case 'std'
             data_stat = std(data.samples(class_idx(:,j),:),1);
         otherwise

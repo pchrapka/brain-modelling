@@ -42,10 +42,16 @@ figure;
 plot_rc_feature_matrix(data,'mode','mean');
 
 figure;
+plot_rc_feature_matrix(data,'mode','median');
+
+figure;
 plot_rc_feature_matrix(data,'mode','std');
 
 figure;
-plot_rc_feature_matrix(data,'mode','mean-diff');
+plot_rc_feature_matrix(data,'mode','diff-mean');
+
+figure;
+plot_rc_feature_matrix(data,'mode','diff-median');
 
 % %%
 % % load file list of filtered data

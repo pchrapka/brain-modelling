@@ -1,7 +1,7 @@
-function plot_rc_feature_matrix_mean_diff(data,varargin)
-%PLOT_RC_FEATURE_MATRIX_MEAN_DIFF plots difference of the mean of
+function plot_rc_feature_matrix_diff(data,varargin)
+%PLOT_RC_FEATURE_MATRIX_DIFF plots difference of a measure of
 %reflection coefficients from feature matrix
-%   PLOT_RC_FEATURE_MATRIX_MEAN_DIFF(data,...) plots difference of the mean
+%   PLOT_RC_FEATURE_MATRIX_DIFF(data,...) plots difference of a measure
 %   of reflection coefficients from feature matrix
 %
 %   Input
@@ -17,10 +17,14 @@ function plot_rc_feature_matrix_mean_diff(data,varargin)
 %       class_labels (vector)
 %           class labels for each sample
 %
+%   Parameter
+%   ---------
+%   measure (string, default = 'mean')
+%       options: mean, median
 
 
 p = inputParser();
-% addParameter(p,'stat','mean',@(x) any(validatestring(x,{'mean','std'})));
+addParameter(p,'measure','mean',@(x) any(validatestring(x,{'mean','median'})));
 p.parse(varargin{:});
 
 [nsamples,nfeatures] = size(data.samples);
@@ -34,10 +38,15 @@ if nclasses > 2
 end
 
 class_idx = false(nsamples,length(class_labels));
-data_mean = zeros(nclasses,nfeatures);
+data_measure = zeros(nclasses,nfeatures);
 for j=1:nclasses
     class_idx(:,j) = data.class_labels == class_labels(j);
-    data_mean(j,:) = mean(data.samples(class_idx(:,j),:),1);
+    switch p.Results.measure
+        case 'mean'
+            data_measure(j,:) = mean(data.samples(class_idx(:,j),:),1);
+        case 'median'
+            data_measure(j,:) = median(data.samples(class_idx(:,j),:),1);
+    end
 end
 
 % parse feature labels
@@ -56,7 +65,7 @@ nchannels = length(channels);
 % set up iterator
 orders = reshape(orders,1,numel(orders));
 
-data_diff = data_mean(1,:) - data_mean(2,:);
+data_diff = data_measure(1,:) - data_measure(2,:);
 
 % set up subplot settings
 nrows = norders;
@@ -79,7 +88,14 @@ for k=orders
     
     ylabel(sprintf('P %d',k));
     if idx_plot == 1
-        title('mean diff');
+        title(sprintf('diff %s',p.Results.measure));
+    end
+    
+    if k == orders(end)
+        xlabel('Time');
+    else
+        set(gca,'xticklabel',[]);
+        set(gca,'yticklabel',[]);
     end
 end
 
