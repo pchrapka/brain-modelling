@@ -99,7 +99,7 @@ if ~isequal(p.Results.threshold,'none')
         case 'clamp'
             % set large samples to the threshold
             samples(samples > p.Results.threshold) = p.Results.threshold;
-            samples(samples < p.Results.threshold) = -p.Results.threshold;
+            samples(samples < -p.Results.threshold) = -p.Results.threshold;
     end
 end
 
