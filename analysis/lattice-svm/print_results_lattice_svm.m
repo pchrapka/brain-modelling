@@ -12,11 +12,14 @@ function print_results_lattice_svm(params_subject,filter_params,varargin)
 %   ----------
 %   tofile (logical, default = false)
 %       selects printing to file or to stdout
+%   plot (logical, default = false)
+%       plot confusion matrix
 
 p = inputParser();
 addRequired(p,'params_subject',@ischar);
 addRequired(p,'filter_params',@iscell);
 addParameter(p,'tofile',false,@islogical);
+addParameter(p,'plot',false,@islogical);
 parse(p,params_subject,filter_params,varargin{:});
 
 test = false;
@@ -58,6 +61,8 @@ for j=1:length(filter_params)
         
         fprintf(fid,'%s\n',job_name);
         fprintf(fid,'%s\n',repmat('-',1,length(job_name)));
+        fprintf(fid,'outdir:\n');
+        fprintf(fid,'\t%s\n\n', pipeline.pipeline.(jobs_desired{i}).outdir);
         
         % get test job
         brick_name = 'bricks.train_test_common';
@@ -78,11 +83,18 @@ for j=1:length(filter_params)
                 validated.class_labels, validated.predictions);
             fprintf(fid,'\tclassification accuracy: %0.2f%%\n',perf*100);
             
-            figure;
-            plot_svmmrmr_confusion(validated.class_labels, validated.predictions);
+            if p.Results.plot
+                figure;
+                plot_svmmrmr_confusion(validated.class_labels, validated.predictions);
+            end
+            
+            test_result = loadfile(file_test);
+            fprintf(fid,'train:\n');
+            perf = svmmrmr_class_accuracy(...
+                test_result.class_labels_train, test_result.predictions_train);
+            fprintf(fid,'\tclassification accuracy: %0.2f%%\n',perf*100);
             
             fprintf(fid,'test:\n');
-            test_result = loadfile(file_test);
             perf = svmmrmr_class_accuracy(...
                 test_result.class_labels, test_result.predictions);
             fprintf(fid,'\tclassification accuracy: %0.2f%%\n',perf*100);
