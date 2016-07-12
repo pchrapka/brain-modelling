@@ -91,8 +91,12 @@ model.train(...
     'BoxConstraint',params.BoxConstraint,...
     'KernelScale',params.KernelScale);
 
+predictions_train = model.predict(train_dat.samples);
+if isempty(predictions_train)
+    error('something went wrong with the prediction step');
+end
+
 % test SVM
-% TODO how are the test samples arranged?
 predictions = model.predict(test_data.samples);
 if isempty(predictions)
     error('something went wrong with the prediction step');
@@ -103,6 +107,8 @@ data = [];
 data.predictions = predictions;
 data.class_labels = test_data.class_labels;
 data.feat_common = feat_common_idx;
+data.predictions_train = predictions_train;
+data.class_labels_train = train_data.class_labels;
 
 save(p.Results.files_out,'data');
 
