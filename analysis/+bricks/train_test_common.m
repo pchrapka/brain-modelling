@@ -91,7 +91,7 @@ model.train(...
     'BoxConstraint',params.BoxConstraint,...
     'KernelScale',params.KernelScale);
 
-predictions_train = model.predict(train_dat.samples);
+predictions_train = model.predict(train_data.samples);
 if isempty(predictions_train)
     error('something went wrong with the prediction step');
 end
