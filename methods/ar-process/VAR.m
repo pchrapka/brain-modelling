@@ -45,7 +45,8 @@ classdef VAR < VARProcess
                 obj.init = true;
             else
                 disp(size(A))
-                error('bad size, should be [%d %d %d]',...
+                error([mfilename ':ParamError'],...
+                    'bad size, should be [%d %d %d]',...
                     obj.K, obj.K, obj.P);
             end
         end
@@ -100,12 +101,19 @@ classdef VAR < VARProcess
             %   ncoefs (integer)
             %       number of coefficients to be nonzero, required when
             %       mode = 'exact'
+            %
+            %   stable (logical, default = false)
+            %       generates a stable process
+            %   verbose (integer, default = 0)
+            %       toggles verbosity of function
             
             p = inputParser;
             params_mode = {'probability','exact'};
             addParameter(p,'mode','probability',@(x) any(validatestring(x,params_mode)));
             addParameter(p,'probability',0.1,@isnumeric);
             addParameter(p,'ncoefs',0,@isnumeric);
+            addParameter(p,'stable',false,@islogical);
+            addParameter(p,'verbose',0,@isnumeric);
             parse(p,varargin{:});
             
             % reset coefs
@@ -122,14 +130,47 @@ classdef VAR < VARProcess
                     idx = false(ncoefs,1);
                     idx(num_idx) = true;
             end
-                    
             
-            % randomly assign coefficient values from uniform distribution
-            % on interval [-1 1]
-            nidx = sum(idx);
+            % interval for uniform distribution
             a = -1;
             b = 1;
-            obj.A(idx) = a + (b-a).*rand(nidx,1);
+            
+            if p.Results.stable
+                % randomly assign coefficient values one order at a time
+                % this makes it a bit easire to get something stable for
+                % higher orders
+                idx_hier = reshape(idx,obj.K,obj.K,obj.P);
+                for i=1:obj.P
+                    if p.Results.verbose > 0
+                        fprintf('working on order %d\n',i);
+                    end
+                    
+                    stable = false;
+                    while ~stable
+                        % get new coefs for current order
+                        coefs_rand = unifrnd(a,b,obj.K,obj.K);
+                        coefs_rand(~idx_hier(:,:,i)) = 0;
+                        
+                        % select coefs according to random index
+                        obj.A(:,:,i) = coefs_rand;
+                        
+                        % set up a new object of order i
+                        s = VAR(obj.K, i);
+                        s.coefs_set(obj.A(:,:,1:i));
+                        
+                        % check stability
+                        stable = s.coefs_stable(false);
+                    end
+                    
+                    if p.Results.verbose > 0
+                        fprintf('got order %d\n',i);
+                    end
+                end
+            else
+                % randomly assign coefficient values from uniform distribution
+                nidx = sum(idx);
+                obj.A(idx) = a + (b-a).*rand(nidx,1);
+            end
             
             obj.init = true;
             
