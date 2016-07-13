@@ -21,7 +21,7 @@ ncoefs = nchannels^2*norder;
 sparsity = 0.1;
 ncoefs_sparse = ceil(ncoefs*sparsity);
 while ~stable
-    s.coefs_gen_sparse('mode','exact','ncoefs',ncoefs_sparse);
+    s.coefs_gen_sparse('mode','exact','ncoefs',ncoefs_sparse,'stable',true,'verbose',1);
     stable = s.coefs_stable(true);
     
     if stable

@@ -9,8 +9,8 @@ norder = 3;
 nchannels = 4;
 ntrials = 1;
 
-s = VRC(nchannels,norder);
-s.coefs_gen_sparse('mode','exact','ncoefs',6);
+s = VRC(nchannels,norder);  
+s.coefs_gen_sparse('mode','exact','ncoefs',6,'stable',true,'verbose',1);
 
 % allocate mem for data
 x = zeros(nchannels,nsamples,ntrials);

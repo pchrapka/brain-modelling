@@ -119,12 +119,19 @@ classdef VRC < VARProcess
             %   ncoefs (integer)
             %       number of coefficients to be nonzero, required when
             %       mode = 'exact'
+            %
+            %   stable (logical, default = false)
+            %       generates a stable process
+            %   verbose (integer, default = 0)
+            %       toggles verbosity of function
             
             p = inputParser;
             params_mode = {'probability','exact'};
             addParameter(p,'mode','probability',@(x) any(validatestring(x,params_mode)));
             addParameter(p,'probability',0.1,@isnumeric);
             addParameter(p,'ncoefs',0,@isnumeric);
+            addParameter(p,'stable',false,@islogical);
+            addParameter(p,'verbose',0,@isnumeric);
             parse(p,varargin{:});
             
             % reset coefs
@@ -142,17 +149,56 @@ classdef VRC < VARProcess
                     idx = false(ncoefs,1);
                     idx(num_idx) = true;
             end
-                    
             
-            % randomly assign coefficient values from uniform distribution
-            % on interval [-1 1]
-            nidx = sum(idx);
+            % interval for uniform distribution
             a = -1;
             b = 1;
-            obj.Kf(idx) = a + (b-a).*rand(nidx,1);
-            for i=1:obj.P
-                obj.Kb(:,:,i) = obj.Kf(:,:,i);
+            
+            if p.Results.stable
+                % randomly assign coefficient values one order at a time
+                % this makes it a bit easire to get something stable for
+                % higher orders
+                idx_hier = reshape(idx,obj.K,obj.K,obj.P);
+                for i=1:obj.P
+                    if p.Results.verbose > 0
+                        fprintf('working on order %d\n',i);
+                    end
+                    
+                    stable = false;
+                    scaling = 1;
+                    
+                    while ~stable
+                        % get new coefs for current order
+                        coefs_rand = scaling*unifrnd(a,b,obj.K,obj.K);
+                        coefs_rand(~idx_hier(:,:,i)) = 0;
+                        
+                        % select coefs according to random index
+                        obj.Kf(:,:,i) = coefs_rand;
+                        
+                        % set up a new object of order i
+                        s = VRC(obj.K, i);
+                        s.coefs_set(obj.Kf(:,:,1:i),obj.Kf(:,:,1:i));
+                        
+                        % check stability
+                        stable = s.coefs_stable(false);
+                        
+                        % make sampling interval smaller, so we can
+                        % converge to something
+                        scaling = 0.99*scaling;
+                    end
+                    
+                    if p.Results.verbose > 0
+                        fprintf('got order %d, scaling %0.2f\n',i,scaling);
+                    end
+                end
+            else
+                % randomly assign coefficient values from uniform distribution
+                nidx = sum(idx);
+                obj.Kf(idx) = a + (b-a).*rand(nidx,1);
             end
+                    
+            % copy coefficients
+            obj.Kb = obj.Kf;
             
             obj.init = true;
             

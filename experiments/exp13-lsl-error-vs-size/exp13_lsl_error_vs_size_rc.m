@@ -70,12 +70,7 @@ for i=1:nchannels
             ncoefs = channels(i)^2*order(j);
             sparsity = 0.1;
             ncoefs_sparse = ceil(ncoefs*sparsity);
-            stable = false;
-            verbose = true;
-            while ~stable
-                s.coefs_gen_sparse('mode','exact','ncoefs',ncoefs_sparse);
-                stable = s.coefs_stable(verbose);
-            end
+            s.coefs_gen_sparse('mode','exact','ncoefs',ncoefs_sparse,'stable',true,'verbose',1);
             
             % allocate mem for data
             x = zeros(channels(i),nsamples,ntrials);

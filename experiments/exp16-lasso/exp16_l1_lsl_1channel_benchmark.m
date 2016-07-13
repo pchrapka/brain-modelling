@@ -26,12 +26,7 @@ for j=1:nsims
     sparsity = ncoefs/norder;
     
     s = VRC(nchannels,norder);
-    s.coefs_gen_sparse('mode','exact','ncoefs',ncoefs);
-    stable = false;
-    while stable == false
-        s.coefs_gen_sparse('mode','exact','ncoefs',ncoefs);
-        stable = s.coefs_stable(false);
-    end
+    s.coefs_gen_sparse('mode','exact','ncoefs',ncoefs_sparse,'stable',true,'verbose',1);
     disp(reshape(s.Kf,1,norder));
     
     % allocate mem for data

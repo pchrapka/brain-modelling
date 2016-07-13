@@ -11,16 +11,14 @@ data_source = 'beamformed';
 
 switch data_source
     case 'simulated'
-        % PROBLEMS difficult to simulate a stable sparse process
         
         nchannels = 13;
         nsamples = 358;
         norder = 5;
         order_est = 5;
         
-        %s = VRC(nchannels,norder);
-        s = VAR(nchannels,norder);
-        % PROBLEM can't reliably simulate a stable sparse process
+        s = VRC(nchannels,norder);
+        %s = VAR(nchannels,norder);
         stable = false;
         
         ncoefs = nchannels^2*norder;
@@ -28,7 +26,7 @@ switch data_source
         ncoefs_sparse = ceil(ncoefs*sparsity);
         while ~stable
             %s.coefs_gen_sparse('mode','exact','ncoefs',ncoefs_sparse);
-            s.coefs_gen(); % PROBLEM not the best model either
+            s.coefs_gen_sparse('mode','exact','ncoefs',ncoefs_sparse,'stable',true,'verbose',1);
             stable = s.coefs_stable(true);
             
             if stable
