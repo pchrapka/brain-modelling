@@ -35,7 +35,6 @@ for i=1:ncond
     if ~exist(params.conds(i).file,'file')
         % set up VAR model with random coefficients
         s = VAR(nchannels, norder);
-        stable = false;
         ncoefs = nchannels^2*norder;
         sparsity = 0.1;
         ncoefs_sparse = ceil(ncoefs*sparsity);
@@ -50,10 +49,10 @@ for i=1:ncond
             [signal,~,~] = s.simulate(2*ntime);
             
             data(j).label = conds(i).label;
-            data(j).inside = ones(nsources,1);
-            data(j).avg.mom = cell(nsources,1);
+            data(j).inside = ones(nchannels,1);
+            data(j).avg.mom = cell(nchannels,1);
             data(j).time = linspace(-0.5,1,ntime);
-            for k=1:nsources
+            for k=1:nchannels
                 data(j).avg.mom{k} = signal(k,ntime+1:end); %[1 time]
             end
         end
