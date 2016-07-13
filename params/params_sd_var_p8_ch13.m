@@ -34,7 +34,7 @@ for i=1:ncond
     % check if the data file exists
     if ~exist(params.conds(i).file,'file')
         % set up VAR model with random coefficients
-        s = VAR(nsources, order);
+        s = VAR(nchannels, norder);
         stable = false;
         ncoefs = nchannels^2*norder;
         sparsity = 0.1;
