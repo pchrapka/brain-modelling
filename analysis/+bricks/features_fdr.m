@@ -38,7 +38,6 @@ function features_fdr(files_in,files_out,opt)
 p = inputParser;
 addRequired(p,'files_in',@ischar);
 addRequired(p,'files_out',@ischar);
-% addParameter(p,'threshold','none');
 addParameter(p,'nfeatures',1000,@isnumeric);
 parse(p,files_in,files_out,opt{:});
 

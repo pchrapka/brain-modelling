@@ -109,7 +109,14 @@ classdef SVMMRMR < SVM
                     obj.samples, 'bins', p.Results.nbins,...
                     'min', -1.5, 'max', 1.5);
             else
-                samples = obj.samples;
+                % remove feature columns that contain zeros
+                column_sum = sum(obj.samples,1);
+                column_nonzero = column_sum > 0;
+                samples = obj.samples(:,columns_nonzero);
+                
+                % set up a mapping to the true feature index
+                feat_idx = 1:size(obj.samples,2);
+                feat_idx = feat_idx(column_nonzero);
             end
             
             nsamples = size(obj.samples,1);
@@ -131,10 +138,12 @@ classdef SVMMRMR < SVM
                 % mRMR - select features
                 %%%%%
                 
-                [feat_sel(:,i)] = feast('mrmr',...
+                feat_sel_temp = feast('mrmr',...
                     nfeatures,...
                     samples(~testidx,:),...
                     obj.class_labels(~testidx));
+                
+                feat_sel(:,i) = feat_idx(feat_sel_temp);
                 
                 if verbosity > 1 
                     fprintf('Features selected:\n');
