@@ -146,9 +146,11 @@ classdef VAR < VARProcess
                     end
                     
                     stable = false;
+                    scaling = 1;
+                    
                     while ~stable
                         % get new coefs for current order
-                        coefs_rand = unifrnd(a,b,obj.K,obj.K);
+                        coefs_rand = scaling*unifrnd(a,b,obj.K,obj.K);
                         coefs_rand(~idx_hier(:,:,i)) = 0;
                         
                         % select coefs according to random index
@@ -160,10 +162,14 @@ classdef VAR < VARProcess
                         
                         % check stability
                         stable = s.coefs_stable(false);
+                        
+                        % make sampling interval smaller, so we can
+                        % converge to something
+                        scaling = 0.99*scaling;
                     end
                     
                     if p.Results.verbose > 0
-                        fprintf('got order %d\n',i);
+                        fprintf('got order %d, scaling %0.2f\n',i,scaling);
                     end
                 end
             else

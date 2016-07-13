@@ -48,9 +48,14 @@ classdef TestVAR < matlab.unittest.TestCase
          function test_sparse_stable_large(testCase)
             K = 13;
             order = 8;
+            sparsity = 0.1;
+            ncoefs = ceil(K^2*order*sparsity);
             % test constructor
             s = VAR(K,order);
-            s.coefs_gen_sparse('mode','exact','ncoefs',6,'stable',true,'verbose',1);
+            s.coefs_gen_sparse('mode','exact','ncoefs',ncoefs,'stable',true,'verbose',1);
+            
+            ncoefs_var = abs(s.A(:)) > 0;
+            testCase.verifyEqual(ncoefs,sum(ncoefs_var));
         end
         
         function test_simulate(testCase)
