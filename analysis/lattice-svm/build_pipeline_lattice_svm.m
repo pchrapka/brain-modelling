@@ -21,7 +21,7 @@ setup_parfor();
 params_func = str2func(params_subject);
 params_sd = params_func();
 % subject specific info
-[~,subject_file,subject_name] = get_coma_data(params_sd.subject_id);
+% [~,subject_file,subject_name] = get_coma_data(params_sd.subject_id);
 
 %% create lattice filter pipeline
 
@@ -172,7 +172,7 @@ for j=1:length(params_sd.analysis)
     
 end
 
-% pipeline options
+% default pipeline options
 pipeline.options.mode = 'session';
 pipeline.options.max_queued = 1; % use one thread since all stages use parfor
 

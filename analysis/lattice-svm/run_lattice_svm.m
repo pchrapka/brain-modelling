@@ -1,20 +1,24 @@
 %% run_lattice_svm
 % Goal:
-%   Run lattice svm alg on P022 data, depends on output from
-%   exp10_beamform_patch
+%   Run lattice svm alg
 
-pipeline = build_pipeline_lattice_svm('params_sd_22');
+% P022 data, all trials, depends on output from exp10_beamform_patch
+% pipeline = build_pipeline_lattice_svm('params_sd_22');
 
-% pipeline options
-pipeline.options.mode = 'session';
-pipeline.options.max_queued = 1; % use one thread since all stages use parfor
+% P022 data, consecutive std odd trials, depends on output from exp10_beamform_patch
+% pipeline = build_pipeline_lattice_svm('params_sd_22_consec');
 
+% simulated VAR
+% pipeline = build_pipeline_lattice_svm('params_sd_var_p8_ch13');
+
+%%%%%%%%%%%
+%% Usage %%
+%%%%%%%%%%%
+
+%% Run pipeline
 % pipeline.run();
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%
-%% Monitor pipeline %%
-%%%%%%%%%%%%%%%%%%%%%%%%
+%% Monitor pipeline 
 
 %% Display flowchart
 % psom_pipeline_visu(pipeline.options.path_logs,'flowchart');
