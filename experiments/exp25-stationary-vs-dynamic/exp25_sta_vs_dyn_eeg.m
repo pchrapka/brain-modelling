@@ -1,10 +1,12 @@
 %% exp25_sta_vs_dyn_eeg
 
+close all;
+
 trial_idx = 1:5;
 ntrials = length(trial_idx);
 
-% data_source = 'simulated';
-data_source = 'beamformed';
+data_source = 'simulated';
+% data_source = 'beamformed';
 % data_source = 'eeg';
 
 %% get data
@@ -14,8 +16,8 @@ switch data_source
         
         nchannels = 13;
         nsamples = 358;
-        norder = 5;
-        order_est = 5;
+        norder = 11;
+        order_est = 11;
         
         s = VRC(nchannels,norder);
         %s = VAR(nchannels,norder);
@@ -141,8 +143,20 @@ data_coh = {};
 
 verbosity = 0;
 % lambda = 0.99;
+lambda = 0.98;
 % lambda = 0.95;
-lambda = 0.9;
+% lambda = 0.9;
+
+%% true RC coefs
+if isequal(data_source,'simulated')
+    ktrue = zeros(order_est, nchannels, nchannels);
+    for i=1:s.P
+        ktrue(i,:,:) = s.Kf(:,:,i);
+    end
+    data_sta{m}.coef = ktrue;
+    data_sta{m}.name = 'True';
+    m = m+1;
+end
 
 %% estimate connectivity with RC
 
@@ -324,9 +338,9 @@ if do_traces
     for i=1:length(trace)
         
         % image-order
-        %fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
-        %figure('Name',fig_name,'NumberTitle','off')
-        %plot_rc(trace{i}.trace,'mode','image-order','clim','none','abs',true,'threshold','none');
+%         fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
+%         figure('Name',fig_name,'NumberTitle','off')
+%         plot_rc(trace{i}.trace,'mode','image-order','clim','none','abs',true,'threshold','none');
         
         fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
         figure('Name',fig_name,'NumberTitle','off')
@@ -343,8 +357,12 @@ do_stationary = true;
 if do_stationary
     for i=1:length(data_sta)
         fig_name = sprintf('Trace %d: %s',i,data_sta{i}.name);
-        figure('Name',fig_name,'NumberTitle','off')
+        figure('Name',fig_name,'NumberTitle','off','Position', [100, 100, 1300, 400])
         plot_rc_stationary(data_sta{i},'mode','image-order','clim',[0 1.5],'abs',true,'threshold',1.5);
+        
+        fig_name = sprintf('Trace %d: %s (No Thresh)',i,data_sta{i}.name);
+        figure('Name',fig_name,'NumberTitle','off','Position', [100, 100, 1300, 400])
+        plot_rc_stationary(data_sta{i},'mode','image-order','clim','none','abs',true,'threshold','none');
         
         fig_name = sprintf('Trace %d: %s (Max)',i,data_sta{i}.name);
         figure('Name',fig_name,'NumberTitle','off')
@@ -368,18 +386,24 @@ do_movie = true;
 if do_movie
     %i = 1;
     %i = 4; % mt5
-    %i = 5; % sparse
+    i = 5; % sparse
     %i = 7; % mqrdlsl noise warmup
-    i = 8; % mt5 noise warmup
+    %i = 8; % mt5 noise warmup
     %i = 9; % nuttall strand
     %i = 10; % nuttall strand AR
     %i = 11; % coherence
     
     mode = 'movie-order';
+    position = [100, 100, 1300, 400];
 %     mode = 'movie-max';
+%     position = [100, 100, 400, 400];
+    
+%     fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
+%     figure('Name',fig_name,'NumberTitle','off')
+%     plot_rc(trace{i}.trace,'mode',mode,'clim',[0 1.5],'abs',true,'threshold',1.5);
     
     fig_name = sprintf('Trace %d: %s',i,trace{i}.name);
-    figure('Name',fig_name,'NumberTitle','off')
-    plot_rc(trace{i}.trace,'mode',mode,'clim',[0 1.5],'abs',true,'threshold',1.5);
+    figure('Name',fig_name,'NumberTitle','off','Position', position)
+    plot_rc(trace{i}.trace,'mode',mode,'clim',[0 1.5],'abs',true,'threshold','none');
 end
 
