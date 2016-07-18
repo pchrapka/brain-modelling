@@ -47,9 +47,18 @@ data_in = loadfile(files_in);
 % filter out features using fisher's discriminant ratio
 ratio = fishers_discriminant_ratio(data_in.samples,data_in.class_labels);
 nfeatures = size(data_in.samples,2);
+
+% sort features by ratio
 temp = [ratio' (1:nfeatures)'];
 ratio_sorted = sortrows(temp,-1);
-feat_sel_fdr = ratio_sorted(1:p.Results.nfeatures,2);
+
+% remove nans
+ratio_sorted(isnan(ratio_sorted(:,1)),:) = [];
+
+% select features by according to sorted ratios
+nfeatures_left = size(ratio_sorted,1);
+nfeatures = min(p.Results.nfeatures, nfeatures_left);
+feat_sel_fdr = ratio_sorted(1:nfeatures,2);
 features = data_in.samples(:,feat_sel_fdr);
 feature_labels = data_in.feature_labels(feat_sel_fdr);
 
