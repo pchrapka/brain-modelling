@@ -114,7 +114,8 @@ classdef SVMMRMR < SVM
                 column_nonzero = column_sum > 0;
                 samples = obj.samples(:,column_nonzero);
                 if p.Results.verbosity > 0
-                    fprintf('removing %d/%d features\n',sum(column_nonzero),size(obj.samples,2));
+                    nfeatures = size(obj.samples,2);
+                    fprintf('removing %d/%d features\n',nfeatures - sum(column_nonzero),nfeatures);
                 end
                 if isempty(samples)
                     error('no features left :( there''s not much to do here');
