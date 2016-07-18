@@ -1,4 +1,20 @@
 %% run_lattice_svm
+%
+%   Usage:
+%
+%   Example:
+%   pipeline = build_pipeline_lattice_svm('params_sd_22');
+%
+%   Available options
+%   P022 data, all trials, depends on output from exp10_beamform_patch
+%   pipeline = build_pipeline_lattice_svm('params_sd_22');
+%
+%   P022 data, consecutive std odd trials, depends on output from exp10_beamform_patch
+%   pipeline = build_pipeline_lattice_svm('params_sd_22_consec');
+%
+%   simulated VAR
+%   pipeline = build_pipeline_lattice_svm('params_sd_var_p8_ch13');
+
 % Goal:
 %   Run lattice svm alg
 

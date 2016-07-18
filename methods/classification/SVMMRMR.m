@@ -112,7 +112,13 @@ classdef SVMMRMR < SVM
                 % remove feature columns that contain zeros
                 column_sum = sum(obj.samples,1);
                 column_nonzero = column_sum > 0;
-                samples = obj.samples(:,columns_nonzero);
+                samples = obj.samples(:,column_nonzero);
+                if p.Results.verbosity > 0
+                    fprintf('removing %d/%d features\n',sum(column_nonzero),size(obj.samples,2));
+                end
+                if isempty(samples)
+                    error('no features left :( there''s not much to do here');
+                end
                 
                 % set up a mapping to the true feature index
                 feat_idx = 1:size(obj.samples,2);
