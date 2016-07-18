@@ -6,7 +6,7 @@ function params = params_sd_var_p8_ch13()
 %% generate data
 
 norder = 8;
-ntrials = 240;
+ntrials = 270;
 nchannels = 13;
 ntime = 358;
 
