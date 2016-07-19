@@ -48,6 +48,7 @@ for i=1:nchannels
         estimate = cell(nsims,1);
         kf_true_sims = cell(nsims,1);
         data_simulated = cell(nsims,1);
+        fresh = false(nsims,1);
         
         order_cur = order(j);
         channels_cur = channels(i);
@@ -93,6 +94,9 @@ for i=1:nchannels
                 data.kf_true = kf_true;
                 data.simulated = data_simulated{k};
                 save_parfor(outfile_sim,data);
+                
+                % set flag that new simulated is available
+                fresh(k) = true;
             else
                 fprintf('loading: %s\n', slug_sim);
                 % load data
@@ -114,7 +118,7 @@ for i=1:nchannels
             slug_sim = sprintf('%s-s%d',slug_filter,k);
             outfile = fullfile(outdir,[slug_sim '.mat']);
             
-            if ~exist(outfile,'file')
+            if fresh(k) || ~exist(outfile,'file')
                 fprintf('running: %s\n', slug_sim);
                 
                 %% Set up filter
