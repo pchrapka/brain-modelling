@@ -23,7 +23,7 @@ else
     
     nsims = 10;
     nsamples = 1000;
-    ntrials = 1;
+    ntrials = 10;
     nsamples_mse = 10;
 end
 
@@ -47,36 +47,30 @@ for i=1:nchannels
         trace = cell(nsims,1);
         estimate = cell(nsims,1);
         kf_true_sims = cell(nsims,1);
+        data_simulated = cell(nsims,1);
         
-        % set up output file for data
-        lambda = 0.99;
-        filter_main = MQRDLSL1(channels(i),order(j),lambda);
-        slug = filter_main.name;
-        slug = strrep(slug,' ','-');
-        outfile = fullfile(outdir,[slug '.mat']);
+        order_cur = order(j);
+        channels_cur = channels(i);
         
-        if ~exist(outfile,'file')
-            fprintf('running: %s\n', slug);
+        % simulate data
+        parfor k=1:nsims
             
-            % simulate and analyze data
-            parfor k=1:nsims
-                %% Set up filter
-                % channels from above
-                % order from above
-                lambda = 0.99;
-                filter = MQRDLSL1(channels(i),order(j),lambda);
-                %filter = MQRDLSL2(channels(i),order(j),lambda);
-                trace{k} = LatticeTrace(filter,'fields',{'Kf'});
+            % set up output file for sim data
+            slug_sim = sprintf('vrc-p%d-c%d-s%d',order_cur,channels_cur,k);
+            outfile_sim = fullfile(outdir,[slug_sim '.mat']);
+            
+            if ~exist(outfile_sim,'file')
+                fprintf('simultaing: %s\n', slug_sim);
                 
                 %% generate VRC
-                s = VRC(channels(i),order(j));
-                ncoefs = channels(i)^2*order(j);
+                s = VRC(channels_cur, order_cur);
+                ncoefs = channels_cur^2*order_cur;
                 sparsity = 0.1;
                 ncoefs_sparse = ceil(ncoefs*sparsity);
                 s.coefs_gen_sparse('mode','exact','ncoefs',ncoefs_sparse,'stable',true,'verbose',1);
                 
                 % allocate mem for data
-                x = zeros(channels(i),nsamples,ntrials);
+                x = zeros(channels_cur,nsamples,ntrials);
                 for m=1:ntrials
                     [~,x(:,:,m),~] = s.simulate(nsamples);
                 end
@@ -90,29 +84,65 @@ for i=1:nchannels
                 % simulate data
                 [X,X_norm,noise] = s.simulate(2*nsamples);
                 
+                % save vars for later
+                data_simulated{k} = X;
+                kf_true_sims{k} = kf_true;
+                
+                % save data
+                data = [];
+                data.kf_true = kf_true;
+                data.simulated = data_simulated{k};
+                save_parfor(outfile_sim,data);
+            else
+                fprintf('loading: %s\n', slug_sim);
+                % load data
+                data = loadfile(outfile_sim);
+                kf_true_sims{k} = data.kf_true;
+                data_simulated{k} = data.simulated;
+            end
+            
+        end
+        
+        lambda = 0.99;
+        filter_main = MQRDLSL1(channels_cur,order_cur,lambda);
+        slug_filter = filter_main.name;
+        slug_filter = strrep(slug_filter,' ','-');
+        
+        parfor k=1:nsims
+            % set up output file for data
+            
+            slug_sim = sprintf('%s-s%d',slug_filter,k);
+            outfile = fullfile(outdir,[slug_sim '.mat']);
+            
+            if ~exist(outfile,'file')
+                fprintf('running: %s\n', slug_sim);
+                
+                %% Set up filter
+                lambda = 0.99;
+                filter = MQRDLSL1(channels_cur,order_cur,lambda);
+                %filter = MQRDLSL2(channels_cur,order_cur,lambda);
+                trace{k} = LatticeTrace(filter,'fields',{'Kf'});
+                
                 %% Estimate coefs using lattice filter
                 
                 % run the filter
                 warning('off','all');
-                trace{k}.run(X(:,:,1),'verbosity',0);
+                data_temp = data_simulated{k};
+                trace{k}.run(data_temp(:,:,1),'verbosity',0);
                 warning('on','all');
                 
                 estimate{k} = trace{k}.trace.Kf(nsamples+1:end,:,:,:);
-                kf_true_sims{k} = kf_true;
                 
+                % save data
+                data = [];
+                data.estimate = estimate{k};
+                save_parfor(outfile,data);
+            else
+                fprintf('loading: %s\n', slug_sim);
+                % load data
+                data = loadfile(outfile);
+                estimate{k} = data.estimate;
             end
-            
-            % save data
-            data = [];
-            data.estimate = estimate;
-            data.kf_true_sims = kf_true_sims;
-            save(outfile,'data');
-        else
-            fprintf('loading: %s\n', slug);
-            % load data
-            data = loadfile(outfile);
-            estimate = data.estimate;
-            kf_true_sims = data.kf_true_sims; 
         end
         
         %% Plot MSE
@@ -122,10 +152,10 @@ for i=1:nchannels
             'mode','log',...
             'labels',{filter_main.name});
         
-        save_fig_exp(mfilename('fullpath'),'tag',[slug '-mse-full']);
+        save_fig_exp(mfilename('fullpath'),'tag',[slug_filter '-mse-full']);
         
         ylim([10^(-4) 10^3]);
-        save_fig_exp(mfilename('fullpath'),'tag',[slug '-mse']);
+        save_fig_exp(mfilename('fullpath'),'tag',[slug_filter '-mse']);
         close(h);
         
         %% Calculate final MSE
