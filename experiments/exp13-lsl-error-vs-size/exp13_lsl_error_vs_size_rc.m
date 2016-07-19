@@ -60,7 +60,7 @@ for i=1:nchannels
             outfile_sim = fullfile(outdir,[slug_sim '.mat']);
             
             if ~exist(outfile_sim,'file')
-                fprintf('simultaing: %s\n', slug_sim);
+                fprintf('simulating: %s\n', slug_sim);
                 
                 %% generate VRC
                 s = VRC(channels_cur, order_cur);
