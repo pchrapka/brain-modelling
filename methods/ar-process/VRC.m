@@ -158,6 +158,7 @@ classdef VRC < VARProcess
                 % randomly assign coefficient values one order at a time
                 % this makes it a bit easire to get something stable for
                 % higher orders
+                max_iters = 200;
                 idx_hier = reshape(idx,obj.K,obj.K,obj.P);
                 i = 1;
                 while (i <= obj.P)
@@ -169,7 +170,7 @@ classdef VRC < VARProcess
                     scaling = 1;
                     iters = 1;
                     
-                    while ~stable && (iters <= 100)
+                    while ~stable && (iters <= max_iters)
                         % get new coefs for current order
                         coefs_rand = scaling*unifrnd(a,b,obj.K,obj.K);
                         coefs_rand(~idx_hier(:,:,i)) = 0;
