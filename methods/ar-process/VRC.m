@@ -159,15 +159,17 @@ classdef VRC < VARProcess
                 % this makes it a bit easire to get something stable for
                 % higher orders
                 idx_hier = reshape(idx,obj.K,obj.K,obj.P);
-                for i=1:obj.P
+                i = 1;
+                while (i <= obj.P)
                     if p.Results.verbose > 0
                         fprintf('working on order %d\n',i);
                     end
                     
                     stable = false;
                     scaling = 1;
+                    iters = 1;
                     
-                    while ~stable
+                    while ~stable && (iters <= 100)
                         % get new coefs for current order
                         coefs_rand = scaling*unifrnd(a,b,obj.K,obj.K);
                         coefs_rand(~idx_hier(:,:,i)) = 0;
@@ -185,11 +187,21 @@ classdef VRC < VARProcess
                         % make sampling interval smaller, so we can
                         % converge to something
                         scaling = 0.99*scaling;
+                        
+                        iters = iters + 1;
                     end
                     
-                    if p.Results.verbose > 0
-                        fprintf('got order %d, scaling %0.2f\n',i,scaling);
+                    if stable
+                        if p.Results.verbose > 0
+                            fprintf('got order %d, scaling %0.2f\n',i,scaling);
+                        end
+                        % increment order
+                        i = i+1;
+                    else
+                        % start over
+                        i = 1;
                     end
+
                 end
             else
                 % randomly assign coefficient values from uniform distribution
