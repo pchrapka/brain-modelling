@@ -8,6 +8,7 @@
 *.eps
 !experiments/**/*.png
 !experiments/**/*.eps
+experiments/exp13-lsl-error-vs-size/img/**
 
 **/output
 **/auto
