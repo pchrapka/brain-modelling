@@ -125,7 +125,7 @@ classdef SVMMRMR < SVM
                     samples(~testidx,:),...
                     obj.class_labels(~testidx));
                 
-                feat_sel(:,i) = feat_idx(feat_sel_temp);
+                feat_sel(:,i) = feat_sel_temp;
                 
                 if verbosity > 1 
                     fprintf('Features selected:\n');
