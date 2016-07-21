@@ -16,6 +16,9 @@ print_results_lattice_svm(params_subject,params_name,'tofile',true);
 % pipeline.run();
 
 params_subject = 'params_sd_22_consec';
-params_name = {'params_lf_MLOCCDTWL_p10_l099_n400'};
+params_name = {...
+    'params_lf_MLOCCDTWL_p10_l099_n400',...
+    'params_lf_MLOCCDTWL_p10_l098_n400',...
+    };
 
 print_results_lattice_svm(params_subject,params_name,'tofile',true);
