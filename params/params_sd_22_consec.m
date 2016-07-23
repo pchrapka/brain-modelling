@@ -604,7 +604,7 @@ params.analysis(k).tt = {...
 k = k+1;
 
 %% params_lf_MCMTQRDLSL1_mt5_p6_l098_n400
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p4_l098_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p6_l098_n400';
 params.analysis(k).fm = 'params_fm_lattice_nothresh_scalefw';
 params.analysis(k).pd = 'params_pd_std_odd_tr30_te20';
 params.analysis(k).fd = 'params_fd_20000';
