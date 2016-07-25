@@ -52,8 +52,8 @@ var_const = zeros(nchannels, nchannels, norder);
 var_const(source_channels(1),source_channels(1),:) = var1.A;
 
 % set pulse to var 2
-var_pulse = zeros(nchannels, nchannels, norder);
-var_pulse(source_channels(2),source_channels(2),:) = var2.A;
+var_pulse_source = zeros(nchannels, nchannels, norder);
+var_pulse_source(source_channels(2),source_channels(2),:) = var2.A;
 
 % set different changepoints for the conditions
 changepoints = {};
@@ -89,7 +89,7 @@ for i=1:ncond
             end
             
             % add const and coupling to pulse
-            var_pulse = var_const + var_coupling + var_pulse;
+            var_pulse = var_const + var_coupling + var_pulse_source;
             
             var_constpulse = VARConstAndPulse(nchannels, norder, changepoints{i});
             
