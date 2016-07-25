@@ -158,7 +158,7 @@ classdef VARConstAndPulse < VARProcess
                 error('no coefficients set');
             end
             
-            if nsamples < obj.changepoint(1)
+            if nsamples < obj.changepoints(1)
                 [Y,Y_norm,noise] = obj.process_const.simulate(nsamples,varargin{:});
             else
                 K = obj.process_const.K;
@@ -185,9 +185,9 @@ classdef VARConstAndPulse < VARProcess
                 Y(:,1:P) = Ylag;
                 for i=1:nsamples
                     switch i
-                        case obj.changepoint(1)
+                        case obj.changepoints(1)
                             A = obj.process_pulse.A;
-                        case obj.changepoint(2)
+                        case obj.changepoints(2)
                             A = obj.process_const.A;
                     end
                     
