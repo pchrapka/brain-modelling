@@ -106,7 +106,7 @@ for i=1:ncond
         data(ntrials).inside = [];
         for j=1:ntrials
             % simulate process
-            [signal,~,~] = s.simulate(2*ntime);
+            [signal,~,~] = var_constpulse.simulate(ntime);
             
             data(j).label = conds(i).label;
             data(j).inside = ones(nchannels,1);
