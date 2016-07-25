@@ -56,6 +56,26 @@ classdef TestVAR < matlab.unittest.TestCase
             
             ncoefs_var = abs(s.A(:)) > 0;
             testCase.verifyEqual(ncoefs,sum(ncoefs_var));
+         end
+        
+         function test_gen_sparse_fullchannels(testCase)
+            K = 13;
+            order = 8;
+            sparsity = 0.1;
+            
+            ncoefs = ceil(K^2*order*sparsity);
+            ncouplings = floor(ncoefs/4);
+            
+            s = VAR(K,order);
+            s.coefs_gen_sparse('mode','exact',...
+                'structure','fullchannels',...
+                'ncoefs',ncoefs,...
+                'ncouplings',ncouplings,...
+                'stable',true,...
+                'verbose',1);
+            
+            ncoefs_var = abs(s.A(:)) > 0;
+            testCase.verifyGreaterThanOrEqual(sum(ncoefs_var),ncoefs-K);
         end
         
         function test_simulate(testCase)

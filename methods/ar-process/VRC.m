@@ -104,21 +104,33 @@ classdef VRC < VARProcess
             %
             %   Parameters
             %   ----------
+            %   structure (string, default = 'all')
+            %       type of structure assumed for sparse model
+            %       all - all coefficients are considered randomly
+            %       fullchannels - generates a random sparse AR process in
+            %       each channel, with random couplings
+            %       
+            %   structure = fullchannels
+            %   ncouplings (integer, default = 0)
+            %       number of coupling coefficients to be nonzero
+            %   
             %   mode (string, default = probability)
             %       method to select number of coefficients: 'probability'
             %       and 'exact'
-            %
-            %       'probability' - sets the probability of a coefficient
+            %       probability - sets the probability of a coefficient
             %       being nonzero, requires probability parameter
-            %
-            %       'exact' - sets the exact number of coefficients to be
+            %       exact - sets the exact number of coefficients to be
             %       nonzero, requires ncoefs parameter
+            %
+            %   mode = probability
             %   probability
-            %       probability of a coefficient being nonzero, required
-            %       when mode = 'probability'
+            %       probability of a coefficient being nonzero
+            %       required when mode = 'probability'
+            %
+            %   mode = exact
             %   ncoefs (integer)
-            %       number of coefficients to be nonzero, required when
-            %       mode = 'exact'
+            %       number of coefficients to be nonzero
+            %       required when mode = 'exact'
             %
             %   stable (logical, default = false)
             %       generates a stable process
@@ -128,90 +140,21 @@ classdef VRC < VARProcess
             p = inputParser;
             params_mode = {'probability','exact'};
             addParameter(p,'mode','probability',@(x) any(validatestring(x,params_mode)));
+            params_struct = {'all','fullchannels'};
+            addParameter(p,'structure','all',@(x) any(validatestring(x,params_struct)));
             addParameter(p,'probability',0.1,@isnumeric);
             addParameter(p,'ncoefs',0,@isnumeric);
+            addParameter(p,'ncouplings',0,@isnumeric);
             addParameter(p,'stable',false,@islogical);
             addParameter(p,'verbose',0,@isnumeric);
             parse(p,varargin{:});
             
-            % reset coefs
-            obj.Kf = zeros(obj.K,obj.K,obj.P);
-            obj.Kb = zeros(obj.K,obj.K,obj.P);
-            
-            ncoefs = numel(obj.Kf);
-            switch p.Results.mode
-                case 'probability'
-                    % randomly select coefficient indices
-                    idx = rand(ncoefs,1) < p.Results.probability;
-                case 'exact'
-                    % randomly select coefficient indices
-                    num_idx = randsample(1:ncoefs,p.Results.ncoefs);
-                    idx = false(ncoefs,1);
-                    idx(num_idx) = true;
+            switch p.Results.structure
+                case 'all'
+                    obj.coefs_gen_sparse_all(varargin{:});
+                case 'fullchannels'
+                    obj.coefs_gen_sparse_fullchannels(varargin{:});
             end
-            
-            % interval for uniform distribution
-            a = -1;
-            b = 1;
-            
-            if p.Results.stable
-                % randomly assign coefficient values one order at a time
-                % this makes it a bit easire to get something stable for
-                % higher orders
-                max_iters = 200;
-                idx_hier = reshape(idx,obj.K,obj.K,obj.P);
-                i = 1;
-                while (i <= obj.P)
-                    if p.Results.verbose > 0
-                        fprintf('working on order %d\n',i);
-                    end
-                    
-                    stable = false;
-                    scaling = 1;
-                    iters = 1;
-                    
-                    while ~stable && (iters <= max_iters)
-                        % get new coefs for current order
-                        coefs_rand = scaling*unifrnd(a,b,obj.K,obj.K);
-                        coefs_rand(~idx_hier(:,:,i)) = 0;
-                        
-                        % select coefs according to random index
-                        obj.Kf(:,:,i) = coefs_rand;
-                        
-                        % set up a new object of order i
-                        s = VRC(obj.K, i);
-                        s.coefs_set(obj.Kf(:,:,1:i),obj.Kf(:,:,1:i));
-                        
-                        % check stability
-                        stable = s.coefs_stable(false);
-                        
-                        % make sampling interval smaller, so we can
-                        % converge to something
-                        scaling = 0.99*scaling;
-                        
-                        iters = iters + 1;
-                    end
-                    
-                    if stable
-                        if p.Results.verbose > 0
-                            fprintf('got order %d, scaling %0.2f\n',i,scaling);
-                        end
-                        % increment order
-                        i = i+1;
-                    else
-                        % start over
-                        i = 1;
-                    end
-
-                end
-            else
-                % randomly assign coefficient values from uniform distribution
-                nidx = sum(idx);
-                obj.Kf(idx) = a + (b-a).*rand(nidx,1);
-            end
-                    
-            % copy coefficients
-            obj.Kb = obj.Kf;
             
             obj.init = true;
             
@@ -381,6 +324,200 @@ classdef VRC < VARProcess
             
             % Normalize variance of each channel to unit variance
             Y_norm = Y./repmat(std(Y,0,2),1,nsamples);
+        end
+    end
+    
+    methods (Access = protected)
+        function coefs_gen_sparse_all(obj, varargin)           
+            p = inputParser;
+            params_mode = {'probability','exact'};
+            addParameter(p,'mode','probability',@(x) any(validatestring(x,params_mode)));
+            addParameter(p,'structure','all',@(x) isequal(x,'all'));
+            addParameter(p,'probability',0.1,@isnumeric);
+            addParameter(p,'ncoefs',0,@isnumeric);
+            addParameter(p,'stable',false,@islogical);
+            addParameter(p,'verbose',0,@isnumeric);
+            parse(p,varargin{:});
+            
+            % reset coefs
+            obj.Kf = zeros(obj.K,obj.K,obj.P);
+            obj.Kb = zeros(obj.K,obj.K,obj.P);
+            
+            ncoefs = numel(obj.Kf);
+            switch p.Results.mode
+                case 'probability'
+                    % randomly select coefficient indices
+                    idx = rand(ncoefs,1) < p.Results.probability;
+                case 'exact'
+                    % randomly select coefficient indices
+                    num_idx = randsample(1:ncoefs,p.Results.ncoefs);
+                    idx = false(ncoefs,1);
+                    idx(num_idx) = true;
+            end
+            
+            % interval for uniform distribution
+            a = -1;
+            b = 1;
+            
+            if p.Results.stable
+                % randomly assign coefficient values one order at a time
+                % this makes it a bit easire to get something stable for
+                % higher orders
+                max_iters = 200;
+                idx_hier = reshape(idx,obj.K,obj.K,obj.P);
+                i = 1;
+                while (i <= obj.P)
+                    if p.Results.verbose > 0
+                        fprintf('working on order %d\n',i);
+                    end
+                    
+                    stable = false;
+                    scaling = 1;
+                    iters = 1;
+                    
+                    while ~stable && (iters <= max_iters)
+                        % get new coefs for current order
+                        coefs_rand = scaling*unifrnd(a,b,obj.K,obj.K);
+                        coefs_rand(~idx_hier(:,:,i)) = 0;
+                        
+                        % select coefs according to random index
+                        obj.Kf(:,:,i) = coefs_rand;
+                        
+                        % set up a new object of order i
+                        s = VRC(obj.K, i);
+                        s.coefs_set(obj.Kf(:,:,1:i),obj.Kf(:,:,1:i));
+                        
+                        % check stability
+                        stable = s.coefs_stable(false);
+                        
+                        % make sampling interval smaller, so we can
+                        % converge to something
+                        scaling = 0.99*scaling;
+                        
+                        iters = iters + 1;
+                    end
+                    
+                    if stable
+                        if p.Results.verbose > 0
+                            fprintf('got order %d, scaling %0.2f\n',i,scaling);
+                        end
+                        % increment order
+                        i = i+1;
+                    else
+                        % start over
+                        i = 1;
+                    end
+
+                end
+            else
+                % randomly assign coefficient values from uniform distribution
+                nidx = sum(idx);
+                obj.Kf(idx) = a + (b-a).*rand(nidx,1);
+            end
+                    
+            % copy coefficients
+            obj.Kb = obj.Kf;
+        end
+        
+        function coefs_gen_sparse_fullchannels(obj,varargin)
+            p = inputParser;
+            params_mode = {'probability','exact'};
+            addParameter(p,'mode','probability',@(x) any(validatestring(x,params_mode)));
+            addParameter(p,'structure','fullchannels',@(x) isequal(x,'fullchannels'));
+            addParameter(p,'probability',0.1,@isnumeric);
+            addParameter(p,'ncoefs',0,@isnumeric);
+            addParameter(p,'ncouplings',0,@isnumeric);
+            addParameter(p,'stable',false,@islogical);
+            addParameter(p,'verbose',0,@isnumeric);
+            parse(p,varargin{:});
+            
+            % reset coefs
+            obj.Kf = zeros(obj.K,obj.K,obj.P);
+            obj.Kb = zeros(obj.K,obj.K,obj.P);
+            
+            a = -1;
+            b = 1;
+            
+            ncoefs_channel = p.Results.ncoefs - p.Results.ncouplings;
+            if p.Results.stable
+                
+                stable = false;
+                while ~stable
+                    obj.init = true;
+                    
+                    % generate sparse coefs for each channel
+                    for i=1:obj.K
+                        var1 = VRC(1,obj.P);
+                        switch p.Results.mode
+                            case 'probability'
+                                var1.coefs_gen_sparse(...
+                                    'structure','all',...
+                                    'mode','probability',...
+                                    'probability',p.Results.probability,...
+                                    'stable',true);
+                            case 'exact'
+                                ncoefs_perchannel = floor(ncoefs_channel / obj.K);
+                                var1.coefs_gen_sparse(...
+                                    'structure','all',...
+                                    'mode','exact',...
+                                    'ncoefs',ncoefs_perchannel,...
+                                    'stable',true);
+                        end
+                        obj.Kf(i,i,:) = var1.Kf;
+                    end
+                    
+                    coupling_count = 0;
+                    while coupling_count < p.Results.ncouplings
+                        coupled_channels = randsample(1:obj.K,2);
+                        coupled_order = randsample(1:obj.P,1);
+                        
+                        % check if we've already chosen this one
+                        if obj.Kf(coupled_channels(1),coupled_channels(2),coupled_order) == 0
+                            
+                            stable_coupling = false;
+                            scaling = 1;
+                            iters = 1;
+                            max_iters = 200;
+                            while ~stable_coupling  && (iters <= max_iters)
+                                % generate a new coefficient
+                                obj.Kf(coupled_channels(1),coupled_channels(2),...
+                                    coupled_order) = scaling*unifrnd(a, b);
+                                
+                                % check coupling stability
+                                stable_coupling = obj.coefs_stable(false);
+                                
+                                % make sampling interval smaller, so we can
+                                % converge to something
+                                scaling = 0.99*scaling;
+                                
+                                iters = iters+1;
+                            end
+                            
+                            if stable_coupling
+                                % increment counter
+                                coupling_count = coupling_count + 1;
+                                if p.Results.verbose > 0
+                                    fprintf('%d/%d couplings\n',coupling_count,p.Results.ncouplings);
+                                end
+                            else
+                                % reset coefficient
+                                obj.Kf(coupled_channels(1),coupled_channels(2),...
+                                    coupled_order) = 0;
+                            end
+                            
+                        end
+                    end
+                    
+                    % check stability
+                    stable = obj.coefs_stable(false);
+                end
+                
+            else
+                error('not implemented');
+            end
+            
+            obj.Kb = obj.Kf;
+            
         end
     end
     
