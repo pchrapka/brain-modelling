@@ -97,8 +97,11 @@ for i=1:ncond
             var_constpulse.coefs_set(var_pulse, 'pulse');
             
             % check stability
-            verbosity = true;
+            verbosity = false;
             stable = var_constpulse.coefs_stable(verbosity);
+            if ~stable
+                fprintf('not stable\n');
+            end
         end
             
         % generate data

@@ -163,6 +163,7 @@ classdef VARConstAndPulse < VARProcess
             else
                 K = obj.process_const.K;
                 P = obj.process_const.P;
+                A = obj.process_const.A;
                 
                 inputs = inputParser;
                 addOptional(inputs,'mu',zeros(K,1),@isnumeric);
