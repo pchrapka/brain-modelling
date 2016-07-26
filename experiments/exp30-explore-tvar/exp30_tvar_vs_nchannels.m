@@ -115,13 +115,13 @@ for k=1:length(filter_types)
         data_args = [data_args {estimate kf_true_sims}];
         labels{i} = sprintf('%d channels',nchannels);
     end
-end
-
-%% Plot MSE
     
-h = figure;
-plot_mse_vs_iteration(...
-    data_args{:},...
-    'mode','log',...
-    'labels',labels);
-save_fig_exp(mfilename('fullpath'),'tag',sprintf('%s-mse',slug_filter,nchannels));
+    %% Plot MSE
+    
+    h = figure;
+    plot_mse_vs_iteration(...
+        data_args{:},...
+        'mode','log',...
+        'labels',labels);
+    save_fig_exp(mfilename('fullpath'),'tag',sprintf('%s-mse',slug_filter));
+end
