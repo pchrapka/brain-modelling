@@ -7,7 +7,7 @@ if ~exist(outdir,'dir')
 end
 
 %% set up params
-nsims = 1;
+nsims = 20;
 channels = [2 4 6 8 10 12 14 16];
 % channels = [2 4];
 nchannel_opts = length(channels);

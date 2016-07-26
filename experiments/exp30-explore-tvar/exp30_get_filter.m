@@ -21,6 +21,8 @@ switch filter_type
     case 'MLOCCDTWL'
         filter = MLOCCDTWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
         ntrials = 1;
+    otherwise
+        error('unknown filter type %s',filter_type);
 end
 
 end
