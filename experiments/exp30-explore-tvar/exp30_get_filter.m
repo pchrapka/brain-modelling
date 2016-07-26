@@ -19,7 +19,7 @@ switch filter_type
         ntrials = 5;
         filter = MCMTQRDLSL1(ntrials,nchannels,order_est,lambda);
     case 'MLOCCDTWL'
-        filter = MLOCCDTWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
+        filter = MLOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
         ntrials = 1;
     otherwise
         error('unknown filter type %s',filter_type);
