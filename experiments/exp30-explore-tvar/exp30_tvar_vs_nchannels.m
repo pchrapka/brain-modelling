@@ -25,11 +25,11 @@ filter_types = {...
 
 %% loop over params
 
-% allocate mem
-labels = cell(nchannel_opts,1);
-data_args = [];
-
 for k=1:length(filter_types)
+    % allocate mem
+    labels = cell(nchannel_opts,1);
+    data_args = [];
+
     filter_type = filter_types{k};
     for i=1:nchannel_opts
         nchannels = channels(i);
