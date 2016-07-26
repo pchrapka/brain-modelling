@@ -92,10 +92,23 @@ for k=1:length(filter_types)
                 [filter,mt] = exp30_get_filter(filter_type,nchannels);
                 trace{j} = LatticeTrace(filter,'fields',{'Kf'});
                 
-                % run the filter
+                ntime = size(sources,2);
+                mu = zeros(nchannels,1);
+                sigma = eye(nchannels);
+                noise = zeros(nchannels,ntime,mt);
+                for m=1:mt
+                    noise(:,:,m) = mvnrnd(mu,sigma,ntime)';
+                end
+                trace_noise = LatticeTrace(filter,'fields',{'Kf'});
+                
                 warning('off','all');
+                % run filter on noise
+                trace_noise.run(noise,'verbosity',verbosity,'mode','none');
+                
+                % run the filter on data
                 trace{j}.run(sources(:,:,1:mt),'verbosity',verbosity,'mode','none');
                 warning('on','all');
+                
                 trace{j}.name = trace{j}.filter.name;
                 
                 estimate{j} = trace{j}.trace.Kf;
