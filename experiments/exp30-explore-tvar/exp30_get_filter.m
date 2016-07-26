@@ -1,5 +1,6 @@
 function [filter,ntrials] = exp30_get_filter(filter_type,nchannels)
 
+ntime = 358;
 order_est = 10;
 lambda = 0.98;
 
