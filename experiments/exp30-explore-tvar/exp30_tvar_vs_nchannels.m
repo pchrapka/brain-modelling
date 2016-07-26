@@ -131,10 +131,12 @@ for k=1:length(filter_types)
     
     %% Plot MSE
     
-    h = figure(k);
+    h = figure;
+    clf;
     plot_mse_vs_iteration(...
         data_args{:},...
         'mode','log',...
         'labels',labels);
-    save_fig_exp(mfilename('fullpath'),'tag',sprintf('%s-mse',slug_filter));
+    drawnow;
+    save_fig_exp(mfilename('fullpath'),'tag',sprintf('mse-all-%s',slug_filter));
 end
