@@ -42,7 +42,7 @@ else
 end
 
 data_mse = zeros(niter,nsims);
-if nsims == 1
+if ~iscell(p.Results.estimate)
     estimate = reshape(p.Results.estimate,niter,nvars);
     truth = reshape(p.Results.truth,niter,nvars);
     if p.Results.normalized
