@@ -13,9 +13,15 @@ channels = [2 4 6 8 10 12 14 16];
 nchannel_opts = length(channels);
 
 order_est = 10;
-lambda = 0.98;
 
-filter_type = 'MQRDLSL1';
+verbosity = 0;
+
+filter_types = {...
+    'MQRDLSL1',...
+    'MQRDLSL2',...
+    'MCMTMQRDLSL1',...
+    'MLOCCDTWL',...
+    };
 
 %% loop over params
 
@@ -23,95 +29,92 @@ filter_type = 'MQRDLSL1';
 labels = cell(nchannel_opts,1);
 data_args = [];
 
-for i=1:nchannel_opts
-    nchannels = channels(i);
-    
-    trace = cell(nsims,1);
-    estimate = cell(nsims,1);
-    kf_true_sims = cell(nsims,1);
-    data_sim = cell(nsims,1);
-    fresh = false(nsims,1);
-   
-    %for j=1:nsims
-    parfor j=1:nsims
+for k=1:length(filter_types)
+    filter_type = filter_types{k};
+    for i=1:nchannel_opts
+        nchannels = channels(i);
         
-        % set up output file for sim data
-        slug_sim = sprintf('vrc-tvar-p%d-c%d-s%d',order_est,nchannels,j);
-        outfile_sim = fullfile(outdir,[slug_sim '.mat']);
+        trace = cell(nsims,1);
+        estimate = cell(nsims,1);
+        kf_true_sims = cell(nsims,1);
+        data_sim = cell(nsims,1);
+        fresh = false(nsims,1);
         
-        if ~exist(outfile_sim,'file')
-            fprintf('simulating: %s\n', slug_sim);
+        %for j=1:nsims
+        parfor j=1:nsims
             
-            % generate data
-            data = exp30_gen_tvar(nchannels);
-            % save data
-            save_parfor(outfile_sim,data);
+            % set up output file for sim data
+            slug_sim = sprintf('vrc-tvar-p%d-c%d-s%d',order_est,nchannels,j);
+            outfile_sim = fullfile(outdir,[slug_sim '.mat']);
             
-            % copy data for filtering
-            kf_true_sims{j} = data.true;
-            data_sim{j} = data;
-            
-            % set flag that new simulated is available
-            fresh(j) = true;
-        else
-            fprintf('loading: %s\n', slug_sim);
-            
-            % load data
-            data = loadfile(outfile_sim);
-            
-            % copy data for filtering
-            kf_true_sims{j} = data.true;
-            data_sim{j} = data;
-        end
-    end
-       
-    % set up filter slug
-    switch filter_type
-        case 'MQRDLSL1'
-            filter_main = MQRDLSL1(nchannels,order_est,lambda);
-    end
-    slug_filter = filter_main.name;
-    slug_filter = strrep(slug_filter,' ','-');
+            if ~exist(outfile_sim,'file')
+                fprintf('simulating: %s\n', slug_sim);
                 
-    parfor j=1:nsims
-    %for j=1:nsims
-        slug_sim = sprintf('vrc-tvar-p%d-c%d-s%d',order_est,nchannels,j);
-        slug_sim_filt = sprintf('%s-%s',slug_sim,slug_filter);
-        outfile = fullfile(outdir,[slug_sim_filt '.mat']);
-        
-        if fresh(j) || ~exist(outfile,'file')
-            fprintf('running: %s\n', slug_sim_filt)
-            sources = data_sim{j}.signal;
-            
-            switch filter_type
-                case 'MQRDLSL1'
-                    filter = MQRDLSL1(nchannels,order_est,lambda);
-                    mt = 1;
+                % generate data
+                data = exp30_gen_tvar(nchannels);
+                % save data
+                save_parfor(outfile_sim,data);
+                
+                % copy data for filtering
+                kf_true_sims{j} = data.true;
+                data_sim{j} = data;
+                
+                % set flag that new simulated is available
+                fresh(j) = true;
+            else
+                fprintf('loading: %s\n', slug_sim);
+                
+                % load data
+                data = loadfile(outfile_sim);
+                
+                % copy data for filtering
+                kf_true_sims{j} = data.true;
+                data_sim{j} = data;
             end
-            trace{j} = LatticeTrace(filter,'fields',{'Kf'});
-            
-            % run the filter
-            warning('off','all');
-            trace{j}.run(sources(:,:,1:mt),'verbosity',verbosity,'mode','none');
-            warning('on','all');
-            trace{j}.name = trace{j}.filter.name;
-            
-            estimate{j} = trace{j}.trace.Kf;
-            
-            % save data
-            data = [];
-            data.estimate = estimate{j};
-            save_parfor(outfile,data);
-        else
-            fprintf('loading: %s\n', slug_sim_filt);
-            % load data
-            data = loadfile(outfile);
-            estimate{j} = data.estimate;
         end
+        
+        % set up filter slug
+        [filter_main,~] = exp30_get_filter(filter_type,nchannels);
+        
+        slug_filter = filter_main.name;
+        slug_filter = strrep(slug_filter,' ','-');
+        
+        parfor j=1:nsims
+            %for j=1:nsims
+            slug_sim = sprintf('vrc-tvar-p%d-c%d-s%d',order_est,nchannels,j);
+            slug_sim_filt = sprintf('%s-%s',slug_sim,slug_filter);
+            outfile = fullfile(outdir,[slug_sim_filt '.mat']);
+            
+            if fresh(j) || ~exist(outfile,'file')
+                fprintf('running: %s\n', slug_sim_filt)
+                sources = data_sim{j}.signal;
+                
+                [filter,mt] = exp30_get_filter(filter_type,nchannels);
+                trace{j} = LatticeTrace(filter,'fields',{'Kf'});
+                
+                % run the filter
+                warning('off','all');
+                trace{j}.run(sources(:,:,1:mt),'verbosity',verbosity,'mode','none');
+                warning('on','all');
+                trace{j}.name = trace{j}.filter.name;
+                
+                estimate{j} = trace{j}.trace.Kf;
+                
+                % save data
+                data = [];
+                data.estimate = estimate{j};
+                save_parfor(outfile,data);
+            else
+                fprintf('loading: %s\n', slug_sim_filt);
+                % load data
+                data = loadfile(outfile);
+                estimate{j} = data.estimate;
+            end
+        end
+        
+        data_args = [data_args {estimate kf_true_sims}];
+        labels{i} = sprintf('%d channels',nchannels);
     end
-    
-    data_args = [data_args {estimate kf_true_sims}];
-    labels{i} = sprintf('%d channels',nchannels);
 end
 
 %% Plot MSE
