@@ -51,6 +51,8 @@ else
 end
 
 cc = jet(ndata);
+j = 1;
+h = [];
 for i=1:2:ndata
     data_mse = mse_iteration(data{i},data{i+1});
     if nsims > 1
@@ -60,11 +62,13 @@ for i=1:2:ndata
     niter = size(data_mse,1);
     switch p.Results.mode
         case 'log'
-            semilogy(1:niter,data_mse,'Color',cc(i,:),'LineWidth',2);
+            h(j) = semilogy(1:niter,data_mse,'Color',cc(i,:),'LineWidth',2);
         case 'plot'
-            plot(1:niter,data_mse,'Color',cc(i,:),'LineWidth',2);
+            h(j) = plot(1:niter,data_mse,'Color',cc(i,:),'LineWidth',2);
     end
     hold on;
+    
+    j = j+1;
 end
 
 if p.Results.normalized
@@ -75,7 +79,7 @@ end
 xlabel('Iteration');
 
 if ~isempty(p.Results.labels)
-    legend(p.Results.labels);
+    legend(h,p.Results.labels);
 end
 
 end
