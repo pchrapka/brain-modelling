@@ -24,7 +24,7 @@ filter_types = {...
     };
 
 plot_individual = false;
-plot_coef_values = true;
+plot_coef_values = false;
 
 %% loop over params
 

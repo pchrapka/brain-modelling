@@ -54,7 +54,7 @@ cc = jet(ndata);
 j = 1;
 h = [];
 for i=1:2:ndata
-    data_mse = mse_iteration(data{i},data{i+1});
+    data_mse = mse_iteration(data{i},data{i+1},'normalized',p.Results.normalized);
     if nsims > 1
         data_mse = mean(data_mse,2);
     end
