@@ -27,7 +27,7 @@ plot_individual = false;
 
 %% loop over params
 
-large_error = false(nchannel_opts,nsims);
+large_error = zeros(nchannel_opts,nsims);
 for k=1:length(filter_types)
     % allocate mem
     labels = cell(nchannel_opts,1);
@@ -128,8 +128,8 @@ for k=1:length(filter_types)
             end
             
             data_mse = mse_iteration(estimate{j},kf_true_sims{j});
-            if any(data_mse > 10^5)
-                large_error(i,j) = true;
+            if any(data_mse > 10)
+                large_error(i,j) = large_error(i,j) + 1;
             end
         end
         
@@ -178,8 +178,8 @@ fprintf('large errors\n');
 for i=1:nchannel_opts
     nchannels = channels(i);
     for j=1:nsims
-        if large_error(i,j)
-            fprintf('\tc%d-s%d\n',nchannels,j);
+        if large_error(i,j) > 0
+            fprintf('\tc%d-s%d = %d/%d\n',nchannels,j,large_error(i,j),length(filter_types));
         end
     end
 end
