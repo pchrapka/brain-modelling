@@ -138,7 +138,7 @@ for k=1:length(filter_types)
         % plot MSE for each sim
         if plot_individual
             for j=1:nsims
-                figure;
+                h = figure;
                 clf;
                 plot_mse_vs_iteration(...
                     estimate{j}, kf_true_sims{j},...
@@ -146,6 +146,7 @@ for k=1:length(filter_types)
                     'labels',{sprintf('%d channels',nchannels)});
                 drawnow;
                 save_fig_exp(mfilename('fullpath'),'tag',sprintf('mse-%s-s%d',slug_filter,j));
+                close(h);
             end
         end
         
@@ -153,7 +154,7 @@ for k=1:length(filter_types)
         if plot_coef_values
             if ~plotted_coef_values(i)
                 for j=1:nsims
-                    figure;
+                    h = figure;
                     clf;
                     kf_unique = unique(kf_true_sims{j});
                     hist(kf_unique,linspace(-1,1,20));
@@ -161,6 +162,7 @@ for k=1:length(filter_types)
                     save_fig_exp(mfilename('fullpath'),...
                         'tag',sprintf('coefs-c%d-s%d',channels(i),j),...
                         'formats',{'png'});
+                    close(h);
                 end
                 plotted_coef_values(i) = true; % do this only once per channel
             end
