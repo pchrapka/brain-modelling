@@ -158,7 +158,9 @@ for k=1:length(filter_types)
                     kf_unique = unique(kf_true_sims{j});
                     hist(kf_unique,linspace(-1,1,20));
                     drawnow;
-                    save_fig_exp(mfilename('fullpath'),'tag',sprintf('coefs-c%d-s%d',i,j),'formats',{'png'});
+                    save_fig_exp(mfilename('fullpath'),...
+                        'tag',sprintf('coefs-c%d-s%d',channels(i),j),...
+                        'formats',{'png'});
                 end
                 plotted_coef_values(i) = true; % do this only once per channel
             end
