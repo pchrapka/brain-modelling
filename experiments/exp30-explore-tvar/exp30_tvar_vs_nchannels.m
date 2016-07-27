@@ -24,11 +24,13 @@ filter_types = {...
     };
 
 plot_individual = false;
+plot_coef_values = true;
 
 %% loop over params
 
 large_error = zeros(nchannel_opts,nsims);
 fresh = false(nchannel_opts,nsims);
+plotted_coef_values = false; % reset flag
 for k=1:length(filter_types)
     % allocate mem
     labels = cell(nchannel_opts,1);
@@ -145,6 +147,19 @@ for k=1:length(filter_types)
                 drawnow;
                 save_fig_exp(mfilename('fullpath'),'tag',sprintf('mse-%s-s%d',slug_filter,j));
             end
+        end
+        
+        % plot unique reflection coefficient values
+        if plot_coef_values && ~plotted_coef_values
+            for j=1:nsims
+                figure;
+                clf;
+                kf_unique = unique(kf_true_sims{j});
+                hist(kf_unique,linspace(-1,1,20));
+                drawnow;
+                save_fig_exp(mfilename('fullpath'),'tag',sprintf('coefs-s%d',j));
+            end
+            plotted_coef_values = true; % do this only once
         end
         
         data_args = [data_args {estimate kf_true_sims}];
