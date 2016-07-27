@@ -132,7 +132,7 @@ for k=1:length(filter_types)
         end
         
         % plot MSE for each sim
-        for j=1:nsims
+        parfor j=1:nsims
             figure;
             clf;
             plot_mse_vs_iteration(...
