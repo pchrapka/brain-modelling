@@ -6,7 +6,7 @@ function save_fig_exp(mfilename,varargin)
 %   ----------
 %   tag (string, default = '')
 %       add a tag to file name, the file name is [date]-[mfile name]-[tag]
-%   formats (cell array/string, default = {'png','eps'})
+%   formats (cell array, default = {'png','eps'})
 %       export formats for the figure
 %   save_flag (boolean, default = true)
 %       flag for actually capturing the image, useful if you want to
@@ -16,7 +16,7 @@ function save_fig_exp(mfilename,varargin)
 p = inputParser;
 addRequired(p,'mfilename',@ischar);
 addParameter(p,'tag','',@ischar);
-addParameter(p,'formats',{'png','eps'},@(x) iscell(x) || ischar(x));
+addParameter(p,'formats',{'png','eps'},@iscell);
 addParameter(p,'save_flag',true,@islogical);
 parse(p,mfilename,varargin{:});
 
