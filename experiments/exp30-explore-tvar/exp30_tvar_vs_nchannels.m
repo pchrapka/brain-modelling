@@ -23,6 +23,8 @@ filter_types = {...
     'MLOCCDTWL',...
     };
 
+plot_individual = false;
+
 %% loop over params
 
 large_error = false(nchannel_opts,nsims);
@@ -132,15 +134,17 @@ for k=1:length(filter_types)
         end
         
         % plot MSE for each sim
-        for j=1:nsims
-            figure;
-            clf;
-            plot_mse_vs_iteration(...
-                estimate{j}, kf_true_sims{j},...
-                'mode','log',...
-                'labels',{sprintf('%d channels',nchannels)});
-            drawnow;
-            save_fig_exp(mfilename('fullpath'),'tag',sprintf('mse-%s-s%d',slug_filter,j));
+        if plot_individual
+            for j=1:nsims
+                figure;
+                clf;
+                plot_mse_vs_iteration(...
+                    estimate{j}, kf_true_sims{j},...
+                    'mode','log',...
+                    'labels',{sprintf('%d channels',nchannels)});
+                drawnow;
+                save_fig_exp(mfilename('fullpath'),'tag',sprintf('mse-%s-s%d',slug_filter,j));
+            end
         end
         
         data_args = [data_args {estimate kf_true_sims}];
