@@ -30,7 +30,7 @@ plot_coef_values = true;
 
 large_error = zeros(nchannel_opts,nsims);
 fresh = false(nchannel_opts,nsims);
-plotted_coef_values = false; % reset flag
+plotted_coef_values = false(nchannel_opts); % reset flag
 for k=1:length(filter_types)
     % allocate mem
     labels = cell(nchannel_opts,1);
@@ -150,16 +150,18 @@ for k=1:length(filter_types)
         end
         
         % plot unique reflection coefficient values
-        if plot_coef_values && ~plotted_coef_values
-            for j=1:nsims
-                figure;
-                clf;
-                kf_unique = unique(kf_true_sims{j});
-                hist(kf_unique,linspace(-1,1,20));
-                drawnow;
-                save_fig_exp(mfilename('fullpath'),'tag',sprintf('coefs-c%d-s%d',i,j),'formats',{'png'});
+        if plot_coef_values
+            if ~plotted_coef_values(i)
+                for j=1:nsims
+                    figure;
+                    clf;
+                    kf_unique = unique(kf_true_sims{j});
+                    hist(kf_unique,linspace(-1,1,20));
+                    drawnow;
+                    save_fig_exp(mfilename('fullpath'),'tag',sprintf('coefs-c%d-s%d',i,j),'formats',{'png'});
+                end
+                plotted_coef_values(i) = true; % do this only once per channel
             end
-            plotted_coef_values = true; % do this only once
         end
         
         data_args = [data_args {estimate kf_true_sims}];
