@@ -28,6 +28,7 @@ plot_individual = false;
 %% loop over params
 
 large_error = zeros(nchannel_opts,nsims);
+fresh = false(nchannel_opts,nsims);
 for k=1:length(filter_types)
     % allocate mem
     labels = cell(nchannel_opts,1);
@@ -41,7 +42,6 @@ for k=1:length(filter_types)
         estimate = cell(nsims,1);
         kf_true_sims = cell(nsims,1);
         data_sim = cell(nsims,1);
-        fresh = false(nsims,1);
         
         %for j=1:nsims
         parfor j=1:nsims
@@ -62,8 +62,8 @@ for k=1:length(filter_types)
                 kf_true_sims{j} = data.true;
                 data_sim{j} = data;
                 
-                % set flag that new simulated is available
-                fresh(j) = true;
+                % set flag that the simulated data is new
+                fresh(i,j) = true;
             else
                 fprintf('loading: %s\n', slug_sim);
                 
@@ -88,7 +88,7 @@ for k=1:length(filter_types)
             slug_sim_filt = sprintf('%s-%s',slug_sim,slug_filter);
             outfile = fullfile(outdir,[slug_sim_filt '.mat']);
             
-            if fresh(j) || ~exist(outfile,'file')
+            if fresh(i,j) || ~exist(outfile,'file')
                 fprintf('running: %s\n', slug_sim_filt)
                 sources = data_sim{j}.signal;
                 
