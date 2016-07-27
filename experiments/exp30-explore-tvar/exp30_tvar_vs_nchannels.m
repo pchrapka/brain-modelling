@@ -161,6 +161,16 @@ for k=1:length(filter_types)
         'labels',labels);
     drawnow;
     save_fig_exp(mfilename('fullpath'),'tag',sprintf('mse-all-%s',slug_filter));
+    
+    h = figure;
+    clf;
+    plot_mse_vs_iteration(...
+        data_args{:},...
+        'mode','log',...
+        'normalized',true,...
+        'labels',labels);
+    drawnow;
+    save_fig_exp(mfilename('fullpath'),'tag',sprintf('nmse-all-%s',slug_filter));
 end
 
 %% Print extra info
