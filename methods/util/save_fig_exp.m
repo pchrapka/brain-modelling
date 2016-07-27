@@ -6,6 +6,8 @@ function save_fig_exp(mfilename,varargin)
 %   ----------
 %   tag (string, default = '')
 %       add a tag to file name, the file name is [date]-[mfile name]-[tag]
+%   formats (cell array/string, default = {'png','eps'})
+%       export formats for the figure
 %   save_flag (boolean, default = true)
 %       flag for actually capturing the image, useful if you want to
 %       disable saving
@@ -14,6 +16,7 @@ function save_fig_exp(mfilename,varargin)
 p = inputParser;
 addRequired(p,'mfilename',@ischar);
 addParameter(p,'tag','',@ischar);
+addParameter(p,'formats',{'png','eps'},@(x) iscell(x) || ischar(x));
 addParameter(p,'save_flag',true,@islogical);
 parse(p,mfilename,varargin{:});
 
@@ -32,8 +35,19 @@ end
 
 % save the figure in the experiment dir with the experiment as the file
 % name with an optional tag
-cfg = [];
-cfg.out_dir = imgdir;
-save_fig(cfg, [filename '-' p.Results.tag],p.Results.save_flag);
+file_name_date = [datestr(now, 'yyyy-mm-dd') '-' filename '-' p.Results.tag];
+file_name_full = fullfile(imgdir,file_name_date);
+
+% change background color
+set(gcf, 'Color', 'w');
+
+if exist('export_fig', 'file')
+    % export fig in each format
+    for i=1:length(p.Results.formats)
+        export_fig(file_name_full, sprintf('-%s',p.Results.formats{i}));
+    end
+else
+    error('cannot find export_fig');
+end
 
 end
