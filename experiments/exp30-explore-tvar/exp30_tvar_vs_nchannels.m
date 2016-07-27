@@ -25,6 +25,7 @@ filter_types = {...
 
 %% loop over params
 
+large_error = false(nchannel_opts,nsims);
 for k=1:length(filter_types)
     % allocate mem
     labels = cell(nchannel_opts,1);
@@ -123,6 +124,11 @@ for k=1:length(filter_types)
                 data = loadfile(outfile);
                 estimate{j} = data.estimate;
             end
+            
+            data_mse = mse_iteration(estimate{j},kf_true_sims{j});
+            if any(data_mse > 10^5)
+                large_error(i,j) = true;
+            end
         end
         
         % plot MSE for each sim
@@ -152,3 +158,15 @@ for k=1:length(filter_types)
     drawnow;
     save_fig_exp(mfilename('fullpath'),'tag',sprintf('mse-all-%s',slug_filter));
 end
+
+%% Print extra info
+fprintf('large errors\n');
+for i=1:nchannel_opts
+    nchannels = channels(i);
+    for j=1:nsims
+        if large_error(i,j)
+            fprintf('\tc%d-s%d\n',nchannels,j);
+        end
+    end
+end
+
