@@ -180,6 +180,25 @@ classdef AnalysisStep < handle
             force_deps = obj.check_deps();
             restart = ~exist(file, 'file') || obj.force || force_deps;
         end
+        
+        function load_files(obj)
+            %LOAD_FILES loads files specified in the config
+            %
+            %   Requires load_files field in params struct or file. The
+            %   field should be formatted as a listed of property and file
+            %   name pairs'
+            %   For example:
+            %       cfg.load_files = {...
+            %           {'mri_mat', 'standard_mri.mat'},...
+            %           {'mri_segmented', 'standard_seg.mat'}};
+            %
+            
+            for i=1:length(obj.config.load_files)
+                property = obj.config.load_files{i}{1};
+                file_name = obj.config.load_files{i}{2};
+                obj.load_file(property,file_name);
+            end
+        end
     end
     
     methods (Abstract)

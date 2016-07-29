@@ -13,6 +13,6 @@ cfg.ft_prepare_mesh.numvertices = [2000, 2000, 1000];
 % MRI data
 cfg.mri_data = fullfile(srcdir,'..','anatomy','Subject01','Subject01.mri');
 
-save(fullfile(srcdir,'MRIS01.mat'),'cfg');
+save(fullfile(srcdir, [strrep(mfilename,'_','-') '.mat']),'cfg');
 
 end

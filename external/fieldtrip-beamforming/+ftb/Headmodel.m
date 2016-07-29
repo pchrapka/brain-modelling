@@ -75,6 +75,9 @@ classdef Headmodel < ftb.AnalysisStep
                 out_folder2, ['mri_vol.mat']);
             
             obj.init_called = true;
+            
+            % load any files specified in the config
+            obj.load_files();
         end
         
         function obj = process(obj)

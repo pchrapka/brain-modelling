@@ -45,45 +45,51 @@ classdef MRI < ftb.AnalysisStep
         end
         
         function obj = add_prev(obj,prev)
+            %ADD_PREV add previous AnalysisStep
+            %   ADD_PREV(prev) add previous AnalysisStep
             
             % parse inputs
             p = inputParser;
-            addRequired(p,'prev',@(x)isempty(x));
+            addRequired(p,'prev',@isempty);
             parse(p,prev);
             
             % set the previous step, aka None
             obj.prev = p.Results.prev;
         end
         
-        function obj = init(obj,out_folder)
+        function obj = init(obj,analysis_folder)
             
             % parse inputs
             p = inputParser;
-            addOptional(p,'out_folder','',@ischar);
-            parse(p,out_folder);
+            addOptional(p,'analysis_folder','',@ischar);
+            parse(p,analysis_folder);
             
             % check inputs
-            if isempty(out_folder)
+            if isempty(analysis_folder)
                 error(['ftb:' mfilename],...
                     'please specify an output folder');
             end
             
             % create folder for analysis step, name accounts for dependencies
-            out_folder2 = fullfile(out_folder, obj.get_name());
-            if ~exist(out_folder2,'dir')
-                mkdir(out_folder2)
+            out_folder = fullfile(analysis_folder, obj.get_name());
+            if ~exist(out_folder,'dir')
+                mkdir(out_folder)
             end
             
             % Set up file names
             % MRI data specific
             [~, mri_name, ~] = fileparts(obj.config.mri_data);
-            obj.mri_mat = fullfile(out_folder2, [mri_name '_mri.mat']);
-            obj.mri_segmented = fullfile(out_folder2, [mri_name '_mri_segmented.mat']);
+            obj.mri_mat = fullfile(out_folder, [mri_name '_mri.mat']);
+            obj.mri_segmented = fullfile(out_folder, [mri_name '_mri_segmented.mat']);
             
             % Method specific
-            obj.mri_mesh = fullfile(out_folder2, 'mri_mesh.mat');
+            obj.mri_mesh = fullfile(out_folder, 'mri_mesh.mat');
             
+            % set the init flag
             obj.init_called = true;
+            
+            % load any files specified in the config
+            obj.load_files();
         end
         
         function obj = process(obj)
