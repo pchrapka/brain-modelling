@@ -41,20 +41,20 @@ classdef BeamformerContrast < ftb.Beamformer
             obj.post.prev = p.Results.prev;
         end
         
-        function obj = init(obj,out_folder)
+        function obj = init(obj,analysis_folder)
             
             % call Beamformer init on main object
-            init@ftb.Beamformer(obj,out_folder);
+            init@ftb.Beamformer(obj,analysis_folder);
             
-            % create folder for analysis step, name accounts for dependencies
-            out_folder2 = fullfile(out_folder, obj.get_name());
-            if ~exist(out_folder2,'dir')
-                mkdir(out_folder2)
-            end        
+%             % create folder for analysis step, name accounts for dependencies
+%             out_folder2 = fullfile(out_folder, obj.get_name());
+%             if ~exist(out_folder2,'dir')
+%                 mkdir(out_folder2)
+%             end        
             
             % init Beamformer objects
-            obj.pre.init(out_folder2);
-            obj.post.init(out_folder2);
+            obj.pre.init(obj.folder);
+            obj.post.init(obj.folder);
         end
         
         function obj = process(obj)

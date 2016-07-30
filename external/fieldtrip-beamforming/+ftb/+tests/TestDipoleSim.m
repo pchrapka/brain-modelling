@@ -78,7 +78,6 @@ classdef TestDipoleSim < matlab.unittest.TestCase
            testCase.verifyTrue(isfield(a.config, 'ft_dipolesimulation'));
            testCase.verifyTrue(isfield(a.config, 'ft_timelockanalysis'));
            testCase.verifyEqual(a.init_called,false);
-           testCase.verifyTrue(isempty(a.simulated));
            testCase.verifyTrue(isempty(a.timelock));
         end
         
@@ -90,14 +89,14 @@ classdef TestDipoleSim < matlab.unittest.TestCase
            testCase.verifyTrue(isfield(a.config, 'ft_dipolesimulation'));
            testCase.verifyTrue(isfield(a.config, 'ft_timelockanalysis'));
            testCase.verifyEqual(a.init_called,false);
-           testCase.verifyTrue(isempty(a.simulated));
            testCase.verifyTrue(isempty(a.timelock));
         end
         
         function test_init1(testCase)
             % check init throws error
             a = ftb.DipoleSim(testCase.params, testCase.name);
-            testCase.verifyError(@()a.init(''),'ftb:DipoleSim');
+            testCase.verifyError(@()a.init(''),...
+                'MATLAB:InputParser:ArgumentFailedValidation');
         end
         
         function test_init2(testCase)
@@ -105,7 +104,7 @@ classdef TestDipoleSim < matlab.unittest.TestCase
             a = ftb.DipoleSim(testCase.params, testCase.name);
             a.init(testCase.out_folder);
             testCase.verifyEqual(a.init_called,true);
-            testCase.verifyTrue(~isempty(a.simulated));
+            testCase.verifyTrue(~isempty(a.preprocessed));
             testCase.verifyTrue(~isempty(a.timelock));
         end
         
@@ -116,7 +115,7 @@ classdef TestDipoleSim < matlab.unittest.TestCase
             n = a.get_name();
             a.init(testCase.out_folder);
             
-            [pathstr,~,~] = fileparts(a.simulated);
+            [pathstr,~,~] = fileparts(a.preprocessed);
             testCase.verifyEqual(pathstr, fullfile(testCase.out_folder,n));
             [pathstr,~,~] = fileparts(a.timelock);
             testCase.verifyEqual(pathstr, fullfile(testCase.out_folder,n));

@@ -11,9 +11,11 @@ classdef AnalysisStep < handle
         
         % linked prev object
         prev;
+        
+        folder;
     end
     
-    properties(SetAccess = public)
+    properties
         force;
     end
     
@@ -27,6 +29,7 @@ classdef AnalysisStep < handle
             obj.prefix = p.Results.prefix;
             obj.name = '';
             obj.prev = [];
+            obj.folder = '';
             obj.init_called = false;
             obj.force = false;
         end
@@ -193,11 +196,62 @@ classdef AnalysisStep < handle
             %           {'mri_segmented', 'standard_seg.mat'}};
             %
             
+            if ~isfield(obj.config,'load_files')
+                return;
+            end
+            
             for i=1:length(obj.config.load_files)
                 property = obj.config.load_files{i}{1};
                 file_name = obj.config.load_files{i}{2};
                 obj.load_file(property,file_name);
             end
+        end
+        
+        function [varargout] = init_output(obj,analysis_folder,varargin)
+            %INIT_OUTPUT initializes the output for the step
+            %   INIT_OUTPUT(analysis_folder ,['properties', {}])
+            %
+            %   Input
+            %   -----
+            %   analysis_folder (string)
+            %       root folder for the analysis output
+            %   
+            %   Parameters
+            %   ----------
+            %   properties (cell array)
+            %       cell array of class specific properties for which
+            %       output files are required
+            %
+            %   Output
+            %   ------
+            %   property_file (vararout)
+            %       output path and file for each property
+            
+            % parse inputs
+            p = inputParser;
+            addRequired(p,'analysis_folder',@(x) ~isempty(x) && ischar(x));
+            addParameter(p,'properties',{},@iscell);
+            parse(p,analysis_folder,varargin{:});
+            
+            % create folder for analysis step, name accounts for dependencies
+            obj.folder = fullfile(analysis_folder, obj.get_name());
+            if ~exist(obj.folder,'dir')
+                mkdir(obj.folder)
+            end
+            
+            nprops = length(p.Results.properties);
+            if nargout < nprops
+                error(['ftb:' mfilename],...
+                    'not enough output arguments');
+            end
+            
+            % set up file for each property
+            varargout = cell(nprops,1);
+            for i=1:nprops
+                property = p.Results.properties{i};
+                varargout{i} = fullfile(obj.folder, [property '.mat']);
+            end
+            
         end
     end
     

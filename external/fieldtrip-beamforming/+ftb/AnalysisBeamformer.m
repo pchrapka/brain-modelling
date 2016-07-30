@@ -26,13 +26,16 @@ classdef AnalysisBeamformer < handle
             
             % add step
             if isempty(obj.steps)
-                obj.steps{1} = p.Results.new_step;
+                idx = 1;
+                obj.steps{idx} = p.Results.new_step;
             else
                 idx = length(obj.steps) + 1;
                 obj.steps{idx} = p.Results.new_step;
                 % link previous step
                 obj.steps{idx}.add_prev(obj.steps{idx-1});
             end
+            
+            obj.steps{idx}.init(obj.out_folder);
         end
         
         function obj = init(obj)

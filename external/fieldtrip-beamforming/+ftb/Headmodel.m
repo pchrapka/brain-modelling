@@ -2,7 +2,7 @@ classdef Headmodel < ftb.AnalysisStep
     %Headmodel Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties(SetAccess = private)
+    properties(SetAccess = protected)
         config;
         mri_headmodel;
     end
@@ -51,28 +51,18 @@ classdef Headmodel < ftb.AnalysisStep
             obj.prev = p.Results.prev;
         end
         
-        function obj = init(obj,out_folder)
+        function obj = init(obj,analysis_folder)
+            %INIT initializes the output files
+            %   INIT(analysis_folder)
+            %
+            %   Input
+            %   -----
+            %   analysis_folder (string)
+            %       root folder for the analysis output
             
-            % parse inputs
-            p = inputParser;
-            addOptional(p,'out_folder','',@ischar);
-            parse(p,out_folder);
-            
-            % check inputs
-            if isempty(out_folder)
-                error(['ftb:' mfilename],...
-                    'please specify an output folder');
-            end
-            
-            % create folder for analysis step, name accounts for dependencies
-            out_folder2 = fullfile(out_folder, obj.get_name());
-            if ~exist(out_folder2,'dir')
-                mkdir(out_folder2)
-            end            
-            
-            % set up file names
-            obj.mri_headmodel = fullfile(...
-                out_folder2, ['mri_vol.mat']);
+            % init output folder and files
+            obj.mri_headmodel = obj.init_output(analysis_folder,...
+                'properties',{'mri_headmodel'});
             
             obj.init_called = true;
             

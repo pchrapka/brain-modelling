@@ -65,7 +65,8 @@ classdef TestLeadfield < matlab.unittest.TestCase
         function test_init1(testCase)
             % check init throws error
             a = ftb.Leadfield(testCase.params, testCase.name);
-            testCase.verifyError(@()a.init(''),'ftb:Leadfield');
+            testCase.verifyError(@()a.init(''),...
+                'MATLAB:InputParser:ArgumentFailedValidation');
         end
         
         function test_init2(testCase)

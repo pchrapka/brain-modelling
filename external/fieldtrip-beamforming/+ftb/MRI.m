@@ -58,32 +58,20 @@ classdef MRI < ftb.AnalysisStep
         end
         
         function obj = init(obj,analysis_folder)
+            %INIT initializes the output files
+            %   INIT(analysis_folder)
+            %
+            %   Input
+            %   -----
+            %   analysis_folder (string)
+            %       root folder for the analysis output
             
-            % parse inputs
-            p = inputParser;
-            addOptional(p,'analysis_folder','',@ischar);
-            parse(p,analysis_folder);
+            % TODO remove mri_name
             
-            % check inputs
-            if isempty(analysis_folder)
-                error(['ftb:' mfilename],...
-                    'please specify an output folder');
-            end
-            
-            % create folder for analysis step, name accounts for dependencies
-            out_folder = fullfile(analysis_folder, obj.get_name());
-            if ~exist(out_folder,'dir')
-                mkdir(out_folder)
-            end
-            
-            % Set up file names
-            % MRI data specific
-            [~, mri_name, ~] = fileparts(obj.config.mri_data);
-            obj.mri_mat = fullfile(out_folder, [mri_name '_mri.mat']);
-            obj.mri_segmented = fullfile(out_folder, [mri_name '_mri_segmented.mat']);
-            
-            % Method specific
-            obj.mri_mesh = fullfile(out_folder, 'mri_mesh.mat');
+            % init output folder and files
+            [obj.mri_mat,obj.mri_segmented,obj.mri_mesh] = ...
+                obj.init_output(analysis_folder,...
+                'properties',{'mri_mat','mri_segmented','mri_mesh'});
             
             % set the init flag
             obj.init_called = true;

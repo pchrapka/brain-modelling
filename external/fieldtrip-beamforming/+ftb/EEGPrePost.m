@@ -43,21 +43,21 @@ classdef EEGPrePost < ftb.EEG
             obj.post.prev = p.Results.prev;
         end
         
-        function obj = init(obj,out_folder)
+        function obj = init(obj,analysis_folder)
             
             % call EEG init on main object
-            init@ftb.EEG(obj,out_folder);
+            init@ftb.EEG(obj,analysis_folder);
             
-            % create folder for analysis step, name accounts for dependencies
-            out_folder2 = fullfile(out_folder, obj.get_name());
-            if ~exist(out_folder2,'dir')
-                mkdir(out_folder2)
-            end        
+%             % create folder for analysis step, name accounts for dependencies
+%             out_folder2 = fullfile(out_folder, obj.get_name());
+%             if ~exist(out_folder2,'dir')
+%                 mkdir(out_folder2)
+%             end        
             
             % init EEG objects
-            obj.pre.init(out_folder2);
+            obj.pre.init(obj.folder);
             obj.pre.definetrial = '';
-            obj.post.init(out_folder2);
+            obj.post.init(obj.folder);
             obj.post.definetrial = '';
         end
         

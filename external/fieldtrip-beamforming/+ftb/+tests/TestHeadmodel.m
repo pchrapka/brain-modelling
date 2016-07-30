@@ -62,7 +62,8 @@ classdef TestHeadmodel < matlab.unittest.TestCase
         function test_init1(testCase)
             % check init throws error
             a = ftb.Headmodel(testCase.params, testCase.name);
-            testCase.verifyError(@()a.init(''),'ftb:Headmodel');
+            testCase.verifyError(@()a.init(''),...
+                'MATLAB:InputParser:ArgumentFailedValidation');
         end
         
         function test_init2(testCase)

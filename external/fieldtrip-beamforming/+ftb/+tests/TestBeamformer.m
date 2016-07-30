@@ -61,7 +61,8 @@ classdef TestBeamformer < matlab.unittest.TestCase
         function test_init1(testCase)
             % check init throws error
             a = ftb.Beamformer(testCase.params, testCase.name);
-            testCase.verifyError(@()a.init(''),'ftb:Beamformer');
+            testCase.verifyError(@()a.init(''),...
+                'MATLAB:InputParser:ArgumentFailedValidation');
         end
         
         function test_init2(testCase)
