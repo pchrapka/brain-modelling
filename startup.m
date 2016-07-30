@@ -82,6 +82,7 @@ addpath(fullfile(pwd,'methods','stats'));
 addpath(fullfile(pwd,'methods','util'));
 addpath(fullfile(pwd,'analysis'));
 addpath(fullfile(pwd,'analysis','lattice-svm'));
+addpath(fullfile(pwd,'analysis','lattice-svm','params'));
 addpath(fullfile(pwd,'analysis','beamform-patch'));
 addpath(fullfile(pwd,'analysis','beamform-patch','tests'));
 addpath(fullfile(pwd,'analysis','beamform-patch','configs'));
