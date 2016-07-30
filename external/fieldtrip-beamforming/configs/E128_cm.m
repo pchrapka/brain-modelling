@@ -8,6 +8,6 @@ cfg = [];
 cfg.elec_orig = 'GSN-HydroCel-128.sfp';
 cfg.units = 'cm';
 
-save(fullfile(srcdir,'E128-cm.mat'),'cfg');
+save(fullfile(srcdir, [strrep(mfilename,'_','-') '.mat']),'cfg');
 
 end

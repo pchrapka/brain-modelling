@@ -16,6 +16,10 @@ classdef AnalysisBeamformer < handle
             
             obj.steps = {};
             obj.out_folder = p.Results.out_folder;
+            
+            if ~exist(obj.out_folder,'dir')
+                mkdir(obj.out_folder);
+            end
         end
         
         function add(obj, new_step)
