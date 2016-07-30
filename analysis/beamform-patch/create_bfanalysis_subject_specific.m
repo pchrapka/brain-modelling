@@ -68,10 +68,6 @@ switch p.Results.hm_type
         analysis.add(m);
         analysis.add(hm);
         
-        % % Process pipeline
-        %analysis.init();
-        %analysis.process();
-        
     case 2
         
         % MRI
@@ -86,33 +82,18 @@ switch p.Results.hm_type
         analysis.add(m);
         analysis.add(hm);
         
-        % % Process pipeline
-        %analysis.init();
-        %analysis.process();
-        
     case 3
         % MRI
-        params_mri = [];
-        params_mri.mri_data = 'std';
+        params_mri = 'MRIstd.mat';
         m = ftb.MRI(params_mri,'std');
         
         % Headmodel
-        params_hm = [];
-        params_hm.fake = '';
+        params_hm = 'HMstd-cm.mat';
         hm = ftb.Headmodel(params_hm,'std-cm');
         
         % Add steps
         analysis.add(m);
         analysis.add(hm);
-        
-        % Process pipeline
-        analysis.init();
-        m.load_file('mri_mat', 'standard_mri.mat');
-        m.load_file('mri_segmented', 'standard_seg.mat');
-        m.load_file('mri_mesh', 'MRIS01.mat'); % fake this
-        hm.load_file('mri_headmodel', 'standard_bem.mat');
-        % process should ignore the files above
-        %analysis.process();
         
         %hm.plot({'scalp','skull','brain','fiducials'});
 end
