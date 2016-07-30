@@ -1,6 +1,5 @@
 function pipeline = build_pipeline_lattice_svm(params_subject)
 %BUILD_PIPELINE_LATTICE_SVM builds pipeline for the lattice filter SVM
-%analysis of P022 data
 %
 %   NOTE: depends on output from exp10_beamform_patch
 %
@@ -20,8 +19,6 @@ setup_parfor();
 
 params_func = str2func(params_subject);
 params_sd = params_func();
-% subject specific info
-% [~,subject_file,subject_name] = get_coma_data(params_sd.subject_id);
 
 %% create lattice filter pipeline
 
