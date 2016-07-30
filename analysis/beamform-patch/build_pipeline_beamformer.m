@@ -39,36 +39,18 @@ hm = ftb.Headmodel(params_sd.hm,step_name);
 % add step
 pipeline.add(hm);
 
-%% Create and process the electrodes
+%% set up Electrodes
 
 step_name = get_analysis_step_name(params_sd.elec,'E');
 e = ftb.Electrodes(params_sd.elec,step_name);
 
-error('check fiducials');
-if subject_specific
-    e.set_fiducial_channels('NAS','NZ','LPA','LPA','RPA','RPA');
-else
-    error('fix me');
-end
+% add step
 pipeline.add(e);
 e.force = false;
 
-% Process pipeline
-pipeline.init();
-pipeline.process();
-e.force = false;
-
-error('check elec labels');
-if subject_specific
-    % Manually rename channel
-    % NOTE This is why the electrodes are processed ahead of time
-    elec = loadfile(e.elec_aligned);
-    idx = cellfun(@(x) isequal(x,'Afz'),elec.label);
-    if any(idx)
-        elec.label{idx} = 'AFz';
-        save(e.elec_aligned,'elec');
-    end
-end
+% % Process pipeline
+% pipeline.init();
+% pipeline.process();
 
 % e.plot({'scalp','fiducials','electrodes-aligned','electrodes-labels'});
 
