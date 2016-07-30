@@ -4,13 +4,14 @@ function params = paramsbf_sd_coma22_consec(stimulus)
 [~,func_name,~] = fileparts(mfilename('fullpath'));
 
 % subject specific info
-[datadir,subject_file,~] = get_coma_data(22);
+[datadir,subject_file,subject_name] = get_coma_data(22);
 
 params = [];
 params.name = [func_name '_' stimulus];
 
 %% create data specific configs
 params_elec = [];
+params_elec.name = ['E' subject_name];
 params_elec.elec_orig = fullfile(datadir,[subject_file '.sfp']);
 params_elec.fiducials = {'NAS','NZ','LPA','LPA','RPA','RPA'};
 
