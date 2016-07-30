@@ -1,12 +1,7 @@
-function patches = get_aal_coarse(atlasfile,varargin)
-%GET_AAL_COARSE returns anatomical labels partitioned into patches
-%   GET_AAL_COARSE(atlasfile,...) returns a coarse partition of the AAL
+function patches = get_aal_coarse_13(varargin)
+%GET_AAL_COARSE_13 returns anatomical labels partitioned into patches
+%   GET_AAL_COARSE_13(...) returns a coarse partition of the AAL
 %   atlas into 13 patches
-%
-%   Input
-%   -----
-%   atlasfile (string)
-%       atlas filename
 %
 %   Parameters
 %   ----------
@@ -27,15 +22,14 @@ function patches = get_aal_coarse(atlasfile,varargin)
 %   patches.atlasfile (string)
 %       path of associated atlas file
 
-% FIXME atlas_file should point to the AAL atlas in fieldtrip, how do I
-% check for this?
-
 p = inputParser;
-addRequired(p,'atlasfile',@ischar);
 addParameter(p,'verbosity',0);
-parse(p,atlasfile,varargin{:});
+parse(p,varargin{:});
 
-atlas = ft_read_atlas(p.Results.atlasfile);
+% Set up an atlas
+atlas_file = fullfile(ft_get_dir(),'template','atlas','aal','ROI_MNI_V4.nii');
+
+atlas = ft_read_atlas(atlas_file);
 
 patches = [];
 k = 1;
@@ -162,7 +156,7 @@ for i=1:length(patches)
         end
     end
 end
-% save atlasfile
-[patches.atlasfile] = deal(p.Results.atlasfile);
+% save atlas_file
+[patches.atlasfile] = deal(atlas_file);
 
 end

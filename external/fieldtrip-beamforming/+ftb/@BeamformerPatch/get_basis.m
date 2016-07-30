@@ -1,9 +1,11 @@
-function patches = basis(patches, leadfield, varargin)
+function patches = get_basis(patches, leadfield, varargin)
+%GET_BASIS returns the basis for each patch
+%   GET_BASIS(patches, leadfield, ...) returns the basis for each patch
+%
 %   Input
 %   -----
 %   patches (struct array)
-%       patch configuration, output of ftb.patches functions, for example
-%       ftb.patches.get_aal_coarse
+%       patch configuration, output of ftb.CorticalPatches.get_patches
 %   leadfield (struct)
 %       leadfields, output of ft_prepare_leadfield
 %

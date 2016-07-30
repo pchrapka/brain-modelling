@@ -15,6 +15,19 @@ classdef BeamformerPatch < ftb.Beamformer
     
     methods (Access = protected)
         obj = process_beamformer_patch(obj);
+        
+        patches = get_basis(patches, leadfield, varargin);
+        
+        function patches = get_patches(config_name)
+            switch config_name
+                case 'aal-coarse-13'
+                    patches = get_aal_coarse_13();
+                case 'aal'
+                    patches = get_all();
+                otherwise
+                    error('unknown cortical patch config: %s\n',config_name);
+            end     
+        end
     end
     
     methods
@@ -23,6 +36,14 @@ classdef BeamformerPatch < ftb.Beamformer
             %       struct or file name
             %   name (string)
             %       object name
+            %
+            %   Config
+            %   ------
+            %   cortical_patches_name (string)
+            %       name of cortical patch configuration 
+            %       options: 
+            %           aal-coarse-13
+            %           aal
             
             % use Beamformer constructor
             obj@ftb.Beamformer(params,name);
@@ -82,20 +103,19 @@ classdef BeamformerPatch < ftb.Beamformer
             if obj.check_file(obj.patches)
                 % load data
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
-                patches = ftb.patches.get_aal_coarse(obj.config.atlas_file);
-                % FIXME this shouldn't be so specific
+                patches_list = obj.get_patches(obj.config.name);
                 
                 % get the patch basis
                 if ~isfield(obj.config,'ftb_patches_basis')
                     obj.config.ftb_patches_basis = {};
                 end
-                patches = ftb.patches.basis(patches, leadfield,...
+                patches_list = obj.get_basis(patches_list, leadfield,...
                     obj.config.ftb_patches_basis{:});
                 
                 % save patches
-                save(obj.patches, 'patches');
+                save(obj.patches, 'patches_list');
             else
-                fprintf('%s: skipping ftb.patches.basis, already exists\n',...
+                fprintf('%s: skipping patches, already exists\n',...
                     strrep(class(obj),'ftb.',''));
             end
             
@@ -104,11 +124,11 @@ classdef BeamformerPatch < ftb.Beamformer
                 % load data
                 data = ftb.util.loadvar(eegObj.timelock);
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
-                patches = ftb.util.loadvar(obj.patches);
+                patches_list = ftb.util.loadvar(obj.patches);
                 
                 % computer filters
                 source = ftb.BeamformerPatch.beamformer_lcmv_patch(...
-                    data, leadfield, patches);
+                    data, leadfield, patches_list);
                 
                 % save filters
                 leadfield.filter = source.filters;

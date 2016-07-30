@@ -29,6 +29,11 @@ classdef Electrodes < ftb.AnalysisStep
             %       object name
             %   prev (Headmodel Object)
             %       previous analysis step - Headmodel Object
+            %
+            %   Config
+            %   ------
+            %   fiducials (cell array, optional)
+            %       name value pairs for set_fiducial_channels
             
             % parse inputs
             p = inputParser;
@@ -78,6 +83,10 @@ classdef Electrodes < ftb.AnalysisStep
             [obj.elec,obj.elec_aligned] = ...
                 obj.init_output(analysis_folder,...
                 'properties',{'elec','elec_aligned'});
+            
+            if isfield(obj.config,'fiducials')
+                obj.set_fiducial_channels(obj.config.fiducials{:});
+            end
             
             if isempty(obj.fid_nas)
                 fprintf('%s: using defaults for fiducial channels\n',...
