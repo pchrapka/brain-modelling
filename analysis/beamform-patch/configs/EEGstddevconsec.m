@@ -27,6 +27,8 @@ parse(p,subject,stimulus);
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 
 params_eeg = [];
+params_eeg.name = ['EEG' stimulus 'consec'];
+
 params_eeg.ft_definetrial = [];
 params_eeg.ft_definetrial.dataset = fullfile(datadir,[subject '-MMNf.eeg']);
 % use default function

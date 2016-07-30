@@ -16,8 +16,13 @@ outdir = fullfile(srcdir,'..','..','experiments','output-common','fb');
 
 %% get subject specific parameters
 
-params_func = str2func(params_subject);
-params_sd = params_func();
+if ischar(params_subject)
+    params_func = str2func(params_subject);
+    params_sd = params_func();
+else
+    params_sd = params_subject;
+    params_subject = params_sd.name;
+end
 
 %% set up beamformer analysis
 
@@ -48,6 +53,15 @@ e = ftb.Electrodes(params_sd.elec,step_name);
 pipeline.add(e);
 e.force = false;
 
+%     % Manually rename channel
+%     % NOTE This is why the electrodes are processed ahead of time
+%     elec = loadfile(e.elec_aligned);
+%     idx = cellfun(@(x) isequal(x,'Afz'),elec.label);
+%     if any(idx)
+%         elec.label{idx} = 'AFz';
+%         save(e.elec_aligned,'elec');
+%     end
+
 % % Process pipeline
 % pipeline.init();
 % pipeline.process();
@@ -70,9 +84,10 @@ pipeline.process();
 
 %% set up EEG
 
-% TODO which to use?
-params_eeg = EEGstddevconsec(p.Results.datadir, p.Results.subject_file, p.Results.stimulus);
-eeg = ftb.EEG(params_eeg, [p.Results.stimulus 'consec']);
+step_name = get_analysis_step_name(params_sd.eeg,'EEG');
+eeg = ftb.EEG(params_sd.eeg, step_name);
+
+% add step
 pipeline.add(eeg);
 
 %% set up Beamformer
