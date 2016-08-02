@@ -55,11 +55,6 @@ classdef BeamformerPatch < ftb.Beamformer
                     'only compatible with lcmv');
             end
             
-            if ~isfield(obj.config,'atlas_file')
-                error(['ftb:' mfilename],...
-                    'missing params.atlas_file');
-            end
-            
             % create leadfield object
             obj.lf = ftb.Leadfield(obj.config,'patchfilt');
             

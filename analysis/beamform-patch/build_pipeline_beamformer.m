@@ -31,6 +31,7 @@ pipeline = ftb.AnalysisBeamformer(pipedir);
 
 
 param_list = [];
+k = 1;
 
 param_list(k).field = 'mri';
 param_list(k).class = 'MRI';
