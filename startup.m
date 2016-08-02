@@ -3,6 +3,9 @@
 % add the current directory
 addpath(pwd);
 
+%% add data
+addpath(fullfile(pwd,'..','data-headmodel','mni152'));
+
 %% add external packages
 addpath(fullfile(pwd,'external'));
 addpath(fullfile(pwd,'external','subaxis'));
