@@ -8,14 +8,20 @@ params.name = 's04-10';
 params.file = fullfile(srcdir,'..','..','data-andrew-beta','exp04_10.bdf');
 
 %% create data specific configs
+MRIicbm152();
+HMicbm152_dipoli_cm();
 Eandrew_s04_cm();
 
+params_eeg = [];
+params_eeg.name = 'EEGfake';
+
 %% assign configs for analysis
-params.mri = 'MRIstd.mat';
-params.hm = 'HMstd-cm.mat';
+params.mri = 'MRIicbm152.mat';
+params.hm = 'HMicbm152-dipoli-cm.mat';
+params.hm = 'HMdipoli-cm.mat';
 params.elec = 'Eandrew-s04-cm.mat';
 params.lf = 'L1cm-norm-tight.mat';
-params.eeg = ''; % TODO set up
+params.eeg = params_eeg; %''; % TODO set up
 params.bf = 'BFPatchAAL.mat';
 
 end
