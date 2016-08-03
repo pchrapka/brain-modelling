@@ -135,20 +135,33 @@ classdef MRI < ftb.AnalysisStep
             end
         end
         
-        function [pos,names] = get_mri_fiducials(obj)
+        function [pos,names,unit] = get_mri_fiducials(obj)
             % extracts fiducials from mri
             
             % Load MRI data
             mri = ftb.util.loadvar(obj.mri_mat);
             fields = {'nas','lpa','rpa'};
+            nfields = length(fields);
+            
+            % allocate mem
+            pos = zeros(nfields,3);
+            names = cell(nfields,1);
             
             % get fiducials
             transm = mri.transform;
-            for j=1:length(fields)
+            for j=1:nfields
                 coord = mri.hdr.fiducial.mri.(fields{j});
                 coord = ft_warp_apply(transm, coord, 'homogenous');
                 pos(j,:) = coord;
                 names{j} = upper(fields{j});
+            end
+            
+            % set unit
+            if ~isfield(mri,'unit')
+                warning('no unit in mri, assuming mm');
+                unit = 'mm';
+            else
+                unit = mri.unit;
             end
         end
         

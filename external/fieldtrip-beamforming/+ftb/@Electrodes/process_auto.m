@@ -1,8 +1,13 @@
-function obj = process_auto(obj)
+function obj = process_auto(obj,varargin)
 
-% Try automatic alignment
+p = inputParser();
+options_fiducial = {'fiducial-template','fiducial-exact'};
+addParameter(p,'fiducial','fiducial-template',@(x) any(validatestring(x,options_fiducial)));
+p.parse(varargin{:});
+
+% Try automatic fiducial alignment
 % Refer to http://fieldtrip.fcdonders.nl/tutorial/headmodel_eeg
-obj.align_electrodes('fiducial');
+obj.align_electrodes(p.Results.fiducial);
 
 % Visualization - check alignment
 h = figure;

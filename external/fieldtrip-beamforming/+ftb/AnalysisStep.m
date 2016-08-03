@@ -91,6 +91,11 @@ classdef AnalysisStep < handle
             %
             %   Input
             %   -----
+            %   class_name (string)
+            %       name of class, ex. ftb.MRI
+            %
+            %   Parameters
+            %   ----------
             %   mode (optional, default = 'first')
             %       selects number of results to find
             %   

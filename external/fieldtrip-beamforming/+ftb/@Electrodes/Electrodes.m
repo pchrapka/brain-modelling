@@ -131,17 +131,22 @@ classdef Electrodes < ftb.AnalysisStep
                 obj.plot(elements);
             end
             
-            % determine process mode
-            if ~isfield(obj.config, 'ft_electroderealign')
-                obj.process_mode = 'auto';
+            % has user specified a specific mode?
+            if ~isfield(obj.config,'mode')
+                obj.process_mode = 'fiducial-template';
             else
-                obj.process_mode = 'default';
+                obj.process_mode = obj.config.mode;
             end
+            fprintf('%s: using %s mode for alignment\n',...
+                strrep(class(obj),'ftb.',''), obj.process_mode);
             
             switch obj.process_mode
-                case 'auto'
-                    obj.process_auto();
+                case 'fiducial-exact'
+                    obj.process_auto('fiducial','fiducial-exact');
+                case 'fiducial-template'
+                    obj.process_auto('fiducial','fiducial-template');
                 case 'default'
+                    % also requires user specified ft_electrodealign config
                     obj.process_default();
                 otherwise
                     error(['ftb:' mfilename], 'unknown mode %s', obj.process_mode)
@@ -187,38 +192,73 @@ classdef Electrodes < ftb.AnalysisStep
             
             switch type
                 
-                case 'fiducial'
-                    % Fiducial alignment
+                case 'fiducial-template'
+                    % Fiducial alignment using an optimized warp
                     
-                    [pos,names] = mriObj.get_mri_fiducials();
+                    [pos,names,unit] = mriObj.get_mri_fiducials();
                     
                     % create a structure similar to a template set of electrodes
-                    fid.chanpos = pos;       % ctf-coordinates of fiducials
-                    % same labels as in elec, same order as in
-                    % get_mri_fiducials
+                    fid.chanpos = pos;
+                    fid.unit = unit; % same units as mri
+                    % set the labels of the fiducials in the right order
                     names = lower(names);
                     for i=1:length(names)
+                        % use the labels included in elec
                         fid.label{i} = obj.(['fid_' names{i}]);
                     end
-                    fid.unit = 'mm'; % same units as mri
                     
-                    % Alignment
-                    cfgin               = [];
-                    cfgin.method        = 'fiducial';
-                    cfgin.target        = fid; % see above
-                    cfgin.elec          = elecdata;
+                    % load config options
+                    if isfield(obj.config,'ft_electroderealign')
+                        cfgin = obj.config.ft_electroderealign;
+                    else
+                        cfgin = [];
+                    end
+                    % TODO throw warnings if i'm overwriting a parameter
+                    
+                    % set up params
+                    cfgin.method = 'template';
+                    cfgin.target = fid;
+                    cfgin.elec = elecdata;
+                    
+                    % alignment
+                    elec = ft_electroderealign(cfgin);
+                
+                case 'fiducial-exact'
+                    % Fiducial alignment
+                    
+                    [pos,names,unit] = mriObj.get_mri_fiducials();
+                    
+                    % create a structure similar to a template set of electrodes
+                    fid.chanpos = pos;
+                    fid.unit = unit;
+                    % set the labels of the fiducials in the right order
+                    names = lower(names);
+                    for i=1:length(names)
+                        % use the labels included in elec
+                        fid.label{i} = obj.(['fid_' names{i}]);
+                    end
+                    
+                    % set up params
+                    cfgin = [];
+                    cfgin.method = 'fiducial';
+                    cfgin.target = fid; % see above
+                    cfgin.elec = elecdata;
+                    cfgin.casesensitive = 'no';
                     % labels of fiducials in fid and in elec
-                    cfgin.fiducial      = {obj.fid_nas, obj.fid_lpa, obj.fid_rpa};
-                    elec      = ft_electroderealign(cfgin);
+                    cfgin.fiducial = {obj.fid_nas, obj.fid_lpa, obj.fid_rpa};
+                    
+                    % alignment
+                    elec = ft_electroderealign(cfgin);
                     
                 case 'interactive'
                     % Interactive alignment
                     
                     vol = ftb.util.loadvar(hmObj.mri_headmodel);
                     
-                    cfgin           = [];
-                    cfgin.method    = 'interactive';
-                    cfgin.elec      = elecdata;
+                    cfgin = [];
+                    cfgin.method  = 'interactive';
+                    cfgin.elec = elecdata;
+                    cfgin.casesensitive = 'no';
                     if isfield(vol, 'skin_surface')
                         cfgin.headshape = vol.bnd(vol.skin_surface);
                     else

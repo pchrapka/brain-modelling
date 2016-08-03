@@ -6,6 +6,7 @@ function E32()
 cfg = [];
 % Processing options
 cfg.elec_orig = 'GSN-HydroCel-32.sfp';
+cfg.mode = 'fiducial-exact';
 
 save(fullfile(srcdir,'E32.mat'),'cfg');
 
