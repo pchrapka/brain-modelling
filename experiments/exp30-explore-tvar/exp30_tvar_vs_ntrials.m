@@ -183,7 +183,7 @@ for k=1:length(filters)
         end
         
         data_args = [data_args {estimate kf_true_sims}];
-        labels{i} = sprintf('%d channels',nchannels);
+        labels{i} = sprintf('%d trials',ntrials);
     end
     
     %% Plot MSE
@@ -211,10 +211,11 @@ end
 %% Print extra info
 fprintf('large errors\n');
 for i=1:ntrials_opts
-    nchannels = channels(i);
+    ntrials = trials(i);
     for j=1:nsims
         if large_error(i,j) > 0
-            fprintf('\tc%d-s%d = %d/%d\n',nchannels,j,large_error(i,j),length(filter_types));
+            fprintf('\tt%d-c%d-s%d = %d/%d\n',...
+                ntrials,nchannels,j,large_error(i,j),length(filters));
         end
     end
 end
