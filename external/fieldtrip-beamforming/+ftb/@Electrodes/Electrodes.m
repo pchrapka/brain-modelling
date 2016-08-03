@@ -200,24 +200,16 @@ classdef Electrodes < ftb.AnalysisStep
                     for i=1:length(names)
                         fid.label{i} = obj.(['fid_' names{i}]);
                     end
-                    %fid.label = {obj.fid_nas, obj.fid_lpa, obj.fid_rpa};
                     fid.unit = 'mm'; % same units as mri
                     
                     % Alignment
                     cfgin               = [];
                     cfgin.method        = 'fiducial';
-                    cfgin.template      = fid;                   % see above
+                    cfgin.target        = fid; % see above
                     cfgin.elec          = elecdata;
                     % labels of fiducials in fid and in elec
                     cfgin.fiducial      = {obj.fid_nas, obj.fid_lpa, obj.fid_rpa};
                     elec      = ft_electroderealign(cfgin);
-                    
-                    % NOTE If you want to address the warning RE
-                    % cfgin.template, you need to use chanpos
-                    %cfgin.target.chanpos(1,:) = nas;
-                    %cfgin.target.chanpos(2,:) = lpa;
-                    %cfgin.target.chanpos(3,:) = rpa;
-                    %cfgin.target.label    = {'FidNz','FidT9','FidT10'};
                     
                 case 'interactive'
                     % Interactive alignment

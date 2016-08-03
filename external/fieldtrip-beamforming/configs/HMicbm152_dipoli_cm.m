@@ -1,5 +1,5 @@
-function MRIicbm152()
-% MRIicmb152
+function HMicbm152_dipoli_cm()
+% HMicbm152_dipoli_cm
 
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 
@@ -14,14 +14,13 @@ if ~exist('create_icbm152.m','file')
     error('missing data-headmodel repo');
 end
 
-[mri_dir,~,~] = fileparts(which('create_icbm152'));
+[data_dir,~,~] = fileparts(which('create_icbm152'));
 
 cfg = [];
 cfg.load_files = {...
-    {'mri_mat', fullfile(mri_dir,'icbm152_mri.mat')},...
-    {'mri_segmented', fullfile(mri_dir,'icbm152_seg.mat')},...
-    {'mri_mesh', 'icbm152_mesh.mat'},...
+    {'mri_headmodel', fullfile(data_dir,'icbm152_bem.mat')'},...
     };
+
 
 save(fullfile(srcdir, [strrep(mfilename,'_','-') '.mat']),'cfg');
 
