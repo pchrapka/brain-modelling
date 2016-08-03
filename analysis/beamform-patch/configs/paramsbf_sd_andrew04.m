@@ -18,7 +18,6 @@ params_eeg.name = 'EEGfake';
 %% assign configs for analysis
 params.mri = 'MRIicbm152.mat';
 params.hm = 'HMicbm152-dipoli-cm.mat';
-params.hm = 'HMdipoli-cm.mat';
 params.elec = 'Eandrew-s04-cm.mat';
 params.lf = 'L1cm-norm-tight.mat';
 params.eeg = params_eeg; %''; % TODO set up
