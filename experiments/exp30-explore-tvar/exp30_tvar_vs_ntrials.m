@@ -6,11 +6,13 @@ if ~exist(outdir,'dir')
     mkdir(outdir);
 end
 
+setup_parfor();
+
 %% set up params
 nsims = 20;
-ntrials = [1 2 3 5 8 13 21 34 55 89];
-ntrials_opts = length(ntrials);
-ntrials_max = max(ntrials);
+trials = [2 3 5 8 13 21 34 55 89];
+ntrials_opts = length(trials);
+ntrials_max = max(trials);
 % channels = [2 4 6 8 10 12 14 16];
 % channels = [2 4];
 % nchannel_opts = length(channels);
@@ -24,10 +26,11 @@ lambda = 0.98;
 
 verbosity = 0;
 
+k = 1;
 filters = [];
 
 filters(k).name = 'MCMTQRDLSL1';
-filters(k).params = {'nchannels',nchannels,'order',order_est,'lambda',labmda};
+filters(k).params = {'nchannels',nchannels,'order',order_est,'lambda',lambda};
 k = k+1;
 
 plot_individual = false;
@@ -43,7 +46,7 @@ for k=1:length(filters)
     labels = cell(ntrials_opts,1);
     data_args = [];
 
-    filter_type = filters{k};
+    filter_type = filters(k);
     for i=1:ntrials_opts
         ntrials = trials(i);
         
