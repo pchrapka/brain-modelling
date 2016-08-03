@@ -6,6 +6,8 @@ if ~exist(outdir,'dir')
     mkdir(outdir);
 end
 
+setup_parfor();
+
 %% set up params
 nsims = 20;
 channels = [2 4 6 8 10 12 14 16];
