@@ -1,7 +1,10 @@
-function data = exp30_gen_tvar(nchannels)
+function data = exp30_gen_tvar(nchannels,varargin)
 
-trial_idx = 1:5;
-ntrials = length(trial_idx);
+p = inputParser();
+addParameter(p,'ntrials',5,@isnumeric)
+parse(p,varargin{:});
+
+ntrials = p.Results.ntrials;
 
 norder = 10;
 ntime = 358;
@@ -78,6 +81,7 @@ end
 
 % generate data
 data = [];
+data.process = vrc_constpulse;
 data.signal = zeros(nchannels,ntime,ntrials);
 data.signal_norm = zeros(nchannels,ntime,ntrials);
 for j=1:ntrials

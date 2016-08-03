@@ -1,4 +1,4 @@
-% exp30_tvar_vs_nchannels
+%% exp30_tvar_vs_ntrials
 
 [srcdir,func_name,~] = fileparts(mfilename('fullpath'));
 outdir = fullfile(srcdir,'output');
@@ -8,9 +8,16 @@ end
 
 %% set up params
 nsims = 20;
-channels = [2 4 6 8 10 12 14 16];
+ntrials = [1 2 3 5 8 13 21 34 55 89];
+ntrials_opts = length(ntrials);
+ntrials_max = max(ntrials);
+% channels = [2 4 6 8 10 12 14 16];
 % channels = [2 4];
-nchannel_opts = length(channels);
+% nchannel_opts = length(channels);
+nchannels = 2;
+nchannels = 4;
+nchannels = 8;
+nchannels = 14;
 
 order_est = 10;
 lambda = 0.98;
@@ -18,39 +25,27 @@ lambda = 0.98;
 verbosity = 0;
 
 filters = [];
-filters(k).name = 'MQRDLSL1';
-filters(k).params = {'order',order_est,'lambda',labmda,'ntrials',1};
-k = k+1;
-
-filters(k).name = 'MQRDLSL2';
-filters(k).params = {'order',order_est,'lambda',labmda,'ntrials',1};
-k = k+1;
 
 filters(k).name = 'MCMTQRDLSL1';
-filters(k).params = {'order',order_est,'lambda',labmda,'ntrials',5};
+filters(k).params = {'nchannels',nchannels,'order',order_est,'lambda',labmda};
 k = k+1;
-
-filters(k).name = 'MLOCCDTWL';
-filters(k).params = {'order',order_est,'lambda',lambda,'ntrials',1};
-k = k+1;
-
 
 plot_individual = false;
 plot_coef_values = false;
 
 %% loop over params
 
-large_error = zeros(nchannel_opts,nsims);
-fresh = false(nchannel_opts,nsims);
-plotted_coef_values = false(nchannel_opts); % reset flag
-for k=1:length(filter_types)
+large_error = zeros(ntrials_opts,nsims);
+fresh = false(ntrials_opts,nsims);
+plotted_coef_values = false(ntrials_opts); % reset flag
+for k=1:length(filters)
     % allocate mem
-    labels = cell(nchannel_opts,1);
+    labels = cell(ntrials_opts,1);
     data_args = [];
 
-    filter_type = filters(k);
-    for i=1:nchannel_opts
-        nchannels = channels(i);
+    filter_type = filters{k};
+    for i=1:ntrials_opts
+        ntrials = trials(i);
         
         trace = cell(nsims,1);
         estimate = cell(nsims,1);
@@ -68,7 +63,7 @@ for k=1:length(filter_types)
                 fprintf('simulating: %s\n', slug_sim);
                 
                 % generate data
-                data = exp30_gen_tvar(nchannels);
+                data = exp30_gen_tvar(nchannels,'ntrials',ntrials_max);
                 % save data
                 save_parfor(outfile_sim,data);
                 
@@ -92,7 +87,7 @@ for k=1:length(filter_types)
         
         % set up filter slug
         [filter_main,~] = exp30_get_filter(filter_type.name,...
-            'nchannels',nchannels,...
+            'ntrials',ntrials,...
             filter_type.params{:});
         
         slug_filter = filter_main.name;
@@ -108,16 +103,16 @@ for k=1:length(filter_types)
                 fprintf('running: %s\n', slug_sim_filt)
                 sources = data_sim{j}.signal;
                 
-                [filter,mt] = exp30_get_filter(filter_type.name,...
-                    'nchannels',nchannels,...
+                [filter,~] = exp30_get_filter(filter_type.name,...
+                    'ntrials',ntrials,...
                     filter_type.params{:});
                 trace{j} = LatticeTrace(filter,'fields',{'Kf'});
                 
                 ntime = size(sources,2);
                 mu = zeros(nchannels,1);
                 sigma = eye(nchannels);
-                noise = zeros(nchannels,ntime,mt);
-                for m=1:mt
+                noise = zeros(nchannels,ntime,ntrials);
+                for m=1:ntrials
                     noise(:,:,m) = mvnrnd(mu,sigma,ntime)';
                 end
                 trace_noise = LatticeTrace(filter,'fields',{'Kf'});
@@ -127,7 +122,7 @@ for k=1:length(filter_types)
                 trace_noise.run(noise,'verbosity',verbosity,'mode','none');
                 
                 % run the filter on data
-                trace{j}.run(sources(:,:,1:mt),'verbosity',verbosity,'mode','none');
+                trace{j}.run(sources(:,:,1:ntrials),'verbosity',verbosity,'mode','none');
                 warning('on','all');
                 
                 trace{j}.name = trace{j}.filter.name;
@@ -212,7 +207,7 @@ end
 
 %% Print extra info
 fprintf('large errors\n');
-for i=1:nchannel_opts
+for i=1:ntrials_opts
     nchannels = channels(i);
     for j=1:nsims
         if large_error(i,j) > 0
