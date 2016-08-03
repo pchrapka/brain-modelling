@@ -6,7 +6,7 @@ pipeline.process();
 
 %% visual checks
 
-do_plots = false;
+do_plots = true;
 
 if do_plots
     % electrodes pre-alignment
