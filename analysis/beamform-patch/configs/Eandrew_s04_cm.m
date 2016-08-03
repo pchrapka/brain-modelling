@@ -12,6 +12,9 @@ cfg.fiducials = {...
     'LPA','LPA',...
     'RPA','RPA',...
     };
+cfg.mode = 'fiducial-template';
+cfg.ft_electroderealign.warp = 'globalrescale';
+cfg.ft_electroderealign.casesensitive = 'no';
 
 save(fullfile(srcdir, [strrep(mfilename,'_','-') '.mat']),'cfg');
 
