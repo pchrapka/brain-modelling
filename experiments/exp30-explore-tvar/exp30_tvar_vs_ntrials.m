@@ -196,7 +196,7 @@ for z=1:nchannel_opts
             'mode','log',...
             'labels',labels);
         drawnow;
-        save_fig_exp(mfilename('fullpath'),'tag',sprintf('mse-ntrials-%s-c%d',filter_type.name,nchannels));
+        save_fig_exp(mfilename('fullpath'),'tag',sprintf('mse-ntrials-%s',slug_filter));
         
         h = figure;
         clf;
@@ -206,7 +206,7 @@ for z=1:nchannel_opts
             'normalized',true,...
             'labels',labels);
         drawnow;
-        save_fig_exp(mfilename('fullpath'),'tag',sprintf('nmse-ntrials-%s-%d',filter_type.name,nchannels));
+        save_fig_exp(mfilename('fullpath'),'tag',sprintf('nmse-ntrials-%s',slug_filter));
     end
     
 end
