@@ -17,7 +17,7 @@ classdef Electrodes < ftb.AnalysisStep
     
     methods(Access = private)
         obj = process_default(obj)
-        obj = process_auto(obj)
+        obj = process_auto(obj,varargin)
     end
     
     methods
