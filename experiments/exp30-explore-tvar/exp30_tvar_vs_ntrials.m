@@ -26,7 +26,7 @@ k = 1;
 filters = [];
 
 filters(k).name = 'MCMTQRDLSL1';
-filters(k).params = {'nchannels',nchannels,'order',order_est,'lambda',lambda};
+filters(k).params = {'order',order_est,'lambda',lambda};
 k = k+1;
 
 plot_individual = false;
@@ -90,6 +90,7 @@ for z=1:nchannel_opts
             % set up filter slug
             [filter_main,~] = exp30_get_filter(filter_type.name,...
                 'ntrials',ntrials,...
+                'nchannels',nchannels,...
                 filter_type.params{:});
             
             slug_filter = filter_main.name;
@@ -107,6 +108,7 @@ for z=1:nchannel_opts
                     
                     [filter,~] = exp30_get_filter(filter_type.name,...
                         'ntrials',ntrials,...
+                        'nchannels',nchannels,...
                         filter_type.params{:});
                     trace{j} = LatticeTrace(filter,'fields',{'Kf'});
                     
