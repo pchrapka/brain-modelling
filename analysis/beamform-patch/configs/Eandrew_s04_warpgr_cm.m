@@ -1,5 +1,5 @@
-function Eandrew_s04_cm()
-% Eandrew_s04_cm
+function Eandrew_s04_warpgr_cm()
+% Eandrew_s04_warpgr_cm
 
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 
@@ -12,7 +12,9 @@ cfg.fiducials = {...
     'LPA','LPA',...
     'RPA','RPA',...
     };
-cfg.mode = 'fiducial-exact';
+cfg.mode = 'fiducial-template';
+cfg.ft_electroderealign.warp = 'globalrescale';
+cfg.ft_electroderealign.casesensitive = 'no';
 
 save(fullfile(srcdir, [strrep(mfilename,'_','-') '.mat']),'cfg');
 
