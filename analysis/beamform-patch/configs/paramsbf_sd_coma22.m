@@ -1,6 +1,10 @@
 function params = paramsbf_sd_coma22(stimulus)
 % params for subject 22
 
+p = inputParser();
+addRequired(p,'stimulus',@(x) any(validatestring(x,{'std','odd'})));
+parse(p,stimulus);
+
 [~,func_name,~] = fileparts(mfilename('fullpath'));
 
 % subject specific info
@@ -14,7 +18,7 @@ params_elec = [];
 params_elec.elec_orig = fullfile(datadir,[subject_file '.sfp']);
 params_elec.fiducials = {'NAS','NZ','LPA','LPA','RPA','RPA'};
 
-params_eeg = EEGstddev(datadir, subject_file, stimulus);
+params_eeg = EEGstddev(datadir, subject_file, p.Results.stimulus);
 
 BFPatchAAL13();
 
