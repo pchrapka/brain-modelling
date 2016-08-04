@@ -6,6 +6,7 @@ function params = paramsbf_sd_andrew(subject_num,deviant_percent,stimulus)
 %% create data specific configs
 MRIicbm152();
 HMicbm152_dipoli_cm();
+BFPatchAAL();
 params_elec = Eandrew_warpgr_cm(elec_file, data_name);
 
 params_eeg = EEGandrew_stddev(data_file, data_name, stimulus);

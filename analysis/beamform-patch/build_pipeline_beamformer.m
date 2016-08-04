@@ -5,11 +5,9 @@ function pipeline = build_pipeline_beamformer(params_subject)
 %       parameter file for subject data and beamformer configuration
 
 %% set up output folder
-% use absolute directories
-[srcdir,~,~] = fileparts(mfilename('fullpath'));
 
 % use folder common to all experiments to avoid recomputation
-outdir = fullfile(srcdir,'..','..','experiments','output-common','fb');
+pipedir = get_data_andrew_pipeline();
 
 % %% set up parallel pool
 % setup_parfor();
@@ -26,8 +24,6 @@ end
 
 %% set up beamformer analysis
 
-% pipedir = fullfile(outdir,params_subject);
-pipedir = fullfile(outdir);
 pipeline = ftb.AnalysisBeamformer(pipedir);
 
 
