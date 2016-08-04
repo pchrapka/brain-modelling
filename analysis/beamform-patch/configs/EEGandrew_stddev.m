@@ -1,4 +1,4 @@
-function config_file = EEGandrew_stddev(dataset, data_name, stimulus)
+function params_eeg = EEGandrew_stddev(dataset, data_name, stimulus)
 % EEGANDREW_STDDEV creates a subject specific config for ftb.EEG
 %   EEGANDREW_STDDEV(dataset, data_name, stimulus) creates a subject
 %   specific config for ftb.EEG
@@ -24,7 +24,7 @@ addRequired(p,'stimulus',@(x) any(validatestring(x,{'std','odd'})));
 parse(p,dataset,data_name,stimulus);
 
 params_eeg = [];
-params_eeg.name = ['EEG' stimulus];
+params_eeg.name = [stimulus '-' data_name(1:3)];
 
 params_eeg.ft_definetrial = [];
 params_eeg.ft_definetrial.dataset = dataset;

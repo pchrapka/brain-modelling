@@ -21,12 +21,13 @@ if ischar(params_subject)
     params_sd = params_func();
 else
     params_sd = params_subject;
-    params_subject = params_sd.name;
+    %params_subject = params_sd.name;
 end
 
 %% set up beamformer analysis
 
-pipedir = fullfile(outdir,params_subject);
+% pipedir = fullfile(outdir,params_subject);
+pipedir = fullfile(outdir);
 pipeline = ftb.AnalysisBeamformer(pipedir);
 
 

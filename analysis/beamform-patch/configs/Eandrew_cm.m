@@ -1,5 +1,5 @@
-function params = Eandrew_warpgr_cm(elec_file, data_name)
-% Eandrew_warpgr_cm
+function params = Eandrew_cm(elec_file, data_name)
+% Eandrew_cm
 
 p = inputParser;
 addRequired(p,'elec_file',@ischar);
@@ -7,7 +7,7 @@ addRequired(p,'data_name',@ischar);
 parse(p,elec_file,data_name);
 
 params = [];
-params.name = [strrep('andrew_warpgr_cm','_','-') '-' data_name(1:3)];
+params.name = [strrep('andrew_cm','_','-') '-' data_name(1:3)];
 % Processing options
 params.elec_orig = elec_file;
 params.units = 'cm';
@@ -16,9 +16,7 @@ params.fiducials = {...
     'LPA','LPA',...
     'RPA','RPA',...
     };
-params.mode = 'fiducial-template';
-params.ft_electroderealign.warp = 'globalrescale';
-params.ft_electroderealign.casesensitive = 'no';
+params.mode = 'fiducial-exact';
 
 % save config
 config_file = [strrep(mfilename,'_','-') '-' data_name(1:3) '.mat'];

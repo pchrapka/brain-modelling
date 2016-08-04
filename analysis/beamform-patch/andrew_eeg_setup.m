@@ -1,7 +1,6 @@
-%% andrew04_eeg_setup
+%% andrew_eeg_setup
 
-[srcdir,~,~] = fileparts(mfilename('fullpath'));
-data_file = fullfile(srcdir,'..','..','..','data-andrew-beta','exp04_10.bdf');
+[data_file,~,~] = get_data_andrew(4,10);
 
 %% Check header and events
 cfg = [];

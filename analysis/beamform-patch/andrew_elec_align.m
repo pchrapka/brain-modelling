@@ -1,6 +1,6 @@
-%% align_electrodes_andrew04
+%% andrew_elec_align
 
-pipeline = build_pipeline_beamformer('paramsbf_sd_andrew04');
+pipeline = build_pipeline_beamformer(paramsbf_sd_andrew(4,10,'std'));
 
 step_final = pipeline.steps{end};
 
