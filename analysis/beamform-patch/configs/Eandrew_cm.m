@@ -18,6 +18,9 @@ params.fiducials = {...
     };
 params.mode = 'fiducial-exact';
 
+% remove unnecessary channels from later processing
+params.ft_channelselection = {'all','-NZ','-LPA','-RPA','-CMS'};
+
 % save config
 config_file = [strrep(mfilename,'_','-') '-' data_name(1:3) '.mat'];
 
