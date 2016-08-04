@@ -26,7 +26,7 @@ camlight;
 
 %% load atlas
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
-pathstr = fullfile(srcdir,'..','external','fieldtrip-20160128','template','atlas','aal');
+pathstr = fullfile(srcdir,'..','..','external','fieldtrip-20160128','template','atlas','aal');
 atlas_file = fullfile(pathstr,'ROI_MNI_V4.nii');
 
 atlas = ft_read_atlas(atlas_file);
@@ -35,7 +35,8 @@ atlas = ft_convert_units(atlas,'cm');
 %% select anatomical ROI
 cfg = [];
 cfg.atlas = atlas;
-cfg.roi = {'Cerebelum_Crus2_R'};%atlas.tissuelabel;
+% cfg.roi = {'Cerebelum_Crus2_R'};%atlas.tissuelabel;
+cfg.roi = atlas.tissuelabel{1};
 cfg.inputcoord = 'mni';
 mask = ft_volumelookup(cfg,template_grid);
 
