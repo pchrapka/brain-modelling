@@ -33,8 +33,30 @@ obj.plot(elements);
 if isfield(obj.config,'units')
     fprintf('%s: converting units to %s\n',...
         strrep(class(obj),'ftb.',''), obj.config.units);
+    
+    % load
     elec = ftb.util.loadvar(obj.elec_aligned);
+    % convert
     elec = ft_convert_units(elec, obj.config.units);
+    
+    % save
+    save(obj.elec_aligned, 'elec');
+end
+
+if isfield(obj.config,'ft_channelselection')
+    fprintf('%s: selecting channels\n',...
+        strrep(class(obj),'ftb.',''));
+    
+    elec = ftb.util.loadvar(obj.elec_aligned);
+    channels = ft_channelselection(obj.config.ft_channelselection,elec.label);
+    [~, channel_idx] = match_str(channels, elec.label);
+    
+    % select wanted channels
+    elec.chanpos = elec.chanpos(channel_idx,:);
+    elec.elecpos = elec.elecpos(channel_idx,:);
+    elec.label = elec.label(channel_idx);
+    
+    % save
     save(obj.elec_aligned, 'elec');
 end
 
