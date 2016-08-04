@@ -31,26 +31,28 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
             if obj.check_file(obj.patches)
                 % load data
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
-                patches = ftb.patches.get_aal_coarse(obj.config.atlas_file);
-                % FIXME this shouldn't be so specific
+                patches_list = ftb.BeamformerPatch.get_patches(...
+                    obj.config.cortical_patches_name);
                 
-                % get the patch basis
-                if ~isfield(obj.config,'ftb_patches_basis')
-                    obj.config.ftb_patches_basis = {};
+                % check for get_basis params
+                if ~isfield(obj.config,'get_basis')
+                    obj.config.get_basis = {};
                 end
-                patches = ftb.patches.basis(patches, leadfield,...
-                    obj.config.ftb_patches_basis{:});
+                % get the patch basis
+                patches_list = ftb.BeamformerPatch.get_basis(...
+                    patches_list, leadfield,...
+                    obj.config.get_basis{:});
                 
                 % save patches
-                save(obj.patches, 'patches');
+                save(obj.patches, 'patches_list');
             else
-                fprintf('%s: skipping ftb.patches.basis, already exists\n',...
+                fprintf('%s: skipping patches, already exists\n',...
                     strrep(class(obj),'ftb.',''));
             end
             
             if obj.check_file(obj.sourceanalysis)
                 % load data
-                patches = ftb.util.loadvar(obj.patches);
+                patches_list = ftb.util.loadvar(obj.patches);
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
                 timelock_all = ftb.util.loadvar(eegObj.timelock);
                 
@@ -104,7 +106,7 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                     % NOTE if mode == 'all' each source struct takes up a
                     % few MBs, if there are 1000 trials, that's a few GBs
                     source = ftb.BeamformerPatch.beamformer_lcmv_patch(...
-                        timelock, leadfield, patches,'mode','single');
+                        timelock, leadfield, patches_list,'mode','single');
                     
                     % save filters
                     leadfield.filter = source.filters;
@@ -139,7 +141,7 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                 
                 % save all sourceanalyses
                 obj.sourceanalysis = source_all_file;
-                save(obj.sourceanalysis, 'sourceanalysis_all');
+                save(obj.sourceanalysis, 'sourceanalysis_all','-v7.3');
             else
                 fprintf('%s: skipping ft_sourceanalysis, already exists\n',...
                     strrep(class(obj),'ftb.',''));
