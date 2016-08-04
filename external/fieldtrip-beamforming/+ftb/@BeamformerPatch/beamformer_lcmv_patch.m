@@ -104,14 +104,17 @@ for i=1:length(patches)
             
         case 'single'
             idx = find(patches(i).inside == 1, 1, 'first');
-            % set patch filter at one point in patch
-            source.filters{idx} = filter;
             
-            % save patch label for each point
-            source.patch_labels{idx} = patches(i).name;
-            
-            % save point location
-            source.inside(idx) = true;
+            if ~isempty(idx)
+                % set patch filter at one point in patch
+                source.filters{idx} = filter;
+                
+                % save patch label for each point
+                source.patch_labels{idx} = patches(i).name;
+                
+                % save point location
+                source.inside(idx) = true;
+            end
     end
     
 end
