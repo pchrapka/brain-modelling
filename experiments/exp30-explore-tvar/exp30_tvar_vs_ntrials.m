@@ -197,6 +197,9 @@ for z=1:nchannel_opts
             'labels',labels);
         drawnow;
         save_fig_exp(mfilename('fullpath'),'tag',sprintf('mse-ntrials-%s',slug_filter));
+        ylim([10^(-4) 10^(0)]);
+        drawnow;
+        save_fig_exp(mfilename('fullpath'),'tag',sprintf('mse-ntrials-axis-%s',slug_filter));
         
         h = figure;
         clf;
@@ -207,6 +210,9 @@ for z=1:nchannel_opts
             'labels',labels);
         drawnow;
         save_fig_exp(mfilename('fullpath'),'tag',sprintf('nmse-ntrials-%s',slug_filter));
+        ylim([10^(-1) 10^3]);
+        drawnow;
+        save_fig_exp(mfilename('fullpath'),'tag',sprintf('nmse-ntrials-axis-%s',slug_filter));
     end
     
 end
