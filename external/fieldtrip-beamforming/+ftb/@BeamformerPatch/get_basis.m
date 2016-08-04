@@ -35,6 +35,8 @@ parse(p,patches,leadfield,varargin{:});
 atlas = ft_read_atlas(patches(1).atlasfile);
 atlas = ft_convert_units(atlas,'cm');
 
+debug = false;
+
 % computer basis for each patch
 for i=1:length(patches)
     
@@ -43,7 +45,24 @@ for i=1:length(patches)
     cfg.atlas = atlas;
     cfg.roi = patches(i).labels;
     cfg.inputcoord = 'mni';
-    patches(i).inside = ft_volumelookup(cfg, leadfield);
+    mask = ft_volumelookup(cfg, leadfield);
+    patches(i).inside = leadfield.inside & mask(:);
+    
+    if debug
+        figure;
+        % plot all inside points
+        ft_plot_mesh(leadfield.pos(leadfield.inside,:),'vertexcolor','g');
+        hold on;
+        % plot patch points
+        ft_plot_mesh(leadfield.pos(mask,:));
+        
+        figure;
+        % plot all inside points
+        ft_plot_mesh(leadfield.pos(leadfield.inside,:),'vertexcolor','g');
+        hold on;
+        % plot inside patch points
+        ft_plot_mesh(leadfield.pos(leadfield.inside & mask(:),:));
+    end
     
     % get leadfields in patch
     lf_patch = leadfield.leadfield(patches(i).inside);
@@ -63,6 +82,7 @@ for i=1:length(patches)
     % S elements are in decreasing order
     [U,Sk,~] = svd(Hk);
     nsingular = size(Sk,1);
+    Uk = [];
     % select the minimum number of singular values
     for j=1:nsingular
         % NOTE if Gamma ~= I

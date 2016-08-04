@@ -64,32 +64,36 @@ source.inside = false(size(leadfield.inside));
 % computer filter for each patch
 for i=1:length(patches)
 
-    % get the patch basis
-    Uk = patches(i).U;
-    
-    Yk = Uk'*pinv(data.cov)*Uk;
-    
-    % check what to do about unknown moment
-    if p.Results.fixedori
-        % if the moment orientation is unknown, maximize the power
-        % ordered from smallest to largest
-        [V,D] = eig(Yk);
-        d = diag(D);
-        [~,idx] = sort(d(:),1,'ascend');
-        % select the eigenvector corresponding to the smallest eigenvalue
-        vk = V(:,idx(1)); 
-        
-        % compute patch filter weights
-        filter = pinv(vk'*Yk*vk)*pinv(data.cov)*Uk*vk;
-        filter = filter';
+    if isempty(patches(i).U)
+        filter = zeros(1,size(data.cov,1));
     else
-        % NOTE Not sure what to do if it's not true
-        % You're limited to j moments
-        % They're not x,y,z anymore because we changed the basis
-        error('are you sure about this?');
+        % get the patch basis
+        Uk = patches(i).U;
         
-        % compute patch filter weights
-        filter = pinv(Yk)*Uk'*pinv(data.cov);
+        Yk = Uk'*pinv(data.cov)*Uk;
+        
+        % check what to do about unknown moment
+        if p.Results.fixedori
+            % if the moment orientation is unknown, maximize the power
+            % ordered from smallest to largest
+            [V,D] = eig(Yk);
+            d = diag(D);
+            [~,idx] = sort(d(:),1,'ascend');
+            % select the eigenvector corresponding to the smallest eigenvalue
+            vk = V(:,idx(1));
+            
+            % compute patch filter weights
+            filter = pinv(vk'*Yk*vk)*pinv(data.cov)*Uk*vk;
+            filter = filter';
+        else
+            % NOTE Not sure what to do if it's not true
+            % You're limited to j moments
+            % They're not x,y,z anymore because we changed the basis
+            error('are you sure about this?');
+            
+            % compute patch filter weights
+            filter = pinv(Yk)*Uk'*pinv(data.cov);
+        end
     end
     
     switch p.Results.mode
