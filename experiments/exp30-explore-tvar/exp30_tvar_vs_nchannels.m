@@ -225,7 +225,7 @@ for i=1:nchannel_opts
     nchannels = channels(i);
     for j=1:nsims
         if large_error(i,j) > 0
-            fprintf('\tc%d-s%d = %d/%d\n',nchannels,j,large_error(i,j),length(filter_types));
+            fprintf('\tc%d-s%d = %d/%d\n',nchannels,j,large_error(i,j),length(filters));
         end
     end
 end
