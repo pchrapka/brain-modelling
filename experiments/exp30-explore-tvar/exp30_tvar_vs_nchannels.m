@@ -19,17 +19,18 @@ lambda = 0.98;
 
 verbosity = 0;
 
+k=1;
 filters = [];
 filters(k).name = 'MQRDLSL1';
-filters(k).params = {'order',order_est,'lambda',labmda,'ntrials',1};
+filters(k).params = {'order',order_est,'lambda',lambda,'ntrials',1};
 k = k+1;
 
 filters(k).name = 'MQRDLSL2';
-filters(k).params = {'order',order_est,'lambda',labmda,'ntrials',1};
+filters(k).params = {'order',order_est,'lambda',lambda,'ntrials',1};
 k = k+1;
 
 filters(k).name = 'MCMTQRDLSL1';
-filters(k).params = {'order',order_est,'lambda',labmda,'ntrials',5};
+filters(k).params = {'order',order_est,'lambda',lambda,'ntrials',5};
 k = k+1;
 
 filters(k).name = 'MLOCCDTWL';
@@ -45,7 +46,7 @@ plot_coef_values = false;
 large_error = zeros(nchannel_opts,nsims);
 fresh = false(nchannel_opts,nsims);
 plotted_coef_values = false(nchannel_opts); % reset flag
-for k=1:length(filter_types)
+for k=1:length(filters)
     % allocate mem
     labels = cell(nchannel_opts,1);
     data_args = [];
@@ -200,6 +201,9 @@ for k=1:length(filter_types)
         'labels',labels);
     drawnow;
     save_fig_exp(mfilename('fullpath'),'tag',sprintf('mse-all-%s',slug_filter));
+    ylim([10^(-4) 10^(0)]);
+    drawnow;
+    save_fig_exp(mfilename('fullpath'),'tag',sprintf('mse-all-axis-%s',slug_filter));
     
     h = figure;
     clf;
@@ -210,6 +214,9 @@ for k=1:length(filter_types)
         'labels',labels);
     drawnow;
     save_fig_exp(mfilename('fullpath'),'tag',sprintf('nmse-all-%s',slug_filter));
+    ylim([10^(-1) 10^(3)]);
+    drawnow;
+    save_fig_exp(mfilename('fullpath'),'tag',sprintf('nmse-all-axis-%s',slug_filter));
 end
 
 %% Print extra info
