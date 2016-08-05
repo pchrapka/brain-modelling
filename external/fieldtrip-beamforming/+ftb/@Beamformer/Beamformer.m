@@ -154,10 +154,12 @@ classdef Beamformer < ftb.AnalysisStep
                 cfgin.inputfile = eegObj.timelock;
                 cfgin.outputfile = obj.sourceanalysis;
                 
-                if ~isfield(cfgin, 'channel')
-                    % Remove fiducial channels
-                    cfgin.channel = elecObj.remove_fiducials();
-                end
+                % NOTE for some reason, at some point before this stage
+                % the channel labels have no hyphens
+                %if ~isfield(cfgin, 'channel')
+                %    % Remove fiducial channels
+                %    cfgin.channel = elecObj.remove_fiducials();
+                %end
                 
                 % source analysis
                 ft_sourceanalysis(cfgin)

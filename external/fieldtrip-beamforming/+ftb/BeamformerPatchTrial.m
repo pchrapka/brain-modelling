@@ -85,13 +85,24 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                     % -------
                     
                     % select data for one trial
-                    timelock = timelock_all;
+                    timelock = keepfields(timelock_all,{'time','dof','label','cfg'});
+                    timelock.avg = squeeze(timelock_all.trial(i,:,:));
+                    timelock.var = zeros(size(timelock_all.var));
                     timelock.dimord = 'chan_time';
-                    timelock.trial = squeeze(timelock_all.trial(i,:,:));
                     timelock.cov = squeeze(timelock_all.cov(i,:,:));
-                    if isfield(timelock,'trialinfo')
-                        timelock.trialinfo = timelock_all.trialinfo(i,:);
-                    end
+                    %if isfield(timelock,'trialinfo')
+                    %    timelock.trialinfo = timelock_all.trialinfo(i,:);
+                    %end
+                    
+                    % should look like this
+                    %        avg: [128x1434 double]
+                    %        var: [128x1434 double]
+                    %       time: [1x1434 double]
+                    %        dof: [128x1434 double]
+                    %      label: {128x1 cell}
+                    %     dimord: 'chan_time'
+                    %        cov: [128x128 double]
+                    %        cfg: [1x1 struct]
                     
                     % save
                     tmp_timelock_file = fullfile(out_folder,'temp.mat');
