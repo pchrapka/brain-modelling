@@ -81,6 +81,15 @@ for z=1:nchannel_opts
                     % load data
                     data = loadfile(outfile_sim);
                     
+                    % check how many trials there are
+                    ntrials_data = size(data.signal,3);
+                    if ntrials_data < ntrials_max
+                        % generate more trials if there aren't enough
+                        data = exp30_gen_tvar(nchannels,...
+                            'ntrials', ntrials_max, 'process', data.process);
+                        save_parfor(outfile_sim,data);
+                    end
+                    
                     % copy data for filtering
                     kf_true_sims{j} = data.true;
                     data_sim{j} = data;
