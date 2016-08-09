@@ -1,4 +1,4 @@
-classdef MLSL < handle
+classdef MLSL
     %MLSL Multichannel Least Squares Lattice algorithm
     %   The implementation is as described in Lewis1990
     %   TODO add source

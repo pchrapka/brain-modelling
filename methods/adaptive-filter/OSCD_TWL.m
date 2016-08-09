@@ -1,4 +1,4 @@
-classdef OSCD_TWL < handle
+classdef OSCD_TWL
     %OSCD_TWL Online Selective Coordinate Descent Time Weighted Lasso
     %   Implementation of Algorithm 2 from 
     %   D. Angelosante, J. A. Bazerque, and G. B. Giannakis, “Online

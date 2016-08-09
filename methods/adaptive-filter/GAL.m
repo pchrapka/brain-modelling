@@ -1,4 +1,4 @@
-classdef GAL < handle
+classdef GAL
     %GAL Gradient Adaptive Lattice algorithm
     
     properties

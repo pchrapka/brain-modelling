@@ -308,7 +308,7 @@ classdef LatticeTrace < handle
                 lastwarn('');
                 
                 % update the filter with the new measurement
-                obj.filter.update(permute(samples(:,i,:),[1 3 2]),...
+                obj.filter = obj.filter.update(permute(samples(:,i,:),[1 3 2]),...
                     'verbosity',p.Results.verbosity);
                 
                 % check last warning

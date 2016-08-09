@@ -1,4 +1,4 @@
-classdef QRDLSL < handle
+classdef QRDLSL
     %QRDLSL QR-Decomposition-based Least Squares Lattice algorithm
     %   The implementation is as described in Haykin2002
     %   TODO add source

@@ -1,4 +1,4 @@
-classdef MOCCD_TWL < handle
+classdef MOCCD_TWL
     %MOCCD_TWL Multichannel Online Cyclic Coordinate Descent Time Weighted Lasso
     %   Based on Algorithm 3 from 
     %   D. Angelosante, J. A. Bazerque, and G. B. Giannakis, “Online

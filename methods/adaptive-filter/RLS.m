@@ -1,4 +1,4 @@
-classdef RLS < handle
+classdef RLS
     %RLS Recursive Least Squares
     %   Implementation from 
     %   S. Haykin, Adaptive filter theory, 4th ed. 2002. p. 443

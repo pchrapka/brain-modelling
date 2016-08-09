@@ -1,4 +1,4 @@
-classdef MCMTQRDLSL1 < handle
+classdef MCMTQRDLSL1
     %MCMTQRDLSL1 Multichannel Multitrial QR-Decomposition-based Least
     %Squares Lattice algorithm
     %   The implementation is as described in Lewis1990

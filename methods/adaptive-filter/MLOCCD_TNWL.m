@@ -1,4 +1,4 @@
-classdef MLOCCD_TNWL < handle
+classdef MLOCCD_TNWL
     %MLOCCD_TNWL Multichannel Lattice Online Cyclic Coordinate Descent Time and Norm Weighted Lasso
     %   Based on Algorithm 3 from 
     %   D. Angelosante, J. A. Bazerque, and G. B. Giannakis, “Online

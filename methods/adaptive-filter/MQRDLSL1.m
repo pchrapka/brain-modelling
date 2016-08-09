@@ -1,4 +1,4 @@
-classdef MQRDLSL1 < handle
+classdef MQRDLSL1
     %MQRDLSL1 Multichannel QR-Decomposition-based Least Squares Lattice
     %algorithm
     %   The implementation is as described in Lewis1990

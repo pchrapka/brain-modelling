@@ -1,4 +1,4 @@
-classdef OCCD_TWL < handle
+classdef OCCD_TWL
     %OCCD_TWL Online Cyclic Coordinate Descent Time Weighted Lasso
     %   Implementation of Algorithm 3 from 
     %   D. Angelosante, J. A. Bazerque, and G. B. Giannakis, “Online

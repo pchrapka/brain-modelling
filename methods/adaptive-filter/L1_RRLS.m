@@ -1,4 +1,4 @@
-classdef L1_RRLS < handle
+classdef L1_RRLS
     %L1_RRLS L1-Reweighted Recursive Least Squares
     %   Implementation from 
     %   E. M. Eksioglu, “Sparsity regularised recursive least squares

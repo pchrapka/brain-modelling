@@ -1,4 +1,4 @@
-classdef MJOCCD_TWL < handle
+classdef MJOCCD_TWL
     %MJOCCD_TWL Joint Multichannel Online Cyclic Coordinate Descent Time Weighted Lasso
     %   Based on Algorithm 3 from 
     %   D. Angelosante, J. A. Bazerque, and G. B. Giannakis, “Online
