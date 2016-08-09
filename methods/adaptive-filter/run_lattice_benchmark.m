@@ -89,9 +89,16 @@ for k=1:nsim_params
     estimate = cell(nsims,1);
     kf_true_sims = cell(nsims,1);
     
+    % figure out how many trials per sim
+    if isprop(sim_param.filter,'ntrials')
+        ntrials = sim_param.filter.ntrials;
+    else
+        ntrials = 1;
+    end
+    
     % load data
     nchannels = sim_param.filter.nchannels;
-    var_gen = VARGenerator(sim_param.data,nsims,nchannels);
+    var_gen = VARGenerator(sim_param.data, nsims*ntrials, nchannels);
     data_var = var_gen.generate();
     % get the data time stamp
     data_time = get_timestamp(var_gen.get_file());
@@ -107,11 +114,6 @@ for k=1:nsim_params
     slug_filter = sim_param.filter.name;
     slug_filter = strrep(slug_filter,' ','-');
     
-    if isprop(sim_param.filter,'ntrials')
-        ntrials = sim_param.filter.ntrials;
-    else
-        ntrials = 1;
-    end
     
     parfor j=1:nsims
     %for j=1:nsims

@@ -59,8 +59,9 @@ classdef VARGenerator < handle
                     otherwise
                         error('unknown data name %s',obj.data_name);
                 end
+                
                 % save data
-                save_parfor(outfile_sim,data);
+                save_parfor(outfile_sim, data);
                 
             else
                 % otherwise load data
@@ -68,6 +69,24 @@ classdef VARGenerator < handle
                 
                 % load data
                 data = loadfile(outfile_sim);
+                
+                % check if there are enough sims
+                nsims_data = size(data.signal,3);
+                if nsims_data < obj.nsims
+                    % get the var process object
+                    var_process = data.process;
+                    ntime = size(data.signal,2);
+                    
+                    % generate the extra sims
+                    for j=nsims_data:obj.nsims
+                        [signal, signal_norm,~] = var_process.simulate(ntime);
+                        data.signal(:,:,j) = signal;
+                        data.signal_norm(:,:,j) = signal_norm;
+                    end
+                    
+                    % save new data
+                    save_parfor(outfile_sim, data);
+                end
             end
             
         end
