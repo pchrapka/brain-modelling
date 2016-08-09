@@ -73,6 +73,7 @@ classdef VARGenerator < handle
                 % check if there are enough sims
                 nsims_data = size(data.signal,3);
                 if nsims_data < obj.nsims
+                    fprintf('simulating some more: %s\n', slug_sim);
                     % get the var process object
                     var_process = data.process;
                     ntime = size(data.signal,2);

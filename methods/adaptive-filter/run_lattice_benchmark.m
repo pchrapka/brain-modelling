@@ -76,7 +76,8 @@ setup_parfor();
 
 % allocate mem
 data_args = [];
-large_error = zeros(nsim_params,nsims);
+large_error = [];
+large_error(nsim_params,nsims).val = 0;
 labels = cell(nsim_params,1);
 
 for k=1:nsim_params
@@ -182,7 +183,8 @@ for k=1:nsim_params
         
         data_mse = mse_iteration(estimate{j},kf_true_sims{j});
         if any(data_mse > 10)
-            large_error(k,j) = true;
+            large_error(k,j).name = slug_data_filt;
+            large_error(k,j).val = true;
         end
     end
     
@@ -279,8 +281,8 @@ end
 fprintf('large errors\n');
 for k=1:nsim_params
     for j=1:nsims
-        if large_error(k,j) > 0
-            fprintf('\tsim params: %d, s%d\n',k,j);
+        if large_error(k,j).val > 0
+            fprintf('\tsim params: %s s%d\n',large_error(k,j).name,j);
         end
     end
 end
