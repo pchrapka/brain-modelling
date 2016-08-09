@@ -241,6 +241,9 @@ end
 
 %% Plot MSE
 
+tag = strrep(p.Results.name,' ','-');
+tag = strrep(tag,'_','-');
+
 if p.Results.plot_avg_mse
     h = figure;
     clf;
@@ -249,11 +252,11 @@ if p.Results.plot_avg_mse
         'mode','log',...
         'labels',labels);
     drawnow;
-    save_fig_exp(p.Results.exp_path,'tag',sprintf('mse-all-%s',p.Results.name));
+    save_fig_exp(p.Results.exp_path,'tag',sprintf('mse-all-%s',tag));
     
     ylim([10^(-4) 10^(0)]);
     drawnow;
-    save_fig_exp(p.Results.exp_path,'tag',sprintf('mse-all-axis-%s',p.Results.name));
+    save_fig_exp(p.Results.exp_path,'tag',sprintf('mse-all-axis-%s',tag));
 end
 
 if p.Results.plot_avg_nmse
@@ -265,11 +268,11 @@ if p.Results.plot_avg_nmse
         'normalized',true,...
         'labels',labels);
     drawnow;
-    save_fig_exp(p.Results.exp_path,'tag',sprintf('nmse-all-%s',p.Results.name));
+    save_fig_exp(p.Results.exp_path,'tag',sprintf('nmse-all-%s',tag));
     
     ylim([10^(-1) 10^(3)]);
     drawnow;
-    save_fig_exp(p.Results.exp_path,'tag',sprintf('nmse-all-axis-%s',p.Results.name));
+    save_fig_exp(p.Results.exp_path,'tag',sprintf('nmse-all-axis-%s',tag));
 end
 
 %% Print extra info

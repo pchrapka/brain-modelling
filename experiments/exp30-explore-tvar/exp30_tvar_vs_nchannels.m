@@ -22,6 +22,25 @@ verbosity = 0;
 sim_params = [];
 for k=1:nchannel_opts
     nchannels = channels(k);
+    sim_params(k).filter = MCMTQRDLSL1(5,nchannels,order_est,lambda);
+    sim_params(k).data = 'vrc-2ch-coupling';
+    sim_params(k).label = sprintf('%d channels',nchannels);
+end
+
+run_lattice_benchmark(...
+    mfilename('fullpath'),...
+    'name',sim_params(1).filter.name,...
+    'sim_params', sim_params,...
+    'nsims', 20,...
+    'noise_warmup', true,...
+    'plot_avg_mse', true,...
+    'plot_avg_nmse', true);
+
+close all;
+
+sim_params = [];
+for k=1:nchannel_opts
+    nchannels = channels(k);
     sim_params(k).filter = MQRDLSL1(nchannels,order_est,lambda);
     sim_params(k).data = 'vrc-2ch-coupling';
     sim_params(k).label = sprintf('%d channels',nchannels);
@@ -42,25 +61,6 @@ sim_params = [];
 for k=1:nchannel_opts
     nchannels = channels(k);
     sim_params(k).filter = MQRDLSL2(nchannels,order_est,lambda);
-    sim_params(k).data = 'vrc-2ch-coupling';
-    sim_params(k).label = sprintf('%d channels',nchannels);
-end
-
-run_lattice_benchmark(...
-    mfilename('fullpath'),...
-    'name',sim_params(1).filter.name,...
-    'sim_params', sim_params,...
-    'nsims', 20,...
-    'noise_warmup', true,...
-    'plot_avg_mse', true,...
-    'plot_avg_nmse', true);
-
-close all;
-
-sim_params = [];
-for k=1:nchannel_opts
-    nchannels = channels(k);
-    sim_params(k).filter = MCMTQRDLSL1(5,nchannels,order_est,lambda);
     sim_params(k).data = 'vrc-2ch-coupling';
     sim_params(k).label = sprintf('%d channels',nchannels);
 end
