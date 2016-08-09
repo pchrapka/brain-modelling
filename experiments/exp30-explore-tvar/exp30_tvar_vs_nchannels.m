@@ -24,7 +24,7 @@ for k=1:nchannel_opts
     nchannels = channels(k);
     sim_params(k).filter = MQRDLSL1(nchannels,order_est,lambda);
     sim_params(k).data = 'vrc-2ch-coupling';
-    sim_params(k).label = '';
+    sim_params(k).label = sprintf('%d channels',nchannels);
 end
 
 run_lattice_benchmark(...
@@ -41,7 +41,7 @@ for k=1:nchannel_opts
     nchannels = channels(k);
     sim_params(k).filter = MQRDLSL2(nchannels,order_est,lambda);
     sim_params(k).data = 'vrc-2ch-coupling';
-    sim_params(k).label = '';
+    sim_params(k).label = sprintf('%d channels',nchannels);
 end
 
 run_lattice_benchmark(...
@@ -58,7 +58,7 @@ for k=1:nchannel_opts
     nchannels = channels(k);
     sim_params(k).filter = MCMTQRDLSL1(5,nchannels,order_est,lambda);
     sim_params(k).data = 'vrc-2ch-coupling';
-    sim_params(k).label = '';
+    sim_params(k).label = sprintf('%d channels',nchannels);
 end
 
 run_lattice_benchmark(...
@@ -79,7 +79,7 @@ for k=1:nchannel_opts
     gamma = sqrt(2*sigma^2*ntime*log(nchannels));
     sim_params(k).filter = MLOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
     sim_params(k).data = 'vrc-2ch-coupling';
-    sim_params(k).label = '';
+    sim_params(k).label = sprintf('%d channels',nchannels);
 end
 
 run_lattice_benchmark(...
