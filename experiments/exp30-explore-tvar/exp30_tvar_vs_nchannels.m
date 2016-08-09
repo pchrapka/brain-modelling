@@ -36,6 +36,8 @@ run_lattice_benchmark(...
     'plot_avg_mse', true,...
     'plot_avg_nmse', true);
 
+close all;
+
 sim_params = [];
 for k=1:nchannel_opts
     nchannels = channels(k);
@@ -53,6 +55,8 @@ run_lattice_benchmark(...
     'plot_avg_mse', true,...
     'plot_avg_nmse', true);
 
+close all;
+
 sim_params = [];
 for k=1:nchannel_opts
     nchannels = channels(k);
@@ -69,6 +73,8 @@ run_lattice_benchmark(...
     'noise_warmup', true,...
     'plot_avg_mse', true,...
     'plot_avg_nmse', true);
+
+close all;
 
 sim_params = [];
 ntime = 358;
@@ -90,6 +96,8 @@ run_lattice_benchmark(...
     'noise_warmup', true,...
     'plot_avg_mse', true,...
     'plot_avg_nmse', true);
+
+close all;
 
 
 % k=1;
