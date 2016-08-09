@@ -37,8 +37,8 @@ switch stimulus
         params_eeg.ft_definetrial.trialdef.eventtype = 'STATUS';
         params_eeg.ft_definetrial.trialdef.eventvalue = {2}; % deviant
 end
-params_eeg.ft_definetrial.trialdef.prestim = 0.2; % in seconds
-params_eeg.ft_definetrial.trialdef.poststim = 0.5; % in seconds
+params_eeg.ft_definetrial.trialdef.prestim = 0.1; % in seconds
+params_eeg.ft_definetrial.trialdef.poststim = 0.3; % in seconds
 
 % assuming data was already de-artifacted
 %params_eeg.ft_preprocessing.method = 'trial';
@@ -52,15 +52,6 @@ params_eeg.ft_timelockanalysis.covariance = 'yes';
 params_eeg.ft_timelockanalysis.covariancewindow = 'all'; % should be default
 params_eeg.ft_timelockanalysis.keeptrials = 'yes'; % should be default
 params_eeg.ft_timelockanalysis.removemean = 'yes';
-
-% % specify pre post times
-% params_eeg.pre.ft_redefinetrial.toilim = [-0.2 0];
-% params_eeg.pre.ft_timelockanalysis.covariance = 'yes';
-% params_eeg.pre.ft_timelockanalysis.covariancewindow = 'all'; % should be default
-% 
-% params_eeg.post.ft_redefinetrial.toilim = [0 0.5];
-% params_eeg.post.ft_timelockanalysis.covariance = 'yes';
-% params_eeg.post.ft_timelockanalysis.covariancewindow = 'all'; % should be default
 
 subject_slug = strrep(data_name,'_','');
 subject_slug = strrep(subject_slug,' ','');
