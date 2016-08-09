@@ -277,7 +277,7 @@ fprintf('large errors\n');
 for k=1:nsim_params
     for j=1:nsims
         if large_error(k,j) > 0
-            fprintf('\tsim params: %d, s%d\n',k,j,large_error(k,j));
+            fprintf('\tsim params: %d, s%d\n',k,j);
         end
     end
 end
