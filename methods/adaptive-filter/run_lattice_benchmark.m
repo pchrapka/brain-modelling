@@ -74,12 +74,12 @@ setup_parfor();
 
 %% loop over params
 
+% allocate mem
+data_args = [];
 large_error = zeros(nsim_params,nsims);
+labels = cell(nsim_params,1);
 
 for k=1:nsim_params
-    % allocate mem
-    labels = cell(nsim_params,1);
-    data_args = [];
     
     % copy sim parameters
     sim_param = sim_params(k);
