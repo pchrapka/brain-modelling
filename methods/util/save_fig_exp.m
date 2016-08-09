@@ -36,9 +36,9 @@ end
 % save the figure in the experiment dir with the experiment as the file
 % name with an optional tag
 if isempty(p.Results.tag)
-    file_name_date = [datestr(now, 'yyyy-mm-dd') '-' filename '-' p.Results.tag];
-else
     file_name_date = [datestr(now, 'yyyy-mm-dd') '-' filename];
+else
+    file_name_date = [datestr(now, 'yyyy-mm-dd') '-' filename '-' p.Results.tag];
 end
 file_name_full = fullfile(imgdir,file_name_date);
 
