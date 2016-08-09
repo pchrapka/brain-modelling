@@ -258,6 +258,16 @@ classdef LatticeTrace < handle
             end
         end
         
+        function noise_warmup(obj,noise)
+            %   Input
+            %   -----
+            %   noise (matrix)
+            %       noise data. the data can be specified as 
+            %       [channels samples] or [channels samples trials]
+            
+            obj.run(noise,'mode','none','verbosity',0);
+        end
+        
         function run(obj,samples,varargin)
             %   Input
             %   -----

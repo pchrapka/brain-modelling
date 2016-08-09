@@ -143,13 +143,10 @@ for k=1:nsim_params
                 for m=1:ntrials
                     noise(:,:,m) = mvnrnd(mu,sigma,ntime)';
                 end
-                trace_noise = LatticeTrace(sim_param.filter,'fields',{'Kf'});
                 
                 % run filter on noise
                 warning('off','all');
-                trace_noise.run(noise,...
-                    'verbosity',p.Results.verbosity,...
-                    'mode','none');
+                trace{j}.noise_warmup(noise);
                 warning('on','all');
             end
             
