@@ -1,4 +1,4 @@
-function data = gen_vrc_2ch_coupling(obj,varargin)
+function data = gen_vrc_ch2_coupling2_rnd(obj,varargin)
 
 p = inputParser();
 addParameter(p,'process',[]);
