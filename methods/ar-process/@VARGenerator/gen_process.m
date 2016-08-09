@@ -13,7 +13,7 @@ function data = gen_process(obj, process, varargin)
 p = inputParser();
 addRequired(p,'process');
 addParameter(p,'nsamples',500,@isnumeric);
-p.parser(process,varargin{:});
+p.parse(process,varargin{:});
 
 % generate data
 data = [];
