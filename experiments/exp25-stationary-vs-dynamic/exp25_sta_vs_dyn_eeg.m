@@ -218,14 +218,9 @@ sigma = eye(nchannels);
 % noise = zeros(nchannels,nsamples,1);
 noise = mvnrnd(mu,sigma,nsamples)';
 
-% run the filter on noise
-trace{k} = LatticeTrace(filter,'fields',{'Kf'});
-trace{k}.run(noise,'verbosity',verbosity,'mode','none');
-trace{k}.name = ['noise only ' trace{k}.filter.name];
-k = k+1;
-
 % run the filter on data
 trace{k} = LatticeTrace(filter,'fields',{'Kf'});
+trace{k}.noise_warmup(noise);
 trace{k}.run(sources(:,:,1),'verbosity',verbosity,'mode','none');
 trace{k}.name = ['noise warmup ' trace{k}.filter.name];
 k = k+1;
@@ -240,12 +235,9 @@ for j=1:mt
     noise(:,:,j) = mvnrnd(mu,sigma,nsamples)';
 end
 
-% run the filter on noise
-trace_noise = LatticeTrace(filter,'fields',{'Kf'});
-trace_noise.run(noise,'verbosity',verbosity,'mode','none');
-
 % run the filter on data
 trace{k} = LatticeTrace(filter,'fields',{'Kf'});
+trace{k}.noise_warmup(noise);
 trace{k}.run(sources(:,:,1:mt),'verbosity',verbosity,'mode','none');
 trace{k}.name = ['noise warmup ' trace{k}.filter.name];
 k = k+1;

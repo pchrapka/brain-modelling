@@ -111,8 +111,8 @@ parfor i=1:ntrial_groups
         noise(:,:,j) = mvnrnd(mu,sigma,nsamples)';
     end
     warning('off','all');
-    trace_noise = LatticeTrace(filter,'fields',{});
-    trace_noise.run(noise,'verbosity',p.Results.verbose,'mode','none');
+    trace = LatticeTrace(filter,'fields',{'Kf'});
+    trace.noise_warmup(noise);
     warning('on','all');
     
     X_norm = zeros(nchannels,nsamples,p.Results.trials);
@@ -129,7 +129,6 @@ parfor i=1:ntrial_groups
     
     % estimate the reflection coefficients
     %warning('off','all');
-    trace = LatticeTrace(filter,'fields',{'Kf'});
     trace.run(X_norm,'verbosity',p.Results.verbose,'mode','none');
     %warning('on','all');
     
