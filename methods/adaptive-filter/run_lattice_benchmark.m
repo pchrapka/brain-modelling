@@ -100,7 +100,11 @@ for k=1:nsim_params
     % load data
     nchannels = sim_param.filter.nchannels;
     var_gen = VARGenerator(sim_param.data, nsims*ntrials, nchannels);
-    data_var = var_gen.generate();
+    if isfield(sim_param,'data_params')
+        data_var = var_gen.generate(sim_param.data_params{:});
+    else
+        data_var = var_gen.generate();
+    end
     % get the data time stamp
     data_time = get_timestamp(var_gen.get_file());
     

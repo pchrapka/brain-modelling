@@ -1,43 +1,53 @@
 %% exp32_benchmark_varnocoupling
 
-% gen data
-% set filters to run and benchmark params
-% run benchmark
-% TODO refactor benchmark code
 
-% exp30_tvar_vs_nchannels
-
-% [srcdir,func_name,~] = fileparts(mfilename('fullpath'));
-% outdir = fullfile(srcdir,'output');
-% if ~exist(outdir,'dir')
-%     mkdir(outdir);
-% end
-
-setup_parfor();
-
-%% set up params
+%% set options
 nsims = 20;
-%channels = [2 4 6 8 10 12 14 16];
-channels = [2 4];
-nchannel_opts = length(channels);
+nchannels = 4;
 
 order_est = 10;
 lambda = 0.98;
 
 verbosity = 0;
 
+data_type = 'vrc-coupling0-fixed';
+nsamples = 2000;
+data_params = {'nsamples', nsamples};
+
+% TODO add burg and nuttall strand
+
+%% set up benchmark params
+
+k=1;
 sim_params = [];
 
-for k=1:nchannel_opts
-    nchannels = channels(k);
-    %sim_params(k).filter_name = 'MQRDLSL1';
-    %sim_params(k).filter_params = {'nchannels',nchannels,'order',order_est,'lambda',lambda,'ntrials',1};
-    sim_params(k).filter = MQRDLSL1(nchannels,order_est,lambda);
-    %sim_params(k).data = 'var-no-coupling';
-    sim_params(k).data = 'vrc-2ch-coupling';
-    sim_params(k).label = '';
-end
+ntrials = 5;
+sim_params(k).filter = MCMTQRDLSL1(ntrials,nchannels,order_est,lambda);
+sim_params(k).data = data_type;
+sim_params(k).data_params = data_params;
+sim_params(k).label = sim_params(k).filter.name;
+k = k+1;
 
+sim_params(k).filter = MQRDLSL1(nchannels,order_est,lambda);
+sim_params(k).data = data_type;
+sim_params(k).data_params = data_params;
+sim_params(k).label = sim_params(k).filter.name;
+k = k+1;
+
+sim_params(k).filter = MQRDLSL2(nchannels,order_est,lambda);
+sim_params(k).data = data_type;
+sim_params(k).data_params = data_params;
+sim_params(k).label = sim_params(k).filter.name;
+k = k+1;
+
+sigma = 10^(-1);
+gamma = sqrt(2*sigma^2*nsamples*log(nchannels));
+sim_params(k).filter = MLOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
+sim_params(k).data = data_type;
+sim_params(k).label = sim_params(k).filter.name;
+k = k+1;
+
+%% run
 run_lattice_benchmark(...
     mfilename('fullpath'),...
     'name','',...
@@ -46,26 +56,6 @@ run_lattice_benchmark(...
     'noise_warmup', true,...
     'plot_avg_mse', true,...
     'plot_avg_nmse', true);
-
-
-% sim_params(k).filter_name = 'MQRDLSL2';
-% sim_params(k).filter_params = {'nchannels',nchannels,'order',order_est,'lambda',lambda,'ntrials',1};
-% sim_params(k).data = 'var-no-coupling';
-% sim_params(k).label = '';
-% k = k+1;
-% 
-% sim_params(k).filter_name = 'MCMTQRDLSL1';
-% sim_params(k).filter_params = {'nchannels',nchannels,'order',order_est,'lambda',lambda,'ntrials',5};
-% sim_params(k).data = 'var-no-coupling';
-% sim_params(k).label = '';
-% k = k+1;
-% 
-% sim_params(k).filter_name = 'MLOCCDTWL';
-% sim_params(k).filter_params = {'nchannels',nchannels,'order',order_est,'lambda',lambda,'ntrials',1};
-% sim_params(k).data = 'var-no-coupling';
-% sim_params(k).label = '';
-% k = k+1;
-
 
 
 
