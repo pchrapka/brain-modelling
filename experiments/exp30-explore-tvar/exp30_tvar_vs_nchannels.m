@@ -11,8 +11,8 @@ lambda = 0.98;
 
 verbosity = 0;
 
-data_type = 'vrc-ch2-coupling1-fixed';
-% data_type = 'vrc-ch2-coupling2-rnd';
+data_type = 'vrc-cp-ch2-coupling1-fixed';
+% data_type = 'vrc-cp-ch2-coupling2-rnd';
 
 %% set up benchmark params and run
 

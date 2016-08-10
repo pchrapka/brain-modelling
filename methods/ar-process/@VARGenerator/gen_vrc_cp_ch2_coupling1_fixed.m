@@ -1,4 +1,4 @@
-function data = gen_vrc_ch2_coupling1_fixed(obj,varargin)
+function data = gen_vrc_cp_ch2_coupling1_fixed(obj,varargin)
 
 p = inputParser();
 parse(p,varargin{:});
