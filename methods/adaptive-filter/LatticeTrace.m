@@ -299,45 +299,80 @@ classdef LatticeTrace < handle
             % init the trace
             obj.trace_init(nsamples);
             
-            % init error
-            obj.errors(1:nsamples) = obj.errors(1);
-            
             if p.Results.verbosity > 0
                 fprintf('starting: %s\n',obj.filter.name);
             end
             pause(1);
-
-            % compute reflection coef estimates
-            for i=1:nsamples
+            
+            if ismethod(obj.filter,'update')
                 
-                if p.Results.verbosity > 1
-                    fprintf('sample %d\n',i);
+                % init error
+                obj.errors(1:nsamples) = obj.errors(1);
+                
+                % compute reflection coef estimates
+                for i=1:nsamples
+                    
+                    if p.Results.verbosity > 1
+                        fprintf('sample %d\n',i);
+                    end
+                    
+                    % clear the last warning
+                    lastwarn('');
+                    
+                    % update the filter with the new measurement
+                    obj.filter = obj.filter.update(permute(samples(:,i,:),[1 3 2]),...
+                        'verbosity',p.Results.verbosity);
+                    
+                    % check last warning
+                    [msg, lastid] = lastwarn();
+                    if ~isempty(msg)
+                        %if isequal(lastid,'MATLAB:singularMatrix')
+                        obj.errors(i).warning = true;
+                        obj.errors(i).msg = msg;
+                        obj.errors(i).id = lastid;
+                    end
+                    
+                    % copy filter state
+                    obj.trace_copy(i);
+                    
+                    if isequal(p.Results.mode,'plot')
+                        obj.plot_trace(i,p.Results.plot_options{:});
+                        drawnow;
+                        %pause(0.005);
+                    end
+                    
                 end
+                
+            else
                 
                 % clear the last warning
                 lastwarn('');
-                
-                % update the filter with the new measurement
-                obj.filter = obj.filter.update(permute(samples(:,i,:),[1 3 2]),...
+                    
+                % batch update
+                obj.filter = obj.filter.update_batch(...
+                    permute(samples,[1 3 2]),...
                     'verbosity',p.Results.verbosity);
                 
                 % check last warning
                 [msg, lastid] = lastwarn();
                 if ~isempty(msg)
                     %if isequal(lastid,'MATLAB:singularMatrix')
-                    obj.errors(i).warning = true;
-                    obj.errors(i).msg = msg;
-                    obj.errors(i).id = lastid;
+                    obj.errors(1).warning = true;
+                    obj.errors(1).msg = msg;
+                    obj.errors(1).id = lastid;
                 end
                 
-                % copy filter state
-                obj.trace_copy(i);
+                for i=1:nsamples
+                    % copy filter state
+                    obj.trace_copy(i);
+                end
                 
                 if isequal(p.Results.mode,'plot')
-                    obj.plot_trace(i,p.Results.plot_options{:});
+                    obj.plot_trace(nsamples,p.Results.plot_options{:});
                     drawnow;
                     %pause(0.005);
                 end
+                    
                 
             end
             
