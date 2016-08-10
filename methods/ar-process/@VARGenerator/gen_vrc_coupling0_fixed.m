@@ -35,7 +35,7 @@ for i=1:nchannels
     % set coefficients
     vrc_coefs(i,i,:) = processes{idx};
 end
-vrc.coefs_set(vrc_coefs);
+vrc.coefs_set(vrc_coefs,vrc_coefs);
 
 % generate data
 data = obj.gen_process(vrc, 'nsamples', p.Results.nsamples);
