@@ -254,6 +254,33 @@ classdef VRC < VARProcess
             end
         end
         
+        function rc_time = get_rc_time(obj, nsamples, coefs)
+            %GET_RC_TIME returns the reflection coefficients over time
+            %   GET_RC_TIME(obj, nsamples, coefs) returns the reflection
+            %   coefficients over time
+            %
+            %   Input
+            %   -----
+            %   nsamples (integer)
+            %       number of samples
+            %   coefs (string)
+            %       Kf or Kb
+            %
+            %   Output
+            %   ------
+            %   rc_time (matrix)
+            %       reflection coefficients over time [samples P K K]
+            
+            p = inputParser();
+            p.addRequired('nsamples', @(x) x > 0);
+            p.addRequired('coefs',@(x) any(validatestring(x,{'Kf','Kb'})));
+            p.parse(nsamples,coefs);
+            
+            rc_time = repmat(shiftdim(obj.(coefs),2),1,1,1,nsamples);
+            rc_time = shiftdim(rc_time,3);
+            
+        end
+        
         function [Y,Y_norm,noise] = simulate(obj, nsamples, varargin)
             %SIMULATE simulate VRC process
             %   [Y,Y_norm,noise] = SIMULATE(obj, nsamples, ...)
