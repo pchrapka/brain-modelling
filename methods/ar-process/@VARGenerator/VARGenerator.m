@@ -10,6 +10,7 @@ classdef VARGenerator < handle
         data = gen_var_no_coupling(obj,varargin);
         data = gen_vrc_cp_ch2_coupling1_fixed(obj,varargin);
         data = gen_vrc_cp_ch2_coupling2_rnd(obj,varargin);
+        data = gen_vrc_coupling0_fixed(obj,varargin);
         
         data = gen_process(obj, process, varargin)
     end
@@ -58,6 +59,8 @@ classdef VARGenerator < handle
                 switch obj.data_name
                     case 'var-no-coupling'
                         data = obj.gen_var_no_coupling(varargin{:});
+                    case 'vrc-coupling0-fixed'
+                        data = obj.gen_vrc_coupling0_fixed(varargin{:});
                     case 'vrc-cp-ch2-coupling2-rnd'
                         data = obj.gen_vrc_cp_ch2_coupling2_rnd(varargin{:});
                     case 'vrc-cp-ch2-coupling1-fixed'
