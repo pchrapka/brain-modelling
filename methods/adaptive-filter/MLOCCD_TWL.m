@@ -156,8 +156,8 @@ classdef MLOCCD_TWL
                     end
                     
                     % update prediction errors
-                    ferror(ch,m) = ferror(ch,m-1) + obj.berrord(:,m-1)'*kf_new;
-                    berror(ch,m) = obj.berrord(ch,m-1) + ferror(:,m-1)'*kb_new;
+                    ferror(ch,m) = ferror(ch,m-1) - obj.berrord(:,m-1)'*kf_new;
+                    berror(ch,m) = obj.berrord(ch,m-1) - ferror(:,m-1)'*kb_new;
                     
                     % save vars
                     obj.Kf(m-1,ch,:) = kf_new;
