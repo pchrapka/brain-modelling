@@ -95,8 +95,8 @@ classdef BurgVector
             [rcf,rcb,~,~] = pc2rcv(pc,R0);
             
             % save the rc coefficient, drop the first one
-            obj.Kf = shiftdim(rcf(:,:,2:end),2);
-            obj.Kb = shiftdim(rcb(:,:,2:end),2);
+            obj.Kf = -1*shiftdim(rcf(:,:,2:end),2);
+            obj.Kb = -1*shiftdim(rcb(:,:,2:end),2);
             
         end
     end

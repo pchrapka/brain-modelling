@@ -17,13 +17,13 @@ norder = 10;
 processes = cell(2,1);
 
 kf = zeros(1,1,norder);
-kf(1,1,1) = -0.4789;
-kf(1,1,6) = -0.9642;
+kf(1,1,1) = 0.4789;
+kf(1,1,6) = 0.9642;
 processes{1} = kf;
 
 kf = zeros(1,1,norder);
-kf(1,1,4) = -0.6054;
-kf(1,1,10) = -0.9131;
+kf(1,1,4) = 0.6054;
+kf(1,1,10) = 0.9131;
 processes{2} = kf;
 
 % setup full process
