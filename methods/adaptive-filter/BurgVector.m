@@ -85,7 +85,7 @@ classdef BurgVector
             
             if ~isempty(obj.nsamples)
                 % select a smaller subset of samples
-                x = x(:,1:obj.nsamples);
+                x = x(:,:,1:obj.nsamples);
             end
             
             % compute parcor coefficients using Burg's method
