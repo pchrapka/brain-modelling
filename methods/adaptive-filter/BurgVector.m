@@ -13,11 +13,14 @@ classdef BurgVector
         
         % name
         name;
+        
+        % number of samples
+        nsamples;
     end
     
     methods
         
-        function obj = BurgVector(channels, order)
+        function obj = BurgVector(channels, order, varargin)
             %BurgVector constructor for BurgVector
             %   BurgVector(ORDER, LAMBDA) creates a BurgVector object
             %
@@ -25,16 +28,31 @@ classdef BurgVector
             %       number of channels
             %   order (integer)
             %       filter order
+            %   
+            %   Parameters
+            %   ----------
+            %   nsamples (integer)
+            %       number of samples to use in batch update
+            
+            p = inputParser();
+            addParameter(p,'nsamples',[],@isnumeric);
+            p.parse(varargin{:});
             
             obj.order = order;
             obj.nchannels = channels;
+            obj.nsamples = p.Results.nsamples;
 
             zeroMat = zeros(obj.order, obj.nchannels, obj.nchannels);
             obj.Kb = zeroMat;
             obj.Kf = zeroMat;
             
-            obj.name = sprintf('BurgVector C%d P%d',...
-                channels, order);
+            if isempty(obj.nsamples)
+                obj.name = sprintf('BurgVector C%d P%d',...
+                    channels, order);
+            else
+                obj.name = sprintf('BurgVector C%d P%d N%d',...
+                    channels, order, obj.nsamples);
+            end
         end 
         
         function obj = update_batch(obj, x, varargin)
@@ -63,6 +81,11 @@ classdef BurgVector
                 error([mfilename ':update_batch'],...
                     'samples do not match filter channels: %d %d',...
                     size(x,1), obj.nchannels);
+            end
+            
+            if ~isempty(obj.nsamples)
+                % select a smaller subset of samples
+                x = x(:,1:obj.nsamples);
             end
             
             % compute parcor coefficients using Burg's method
