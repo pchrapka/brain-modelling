@@ -6,7 +6,7 @@ nsims = 20;
 nchannels = 4;
 
 order_est = 10;
-lambda = 0.98;
+lambda = 0.99;
 
 verbosity = 0;
 
@@ -14,7 +14,7 @@ data_type = 'vrc-coupling0-fixed';
 nsamples = 2000;
 data_params = {'nsamples', nsamples};
 
-% TODO add burg and nuttall strand
+% TODO add nuttall strand
 
 %% set up benchmark params
 
