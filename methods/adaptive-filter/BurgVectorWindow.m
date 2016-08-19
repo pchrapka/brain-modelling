@@ -1,4 +1,4 @@
-classdef BurgVector
+classdef BurgVectorWindow
     
     properties (SetAccess = protected)
         % reflection coefficients
@@ -14,15 +14,18 @@ classdef BurgVector
         % name
         name;
         
-        % number of samples
-        nsamples;
+        % number of samples per window
+        nwindow;
+        
+        % buffer to save samples
+        buffer;
     end
     
     methods
         
-        function obj = BurgVector(channels, order, varargin)
-            %BurgVector constructor for BurgVector
-            %   BurgVector(ORDER, LAMBDA) creates a BurgVector object
+        function obj = BurgVectorWindow(channels, order, varargin)
+            %BurgVectorWindow constructor for BurgVector
+            %   BurgVectorWindow(ORDER, LAMBDA) creates a BurgVector object
             %
             %   channels (integer)
             %       number of channels
@@ -31,33 +34,30 @@ classdef BurgVector
             %   
             %   Parameters
             %   ----------
-            %   nsamples (integer)
-            %       number of samples to use in batch update
+            %   nwindow (integer)
+            %       number of samples to use for each window
             
             p = inputParser();
-            addParameter(p,'nsamples',[],@isnumeric);
+            addParameter(p,'nwindow',10,@isnumeric);
             p.parse(varargin{:});
             
             obj.order = order;
             obj.nchannels = channels;
-            obj.nsamples = p.Results.nsamples;
+            obj.nwindow = p.Results.nwindow;
 
             zeroMat = zeros(obj.order, obj.nchannels, obj.nchannels);
             obj.Kb = zeroMat;
             obj.Kf = zeroMat;
             
-            if isempty(obj.nsamples)
-                obj.name = sprintf('BurgVector C%d P%d',...
-                    channels, order);
-            else
-                obj.name = sprintf('BurgVector C%d P%d N%d',...
-                    channels, order, obj.nsamples);
-            end
+            obj.name = sprintf('BurgVectorWindow C%d P%d W%d',...
+                channels, order, obj.nwindow);
+            
+            obj.buffer = zeros(obj.nchannels, 1, obj.nwindow);
         end 
         
-        function obj = update_batch(obj, x, varargin)
-            %UPDATE_BATCH updates reflection coefficients
-            %   UPDATE_BATCH(OBJ,X) updates the reflection coefficients
+        function obj = update(obj, x, varargin)
+            %UPDATE updates reflection coefficients
+            %   UPDATE(OBJ,X) updates the reflection coefficients
             %   using the measurement X
             %
             %   Input
@@ -78,18 +78,18 @@ classdef BurgVector
             
             % check sample size
             if ~isequal(size(x,1), obj.nchannels)
-                error([mfilename ':update_batch'],...
+                error([mfilename ':update'],...
                     'samples do not match filter channels: %d %d',...
                     size(x,1), obj.nchannels);
             end
             
-            if ~isempty(obj.nsamples)
-                % select a smaller subset of samples
-                x = x(:,:,1:obj.nsamples);
-            end
+            % add the new measurement
+            obj.buffer(:,:,1) = [];
+            obj.buffer(:,:,end+1) = x;
             
             % compute parcor coefficients using Burg's method
-            [pc, R0] = burgv(x,obj.order);
+            % needs [channels 1 samples]
+            [pc, R0] = burgv(obj.buffer,obj.order);
             
             % convert parcor to rc
             [rcf,rcb,~,~] = pc2rcv(pc,R0);
