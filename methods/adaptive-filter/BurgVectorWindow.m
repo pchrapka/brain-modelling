@@ -97,6 +97,13 @@ classdef BurgVectorWindow
                     size(x,1), obj.nchannels);
             end
             
+            % check trial size
+            if ~isequal(size(x,2), obj.ntrials)
+                error([mfilename ':update'],...
+                    'samples do not match filter trials: %d %d',...
+                    size(x,2), obj.ntrials);
+            end
+            
             % add the new measurement
             obj.buffer(:,:,1) = [];
             obj.buffer(:,:,end+1) = x;
