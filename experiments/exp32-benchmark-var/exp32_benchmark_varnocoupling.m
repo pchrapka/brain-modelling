@@ -49,7 +49,6 @@ sim_params(k).label = sim_params(k).filter.name;
 k = k+1;
 
 sim_params(k).filter = MLOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma*2);
-sim_params(k).filter = MLOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
 sim_params(k).data = data_type;
 sim_params(k).data_params = data_params;
 sim_params(k).label = sim_params(k).filter.name;
