@@ -17,6 +17,9 @@ classdef BurgVectorWindow
         % number of samples per window
         nwindow;
         
+        % number of trials
+        ntrials;
+        
         % buffer to save samples
         buffer;
         % sample count
@@ -38,23 +41,32 @@ classdef BurgVectorWindow
             %   ----------
             %   nwindow (integer)
             %       number of samples to use for each window
+            %   ntrials (integer)
+            %       number of trials
             
             p = inputParser();
             addParameter(p,'nwindow',10,@isnumeric);
+            addParameter(p,'ntrials',1,@isnumeric);
             p.parse(varargin{:});
             
             obj.order = order;
             obj.nchannels = channels;
             obj.nwindow = p.Results.nwindow;
+            obj.ntrials = p.Results.ntrials;
 
             zeroMat = zeros(obj.order, obj.nchannels, obj.nchannels);
             obj.Kb = zeroMat;
             obj.Kf = zeroMat;
             
-            obj.name = sprintf('BurgVectorWindow C%d P%d W%d',...
-                channels, order, obj.nwindow);
+            if obj.ntrials > 1
+                obj.name = sprintf('BurgVectorWindow C%d P%d W%d T%d',...
+                    channels, order, obj.nwindow, obj.ntrials);
+            else
+                obj.name = sprintf('BurgVectorWindow C%d P%d W%d',...
+                    channels, order, obj.nwindow);
+            end
             
-            obj.buffer = zeros(obj.nchannels, 1, obj.nwindow);
+            obj.buffer = zeros(obj.nchannels, obj.ntrials, obj.nwindow);
         end 
         
         function obj = update(obj, x, varargin)
@@ -95,16 +107,27 @@ classdef BurgVectorWindow
                 return;
             end
             
-            % compute parcor coefficients using Burg's method
-            % needs [channels 1 samples]
-            [pc, R0] = burgv(obj.buffer,obj.order);
+            zeroMat = zeros(obj.order, obj.nchannels, obj.nchannels);
+            obj.Kb = zeroMat;
+            obj.Kf = zeroMat;
             
-            % convert parcor to rc
-            [rcf,rcb,~,~] = pc2rcv(pc,R0);
+            for i=1:obj.ntrials
+                % compute parcor coefficients using Burg's method
+                % needs [channels 1 samples]
+                [pc, R0] = burgv(obj.buffer(:,i,:),obj.order);
+                
+                % convert parcor to rc
+                [rcf,rcb,~,~] = pc2rcv(pc,R0);
+                
+                % save the rc coefficient, drop the first one
+                obj.Kf = obj.Kf + -1*shiftdim(rcf(:,:,2:end),2);
+                obj.Kb = obj.Kb + -1*shiftdim(rcb(:,:,2:end),2);
+                
+            end
             
-            % save the rc coefficient, drop the first one
-            obj.Kf = -1*shiftdim(rcf(:,:,2:end),2);
-            obj.Kb = -1*shiftdim(rcb(:,:,2:end),2);
+            % take the average
+            obj.Kf = obj.Kf/obj.ntrials;
+            obj.Kb = obj.Kb/obj.ntrials;
             
         end
     end
