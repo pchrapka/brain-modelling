@@ -1,9 +1,9 @@
 %% exp32_plot_rc
 
-data = loadfile('output/vrc-coupling0-fixed-c4-s1-BurgVector-C4-P10.mat');
-% data = loadfile('output/vrc-coupling0-fixed-c4-s1-MCMTQRDLSL1-T5-C4-P10-lambda=0.98.mat');
-% data = loadfile('output/vrc-coupling0-fixed-c4-s1-MLOCCD_TWL-C4-P10-lambda=0.98-gamma=7.45.mat');
-% data = loadfile('output/vrc-coupling0-fixed-c4-s1-MQRDLSL1-C4-P10-lambda=0.98.mat');
+% data = loadfile('output/vrc-coupling0-fixed-c4-s1-BurgVector-C4-P10-N2000.mat');
+% data = loadfile('output/vrc-coupling0-fixed-c4-s1-MCMTQRDLSL1-T5-C4-P10-lambda=0.99.mat');
+% data = loadfile('output/vrc-coupling0-fixed-c4-s1-MLOCCD_TWL-C4-P10-lambda=0.99-gamma=7.45.mat');
+data = loadfile('output/vrc-coupling0-fixed-c4-s1-MQRDLSL1-C4-P10-lambda=0.99.mat');
 % data = loadfile('output/vrc-coupling0-fixed-c4-s1-MQRDLSL2-C4-P10-lambda=0.98.mat');
 data_orig = loadfile('../output-common/simulated/vrc-coupling0-fixed-c4.mat');
 
