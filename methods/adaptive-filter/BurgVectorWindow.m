@@ -19,6 +19,8 @@ classdef BurgVectorWindow
         
         % buffer to save samples
         buffer;
+        % sample count
+        count = 1;
     end
     
     methods
@@ -86,6 +88,12 @@ classdef BurgVectorWindow
             % add the new measurement
             obj.buffer(:,:,1) = [];
             obj.buffer(:,:,end+1) = x;
+            obj.count = obj.count + 1;
+            
+            if obj.count < obj.nwindow
+                % wait until we have a minimum number of samples
+                return;
+            end
             
             % compute parcor coefficients using Burg's method
             % needs [channels 1 samples]
