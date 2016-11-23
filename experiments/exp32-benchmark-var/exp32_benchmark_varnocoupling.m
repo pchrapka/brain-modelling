@@ -54,6 +54,12 @@ sim_params(k).data_params = data_params;
 sim_params(k).label = sim_params(k).filter.name;
 k = k+1;
 
+sim_params(k).filter = MLOCCD_TWL2(nchannels,order_est,'lambda',lambda,'gamma',gamma);
+sim_params(k).data = data_type;
+sim_params(k).data_params = data_params;
+sim_params(k).label = sim_params(k).filter.name;
+k = k+1;
+
 sim_params(k).filter = BurgVectorWindow(nchannels,order_est,'nwindow',30);
 sim_params(k).data = data_type;
 sim_params(k).data_params = data_params;
