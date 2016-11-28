@@ -9,7 +9,7 @@ function lattice_filter_test(filter_name, varargin)
 %
 %   Parameters
 %   ----------
-%   varargin
+%   name, value pairs
 %       filter constructor arguments
 
 K = 4;
