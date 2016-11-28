@@ -91,7 +91,7 @@ parfor i=1:ntrial_groups
     % set up lattice filter
     switch p.Results.filter
         case 'MCMTQRDLSL1'
-            filter = MCMTQRDLSL1(p.Results.trials, nchannels, p.Results.order, p.Results.lambda);
+            filter = MCMTQRDLSL1(nchannels, p.Results.order,p.Results.trials, p.Results.lambda);
         case 'MLOCCDTWL'
             sigma = 10^(-1);
             gamma = sqrt(2*sigma^2*nsamples*log(p.Results.order*nchannels^2));

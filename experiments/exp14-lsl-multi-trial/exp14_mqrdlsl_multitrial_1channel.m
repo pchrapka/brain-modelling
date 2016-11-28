@@ -36,7 +36,7 @@ order_est = 2;
 order_est = 2;
 
 lambda = 0.99;
-filter = MCMTQRDLSL1(ntrials,nchannels,order_est,lambda);
+filter = MCMTQRDLSL1(nchannels,order_est,ntrials,lambda);
 % filter = MQRDLSL1(nchannels,order_est,lambda);
 % filter = MQRDLSL2(nchannels,order_est,lambda);
 trace = LatticeTrace(filter,'fields',{'Kf'});
