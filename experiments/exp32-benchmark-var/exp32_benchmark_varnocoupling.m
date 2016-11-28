@@ -22,7 +22,7 @@ k=1;
 sim_params = [];
 
 ntrials = 5;
-sim_params(k).filter = MCMTQRDLSL1(ntrials,nchannels,order_est,lambda);
+sim_params(k).filter = MCMTQRDLSL1(nchannels,order_est,ntrials,lambda);
 sim_params(k).data = data_type;
 sim_params(k).data_params = data_params;
 sim_params(k).label = sim_params(k).filter.name;

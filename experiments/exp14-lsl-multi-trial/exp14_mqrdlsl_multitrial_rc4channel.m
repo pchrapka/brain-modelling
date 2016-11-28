@@ -36,7 +36,7 @@ order_est = norder;
 verbosity = 2;
 
 lambda = 0.99;
-filter = MCMTQRDLSL1(ntrials,nchannels,order_est,lambda);
+filter = MCMTQRDLSL1(nchannels,order_est,ntrials,lambda);
 trace{1} = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
@@ -51,7 +51,7 @@ save_fig_exp(mfilename('fullpath'),'tag','trace1-2');
 
 %% MCMTQRDLSL1 with 2 trials
 lambda = 0.99;
-filter = MCMTQRDLSL1(2,nchannels,order_est,lambda);
+filter = MCMTQRDLSL1(nchannels,order_est,2,lambda);
 trace{2} = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter

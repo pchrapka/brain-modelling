@@ -36,9 +36,9 @@ classdef MCMTQRDLSL1
     end
     
     methods
-        function obj = MCMTQRDLSL1(trials, channels, order, lambda)
+        function obj = MCMTQRDLSL1(channels, order, trials, lambda)
             %MCMTQRDLSL1 constructor for MQRDLSL1
-            %   MCMTQRDLSL1(trials, channels, order, lambda) creates a
+            %   MCMTQRDLSL1(channels, order, trials, lambda) creates a
             %   MCMTQRDLSL1 object
             %
             %   Input

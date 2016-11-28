@@ -178,7 +178,7 @@ k = k+1;
 
 % multi trial
 mt = 2;
-filter = MCMTQRDLSL1(mt,nchannels,order_est,lambda);
+filter = MCMTQRDLSL1(nchannels,order_est,mt,lambda);
 trace{k} = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
@@ -187,7 +187,7 @@ trace{k}.name = trace{k}.filter.name;
 k = k+1;
 
 mt = 5;
-filter = MCMTQRDLSL1(mt,nchannels,order_est,lambda);
+filter = MCMTQRDLSL1(nchannels,order_est,mt,lambda);
 trace{k} = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
@@ -222,7 +222,7 @@ trace{k}.name = ['noise warmup ' trace{k}.filter.name];
 k = k+1;
 
 mt = 5;
-filter = MCMTQRDLSL1(mt,nchannels,order_est,lambda);
+filter = MCMTQRDLSL1(nchannels,order_est,mt,lambda);
 
 mu = zeros(nchannels,1);
 sigma = eye(nchannels);

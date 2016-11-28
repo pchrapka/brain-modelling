@@ -20,7 +20,7 @@ data_type = 'vrc-cp-ch2-coupling1-fixed';
 sim_params = [];
 for k=1:nchannel_opts
     nchannels = channels(k);
-    sim_params(k).filter = MCMTQRDLSL1(5,nchannels,order_est,lambda);
+    sim_params(k).filter = MCMTQRDLSL1(nchannels,order_est,5,lambda);
     sim_params(k).data = data_type;
     sim_params(k).label = sprintf('%d channels',nchannels);
 end

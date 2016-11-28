@@ -102,7 +102,7 @@ order_est = 3;
 verbosity = 1;
 
 lambda = 0.99;
-filter = MCMTQRDLSL1(ntrials,nchannels,order_est,lambda);
+filter = MCMTQRDLSL1(nchannels,order_est,ntrials,lambda);
 trace{1} = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
@@ -114,7 +114,7 @@ trace{1}.run(x,'verbosity',verbosity,'mode','plot',...
 %% MCMTQRDLSL1 with 2 trials
 
 lambda = 0.99;
-filter = MCMTQRDLSL1(2,nchannels,order_est,lambda);
+filter = MCMTQRDLSL1(nchannels,order_est,2,lambda);
 trace{2} = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter

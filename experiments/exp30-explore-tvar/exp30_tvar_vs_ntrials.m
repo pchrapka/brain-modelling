@@ -24,7 +24,7 @@ for k=1:nchannel_opts
     sim_params = [];
     for j=1:ntrials_opts
         ntrials = trials(j);
-        sim_params(j).filter = MCMTQRDLSL1(ntrials,nchannels,order_est,lambda);
+        sim_params(j).filter = MCMTQRDLSL1(nchannels,order_est,ntrials,lambda);
         sim_params(j).data = data_type;
         sim_params(j).label = sprintf('%d trials',ntrials);
     end

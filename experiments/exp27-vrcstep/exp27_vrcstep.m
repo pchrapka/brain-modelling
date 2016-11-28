@@ -126,7 +126,7 @@ count = count + 1;
 
 %% MCMTQRDLSL1 2 trials
 mt = 2;
-filter = MCMTQRDLSL1(mt,nchannels,order_est,lambda);
+filter = MCMTQRDLSL1(nchannels,order_est,mt,lambda);
 trace{count} = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
@@ -149,7 +149,7 @@ count = count + 1;
 
 %% MCMTQRDLSL1 5 trials
 mt = 5;
-filter = MCMTQRDLSL1(mt,nchannels,order_est,lambda);
+filter = MCMTQRDLSL1(nchannels,order_est,mt,lambda);
 trace{count} = LatticeTrace(filter,'fields',{'Kf'});
 
 % run the filter
