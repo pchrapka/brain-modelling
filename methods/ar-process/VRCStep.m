@@ -149,12 +149,12 @@ classdef VRCStep < VARProcess
             p.parse(nsamples,coefs);
             
             if nsamples < obj.changepoint
-                rc_time = repmat(shiftdim(obj.process1.(coefs),2),1,1,1,nsamples);
+                rc_time = repmat(obj.process1.(coefs),[1,1,1,nsamples]);
                 rc_time = shiftdim(rc_time,3);
             else
-                rc_time1 = repmat(shiftdim(obj.process1.(coefs),2),1,1,1,obj.changepoint);
+                rc_time1 = repmat(obj.process1.(coefs),[1,1,1,obj.changepoint]);
                 rc_time1 = shiftdim(rc_time1,3);
-                rc_time2 = repmat(shiftdim(obj.process2.(coefs),2),1,1,1,nsamples - obj.changepoint);
+                rc_time2 = repmat(obj.process2.(coefs),[1,1,1,nsamples - obj.changepoint]);
                 rc_time2 = shiftdim(rc_time2,3);
                 rc_time = cat(1, rc_time1, rc_time2);
             end
@@ -227,8 +227,8 @@ classdef VRCStep < VARProcess
                     
                     % calculate forward and backward error at each stage
                     for p=P+1:-1:2
-                        ferror(:,p-1) = ferror(:,p) + squeeze(Kb(:,:,p-1))*berrord(:,p-1);
-                        berror(:,p) = berrord(:,p-1) - squeeze(Kf(:,:,p-1))'*ferror(:,p-1);
+                        ferror(:,p-1) = ferror(:,p) + squeeze(Kb(p-1,:,:))'*berrord(:,p-1);
+                        berror(:,p) = berrord(:,p-1) - squeeze(Kf(p-1,:,:))'*ferror(:,p-1);
                         % Structure is from Haykin, p.179, sign convention is from
                         % Lewis1990
                     end

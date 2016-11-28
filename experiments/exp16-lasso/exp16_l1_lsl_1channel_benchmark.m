@@ -44,13 +44,8 @@ for j=1:nsims
     %plot(1:nsamples,squeeze(x(:,:,1)));
     
     %% Set plot params
-    % coefs_true = shiftdim(coefs,2);
-    % kf_true = repmat(coefs_true,1,1,1,nsamples);
-    % kf_true = shiftdim(kf_true,3);
     
-    coefs_true = shiftdim(s.Kf,2);
-    kf_true = repmat(coefs_true,1,1,1,nsamples);
-    kf_true = shiftdim(kf_true,3);
+    kf_true = s.get_rc_time(nsamples,'Kf');
     kf_true_sims{j} = kf_true;
     
     % k_est_mat(:,1,1) = k_est;

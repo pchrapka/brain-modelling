@@ -123,8 +123,8 @@ for K = 1:Pmax,
     end;
 end;
 RCF = -reshape(rcf(:,:,2:end),[M,M*Pmax]);
-% transpose the matrix for each order of RCB coefs
-rcb_tran = permute(rcb,[2 1 3]);
-RCB = -reshape(rcb_tran(:,:,2:end),[M,M*Pmax]);
+% % transpose the matrix for each order of RCB coefs
+% rcb_tran = permute(rcb,[2 1 3]);
+RCB = -reshape(rcb(:,:,2:end),[M,M*Pmax]);
 PE  = reshape(Pf,[M,M*(Pmax+1)]);
 end

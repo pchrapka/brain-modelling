@@ -28,8 +28,8 @@ classdef VRC < VARProcess
             
             obj.K = K;
             obj.P = order;
-            obj.Kf = zeros(K,K,order);
-            obj.Kb = zeros(K,K,order);
+            obj.Kf = zeros(order,K,K);
+            obj.Kb = zeros(order,K,K);
         end
             
         
@@ -50,7 +50,7 @@ classdef VRC < VARProcess
             else
                 error([mfilename ':ParamError'],...
                     'bad size, should be [%d %d %d]',...
-                    obj.K, obj.K, obj.P);
+                    obj.P, obj.K, obj.K);
             end
             
             % Kb
@@ -59,7 +59,7 @@ classdef VRC < VARProcess
             else
                 error([mfilename ':ParamError'],...
                     'bad size, should be [%d %d %d]',...
-                    obj.K, obj.K, obj.P);
+                    obj.P, obj.K, obj.K);
             end
             
             obj.init = true;
@@ -276,7 +276,7 @@ classdef VRC < VARProcess
             p.addRequired('coefs',@(x) any(validatestring(x,{'Kf','Kb'})));
             p.parse(nsamples,coefs);
             
-            rc_time = repmat(shiftdim(obj.(coefs),2),[1,1,1,nsamples]);
+            rc_time = repmat(obj.(coefs),[1,1,1,nsamples]);
             rc_time = shiftdim(rc_time,3);
             
         end
@@ -333,8 +333,8 @@ classdef VRC < VARProcess
                 
                 % calculate forward and backward error at each stage
                 for p=obj.P+1:-1:2
-                    ferror(:,p-1) = ferror(:,p) + squeeze(obj.Kb(:,:,p-1))*berrord(:,p-1);
-                    berror(:,p) = berrord(:,p-1) - squeeze(obj.Kf(:,:,p-1))'*ferror(:,p-1);
+                    ferror(:,p-1) = ferror(:,p) + squeeze(obj.Kb(p-1,:,:))'*berrord(:,p-1);
+                    berror(:,p) = berrord(:,p-1) - squeeze(obj.Kf(p-1,:,:))'*ferror(:,p-1);
                     % Structure is from Haykin, p.179, sign convention is from
                     % Lewis1990
                 end
@@ -367,8 +367,8 @@ classdef VRC < VARProcess
             parse(p,varargin{:});
             
             % reset coefs
-            obj.Kf = zeros(obj.K,obj.K,obj.P);
-            obj.Kb = zeros(obj.K,obj.K,obj.P);
+            obj.Kf = zeros(obj.P,obj.K,obj.K);
+            obj.Kb = zeros(obj.P,obj.K,obj.K);
             
             ncoefs = numel(obj.Kf);
             switch p.Results.mode
@@ -391,7 +391,7 @@ classdef VRC < VARProcess
                 % this makes it a bit easire to get something stable for
                 % higher orders
                 max_iters = 200;
-                idx_hier = reshape(idx,obj.K,obj.K,obj.P);
+                idx_hier = reshape(idx,obj.P,obj.K,obj.K);
                 i = 1;
                 while (i <= obj.P)
                     if p.Results.verbose > 0
@@ -405,14 +405,14 @@ classdef VRC < VARProcess
                     while ~stable && (iters <= max_iters)
                         % get new coefs for current order
                         coefs_rand = scaling*unifrnd(a,b,obj.K,obj.K);
-                        coefs_rand(~idx_hier(:,:,i)) = 0;
+                        coefs_rand(~idx_hier(i,:,:)) = 0;
                         
                         % select coefs according to random index
-                        obj.Kf(:,:,i) = coefs_rand;
+                        obj.Kf(i,:,:) = coefs_rand;
                         
                         % set up a new object of order i
                         s = VRC(obj.K, i);
-                        s.coefs_set(obj.Kf(:,:,1:i),obj.Kf(:,:,1:i));
+                        s.coefs_set(obj.Kf(1:i,:,:),obj.Kf(1:i,:,:));
                         
                         % check stability
                         stable = s.coefs_stable(false);
@@ -443,7 +443,9 @@ classdef VRC < VARProcess
             end
                     
             % copy coefficients
-            obj.Kb = obj.Kf;
+            for i=1:obj.P
+                obj.Kb(i,:,:) = squeeze(obj.Kf(i,:,:))';
+            end
         end
         
         function coefs_gen_sparse_fullchannels(obj,varargin)
@@ -459,8 +461,8 @@ classdef VRC < VARProcess
             parse(p,varargin{:});
             
             % reset coefs
-            obj.Kf = zeros(obj.K,obj.K,obj.P);
-            obj.Kb = zeros(obj.K,obj.K,obj.P);
+            obj.Kf = zeros(obj.P,obj.K,obj.K);
+            obj.Kb = zeros(obj.P,obj.K,obj.K);
             
             a = -1;
             b = 1;
@@ -490,7 +492,7 @@ classdef VRC < VARProcess
                                     'ncoefs',ncoefs_perchannel,...
                                     'stable',true);
                         end
-                        obj.Kf(i,i,:) = var1.Kf;
+                        obj.Kf(:,i,i) = var1.Kf;
                     end
                     
                     coupling_count = 0;
@@ -499,7 +501,7 @@ classdef VRC < VARProcess
                         coupled_order = randsample(1:obj.P,1);
                         
                         % check if we've already chosen this one
-                        if obj.Kf(coupled_channels(1),coupled_channels(2),coupled_order) == 0
+                        if obj.Kf(coupled_order,coupled_channels(1),coupled_channels(2)) == 0
                             
                             stable_coupling = false;
                             scaling = 1;
@@ -507,8 +509,8 @@ classdef VRC < VARProcess
                             max_iters = 200;
                             while ~stable_coupling  && (iters <= max_iters)
                                 % generate a new coefficient
-                                obj.Kf(coupled_channels(1),coupled_channels(2),...
-                                    coupled_order) = scaling*unifrnd(a, b);
+                                obj.Kf(coupled_order,coupled_channels(1),coupled_channels(2))...
+                                    = scaling*unifrnd(a, b);
                                 
                                 % check coupling stability
                                 stable_coupling = obj.coefs_stable(false);
@@ -528,8 +530,7 @@ classdef VRC < VARProcess
                                 end
                             else
                                 % reset coefficient
-                                obj.Kf(coupled_channels(1),coupled_channels(2),...
-                                    coupled_order) = 0;
+                                obj.Kf(coupled_order,coupled_channels(1),coupled_channels(2)) = 0;
                             end
                             
                         end
@@ -543,7 +544,9 @@ classdef VRC < VARProcess
                 error('not implemented');
             end
             
-            obj.Kb = obj.Kf;
+            for i=1:obj.P
+                obj.Kb(i,:,:) = squeeze(obj.Kf(i,:,:))';
+            end
             
         end
     end

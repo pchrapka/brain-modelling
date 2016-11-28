@@ -34,8 +34,8 @@ classdef TestVRC < matlab.unittest.TestCase
             testCase.verifyFalse(s.init);
             testCase.verifyEqual(s.K, K);
             testCase.verifyEqual(s.P, order);
-            testCase.verifyEqual(size(s.Kf), [K,K,order]);
-            testCase.verifyEqual(size(s.Kb), [K,K,order]);
+            testCase.verifyEqual(size(s.Kf), [order,K,K]);
+            testCase.verifyEqual(size(s.Kb), [order,K,K]);
         end
         
         function test_simulate(testCase)
@@ -58,11 +58,29 @@ classdef TestVRC < matlab.unittest.TestCase
             end
         end
         
+        function test_simulate2(testCase)
+            K = 4;
+            order = 3;
+            % test constructor
+            s = VRC(K,order);
+            s.coefs_gen_sparse('mode','exact','ncoefs',6);
+            
+            nsamples = 100000;
+            [y, y_norm, noise] = s.simulate(nsamples);
+            
+            [AR,RCF,RCB,PE] = nuttall_strand(y_norm', order);
+            Kf = rcmat2array(RCF,'format',1);
+            Kb = rcmat2array(RCB,'format',1);
+            
+            testCase.verifyEqual(Kf, s.Kf, 'AbsTol', 0.3);
+            testCase.verifyEqual(Kb, s.Kb, 'AbsTol', 0.3);
+        end
+        
         function test_coefs_set(testCase)
             K = 4;
             order = 3;
-            Kf = randn(K,K,order);
-            Kb = randn(K,K,order);
+            Kf = randn(order,K,K);
+            Kb = randn(order,K,K);
 
             s = VRC(K,order);
             s.coefs_set(Kf,Kb);
@@ -74,8 +92,8 @@ classdef TestVRC < matlab.unittest.TestCase
         function test_coefs_set_error_Kf(testCase)
             K = 4;
             order = 3;
-            Kf = randn(K-1,K,order);
-            Kb = randn(K,K,order);
+            Kf = randn(order,K-1,K);
+            Kb = randn(order,K,K);
 
             s = VRC(K,order);
             testCase.verifyError(@() s.coefs_set(Kf,Kb),'VRC:ParamError');
@@ -84,8 +102,8 @@ classdef TestVRC < matlab.unittest.TestCase
         function test_coefs_set_error_Kb(testCase)
             K = 4;
             order = 3;
-            Kb = randn(K-1,K,order);
-            Kf = randn(K,K,order);
+            Kb = randn(order,K-1,K);
+            Kf = randn(order,K,K);
 
             s = VRC(K,order);
             testCase.verifyError(@() s.coefs_set(Kf,Kb),'VRC:ParamError');

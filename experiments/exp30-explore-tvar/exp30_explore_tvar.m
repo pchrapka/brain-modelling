@@ -191,15 +191,11 @@ gamma = sqrt(2*sigma^2*ntime*log(nchannels));
 
 %% true RC coefs
 
-% ktrue = zeros(order_est, nchannels, nchannels);
-% for i=1:s.P
-%     ktrue(i,:,:) = s.Kf(:,:,i);
-% end
-% data_sta{m}.coef = ktrue;
+% data_sta{m}.coef = s.Kf;
 % data_sta{m}.name = 'True';
 % m = m+1;
 
-trace{k}.trace.Kf = ktrue;
+trace{k}.trace.Kf = s.Kf;
 trace{k}.name = 'True';
 k = k+1;
 

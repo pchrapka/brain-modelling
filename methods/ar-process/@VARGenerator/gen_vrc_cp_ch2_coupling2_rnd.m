@@ -35,12 +35,12 @@ if isempty(p.Results.process)
     source_channels = randsample(1:nchannels,2);
     
     % set const to vrc 1
-    vrc_const = zeros(nchannels, nchannels, norder);
-    vrc_const(source_channels(1),source_channels(1),:) = vrc1.Kf;
+    vrc_const = zeros(norder, nchannels, nchannels);
+    vrc_const(:,source_channels(1),source_channels(1)) = vrc1.Kf;
     
     % set pulse to vrc 2
-    vrc_pulse_source = zeros(nchannels, nchannels, norder);
-    vrc_pulse_source(source_channels(2),source_channels(2),:) = vrc2.Kf;
+    vrc_pulse_source = zeros(norder, nchannels, nchannels);
+    vrc_pulse_source(:,source_channels(2),source_channels(2)) = vrc2.Kf;
     
     % set different changepoints for the conditions
     changepoints = [20 100] + (ntime - 256);
@@ -50,7 +50,7 @@ if isempty(p.Results.process)
     while ~stable
         
         % modify coupling for each condition
-        vrc_coupling = zeros(nchannels, nchannels, norder);
+        vrc_coupling = zeros(norder, nchannels, nchannels);
         coupling_count = 0;
         while coupling_count < ncouplings
             
@@ -58,9 +58,9 @@ if isempty(p.Results.process)
             coupled_order = randsample(1:norder,1);
             
             % check if we've already chosen this one
-            if vrc_coupling(coupled_channels(1),coupled_channels(2),coupled_order) == 0
+            if vrc_coupling(coupled_order,coupled_channels(1),coupled_channels(2)) == 0
                 % generate a new coefficient
-                vrc_coupling(coupled_channels(1),coupled_channels(2),coupled_order) = unifrnd(-1, 1);
+                vrc_coupling(coupled_order,coupled_channels(1),coupled_channels(2)) = unifrnd(-1, 1);
                 % increment counter
                 coupling_count = coupling_count + 1;
             end

@@ -14,19 +14,19 @@ nchannels = 4;
 ntrials = 1;
 
 Kf = zeros(nchannels, nchannels,norder);
-Kf(:,:,1) = [...
+Kf(1,:,:) = [...
 	-0.8         0         0         0;
        0      -0.8         0         0;
        0         0      -0.8         0;
        0         0         0      -0.8;...
     ];
-Kf(:,:,2) = [...
+Kf(2,:,:) = [...
        0.6         0         0         0;
          0       0.6         0         0;
          0         0       0.6         0;
          0         0         0       0.6;...
     ];
-Kf(:,:,3) = [...
+Kf(3,:,:) = [...
        0.2         0         0         0;
          0       0.2         0         0;
          0         0       0.2         0;
@@ -34,9 +34,9 @@ Kf(:,:,3) = [...
     ];
 
 Kb = zeros(nchannels,nchannels,norder);
-Kb(:,:,1) = Kf(:,:,1)';
-Kb(:,:,2) = Kf(:,:,2)';
-Kb(:,:,3) = Kf(:,:,3)';
+for i=1:norder
+    Kb(i,:,:) = squeeze(Kf(i,:,:))';
+end
 
 s = VRC(nchannels,norder);
 s.coefs_set(Kf,Kb);
@@ -64,17 +64,11 @@ end
 %% Estimate the AR and reflection coefficients using stationary method, Nuttall Strand
 
 [AR,RCF,RCB,PE] = nuttall_strand(Y', norder);
-Aest = zeros(nchannels,nchannels,norder);
-Kf_NS = zeros(norder,nchannels,nchannels);
-Kb_NS = zeros(norder,nchannels,nchannels);
+Kf_NS = rcmat2array(RCF);
+Kb_NS = rcmat2array(RCB);
+Aest = rcmat2array(AR);
 fprintf('Method: Nuttall Strand\n');
 for i=1:norder
-    idx_start = (i-1)*nchannels+1;
-    idx_end = i*nchannels; 
-    Aest(:,:,i) = AR(:,idx_start:idx_end);
-    Kf_NS(i,:,:) = RCF(:,idx_start:idx_end);
-    Kb_NS(i,:,:) = RCB(:,idx_start:idx_end);
-    
     fprintf('order %d\n\n',i);
     fprintf('VAR coefficients\n');
     %fprintf('Actual\n');
@@ -86,13 +80,13 @@ for i=1:norder
     fprintf('Reflection coefficients\n');
     fprintf('Kf:\n');
     fprintf('Actual\n');
-    disp(s.Kf(:,:,i));
+    disp(s.Kf(i,:,:));
     fprintf('Estimated\n');
     disp(squeeze(Kf_NS(i,:,:)));
     
     fprintf('Kb:\n');
     fprintf('Actual\n');
-    disp(s.Kb(:,:,i));
+    disp(s.Kb(i,:,:));
     fprintf('Estimated\n');
     disp(squeeze(Kb_NS(i,:,:)));
     fprintf('\n');
@@ -101,11 +95,8 @@ end
 
 %% Compare to MQRDLSLS1
 %plot_options = {'ch1',1,'ch2',1,'true',k_true};
-kf_true = repmat(shiftdim(s.Kf,2),1,1,1,nsamples);
-kf_true = shiftdim(kf_true,3);
-
-kb_true = repmat(shiftdim(s.Kb,2),1,1,1,nsamples);
-kb_true = shiftdim(kb_true,3);
+kf_true = s.get_rc_time(nsamples,'Kf');
+kb_true = s.get_rc_time(nsamples,'Kb');
 
 verbosity = 0;
 
@@ -136,13 +127,13 @@ for i=1:norder
     
     fprintf('Kf:\n');
     fprintf('Actual\n');
-    disp(s.Kf(:,:,i));
+    disp(s.Kf(i,:,:));
     fprintf('Estimated\n');
     disp(squeeze(trace.trace.Kf(nsamples,i,:,:)));
     
     fprintf('Kb:\n');
     fprintf('Actual\n');
-    disp(s.Kb(:,:,i));
+    disp(s.Kb(i,:,:));
     fprintf('Estimated\n');
     disp(squeeze(trace.trace.Kb(nsamples,i,:,:)));
     fprintf('\n');

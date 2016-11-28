@@ -153,11 +153,7 @@ lambda = 0.98;
 
 %% true RC coefs
 if isequal(data_source,'simulated')
-    ktrue = zeros(order_est, nchannels, nchannels);
-    for i=1:s.P
-        ktrue(i,:,:) = s.Kf(:,:,i);
-    end
-    data_sta{m}.coef = ktrue;
+    data_sta{m}.coef = s.Kf;
     data_sta{m}.name = 'True';
     m = m+1;
 end
