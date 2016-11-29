@@ -28,12 +28,12 @@ processes{2} = kf;
 
 % setup full process
 vrc = VRC(nchannels, norder);
-vrc_coefs = zeros(nchannels, nchannels, norder);
+vrc_coefs = zeros(order, nchannels, nchannels);
 for i=1:nchannels
     % choose a process randomly
     idx = randsample(length(processes),1);
     % set coefficients
-    vrc_coefs(i,i,:) = processes{idx};
+    vrc_coefs(:,i,i) = processes{idx};
 end
 vrc.coefs_set(vrc_coefs,vrc_coefs);
 
