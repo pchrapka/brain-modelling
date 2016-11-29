@@ -73,11 +73,12 @@ classdef MLOCCD_TWL
             obj.rf = zeroMat2;
             obj.rb = zeroMat2;
             
-            obj.Rf = zeroMat3;
-            obj.Rb = zeroMat3;
-            for i=1:obj.order
-                obj.Rf(i,:,:) = eye(obj.nchannels);
-                obj.Rb(i,:,:) = eye(obj.nchannels);
+            delta = 0.01;
+            C = delta*eye(obj.nchannels);
+            R = chol(C);
+            for i=1:obj.order+1
+                obj.Rf(i,:,:) = R;
+                obj.Rb(i,:,:) = R;
             end
             
             obj.Kf = zeroMat3;

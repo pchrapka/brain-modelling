@@ -66,10 +66,16 @@ classdef MCMTQRDLSL1
             
             zeroMat = zeros(obj.order+1, obj.nchannels, obj.nchannels);
 
-            obj.Rf = zeroMat; % \tilde{R} forward squared (e)
-            obj.Rb = zeroMat; % \tilde{R} backward squared (r)
             obj.Xf = zeroMat; % \tilde{X} forward squared (e)
             obj.Xb = zeroMat; % \tilde{X} backward squared (r)
+            
+            delta = 0.01;
+            C = delta*eye(obj.nchannels);
+            R = chol(C);
+            for i=1:obj.order+1
+                obj.Rf(i,:,:) = R;
+                obj.Rb(i,:,:) = R;
+            end
             
             obj.berrord = zeros(obj.nchannels, obj.ntrials, obj.order+1);
             obj.gammasqd = zeros(obj.ntrials, obj.ntrials, obj.order+1);

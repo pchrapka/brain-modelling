@@ -67,18 +67,17 @@ classdef MLOCCD_TWL2
             obj.name = sprintf('MLOCCD_TWL2 C%d P%d lambda=%0.2f gamma=%0.2f',...
                 obj.nchannels, obj.order, obj.lambda, obj.gamma);
             
-            zeroMat3 = zeros(obj.order,obj.nchannels,obj.nchannels);
-            
-            obj.Rbf = zeroMat3;
-            obj.Rfb = zeroMat3;
-            obj.Rf = zeroMat3;
-            obj.Rb = zeroMat3;
-            
-            for i=1:obj.order
-                obj.Rf(i,:,:) = eye(obj.nchannels);
-                obj.Rb(i,:,:) = eye(obj.nchannels);
+            delta = 0.01;
+            C = delta*eye(obj.nchannels);
+            R = chol(C);
+            for i=1:obj.order+1
+                obj.Rf(i,:,:) = R;
+                obj.Rfb(i,:,:) = R;
+                obj.Rb(i,:,:) = R;
+                obj.Rbf(i,:,:) = R;
             end
             
+            zeroMat3 = zeros(obj.order,obj.nchannels,obj.nchannels);
             obj.Kf = zeroMat3;
             obj.Kb = zeroMat3;
             
