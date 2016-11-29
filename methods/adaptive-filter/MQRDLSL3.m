@@ -1,13 +1,15 @@
-classdef MQRDLSL1
-    %MQRDLSL1 Multichannel QR-Decomposition-based Least Squares Lattice
+classdef MQRDLSL3
+    %MQRDLSL3 Multichannel QR-Decomposition-based Least Squares Lattice
     %algorithm
-    %   The implementation is as described in Lewis1990
+    %   The implementation is as described in Yang1990
     %   TODO add source
     
     properties (SetAccess = protected)
         % filter variables
         Rf;     % R forward (e)
+        Rfinvt;
         Rb;     % R backward (r)
+        Rbinvt;
         Xf;     % X forward (e)
         Xb;     % X backward (r)
         
@@ -34,9 +36,9 @@ classdef MQRDLSL1
     end
     
     methods
-        function obj = MQRDLSL1(channels, order, lambda)
-            %MQRDLSL1 constructor for MQRDLSL1
-            %   MQRDLSL1(ORDER, LAMBDA) creates a MQRDLSL1 object
+        function obj = MQRDLSL3(channels, order, lambda)
+            %MQRDLSL3 constructor for MQRDLSL3
+            %   MQRDLSL3(ORDER, LAMBDA) creates a MQRDLSL3 object
             %
             %   channels (integer)
             %       number of channels
@@ -50,15 +52,16 @@ classdef MQRDLSL1
             obj.lambda = lambda;
             
             zeroMat = zeros(obj.order+1, obj.nchannels, obj.nchannels);
-            
+
             delta = 0.01;
             C = delta*eye(obj.nchannels);
             R = chol(C);
             for i=1:obj.order+1
                 obj.Rf(i,:,:) = R;
+                obj.Rfinvt(i,:,:) = inv(R');
                 obj.Rb(i,:,:) = R;
+                obj.Rbinvt(i,:,:) = inv(R');
             end
-
             obj.Xf = zeroMat; % \tilde{X} forward squared (e)
             obj.Xb = zeroMat; % \tilde{X} backward squared (r)
             
@@ -69,7 +72,7 @@ classdef MQRDLSL1
             obj.Kb = zeroMat2;
             obj.Kf = zeroMat2;
             
-            obj.name = sprintf('MQRDLSL1 C%d P%d lambda=%0.2f',...
+            obj.name = sprintf('MQRDLSL3 C%d P%d lambda=%0.2f',...
                 channels, order, lambda);
         end
         
@@ -130,122 +133,70 @@ classdef MQRDLSL1
                 
                 % gamma
                 gammad = sqrt(obj.gammasqd(p-1));
-                if gammad <= eps
-                    if inputs.Results.verbosity > 0
-                        fprintf('resetting gamma\n');
-                    end
-                    gammad_inv = 0;
-                else
-                    gammad_inv = 1/gammad;
-                end
+                gammad_inv = 1/gammad;
                 
                 % forward errors
                 yf1 = gammad_inv*ferror(:,p-1);
                 yf2 = gammad_inv*obj.berrord(:,p-1);
-                Yf1 = obj.lambda*squeeze(obj.Rf(p,:,:));
-                Yf2 = obj.lambda*squeeze(obj.Xf(p,:,:));
+                Yf1 = sqrt(obj.lambda)*squeeze(obj.Rf(p,:,:));
+                Yf2 = sqrt(obj.lambda)*squeeze(obj.Xf(p,:,:));
+                Yf3 = squeeze(obj.Rfinvt(p,:,:))/sqrt(obj.lambda);
                 Yf = [...
-                    Yf1      Yf2      zeros(m,1);...
-                    yf1'     yf2'     gammad;...
+                    Yf1      Yf2      Yf3           zeros(m,1);...
+                    yf1'     yf2'     zeros(1,m)    gammad;...
                     ];
                 % NOTE the row to be zeroed is last so I can use the
                 % standard Givens rotation with no modifications
-                if inputs.Results.verbosity > 2
-                    display(Yf)
-                end
                 Yf = givens_lsl(Yf,m);
-                if inputs.Results.verbosity > 2
-                    display(Yf)
-                end
-                if inputs.Results.verbosity > 1
-                    if ~isempty(find(isnan(Yf),1))
-                        fprintf('got some nans\n');
-                    end
-                end
-                % remove last row
-                Yf(end,:) = [];
                 
                 % extract updated R,X,beta
-                Rf = Yf(:,1:m);
-                Xf = Yf(:,m+1:2*m);
-                betaf = Yf(:,end);
-                if inputs.Results.verbosity > 2
-                    display(Rf)
-                    display(Xf)
-                    display(betaf)
-                end
+                Rf = Yf(1:m,1:m);
+                Xf = Yf(1:m,m+1:2*m);
+                berrortilde = Yf(m+1,m+1:2*m)'; %order p
+                Rfinvt = Yf(1:m,2*m+1:3*m);
+                gf = Yf(m+1,2*m+1:3*m)';
+                %betaf = Yf(1:m,end);
+                gammatilde = Yf(m+1,end); % order p
                 
                 % backward errors
                 yb1 = gammad_inv*obj.berrord(:,p-1);
                 yb2 = gammad_inv*ferror(:,p-1);
-                Yb1 = obj.lambda*squeeze(obj.Rb(p,:,:));
-                Yb2 = obj.lambda*squeeze(obj.Xb(p,:,:));
+                Yb1 = sqrt(obj.lambda)*squeeze(obj.Rb(p,:,:));
+                Yb2 = sqrt(obj.lambda)*squeeze(obj.Xb(p,:,:));
+                Yb3 = squeeze(obj.Rbinvt(p,:,:))/sqrt(obj.lambda);
                 Yb = [...
-                    Yb1      Yb2      zeros(m,1);...
-                    yb1'     yb2'     gammad;...
+                    Yb1      Yb2      Yb3           zeros(m,1);...
+                    yb1'     yb2'     zeros(1,m)    gammad;...
                     ];
                 % NOTE the row to be zeroed is last so I can use the
                 % standard Givens rotation with no modifications
-                if inputs.Results.verbosity > 2
-                    display(Yb)
-                end
                 Yb = givens_lsl(Yb,m);
-                if inputs.Results.verbosity > 2
-                    display(Yb)
-                end
-                if inputs.Results.verbosity > 1
-                    if ~isempty(find(isnan(Yb),1))
-                        fprintf('got some nans\n');
-                    end
-                end
-                % remove last row
-                Yb(end,:) = [];
                 
                 % extract updated R,X,beta
-                Rb = Yb(:,1:m);
-                Xb = Yb(:,m+1:2*m);
-                betab = Yb(:,end);
-                if inputs.Results.verbosity > 2
-                    display(Rb)
-                    display(Xb)
-                    display(betab)
-                end
+                Rb = Yb(1:m,1:m);
+                Xb = Yb(1:m,m+1:2*m);
+                ferrortilde = Yb(m+1,m+1:2*m)'; %order p
+                Rbinvt = Yb(1:m,2*m+1:3*m);
+                gb = Yb(m+1,2*m+1:3*m)';
+                %betab = Yb(1:m,end);
+                gammadtilde = Yb(m+1,end); % order p
                 
                 % update errors
-                ferror(:,p) = ferror(:,p-1) - Xb'*betab;
-                berror(:,p) = obj.berrord(:,p-1) - Xf'*betaf;
-                gammasq(p) = obj.gammasqd(p-1) - betaf'*betaf;
-                if inputs.Results.verbosity > 2
-                    fprintf('ferror\n');
-                    display(ferror(:,p))
-                    fprintf('berror\n');
-                    display(berror(:,p))
-                    fprintf('gammasq\n');
-                    display(gammasq(p))
-                end
-                if inputs.Results.verbosity > 1
-                    if abs(gammasq(p)) <= eps
-                        fprintf('gammasq is < eps\n');
-                        % NOTE if gammasq becomes zero, the next iteration will
-                        % contain NaNs since the first step is 1/gamma
-                    end
-                    if isnan(gammasq(p))
-                        fprintf('gammasq is nan\n');
-                    end
-                end
+                ferror(:,p) = gammadtilde*ferrortilde;
+                berror(:,p) = gammatilde*berrortilde;
+                gammasq(p) = gammatilde^2;
                 
                 % calculate reflection coefficients
-                obj.Kf(p-1,:,:) = Rf\Xf;
-                obj.Kb(p-1,:,:) = Rb\Xb;
-                % NOTE these are singular for the first few iterations
-                % because there are not enough samples, so Rb isn't full
-                % rank
+                obj.Kf(p-1,:,:) = squeeze(obj.Kf(p-1,:,:)) - gf*berrortilde';
+                obj.Kb(p-1,:,:) = squeeze(obj.Kb(p-1,:,:)) - gb*ferrortilde';
                 
                 % save vars
                 obj.Rf(p,:,:) = Rf;
+                obj.Rfinvt(p,:,:) = Rfinvt;
                 obj.Xf(p,:,:) = Xf;
                 
                 obj.Rb(p,:,:) = Rb;
+                obj.Rbinvt(p,:,:) = Rbinvt;
                 obj.Xb(p,:,:) = Xb;
                 
             end

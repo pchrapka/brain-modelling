@@ -9,8 +9,10 @@ gamma = 0.2;
 
 lambda = 0.99;
 
+%%
 lattice_filter_test('MQRDLSL1','filter_args',{lambda});
 lattice_filter_test('MQRDLSL2','filter_args',{lambda});
+lattice_filter_test('MQRDLSL3','filter_args',{lambda});
 lattice_filter_test('MCMTQRDLSL1','filter_args',{trials,0.99});
 lattice_filter_test('MLOCCD_TWL','filter_args',{'lambda',lambda,'gamma',gamma}); % fix everything
 lattice_filter_test('MLOCCD_TWL2','filter_args',{'lambda',lambda,'gamma',gamma});

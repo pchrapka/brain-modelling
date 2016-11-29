@@ -56,10 +56,16 @@ classdef MQRDLSL2
             zeroMat2 = zeros(obj.order+1, obj.nchannels);
             obj.dfsq = zeroMat2; % D forward squared (e)
             obj.dbsq = zeroMat2; % D backward squared (r)
-            obj.Rtildef = zeroMat; % \tilde{R} forward squared (e)
-            obj.Rtildeb = zeroMat; % \tilde{R} backward squared (r)
             obj.Xtildef = zeroMat; % \tilde{X} forward squared (e)
             obj.Xtildeb = zeroMat; % \tilde{X} backward squared (r)
+            
+            delta = 0.01;
+            C = delta*eye(obj.nchannels);
+            R = chol(C);
+            for i=1:obj.order+1
+                obj.Rtildef(i,:,:) = R;
+                obj.Rtildeb(i,:,:) = R;
+            end
             
             % init the diagonals of D to 1's
             onesMat = ones(obj.nchannels, obj.order+1);
