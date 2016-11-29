@@ -28,7 +28,7 @@ processes{2} = kf;
 
 % setup full process
 vrc = VRC(nchannels, norder);
-vrc_coefs = zeros(order, nchannels, nchannels);
+vrc_coefs = zeros(norder, nchannels, nchannels);
 for i=1:nchannels
     % choose a process randomly
     idx = randsample(length(processes),1);
