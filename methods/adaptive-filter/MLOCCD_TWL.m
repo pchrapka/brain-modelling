@@ -128,47 +128,26 @@ classdef MLOCCD_TWL
                 Rf_new = obj.lambda*Rf_old + ferror(:,m-1)*ferror(:,m-1)';
                 
                 for ch=1:obj.nchannels
-                    kf_new = squeeze(obj.Kf(m-1,ch,:));
-                    kb_new = squeeze(obj.Kb(m-1,ch,:));
+                    kf = squeeze(obj.Kf(m-1,:,ch))';
+                    kb = squeeze(obj.Kb(m-1,:,ch))';
                     
                     % eq 8
-                    rf_new = obj.lambda*squeeze(obj.rf(m,ch,:)) + ferror(ch,m-1)*obj.berrord(:,m-1);
-                    rb_new = obj.lambda*squeeze(obj.rb(m,ch,:)) + obj.berrord(ch,m-1)*ferror(:,m-1);
+                    rf_new = obj.lambda*squeeze(obj.rf(m-1,:,ch))' + ferror(ch,m-1)*obj.berrord(:,m-1);
+                    rb_new = obj.lambda*squeeze(obj.rb(m-1,:,ch))' + obj.berrord(ch,m-1)*ferror(:,m-1);
                     
-                    for p=1:obj.nregressors
-                        idx = true(obj.nregressors,1);
-                        idx(p) = false;
-                        
-                        % eq 18
-                        if obj.nregressors == 1
-                            rfp = rf_new(p);
-                            rbp = rb_new(p);
-                        else
-                            rfp = rf_new(p) - Rf_new(p,idx)*kf_new(idx);
-                            rbp = rb_new(p) - Rb_new(p,idx)*kb_new(idx);
-                        end
-                        % NOTE I think there's an error in Algorithm 3 in the paper
-                        % It says to use obj.x instead of x_new
-                        
-                        % eq 19
-                        kf_new(p) = sign(rfp)/Rf_new(p,p)*max((abs(rfp) - obj.gamma),0);
-                        kb_new(p) = sign(rbp)/Rb_new(p,p)*max((abs(rbp) - obj.gamma),0);
-                    end
-                    
-                    % update prediction errors
-                    ferror(ch,m) = ferror(ch,m-1) - obj.berrord(:,m-1)'*kf_new;
-                    berror(ch,m) = obj.berrord(ch,m-1) - ferror(:,m-1)'*kb_new;
+                    kf_new = lasso_rls_update(kf, Rf_new, rb_new, obj.gamma);
+                    kb_new = lasso_rls_update(kb, Rb_new, rf_new, obj.gamma);
                     
                     % save vars
-                    obj.Kf(m-1,ch,:) = kf_new;
-                    obj.Kb(m-1,ch,:) = kb_new;
-                    obj.rf(m,ch,:) = rf_new;
-                    obj.rb(m,ch,:) = rb_new;
-                    
-                    %fprintf('ch%02d kf:',ch);
-                    %fprintf('%0.2f ',obj.kf(ch,:));
-                    %fprintf('\n');
+                    obj.Kf(m-1,:,ch) = kf_new;
+                    obj.Kb(m-1,:,ch) = kb_new;
+                    obj.rf(m-1,:,ch) = rf_new;
+                    obj.rb(m-1,:,ch) = rb_new;
                 end
+                
+                % update prediction errors
+                ferror(:,m) = ferror(:,m-1) - squeeze(obj.Kb(m-1,:,:))'*obj.berrord(:,m-1);
+                berror(:,m) = obj.berrord(:,m-1) - squeeze(obj.Kf(m-1,:,:))'*ferror(:,m-1);
                 
                 % save vars
                 obj.Rf(m-1,:,:) = Rf_new;
@@ -177,14 +156,6 @@ classdef MLOCCD_TWL
             
             % save backward error
             obj.berrord = berror;
-            
-            % % reshape to 3d matrix
-            % % FIXME double check this manipulation
-            %obj.Kf = reshape(obj.kf,obj.nchannels,obj.nchannels,obj.order);
-            %obj.Kf = shiftdim(obj.Kf,2);
-            
-            %obj.Kb = reshape(obj.kb,obj.nchannels,obj.nchannels,obj.order);
-            %obj.Kb = shiftdim(obj.Kb,2);
             
         end
     end

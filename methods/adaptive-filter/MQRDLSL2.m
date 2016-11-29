@@ -274,7 +274,7 @@ classdef MQRDLSL2
                 
                 % calculate reflection coefficients
                 obj.Kf(p-1,:,:) = Rf\Xf;
-                obj.Kb(p-1,:,:) = (Rb\Xb)';
+                obj.Kb(p-1,:,:) = Rb\Xb;
                 % NOTE these are singular for the first few iterations
                 % because there are not enough samples, so Rb isn't full
                 % rank

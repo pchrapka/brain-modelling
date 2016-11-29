@@ -127,26 +127,20 @@ classdef MLOCCD_TWL2
                 Rfb_new = obj.lambda*squeeze(obj.Rfb(m-1,:,:)) + ferror(:,m-1)*obj.berrord(:,m-1)';
                 
                 for ch=1:obj.nchannels
-                    kf = squeeze(obj.Kf(m-1,ch,:));
-                    kb = squeeze(obj.Kb(m-1,ch,:));
+                    kf = squeeze(obj.Kf(m-1,:,ch))';
+                    kb = squeeze(obj.Kb(m-1,:,ch))';
                     
-                    kf_new = lasso_rls_update(kf, Rf_new, Rbf_new(ch,:), obj.gamma);
-                    kb_new = lasso_rls_update(kb, Rb_new, Rfb_new(ch,:), obj.gamma);
+                    kf_new = lasso_rls_update(kf, Rf_new, Rfb_new(:,ch), obj.gamma);
+                    kb_new = lasso_rls_update(kb, Rb_new, Rbf_new(:,ch), obj.gamma);
                     
                     % save vars
-                    obj.Kf(m-1,ch,:) = kf_new;
-                    obj.Kb(m-1,ch,:) = kb_new;
-                    
-                    %fprintf('ch%02d kf:',ch);
-                    %fprintf('%0.2f ',obj.kf(ch,:));
-                    %fprintf('\n');
+                    obj.Kf(m-1,:,ch) = kf_new;
+                    obj.Kb(m-1,:,ch) = kb_new;
                 end
                 
                 % update prediction errors
-                ferror(:,m) = ferror(:,m-1) - squeeze(obj.Kf(m-1,:,:))*obj.berrord(:,m-1);
-                berror(:,m) = obj.berrord(:,m-1) - squeeze(obj.Kb(m-1,:,:))*ferror(:,m-1);
-                % NOTE Kf and Kb here are tranposes of my write up,
-                % standardize the notation!!
+                ferror(:,m) = ferror(:,m-1) - squeeze(obj.Kb(m-1,:,:))'*obj.berrord(:,m-1);
+                berror(:,m) = obj.berrord(:,m-1) - squeeze(obj.Kf(m-1,:,:))'*ferror(:,m-1);
                 
                 % save vars
                 obj.Rbf(m-1,:,:) = Rbf_new;
@@ -157,14 +151,6 @@ classdef MLOCCD_TWL2
             
             % save backward error
             obj.berrord = berror;
-            
-            % % reshape to 3d matrix
-            % % FIXME double check this manipulation
-            %obj.Kf = reshape(obj.kf,obj.nchannels,obj.nchannels,obj.order);
-            %obj.Kf = shiftdim(obj.Kf,2);
-            
-            %obj.Kb = reshape(obj.kb,obj.nchannels,obj.nchannels,obj.order);
-            %obj.Kb = shiftdim(obj.Kb,2);
             
         end
     end

@@ -46,7 +46,7 @@ result = isequalntol(squeeze(trace.trace.Kf(end,:,:,:)),...
 idx = abs(process.Kf) > 0;
 accuracy_percent = sum(result(idx))/length(result(idx));
 fprintf('Kf is %0.0f%% OK\n',accuracy_percent*100);
-if accuracy_percent < 0.9
+if accuracy_percent < 5/6
     fprintf('True\n');
     print_rc(process.Kf);
     fprintf('Estimated\n');
@@ -59,7 +59,7 @@ idx = abs(process.Kb) > 0;
 accuracy_percent = sum(result(idx))/length(result(idx));
 fprintf('Kb is %0.0f%% OK\n',accuracy_percent*100);
 
-if accuracy_percent < 0.9
+if accuracy_percent < 5/6
     fprintf('True\n');
     print_rc(process.Kb);
     fprintf('Estimated\n');

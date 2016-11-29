@@ -15,6 +15,7 @@ for p=1:nregressors
     end
     
     % eq 19
+    %fprintf('rp: %g\ngamma: %g\n',rp,gamma);
     x(p) = sign(rp)/R(p,p)*max((abs(rp) - gamma),0);
 end
 
