@@ -21,7 +21,7 @@ addParameter(p,'samples',1000,@isnumeric);
 parse(p,filter_name,varargin{:});
 
 switch filter_name 
-    case 'MCMTQRDLSL1'
+    case {'MCMTQRDLSL1','MCMTLOCCD_TWL2'}
         ntrials = p.Results.filter_args{1};
     otherwise
         ntrials = 1;
