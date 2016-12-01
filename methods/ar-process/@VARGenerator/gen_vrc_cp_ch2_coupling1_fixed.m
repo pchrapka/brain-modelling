@@ -12,14 +12,14 @@ ntime = 358;
 % set VRC processes
 k_vrc1 = zeros(norder,1,1);
 k_vrc1(1,1,1) = 0.4789;
-k_vrc1(6,1,1) = 0.9642;
+k_vrc1(6,1,1) = -0.9642;
 
-k_vrc2 = zeros(1,1,norder);
+k_vrc2 = zeros(norder,1,1);
 k_vrc2(4,1,1) = 0.6054;
 k_vrc2(10,1,1) = 0.9131;
 
-coupling_value = -0.5006;
-coupling_order = 7;
+coupling_value = -0.4006;
+coupling_order = 3;
 
 % Rationale: for each condition use the same VAR models for the constant
 % and pulse processes, change the coupling and changepoints to account for
