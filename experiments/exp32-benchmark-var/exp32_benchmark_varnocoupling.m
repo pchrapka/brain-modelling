@@ -11,9 +11,12 @@ lambda = 0.99;
 verbosity = 0;
 
 % data_type = 'vrc-coupling0-fixed';
+% nsamples = 2000;
+% data_params = {'nsamples', nsamples};
+
 data_type = 'vrc-cp-ch2-coupling1-fixed';
-nsamples = 2000;
-data_params = {'nsamples', nsamples};
+nsamples = 358;
+data_params = {};
 
 % TODO add nuttall strand
 
