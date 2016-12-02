@@ -1,8 +1,6 @@
 function params = params_sd_tvar_p8_ch13()
 % params for time varying VAR, order = 8, channels = 13
 
-[srcdir,func_name,~] = fileparts(mfilename('fullpath'));
-
 %% generate data
 
 norder = 8;
@@ -20,11 +18,11 @@ conds(2).label = 'odd';
 conds(2).opt_func = 'params_al_odd';
 ncond = length(conds);
 
-outdir = fullfile(srcdir,...
-    '..','experiments','output-common','simulated');
+outdir = fullfile(get_project_dir(),'experiments','output-common','simulated');
 if ~exist(outdir,'dir')
     mkdir(outdir);
 end
+[~,func_name,~] = fileparts(mfilename('fullpath'));
 
 % set different changepoints for the conditions
 changepoints = {};
