@@ -103,7 +103,7 @@ parfor i=1:ntrial_groups
         case 'MCMTLOCCD_TWL2'
             sigma = 10^(-1);
             gamma = sqrt(2*sigma^2*nsamples*log(p.Results.order*nchannels^2));
-            filter = MLOCCD_TWL(nchannels, p.Results.order, p.Results.trials,...
+            filter = MCMTMLOCCD_TWL2(nchannels, p.Results.order, p.Results.trials,...
                 'lambda', p.Results.lambda,'gamma',gamma);
         case 'MQRDLSL2'
             filter = MQRDLSL2(nchannels, p.Results.order, p.Results.lambda);
