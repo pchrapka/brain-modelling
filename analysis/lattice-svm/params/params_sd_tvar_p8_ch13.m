@@ -43,6 +43,7 @@ for i=1:ncond
     % get the data time stamp
     data_time = get_timestamp(var_gen.get_file());
     
+    fresh = false;
     if exist(outfile,'file')
         % check freshness of data and source analysis
         source_time = get_timestamp(outfile);
@@ -68,7 +69,7 @@ for i=1:ncond
         end
         
         % save data
-        save(outfile,'data');
+        save(outfile,'data','v7.3');
         params.force = true;
     else
         fprintf('source data exists: %s\n',outfile);
