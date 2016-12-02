@@ -11,6 +11,7 @@ nchannels = 13;
 ntime = 358;
 
 params = [];
+params.force = false;
 
 conds = [];
 conds(1).label = 'std';
@@ -68,6 +69,7 @@ for i=1:ncond
         
         % save data
         save(outfile,'data');
+        params.force = true;
     else
         fprintf('source data exists: %s\n',outfile);
     end

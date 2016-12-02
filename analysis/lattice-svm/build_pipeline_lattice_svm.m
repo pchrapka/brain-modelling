@@ -175,4 +175,13 @@ end
 pipeline.options.mode = 'session';
 pipeline.options.max_queued = 1; % use one thread since all stages use parfor
 
+% restart the whole pipeline if the force flag is set
+% Only the case if the initial data changes
+if isfield(params_sd,'force')
+    if params_sd.force
+        pipeline.options.restart = 'al';
+        pipeline.options.type_restart = 'substring';
+    end
+end
+
 end
