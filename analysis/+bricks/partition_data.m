@@ -78,7 +78,7 @@ test_data.feature_labels = data.feature_labels;
 train_data.feature_labels = data.feature_labels;
 
 % save
-save(files_out.test,'test_data');
-save(files_out.train,'train_data');
+save(files_out.test,'test_data','-v7.3');
+save(files_out.train,'train_data','-v7.3');
 
 end

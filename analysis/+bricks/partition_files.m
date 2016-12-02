@@ -67,7 +67,7 @@ test_files = reshape(test_files,numel(test_files),1);
 train_files = reshape(train_files,numel(train_files),1);
 
 % save
-save(files_out.test,'test_files');
-save(files_out.train,'train_files');
+save(files_out.test,'test_files','-v7.3');
+save(files_out.train,'train_files','-v7.3');
 
 end

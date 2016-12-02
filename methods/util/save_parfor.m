@@ -5,5 +5,5 @@ if ~exist(pathstr,'dir')
     mkdir(pathstr);
 end
 
-save(filename, 'data');
+save(filename, 'data','-v7.3');
 end

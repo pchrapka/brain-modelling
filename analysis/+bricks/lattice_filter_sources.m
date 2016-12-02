@@ -169,6 +169,6 @@ parfor i=1:ntrial_groups
 end
 
 % save trial list
-save(files_out, 'file_list');
+save(files_out, 'file_list','-v7.3');
 
 end

@@ -28,6 +28,6 @@ data = loadfile(files_in);
 % add label
 [data.label] = deal(p.Results.label);
 
-save(files_out,'data');
+save(files_out,'data','-v7.3');
 
 end

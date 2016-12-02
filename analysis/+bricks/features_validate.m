@@ -49,6 +49,6 @@ data = [];
 data.class_labels = data_in.class_labels;
 
 % save output
-save(files_out,'data');
+save(files_out,'data','-v7.3');
 
 end

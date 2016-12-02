@@ -84,6 +84,6 @@ data = [];
 data.feature_labels = feature_labels;
 data.samples = samples;
 data.class_labels = class_labels;
-save(files_out, 'data');
+save(files_out, 'data','-v7.3');
 
 end

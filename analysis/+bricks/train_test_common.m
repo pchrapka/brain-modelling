@@ -110,6 +110,6 @@ data.feat_common = feat_common_idx;
 data.predictions_train = predictions_train;
 data.class_labels_train = train_data.class_labels;
 
-save(p.Results.files_out,'data');
+save(p.Results.files_out,'data','-v7.3');
 
 end

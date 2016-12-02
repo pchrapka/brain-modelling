@@ -68,6 +68,6 @@ data.feature_labels = feature_labels;
 data.feat_sel_fdr = feat_sel_fdr;
 data.features = features;
 data.class_labels = data_in.class_labels;
-save(files_out, 'data');
+save(files_out, 'data','-v7.3');
 
 end
