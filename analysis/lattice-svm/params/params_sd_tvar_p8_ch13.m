@@ -64,7 +64,7 @@ for i=1:ncond
             data(j).avg.mom = cell(nchannels,1);
             data(j).time = linspace(-0.5,1,ntime);
             for k=1:nchannels
-                data(j).avg.mom{k} = data_var.signal(k,:); %[1 time]
+                data(j).avg.mom{k} = data_var.signal(k,:,j); %[1 time]
             end
         end
         
