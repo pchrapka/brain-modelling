@@ -37,7 +37,7 @@ for i=1:ncond
     params.conds(i).opt_func = conds(i).opt_func;
     outfile = params.conds(i).file;
     
-    var_gen = VARGenerator('vrc-cp-ch2-coupling2-rnd', ntrials, nchannels);
+    var_gen = VARGenerator('vrc-cp-ch2-coupling2-rnd', ntrials, nchannels,'version',i);
     data_var = var_gen.generate('time',ntime,'order',norder,'changepoints',changepoints{i});
     % get the data time stamp
     data_time = get_timestamp(var_gen.get_file());

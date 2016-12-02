@@ -4,6 +4,7 @@ classdef VARGenerator < handle
         data_name;
         nchannels;
         nsims;
+        version;
     end
     
     methods (Access = protected)
@@ -17,7 +18,7 @@ classdef VARGenerator < handle
     
     methods
         
-        function obj = VARGenerator(data_name, nsims, nchannels)
+        function obj = VARGenerator(data_name, nsims, nchannels, varargin)
             %VARGenerator cosntructor
             %   VARGenerator(data_name, nsims, nchannels)
             %
@@ -31,21 +32,36 @@ classdef VARGenerator < handle
             %       number of simulations
             %   nchannels (integer)
             %       number of channels
+            %
+            %   Parameter
+            %   ---------
+            %   version (default = 1)
+            %       version number
             
             p = inputParser();
             addRequired(p,'data_name',@ischar);
             addRequired(p,'nsims',@isnumeric);
             addRequired(p,'nchannels',@isnumeric);
-            p.parse(data_name, nsims, nchannels);
+            addParameter(p,'version',1,@isnumeric);
+            p.parse(data_name, nsims, nchannels,varargin{:});
             
             obj.data_name = p.Results.data_name;
             obj.nsims = p.Results.nsims;
             obj.nchannels = p.Results.nchannels;
+            obj.version = p.Results.version;
+            
+            outfile_sim = obj.get_file();
+            if exist(outfile_sim,'file')
+                fprintf('generator exists\n');
+            end
         end
         
         function data = generate(obj,varargin)
             %GENERATE generates VAR data
             %   GENERATE(obj) generates VAR data
+            
+            % FIXME this shouldn't have varargin since the parameters are
+            % fixed for the generator
             
             % get the data file
             outfile_sim = obj.get_file();
@@ -104,7 +120,7 @@ classdef VARGenerator < handle
         function outfile = get_file(obj)
             
             outfile = fullfile(get_project_dir(), 'experiments', 'output-common', 'simulated',...
-                sprintf('%s-c%d.mat', obj.data_name, obj.nchannels));
+                sprintf('%s-c%d-v%d.mat', obj.data_name, obj.nchannels, obj.version));
         end
         
     end
