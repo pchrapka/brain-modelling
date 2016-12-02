@@ -69,7 +69,7 @@ for i=1:ncond
         end
         
         % save data
-        save(outfile,'data','v7.3');
+        save(outfile,'data','-v7.3');
         params.force = true;
     else
         fprintf('source data exists: %s\n',outfile);
