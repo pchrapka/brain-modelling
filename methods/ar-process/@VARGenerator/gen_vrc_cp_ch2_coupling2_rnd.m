@@ -2,13 +2,16 @@ function data = gen_vrc_cp_ch2_coupling2_rnd(obj,varargin)
 
 p = inputParser();
 addParameter(p,'process',[]);
+addParameter(p,'time',358,@isnumeric);
+addParameter(p,'order',10,@isnumeric);
+addParameter(p,'changepoints',[20 100] + (358 - 256),@isvector);
 parse(p,varargin{:});
 
 ntrials = obj.nsims;
 nchannels = obj.nchannels;
 
-norder = 10;
-ntime = 358;
+norder = p.Results.order;
+ntime = p.Results.time;
 
 % ncoefs = norder;
 % sparsity = 0.1;
@@ -42,10 +45,6 @@ if isempty(p.Results.process)
     vrc_pulse_source = zeros(norder, nchannels, nchannels);
     vrc_pulse_source(:,source_channels(2),source_channels(2)) = vrc2.Kf;
     
-    % set different changepoints for the conditions
-    changepoints = [20 100] + (ntime - 256);
-    % changepoints = [50 120] + (ntime - 256);
-    
     stable = false;
     while ~stable
         
@@ -69,7 +68,7 @@ if isempty(p.Results.process)
         % add const and coupling to pulse
         vrc_pulse = vrc_const + vrc_coupling + vrc_pulse_source;
         
-        vrc_constpulse = VRCConstAndPulse(nchannels, norder, changepoints);
+        vrc_constpulse = VRCConstAndPulse(nchannels, norder, p.Results.changepoints);
         
         vrc_constpulse.coefs_set(vrc_const, vrc_const, 'const');
         vrc_constpulse.coefs_set(vrc_pulse, vrc_pulse, 'pulse');

@@ -15,7 +15,9 @@ lambda = 0.98;
 verbosity = 0;
 
 data_type = 'vrc-cp-ch2-coupling1-fixed';
+data_type_params = {};
 % data_type = 'vrc-cp-ch2-coupling2-rnd';
+% data_type_params = {'time',358,'order',10};
 
 %% set up benchmark params and run
 for k=1:nchannel_opts
@@ -26,6 +28,7 @@ for k=1:nchannel_opts
         ntrials = trials(j);
         sim_params(j).filter = MCMTQRDLSL1(nchannels,order_est,ntrials,lambda);
         sim_params(j).data = data_type;
+        sim_params(k).data_params = data_type_params;
         sim_params(j).label = sprintf('%d trials',ntrials);
     end
     

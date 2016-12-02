@@ -43,8 +43,11 @@ plot_ref_coefs = false;
 
 % check filter usage
 if p.Results.trials > 1
-    if ~isequal(p.Results.filter,'MCMTQRDLSL1')
-        error('Only MCMTQRDLSL1 is available for multiple trials');
+    switch p.Results.filter
+        case {'MCMTLOCCD_TWL2','MCMTQRDLSL1'}
+            % ok
+        otherwise
+            error('Only MCMTQRDLSL1 is available for multiple trials');
     end
 end
 
@@ -96,6 +99,11 @@ parfor i=1:ntrial_groups
             sigma = 10^(-1);
             gamma = sqrt(2*sigma^2*nsamples*log(p.Results.order*nchannels^2));
             filter = MLOCCD_TWL(nchannels, p.Results.order,...
+                'lambda', p.Results.lambda,'gamma',gamma);
+        case 'MCMTLOCCD_TWL2'
+            sigma = 10^(-1);
+            gamma = sqrt(2*sigma^2*nsamples*log(p.Results.order*nchannels^2));
+            filter = MLOCCD_TWL(nchannels, p.Results.order, p.Results.trials,...
                 'lambda', p.Results.lambda,'gamma',gamma);
         case 'MQRDLSL2'
             filter = MQRDLSL2(nchannels, p.Results.order, p.Results.lambda);
