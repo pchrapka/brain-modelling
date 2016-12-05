@@ -19,6 +19,8 @@ external/fieldtrip-beamforming/.git
 external/lumberjack/.git
 external/TMSBL_code
 external/STSBL_DEMO
+external/asymp_package_v2b/Chap*
+external/asymp_package_v2b/examples
 
 # no compiled code
 external/libsvm*/matlab/*.mex*

@@ -19,6 +19,7 @@ addpath(fullfile(pwd,'external','LSPC'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','FEAST'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','MIToolbox'));
 addpath(genpath(fullfile(pwd,'external','AutomaticSpectra')));
+addpath(fullfile(pwd,'external','asymp_package_v2b','routines'));
 
 %% add external packages with setup steps
 % Check fEAST has been compiled
