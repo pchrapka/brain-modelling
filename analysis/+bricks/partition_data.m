@@ -56,6 +56,7 @@ for i=1:nsets
     % check that we have a minimum number of samples
     nsamples_in = size(samples_set,1);
     if nsamples_in < nsamples_req
+        fprintf('got %d samples, require %d samples\n',nsamples_in, nsamples_req);
         error('not enough samples');
     end
     

@@ -4,7 +4,9 @@ function params = params_sd_tvar_p8_ch13()
 %% generate data
 
 norder = 8;
-ntrials = 270;
+nsets_max = 120;
+ntrials_max = 5;
+ntrials = nsets_max*ntrials_max;
 nchannels = 13;
 ntime = 358;
 
