@@ -22,10 +22,16 @@ if order,
 	parb_o = parb;
 end   
 for p = 2:order,
-   par(:,:,2:p) =  par_o(:,:,2:p) +fliptime(filterv(rc(:,:,p+1),1,parb_o(:,:,2:p)));
-   par(:,:,p+1)= rc(:,:,p+1);
-   parb(:,:,2:p) =  parb_o(:,:,2:p) +fliptime(filterv(rcb(:,:,p+1) ,1,par_o(:,:,2:p)));
-   parb(:,:,p+1)= rcb(:,:,p+1);
+    % ORIGINAL, error: can't find filterv
+%    par(:,:,2:p) =  par_o(:,:,2:p) +fliptime(filterv(rc(:,:,p+1),1,parb_o(:,:,2:p)));
+%    par(:,:,p+1)= rc(:,:,p+1);
+%    parb(:,:,2:p) =  parb_o(:,:,2:p) +fliptime(filterv(rcb(:,:,p+1) ,1,par_o(:,:,2:p)));
+%    parb(:,:,p+1)= rcb(:,:,p+1);
+
+    par(:,:,2:p) =  par_o(:,:,2:p) +flipdim(armafilterv(parb_o(:,:,2:p),1,rc(:,:,p+1)),3);
+    par(:,:,p+1)= rc(:,:,p+1);
+    parb(:,:,2:p) =  parb_o(:,:,2:p) +flipdim(armafilterv(par_o(:,:,2:p),1,rcb(:,:,p+1)),3);
+    parb(:,:,p+1)= rcb(:,:,p+1);
    
    par_o  = par;
    parb_o = parb;

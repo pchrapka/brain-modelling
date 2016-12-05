@@ -157,12 +157,7 @@ for k=1:nsim_params
             
             % warmup filter with noise
             if p.Results.warmup_noise
-                mu = zeros(nchannels,1);
-                sigma = eye(nchannels);
-                noise = zeros(nchannels,ntime,ntrials);
-                for m=1:ntrials
-                    noise(:,:,m) = mvnrnd(mu,sigma,ntime)';
-                end
+                noise = gen_noise(nchannels, ntime, ntrials);
                 
                 % run filter on noise
                 warning('off','all');
