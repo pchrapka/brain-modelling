@@ -126,9 +126,9 @@ classdef VRCStep < VARProcess
                 obj.process2.coefs_stable(verbose);
         end
         
-        function rc_time = get_rc_time(obj, nsamples, coefs)
-            %GET_RC_TIME returns the reflection coefficients over time
-            %   GET_RC_TIME(obj, nsamples, coefs) returns the reflection
+        function rc_time = get_coefs_vs_time(obj, nsamples, coefs)
+            %GET_COEFS_VS_TIME returns the reflection coefficients over time
+            %   GET_COEFS_VS_TIME(obj, nsamples, coefs) returns the reflection
             %   coefficients over time
             %
             %   Input

@@ -81,8 +81,8 @@ for i=1:nchannels
                     [~,x(:,:,m),~] = s.simulate(nsamples);
                 end
 
-                kf_true = s.get_rc_time(nsamples,'Kf');
-                kb_true = s.get_rc_time(nsamples,'Kb');
+                kf_true = s.get_coefs_vs_time(nsamples,'Kf');
+                kb_true = s.get_coefs_vs_time(nsamples,'Kb');
                 
                 % simulate data
                 [X,X_norm,noise] = s.simulate(2*nsamples);

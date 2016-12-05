@@ -112,7 +112,7 @@ for i=1:ncond
         end
         
         % save true coefficients
-        data.true = vrc_constpulse.get_rc_time(ntime,'Kf');
+        data.true = vrc_constpulse.get_coefs_vs_time(ntime,'Kf');
         
         % save data
         save(conds(i).file,'data');

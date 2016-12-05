@@ -28,8 +28,8 @@ for i=1:ntrials
     [~,x(:,:,i),~] = s.simulate(nsamples);
 end
 
-kf_true = s.get_rc_time(nsamples,'Kf');
-kb_true = s.get_rc_time(nsamples,'Kb');
+kf_true = s.get_coefs_vs_time(nsamples,'Kf');
+kb_true = s.get_coefs_vs_time(nsamples,'Kb');
 
 %% MCMTQRDLSL1 with 10 trials
 order_est = norder;

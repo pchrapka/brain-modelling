@@ -249,6 +249,33 @@ classdef VAR < VARProcess
             end
         end
         
+        function coefs_time = get_coefs_vs_time(obj, nsamples, coefs)
+            %GET_COEFS_VS_TIME returns the AR coefficients over time
+            %   GET_COEFS_VS_TIME(obj, nsamples, coefs) returns the AR
+            %   coefficients over time
+            %
+            %   Input
+            %   -----
+            %   nsamples (integer)
+            %       number of samples
+            %   coefs (string, default = 'A', optional)
+            %       selects coefficient field from object
+            %
+            %   Output
+            %   ------
+            %   ceofs_time (matrix)
+            %       AR coefficients over time [samples P K K]
+            
+            p = inputParser();
+            p.addRequired('nsamples', @(x) x > 0);
+            p.addOptional('coefs','A',@ischar);
+            p.parse(nsamples,coefs);
+            
+            coefs_time = repmat(obj.(coefs),[1,1,1,nsamples]);
+            coefs_time = shiftdim(coefs_time,3);
+            
+        end
+        
         function [Y,Y_norm, noise] = simulate(obj, nsamples, varargin)
             %SIMULATE simulate VAR process
             %   [Y,Y_norm,noise] = SIMULATE(obj, nsamples, ...)

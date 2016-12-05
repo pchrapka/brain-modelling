@@ -73,8 +73,8 @@ end
 
 %% Compare to MQRDLSLS1
 %plot_options = {'ch1',1,'ch2',1,'true',k_true};
-kf_true = s.get_rc_time(nsamples,'Kf');
-kb_true = s.get_rc_time(nsamples,'Kb');
+kf_true = s.get_coefs_vs_time(nsamples,'Kf');
+kb_true = s.get_coefs_vs_time(nsamples,'Kb');
 
 verbosity = 1;
 

@@ -45,7 +45,7 @@ for j=1:nsims
     
     %% Set plot params
     
-    kf_true = s.get_rc_time(nsamples,'Kf');
+    kf_true = s.get_coefs_vs_time(nsamples,'Kf');
     kf_true_sims{j} = kf_true;
     
     % k_est_mat(:,1,1) = k_est;

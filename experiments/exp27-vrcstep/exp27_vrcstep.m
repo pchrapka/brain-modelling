@@ -34,8 +34,8 @@ end
 
 % kf_true = repmat(shiftdim(s.Kf,2),1,1,1,nsamples);
 % kf_true = shiftdim(kf_true,3);
-kf_true = s.get_rc_time(nsamples,'Kf');
-kb_true = s.get_rc_time(nsamples,'Kb');
+kf_true = s.get_coefs_vs_time(nsamples,'Kf');
+kb_true = s.get_coefs_vs_time(nsamples,'Kb');
 
 % kb_true = repmat(shiftdim(s.Kb,2),1,1,1,nsamples);
 % kb_true = shiftdim(kb_true,3);

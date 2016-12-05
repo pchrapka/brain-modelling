@@ -29,6 +29,6 @@ for j=1:obj.nsims
 end
 
 % save true coefficients
-data.true = process.get_rc_time(p.Results.nsamples,'Kf');
+data.true = process.get_coefs_vs_time(p.Results.nsamples,'Kf');
 
 end

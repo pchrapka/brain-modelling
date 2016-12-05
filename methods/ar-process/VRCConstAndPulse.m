@@ -130,7 +130,7 @@ classdef VRCConstAndPulse < VARProcess
                 obj.process_pulse.coefs_stable(verbose);
         end
         
-        function rc_time = get_rc_time(obj, nsamples, coefs)
+        function rc_time = get_coefs_vs_time(obj, nsamples, coefs)
             %   Input
             %   -----
             %   nsamples (integer)

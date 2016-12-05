@@ -39,8 +39,8 @@ for i=1:ntrials
     [~,x(:,:,i),~] = s.simulate(nsamples);
 end
 
-kf_true = s.get_rc_time(nsamples,'Kf');
-kb_true = s.get_rc_time(nsamples,'Kb');
+kf_true = s.get_coefs_vs_time(nsamples,'Kf');
+kb_true = s.get_coefs_vs_time(nsamples,'Kb');
 
 %% Filter params
 order_est = norder;

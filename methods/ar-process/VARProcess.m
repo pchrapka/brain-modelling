@@ -22,11 +22,14 @@ classdef (Abstract) VARProcess < handle
         %COEFS_STABLE checks VAR coefficients for stability
             
         F = coefs_getF(obj)
-        %   COEFS_GETF(OBJ) builds matrix F as defined by Hamilton
-        %   (10.1.10)
+        %COEFS_GETF(OBJ) builds matrix F as defined by Hamilton (10.1.10)
         
         [Y,Y_norm, noise] = simulate(obj, nsamples, varargin)
         %SIMULATE simulate VAR process
+        
+        coefs_time = get_coefs_vs_time(obj, nsamples, coefs)
+        %GET_COEFS_VS_TIME returns the coefficients over time
+        
     end
             
     

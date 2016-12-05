@@ -42,7 +42,7 @@ classdef VARGenerator < handle
             addRequired(p,'data_name',@ischar);
             addRequired(p,'nsims',@isnumeric);
             addRequired(p,'nchannels',@isnumeric);
-            addParameter(p,'version',1,@isnumeric);
+            addParameter(p,'version',1,@(x) isnumeric(x) || ischar(x));
             p.parse(data_name, nsims, nchannels,varargin{:});
             
             obj.data_name = p.Results.data_name;
@@ -59,6 +59,11 @@ classdef VARGenerator < handle
         function data = generate(obj,varargin)
             %GENERATE generates VAR data
             %   GENERATE(obj) generates VAR data
+            
+            p = inputParser();
+            p.KeepUnmatched = true;
+            addParameter(p,'process',[],@(x) isa(x,'VARProcess'));
+            parse(p,varargin{:});
             
             % FIXME this shouldn't have varargin since the parameters are
             % fixed for the generator
@@ -82,7 +87,9 @@ classdef VARGenerator < handle
                     case 'vrc-cp-ch2-coupling1-fixed'
                         data = obj.gen_vrc_cp_ch2_coupling1_fixed(varargin{:});
                     otherwise
-                        error('unknown data name %s',obj.data_name);
+                        fprintf('generating user process\n');
+                        data = obj.gen_process(p.Results.process,...
+                            struct2namevalue(p.Results.Unmatched));
                 end
                 
                 % save data
@@ -119,8 +126,16 @@ classdef VARGenerator < handle
         
         function outfile = get_file(obj)
             
+            if isnumeric(obj.version)
+                format_string = '%s-c%d-v%d.mat';
+            elseif ischar(obj.version)
+                format_string = '%s-c%d-v%s.mat';
+            else
+                error('unknown version type');
+            end
+            
             outfile = fullfile(get_project_dir(), 'experiments', 'output-common', 'simulated',...
-                sprintf('%s-c%d-v%d.mat', obj.data_name, obj.nchannels, obj.version));
+                sprintf(format_string, obj.data_name, obj.nchannels, obj.version));
         end
         
     end
