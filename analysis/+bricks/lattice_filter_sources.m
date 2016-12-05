@@ -120,7 +120,7 @@ parfor i=1:ntrial_groups
     end
     warning('off','all');
     trace = LatticeTrace(filter,'fields',{'Kf'});
-    trace.noise_warmup(noise);
+    trace.warmup(noise);
     warning('on','all');
     
     X_norm = zeros(nchannels,nsamples,p.Results.trials);

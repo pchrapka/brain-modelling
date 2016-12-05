@@ -258,7 +258,7 @@ classdef LatticeTrace < handle
             end
         end
         
-        function noise_warmup(obj,noise)
+        function warmup(obj,noise)
             %   Input
             %   -----
             %   noise (matrix)

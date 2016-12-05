@@ -254,7 +254,7 @@ noise = mvnrnd(mu,sigma,ntime)';
 
 % run the filter on data
 trace{k} = LatticeTrace(filter,'fields',{'Kf'});
-trace{k}.noise_warmup(noise);
+trace{k}.warmup(noise);
 trace{k}.run(sources(:,:,1),'verbosity',verbosity,'mode','none');
 trace{k}.name = ['noise warmup ' trace{k}.filter.name];
 k = k+1;
@@ -264,7 +264,7 @@ filter = MLOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
 
 % run the filter on data
 trace{k} = LatticeTrace(filter,'fields',{'Kf'});
-trace{k}.noise_warmup(noise);
+trace{k}.warmup(noise);
 trace{k}.run(sources(:,:,1),'verbosity',verbosity,'mode','none');
 trace{k}.name = ['noise warmup ' trace{k}.filter.name];
 k = k+1;
@@ -281,7 +281,7 @@ end
 
 % run the filter on data
 trace{k} = LatticeTrace(filter,'fields',{'Kf'});
-trace{k}.noise_warmup(noise);
+trace{k}.warmup(noise);
 trace{k}.run(sources(:,:,1:mt),'verbosity',verbosity,'mode','none');
 trace{k}.name = ['noise warmup ' trace{k}.filter.name];
 k = k+1;

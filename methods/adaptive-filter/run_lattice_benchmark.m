@@ -19,9 +19,15 @@ function run_lattice_benchmark(exp_path,varargin)
 %           data generator name
 %       label (string)
 %           data label for plots
-%   noise_warmup (logical, default = true)
+%   warmup_noise (logical, default = true)
 %       flag for warming up the filter with noise, this helps with filter
 %       initialization
+%   warmup_data (logical, default = false)
+%       flag for warming up the filter with simulated data, this helps with
+%       filter initialization
+%   warmup_data_nsims (integer, default = 1)
+%       selects number of sims to pass through filter for warmup, relevant
+%       only if warmup_data = true
 %   nsims (integer)
 %       number of simulations to average
 %   force (logical, default = false)
@@ -47,7 +53,9 @@ addParameter(p,'name','',@ischar);
 % options_data_name = {'var-no-coupling'};
 % addParameter(p,'data_name','var-no-coupling',@(x) any(validatestring(x,options_data_name)));
 addParameter(p,'sim_params',[]);
-addParameter(p,'noise_warmup',true,@islogical);
+addParameter(p,'warmup_noise',true,@islogical);
+addParameter(p,'warmup_data',false,@islogical);
+addParameter(p,'warmup_data_nsims',1,@isnumeric);
 addParameter(p,'nsims',1,@isnumeric);
 addParameter(p,'force',false,@islogical);
 addParameter(p,'verbosity',0,@isnumeric);
@@ -96,10 +104,15 @@ for k=1:nsim_params
     else
         ntrials = 1;
     end
+    if p.Results.warmup_data
+        nsims_generate = nsims + p.Results.warmup_data_nsims;
+    else
+        nsims_generate = nsims;
+    end
     
     % load data
     nchannels = sim_param.filter.nchannels;
-    var_gen = VARGenerator(sim_param.data, nsims*ntrials, nchannels);
+    var_gen = VARGenerator(sim_param.data, nsims_generate*ntrials, nchannels);
     if isfield(sim_param,'data_params')
         data_var = var_gen.generate(sim_param.data_params{:});
     else
@@ -143,7 +156,7 @@ for k=1:nsim_params
             ntime = size(sources,2);
             
             % warmup filter with noise
-            if p.Results.noise_warmup
+            if p.Results.warmup_noise
                 mu = zeros(nchannels,1);
                 sigma = eye(nchannels);
                 noise = zeros(nchannels,ntime,ntrials);
@@ -153,7 +166,19 @@ for k=1:nsim_params
                 
                 % run filter on noise
                 warning('off','all');
-                trace{j}.noise_warmup(noise);
+                trace{j}.warmup(noise);
+                warning('on','all');
+            end
+            
+            % warmup filter with simulated data
+            if p.Results.warmup_data
+                % use last
+                sim_idx_start = (nsims-1)*ntrials + 1;
+                sim_idx_end = sim_idx_start + ntrials - 1;
+                
+                % run filter on sim data
+                warning('off','all');
+                trace{j}.warmup(sources(:,:,sim_idx_start:sim_idx_end));
                 warning('on','all');
             end
             
