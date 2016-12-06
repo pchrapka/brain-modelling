@@ -18,7 +18,8 @@ gamma = 1:7;
 filters = {'MLOCCD_TWL','MLOCCD_TWL2'};
 
 %% set up benchmark params
-exp_path = fullfile(mfilename('fullpath'),'sparse-gamma');
+[file_path,~,~] = fileparts(mfilename('fullpath'));
+exp_path = fullfile(file_path,'sparse-gamma');
 
 for j=1:length(filters)
     k=1;

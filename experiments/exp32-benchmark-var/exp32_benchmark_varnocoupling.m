@@ -10,13 +10,13 @@ lambda = 0.99;
 
 verbosity = 0;
 
-% data_type = 'vrc-coupling0-fixed';
-% nsamples = 2000;
-% data_params = {'nsamples', nsamples};
+data_type = 'vrc-coupling0-fixed';
+nsamples = 2000;
+data_params = {'nsamples', nsamples};
 
-data_type = 'vrc-cp-ch2-coupling1-fixed';
-nsamples = 358;
-data_params = {};
+% data_type = 'vrc-cp-ch2-coupling1-fixed';
+% nsamples = 358;
+% data_params = {};
 
 % TODO add nuttall strand
 
@@ -113,7 +113,8 @@ sim_params(k).label = sim_params(k).filter.name;
 k = k+1;
 
 %% run
-exp_path = fullfile(mfilename('fullpath'),'warmupnoise');
+[file_path,~,~] = fileparts(mfilename('fullpath'));
+exp_path = fullfile(file_path,'warmupnoise');
 run_lattice_benchmark(...
     exp_path,...
     'name','',...
@@ -124,7 +125,7 @@ run_lattice_benchmark(...
     'plot_avg_mse', true,...
     'plot_avg_nmse', true);
 
-exp_path = fullfile(mfilename('fullpath'),'warmupnoisedata');
+exp_path = fullfile(file_path,'warmupnoisedata');
 run_lattice_benchmark(...
     exp_path,...
     'name','',...
