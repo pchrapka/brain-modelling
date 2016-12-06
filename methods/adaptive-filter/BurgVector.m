@@ -94,9 +94,9 @@ classdef BurgVector
             % convert parcor to rc
             [rcf,rcb,~,~] = pc2rcv(pc,R0);
             
-            % save the rc coefficient, drop the first one
-            obj.Kf = -1*shiftdim(rcf(:,:,2:end),2);
-            obj.Kb = -1*shiftdim(rcb(:,:,2:end),2);
+            % save the rc coefficient, drop the first one            
+            obj.Kf = -1*rcarrayformat(rcf(:,:,2:end),'format',1);
+            obj.Kb = -1*rcarrayformat(rcb(:,:,2:end),'format',1);
             
         end
     end
