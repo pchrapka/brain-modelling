@@ -20,9 +20,9 @@ params.conds(2).opt_func = 'params_al_odd';
 
 k=1;
 
-%% params_lf_MQRDLSL2_p10_l099_n400
+%% params_lf_MQRDLSL2_p10_l099
 
-params.analysis(k).lf = 'params_lf_MQRDLSL2_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MQRDLSL2_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -40,7 +40,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MQRDLSL2_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MQRDLSL2_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5clamp';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -58,7 +58,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MQRDLSL2_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MQRDLSL2_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_nothresh_scalefw';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -76,7 +76,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MQRDLSL2_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MQRDLSL2_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_nothresh';
 params.analysis(k).pd = '';
 params.analysis(k).fd = '';
@@ -84,9 +84,9 @@ params.analysis(k).fv = {};
 params.analysis(k).tt = {};
 k = k+1;
 
-%% params_lf_MLOCCDTWL_p10_l099_n400
+%% params_lf_MLOCCDTWL_p10_l099
 
-params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -104,7 +104,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5clamp';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -122,7 +122,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_nothresh_scalefw';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -140,7 +140,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_nothresh';
 params.analysis(k).pd = '';
 params.analysis(k).fd = '';
@@ -148,9 +148,9 @@ params.analysis(k).fv = {};
 params.analysis(k).tt = {};
 k = k+1;
 
-%% params_lf_MLOCCDTWL_p10_l098_n400
+%% params_lf_MLOCCDTWL_p10_l098
 
-params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l098_n400';
+params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l098';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -168,7 +168,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l098_n400';
+params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l098';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5clamp';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -186,7 +186,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l098_n400';
+params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l098';
 params.analysis(k).fm = 'params_fm_lattice_nothresh_scalefw';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -204,7 +204,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l098_n400';
+params.analysis(k).lf = 'params_lf_MLOCCDTWL_p10_l098';
 params.analysis(k).fm = 'params_fm_lattice_nothresh';
 params.analysis(k).pd = '';
 params.analysis(k).fd = '';
@@ -212,9 +212,9 @@ params.analysis(k).fv = {};
 params.analysis(k).tt = {};
 k = k+1;
 
-%% params_lf_MCMTQRDLSL1_mt2_p10_l099_n400
+%% params_lf_MCMTQRDLSL1_mt2_p10_l099
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -232,7 +232,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5clamp';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -250,7 +250,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_nothresh_scalefw';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -269,7 +269,7 @@ params.analysis(k).tt = {...
 k = k+1;
 
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_nothresh';
 params.analysis(k).pd = '';
 params.analysis(k).fd = '';
@@ -277,9 +277,9 @@ params.analysis(k).fv = {};
 params.analysis(k).tt = {};
 k = k+1;
 
-%% params_lf_MCMTQRDLSL1_mt3_p10_l099_n400
+%% params_lf_MCMTQRDLSL1_mt3_p10_l099
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt3_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt3_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5';
 params.analysis(k).pd = 'params_pd_std_odd_tr70_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -297,7 +297,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt3_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt3_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_nothresh';
 params.analysis(k).pd = '';
 params.analysis(k).fd = '';
@@ -305,9 +305,9 @@ params.analysis(k).fv = {};
 params.analysis(k).tt = {};
 k = k+1;
 
-%% params_lf_MCMTQRDLSL1_mt5_p10_l099_n400
+%% params_lf_MCMTQRDLSL1_mt5_p10_l099
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5';
 params.analysis(k).pd = 'params_pd_std_odd_tr30_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -325,7 +325,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5clamp';
 params.analysis(k).pd = 'params_pd_std_odd_tr30_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -344,7 +344,7 @@ params.analysis(k).tt = {...
 k = k+1;
 
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_nothresh_scalefw';
 params.analysis(k).pd = 'params_pd_std_odd_tr30_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -362,7 +362,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_nothresh';
 params.analysis(k).pd = '';
 params.analysis(k).fd = '';
@@ -370,9 +370,9 @@ params.analysis(k).fv = {};
 params.analysis(k).tt = {};
 k = k+1;
 
-%% params_lf_MCMTQRDLSL1_mt8_p10_l099_n400
+%% params_lf_MCMTQRDLSL1_mt8_p10_l099
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt8_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt8_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5';
 params.analysis(k).pd = 'params_pd_std_odd_tr20_te10';
 params.analysis(k).fd = 'params_fd_20000';
@@ -390,7 +390,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt8_p10_l099_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt8_p10_l099';
 params.analysis(k).fm = 'params_fm_lattice_nothresh';
 params.analysis(k).pd = '';
 params.analysis(k).fd = '';
@@ -398,9 +398,9 @@ params.analysis(k).fv = {};
 params.analysis(k).tt = {};
 k = k+1;
 
-%% params_lf_MCMTQRDLSL1_mt2_p10_l098_n400
+%% params_lf_MCMTQRDLSL1_mt2_p10_l098
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l098_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l098';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -418,7 +418,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l098_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l098';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5clamp';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -436,7 +436,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l098_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l098';
 params.analysis(k).fm = 'params_fm_lattice_nothresh_scalefw';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -454,7 +454,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l098_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l098';
 params.analysis(k).fm = 'params_fm_lattice_nothresh';
 params.analysis(k).pd = '';
 params.analysis(k).fd = '';
@@ -462,9 +462,9 @@ params.analysis(k).fv = {};
 params.analysis(k).tt = {};
 k = k+1;
 
-%% params_lf_MCMTQRDLSL1_mt5_p10_l098_n400
+%% params_lf_MCMTQRDLSL1_mt5_p10_l098
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l098_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l098';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5';
 params.analysis(k).pd = 'params_pd_std_odd_tr30_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -482,7 +482,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l098_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l098';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5clamp';
 params.analysis(k).pd = 'params_pd_std_odd_tr30_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -500,7 +500,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l098_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l098';
 params.analysis(k).fm = 'params_fm_lattice_nothresh_scalefw';
 params.analysis(k).pd = 'params_pd_std_odd_tr30_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -518,7 +518,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l098_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l098';
 params.analysis(k).fm = 'params_fm_lattice_nothresh';
 params.analysis(k).pd = '';
 params.analysis(k).fd = '';
@@ -526,9 +526,9 @@ params.analysis(k).fv = {};
 params.analysis(k).tt = {};
 k = k+1;
 
-%% params_lf_MCMTQRDLSL1_mt2_p10_l09_n400
+%% params_lf_MCMTQRDLSL1_mt2_p10_l09
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l09_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l09';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5';
 params.analysis(k).pd = 'params_pd_std_odd_tr100_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -546,7 +546,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l09_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt2_p10_l09';
 params.analysis(k).fm = 'params_fm_lattice_nothresh';
 params.analysis(k).pd = '';
 params.analysis(k).fd = '';
@@ -554,8 +554,8 @@ params.analysis(k).fv = {};
 params.analysis(k).tt = {};
 k = k+1;
 
-%% params_lf_MCMTQRDLSL1_mt5_p10_l09_n400
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l09_n400';
+%% params_lf_MCMTQRDLSL1_mt5_p10_l09
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l09';
 params.analysis(k).fm = 'params_fm_lattice_thresh1dot5';
 params.analysis(k).pd = 'params_pd_std_odd_tr30_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -573,7 +573,7 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l09_n400';
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p10_l09';
 params.analysis(k).fm = 'params_fm_lattice_nothresh';
 params.analysis(k).pd = '';
 params.analysis(k).fd = '';
@@ -584,8 +584,8 @@ k = k+1;
 %%%%%%%%%%%
 %% Orders 8, 6, 4, 2
 
-%% params_lf_MCMTQRDLSL1_mt5_p8_l098_n400
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p8_l098_n400';
+%% params_lf_MCMTQRDLSL1_mt5_p8_l098
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p8_l098';
 params.analysis(k).fm = 'params_fm_lattice_nothresh_scalefw';
 params.analysis(k).pd = 'params_pd_std_odd_tr30_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -603,8 +603,8 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-%% params_lf_MCMTQRDLSL1_mt5_p6_l098_n400
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p6_l098_n400';
+%% params_lf_MCMTQRDLSL1_mt5_p6_l098
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p6_l098';
 params.analysis(k).fm = 'params_fm_lattice_nothresh_scalefw';
 params.analysis(k).pd = 'params_pd_std_odd_tr30_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -621,8 +621,8 @@ params.analysis(k).tt = {...
     ...'params_tt_rbf_50',...
     };
 k = k+1;
-%% params_lf_MCMTQRDLSL1_mt5_p4_l098_n400
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p4_l098_n400';
+%% params_lf_MCMTQRDLSL1_mt5_p4_l098
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p4_l098';
 params.analysis(k).fm = 'params_fm_lattice_nothresh_scalefw';
 params.analysis(k).pd = 'params_pd_std_odd_tr30_te20';
 params.analysis(k).fd = 'params_fd_20000';
@@ -640,8 +640,8 @@ params.analysis(k).tt = {...
     };
 k = k+1;
 
-%% params_lf_MCMTQRDLSL1_mt5_p2_l098_n400
-params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p2_l098_n400';
+%% params_lf_MCMTQRDLSL1_mt5_p2_l098
+params.analysis(k).lf = 'params_lf_MCMTQRDLSL1_mt5_p2_l098';
 params.analysis(k).fm = 'params_fm_lattice_nothresh_scalefw';
 params.analysis(k).pd = 'params_pd_std_odd_tr30_te20';
 params.analysis(k).fd = 'params_fd_20000';

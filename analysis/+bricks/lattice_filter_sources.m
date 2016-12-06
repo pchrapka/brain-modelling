@@ -22,7 +22,7 @@ function lattice_filter_sources(files_in,files_out,opt)
 %       exponential weighting factor between 0 and 1
 %   trials (scalar, default = 1)
 %       number of trials to include for lattice filtering
-%   nout (scalar, default = 100)
+%   nout (scalar, default = [])
 %       number of outputs to produce
 %   verbose (integer, default = 0)
 %       verbosity level, options: 0,1
@@ -32,7 +32,7 @@ addRequired(p,'files_in',@ischar);
 addRequired(p,'files_out',@ischar);
 addParameter(p,'filter','MQRDLSL2',@ischar);
 addParameter(p,'trials',1,@isnumeric);
-addParameter(p,'nout',100,@isnumeric);
+addParameter(p,'nout',[],@isnumeric);
 addParameter(p,'order',4,@isnumeric);
 addParameter(p,'lambda',0.99,@isnumeric);
 addParameter(p,'verbose',0);
@@ -59,10 +59,14 @@ nsamples = length(data_all(1).time);
 
 % check how much data is available
 nout = p.Results.nout;
-if nout > length(data_all)
+if isempty(nout)
     nout = length(data_all);
-    if p.Results.verbose > 0
-        fprintf('\tusing %d trials instead of %d\n',nout,p.Results.nout);
+else
+    if nout > length(data_all)
+        nout = length(data_all);
+        if p.Results.verbose > 0
+            fprintf('\tusing %d trials instead of %d\n',nout,p.Results.nout);
+        end
     end
 end
 
