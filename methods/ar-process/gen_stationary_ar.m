@@ -52,7 +52,7 @@ else
     noise(:,end-order+1:end) = [];
     
     % normalize variance of each channel to unit variance
-    X_norm = X./repmat(std(X,0,2),1,nsamples);
+    X_norm = normalizev(X);
 end
 
 end

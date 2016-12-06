@@ -86,10 +86,8 @@ switch data_source
         sources = zeros(nchannels, nsamples, ntrials);
         for i=1:ntrials
             m = trial_idx(i);
-            sources(:,:,i) = bf_get_sources(data(m));
-            
             % normalize variance of each channel to unit variance
-            sources(:,:,i) = sources(:,:,i)./repmat(std(sources(:,:,i),0,2),1,nsamples);
+            sources(:,:,i) = normalizev(bf_get_sources(data(m)));
         end
         
     case 'eeg'
@@ -115,7 +113,7 @@ switch data_source
             sources(:,:,i) = temp(idx_channel,:);
             
             % normalize variance of each channel to unit variance
-            sources(:,:,i) = sources(:,:,i)./repmat(std(sources(:,:,i),0,2),1,nsamples);
+            sources(:,:,i) = normalizev(temp(idx_channel,:));
         end
        
     otherwise

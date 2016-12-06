@@ -9,7 +9,7 @@ class_labels = [ones(nclass1,1); zeros(nsamples-nclass1,1)];
 %% normalize features
 % TODO double check if i should zero mean the features
 features_zeromean = features - repmat(mean(features),nsamples,1);
-features_norm = features_zeromean./repmat(std(features_zeromean,0,1),nsamples,1);
+features_norm = normalizev(features_zeromean')';
 
 %% validate features
 model = SVMMRMR(features_norm, class_labels, 'implementation', 'libsvm'); %, feature_labels);

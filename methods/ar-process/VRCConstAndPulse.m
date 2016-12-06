@@ -255,7 +255,7 @@ classdef VRCConstAndPulse < VARProcess
                 end
                 
                 % Normalize variance of each channel to unit variance
-                Y_norm = Y./repmat(std(Y,0,2),1,nsamples);
+                Y_norm = normalizev(Y);
             end
         end
     end

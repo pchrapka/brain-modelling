@@ -89,6 +89,10 @@ clear data_all;
 [file_path,~,~] = fileparts(files_out);
 file_list = cell(ntrial_groups,1);
 
+data_in_shifted = circshift(data_in,1);
+error('check that this is shifted down one');
+% i.e. i need data_in(i-1,j) to be in data_in_shifted(i,j)
+
 parfor i=1:ntrial_groups
 % for i=1:ntrial_groups
     if p.Results.verbose > 1
@@ -115,29 +119,28 @@ parfor i=1:ntrial_groups
             error('unknown filter %s',p.Results.filter)
     end
     
-    % initialize lattice filter with noise
-    mu = zeros(nchannels,1);
-    sigma = eye(nchannels);
-    noise = zeros(nchannels,nsamples,p.Results.trials);
-    for j=1:p.Results.trials
-        noise(:,:,j) = mvnrnd(mu,sigma,nsamples)';
-    end
-    warning('off','all');
     trace = LatticeTrace(filter,'fields',{'Kf'});
+    
+    % initialize lattice filter with noise
+    warning('off','all');
+    noise = gen_noise(nchannels, nsamples, p.Results.trials);
     trace.warmup(noise);
     warning('on','all');
     
     X_norm = zeros(nchannels,nsamples,p.Results.trials);
+    X2_norm = X_norm;
     for j=1:p.Results.trials
         % load data
         data = data_in(i,j);
-        
-        % get source data
-        sources = bf_get_sources(data);
-        
-        % normalize variance of each channel to unit variance
-        X_norm(:,:,j) = sources./repmat(std(sources,0,2),1,nsamples);
+        data2 = data_in_shifted(i,j);
+
+        % get source data and normalize variance of each channel to unit variance
+        X_norm(:,:,j) = normalizev(bf_get_sources(data));
+        X2_norm(:,:,j) = normalizev(bf_get_sources(data2));
     end
+    
+    % warmup with data from previous trial
+    trace.run(X2_norm,'verbosity',p.Results.verbose,'mode','none');
     
     % estimate the reflection coefficients
     %warning('off','all');

@@ -32,6 +32,6 @@ X = rlattice_allpole_allpass(Kf,Kb,noise);
 % sensible results
 
 % normalize the variance
-X_norm = X./repmat(std(X,0,2),1,nsamples);
+X_norm = normalizev(X);
 
 end

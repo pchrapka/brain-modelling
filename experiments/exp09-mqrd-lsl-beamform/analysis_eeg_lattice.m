@@ -79,7 +79,7 @@ for i=1:ntrials
     sources = cell2mat(temp);
     
     % normalize variance of each channel to unit variance
-    X_norm = sources./repmat(std(sources,0,2),1,nsamples);
+    X_norm = normalizev(sources);
     
     % estimate the reflection coefficients
     [lattice,errors] = estimate_reflection_coefs(lattice, X_norm, p.Results.verbose);

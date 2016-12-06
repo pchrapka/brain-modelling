@@ -48,7 +48,7 @@ for i=1:ntrials
     x_orig(:,:,i) = H*signal_trial + noise;
     
     % normalize variance of each channel to unit variance
-    x(:,:,i) = x_orig(:,:,i)./repmat(std(x_orig(:,:,i),0,2),1,nsamples);
+    x(:,:,i) = normalizev(x_orig(:,:,i));
 end
 
 figure;
