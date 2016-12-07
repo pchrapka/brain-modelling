@@ -95,7 +95,7 @@ classdef PipelineLatticeSVM < Pipeline
             %   train_job (string)
             %       training feature matrix job in pipeline
             
-            opt = feval(opt_func);
+            %opt = feval(opt_func);
             
             switch brick_name
                 case 'bricks.add_label'

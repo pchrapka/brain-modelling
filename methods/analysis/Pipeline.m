@@ -155,7 +155,10 @@ classdef Pipeline < handle
                 warning([mfilename ':add_job'],...
                     'job exists in pipeline: %s',job_code);
                 return;
+            else
+                fprintf('adding %s\n',job_code);
             end
+                
             
             % set up path for output files
             job_path = fullfile(obj.outdir, job_dir);
