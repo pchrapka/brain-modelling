@@ -104,21 +104,28 @@ classdef PipelineLatticeSVM < Pipeline
                     p.StructExpand = false;
                     p.KeepUnmatched = true;
                     addParameter(p,'files_in',@(x) ~isempty(x));
+                    addParameter(p,'id',@isnumeric);
                     parse(p,varargin{:});
                     
                     files_in = p.Results.files_in;
-                    files_out = fullfile(job_path, 'labeled.mat');
+                    files_out = fullfile(job_path, sprintf('labeled-id%d.mat',p.Results.id));
                     
                 case 'bricks.lattice_filter_sources'
                     % varargin: parent_job
                     p = inputParser;
                     p.StructExpand = false;
                     p.KeepUnmatched = true;
-                    addParameter(p,'parent_job',@(x) ~isempty(x));
+                    addParameter(p,'parent_job_data',@(x) ~isempty(x));
+                    addParameter(p,'parent_job_warmup',@(x) ~isempty(x));
+                    addParameter(p,'id',@isnumeric);
                     parse(p,varargin{:});
                     
-                    files_in = obj.pipeline.(p.Results.parent_job).files_out;
-                    files_out = fullfile(job_path, 'lattice-filtered-files.mat');
+                    files_in = {};
+                    for i=1:length(p.Results.parent_job_data)
+                        files_in.data{i} = obj.pipeline.(p.Results.parent_job_data{i}).files_out;
+                        files_in.warmup{i} = obj.pipeline.(p.Results.parent_job_warmup{i}).files_out;
+                    end
+                    files_out = fullfile(job_path, sprintf('lattice-filtered-id%d.mat',p.Results.id));
                     
                 case 'bricks.features_matrix'
                     % varargin: parent_job
@@ -128,7 +135,7 @@ classdef PipelineLatticeSVM < Pipeline
                     addParameter(p,'parent_job',@(x) ~isempty(x));
                     parse(p,varargin{:});
                     
-                    files_in = {};
+                    files_in = cell(length(p.Result.parent_job),1);
                     for i=1:length(p.Results.parent_job)
                         files_in{i} = obj.pipeline.(p.Results.parent_job{i}).files_out;
                     end

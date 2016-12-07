@@ -28,7 +28,7 @@ function lattice_filter_sources(files_in,files_out,opt)
 %       verbosity level, options: 0,1
 
 p = inputParser;
-addRequired(p,'files_in',@ischar);
+addRequired(p,'files_in',@(x) isfield(x,'warmup') && isfield(x,'data'));
 addRequired(p,'files_out',@ischar);
 addParameter(p,'filter','MQRDLSL2',@ischar);
 addParameter(p,'trials',1,@isnumeric);
@@ -52,130 +52,86 @@ if p.Results.trials > 1
 end
 
 % load data
-data_all = loadfile(files_in);
+for i=1:length(files_in.data)
+    din = loadfile(files_in.data{i});
+    data_in(i) = din;
+    din = loadfile(files_in.warmup{i});
+    data_warmup(i) = din;
+end
+
 % get dims
-nchannels = sum(data_all(1).inside);
-nsamples = length(data_all(1).time);
+nchannels = sum(data_in(1).inside);
+nsamples = length(data_in(1).time);
 
-% check how much data is available
-nout = p.Results.nout;
-if isempty(nout)
-    nout = length(data_all);
-else
-    if nout > length(data_all)
-        nout = length(data_all);
-        if p.Results.verbose > 0
-            fprintf('\tusing %d trials instead of %d\n',nout,p.Results.nout);
+% set up lattice filter
+switch p.Results.filter
+    case 'MCMTQRDLSL1'
+        filter = MCMTQRDLSL1(nchannels, p.Results.order,p.Results.trials, p.Results.lambda);
+    case 'MLOCCDTWL'
+        sigma = 10^(-1);
+        gamma = sqrt(2*sigma^2*nsamples*log(p.Results.order*nchannels^2));
+        filter = MLOCCD_TWL(nchannels, p.Results.order,...
+            'lambda', p.Results.lambda,'gamma',gamma);
+    case 'MCMTLOCCD_TWL2'
+        sigma = 10^(-1);
+        gamma = sqrt(2*sigma^2*nsamples*log(p.Results.order*nchannels^2));
+        filter = MCMTLOCCD_TWL2(nchannels, p.Results.order, p.Results.trials,...
+            'lambda', p.Results.lambda,'gamma',gamma);
+    case 'MQRDLSL2'
+        filter = MQRDLSL2(nchannels, p.Results.order, p.Results.lambda);
+    otherwise
+        error('unknown filter %s',p.Results.filter)
+end
+
+trace = LatticeTrace(filter,'fields',{'Kf'});
+
+% initialize lattice filter with noise
+warning('off','all');
+noise = gen_noise(nchannels, nsamples, p.Results.trials);
+trace.warmup(noise);
+warning('on','all');
+
+X_norm = zeros(nchannels,nsamples,p.Results.trials);
+X2_norm = X_norm;
+for j=1:p.Results.trials
+    % load data
+    data = data_in(j);
+    data2 = data_warmup(j);
+    
+    % get source data and normalize variance of each channel to unit variance
+    X_norm(:,:,j) = normalizev(bf_get_sources(data));
+    X2_norm(:,:,j) = normalizev(bf_get_sources(data2));
+end
+
+% warmup with data from previous trial
+trace.run(X2_norm,'verbosity',p.Results.verbose,'mode','none');
+
+% estimate the reflection coefficients
+%warning('off','all');
+trace.run(X_norm,'verbosity',p.Results.verbose,'mode','none');
+%warning('on','all');
+
+% plot
+if plot_ref_coefs
+    for ch1=1:nchannels
+        for ch2=ch1:nchannels
+            figure;
+            trace.plot_trace(nsamples,'ch1',ch1,'ch2',ch2,...
+                'title',sprintf('Reflection Coefficient Estimate C%d-%d',ch1,ch2));
         end
     end
 end
 
-% set up multitrial groups
-if p.Results.trials > 1
-    % determine number of groups
-    ntrial_groups = floor(nout/p.Results.trials);
-    nout = ntrial_groups*p.Results.trials;
-    
-    % group trial files into groups, while omitting any extra trials
-    data_in_groups = reshape(data_all(1:nout),p.Results.trials,ntrial_groups)';
-    data_in = data_in_groups;
-else
-    ntrial_groups = nout;
-    data_in = data_all(1:nout);
-    data_in = data_in(:);
-end
-clear data_all;
+% prep lattice data to save
+lattice = trace.trace;
+% copy data label
+lattice.label = data.label;
 
-[file_path,~,~] = fileparts(files_out);
-file_list = cell(ntrial_groups,1);
+% chop off the prestimulus, a bit less memory
+idx = data.time < 0;
+lattice.Kf(idx,:,:,:) = [];
 
-data_in_shifted = circshift(data_in,1);
-error('check that this is shifted down one');
-% i.e. i need data_in(i-1,j) to be in data_in_shifted(i,j)
-
-parfor i=1:ntrial_groups
-% for i=1:ntrial_groups
-    if p.Results.verbose > 1
-        fprintf('trial %d\n',i);
-    end
-    
-    % set up lattice filter
-    switch p.Results.filter
-        case 'MCMTQRDLSL1'
-            filter = MCMTQRDLSL1(nchannels, p.Results.order,p.Results.trials, p.Results.lambda);
-        case 'MLOCCDTWL'
-            sigma = 10^(-1);
-            gamma = sqrt(2*sigma^2*nsamples*log(p.Results.order*nchannels^2));
-            filter = MLOCCD_TWL(nchannels, p.Results.order,...
-                'lambda', p.Results.lambda,'gamma',gamma);
-        case 'MCMTLOCCD_TWL2'
-            sigma = 10^(-1);
-            gamma = sqrt(2*sigma^2*nsamples*log(p.Results.order*nchannels^2));
-            filter = MCMTLOCCD_TWL2(nchannels, p.Results.order, p.Results.trials,...
-                'lambda', p.Results.lambda,'gamma',gamma);
-        case 'MQRDLSL2'
-            filter = MQRDLSL2(nchannels, p.Results.order, p.Results.lambda);
-        otherwise
-            error('unknown filter %s',p.Results.filter)
-    end
-    
-    trace = LatticeTrace(filter,'fields',{'Kf'});
-    
-    % initialize lattice filter with noise
-    warning('off','all');
-    noise = gen_noise(nchannels, nsamples, p.Results.trials);
-    trace.warmup(noise);
-    warning('on','all');
-    
-    X_norm = zeros(nchannels,nsamples,p.Results.trials);
-    X2_norm = X_norm;
-    for j=1:p.Results.trials
-        % load data
-        data = data_in(i,j);
-        data2 = data_in_shifted(i,j);
-
-        % get source data and normalize variance of each channel to unit variance
-        X_norm(:,:,j) = normalizev(bf_get_sources(data));
-        X2_norm(:,:,j) = normalizev(bf_get_sources(data2));
-    end
-    
-    % warmup with data from previous trial
-    trace.run(X2_norm,'verbosity',p.Results.verbose,'mode','none');
-    
-    % estimate the reflection coefficients
-    %warning('off','all');
-    trace.run(X_norm,'verbosity',p.Results.verbose,'mode','none');
-    %warning('on','all');
-    
-    % plot
-    if plot_ref_coefs
-        for ch1=1:nchannels
-            for ch2=ch1:nchannels
-                figure;
-                trace.plot_trace(nsamples,'ch1',ch1,'ch2',ch2,...
-                    'title',sprintf('Reflection Coefficient Estimate C%d-%d',ch1,ch2));
-            end
-        end
-    end
-    
-    % prep lattice data to save
-    lattice = trace.trace;
-    % copy data label
-    lattice.label = data.label;
-    
-    % chop off the prestimulus, a bit less memory
-    idx = data.time < 0;
-    lattice.Kf(idx,:,:,:) = [];
-    
-    % save lattice output
-    if p.Results.verbose > 1
-        fprintf('\tsaving trial group %d\n',i);
-    end
-    file_list{i} = fullfile(file_path,sprintf('trial%d.mat',i));
-    save_parfor(file_list{i}, lattice);
-end
-
-% save trial list
-save(files_out, 'file_list','-v7.3');
+% save lattice output
+save_parfor(files_out, lattice);
 
 end

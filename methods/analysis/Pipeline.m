@@ -109,6 +109,8 @@ classdef Pipeline < handle
             %   parent_job (string, optional)
             %       suffix used as the job name, the default is the name of
             %       the opt_func
+            %   id (integer, optional)
+            %       identifier to differentiate same brick from another
             %   
             %   You can also add specific parameter for each brick
             
@@ -117,6 +119,7 @@ classdef Pipeline < handle
             addRequired(pmain,'brick_name',@ischar);
             addRequired(pmain,'opt_func',@ischar);
             addParameter(pmain,'parent_job','',@(x) ischar(x) || iscell(x));
+            addParameter(pmain,'id','',@isnumeric);
             parse(pmain,brick_name,opt_func,varargin{:});
             
             % add the parameter file
@@ -126,6 +129,11 @@ classdef Pipeline < handle
             % NOTE abstract function
             job_code = obj.get_job_code(...
                 brick_name, opt_func, pmain.Results.parent_job);
+            
+            % add id to job code
+            if ~isempty(pmain.Results.id)
+                job_code = sprintf('%sid%d',job_code,pmain.Results.id);
+            end
             
             % get the job dir
             if isfield(obj.pipeline,pmain.Results.parent_job)

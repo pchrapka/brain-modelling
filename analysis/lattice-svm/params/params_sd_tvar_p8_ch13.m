@@ -39,42 +39,46 @@ for i=1:ncond
     outfile = params.conds(i).file;
     
     var_gen = VARGenerator('vrc-cp-ch2-coupling2-rnd', ntrials, nchannels,'version',i);
-    data_var = var_gen.generate('time',ntime,'order',norder,'changepoints',changepoints{i});
-    % get the data time stamp
-    data_time = get_timestamp(var_gen.get_file());
     
-    fresh = false;
-    if exist(outfile,'file')
-        % check freshness of data and source analysis
-        source_time = get_timestamp(outfile);
-        if data_time > source_time
-            fresh = true;
+    % determine new and old trials
+    data_new_trials = false(ntrials,1);
+    if exist(var_gen.get_file(),'file')
+        % get number of trials already existing
+        data_var = loadfile(var_gen.get_file());
+        data_ntrials = size(data_var.signal,3);
+        if ntrials > data_trials
+            data_new_trials(data_ntrials+1:ntrials,1) = true;
         end
-    end
-    
-    % use data
-    if fresh || ~exist(outfile,'file')
-        % generate data
-        data = [];
-        data(ntrials).inside = [];
-        for j=1:ntrials
-            % create source analysis data
-            data(j).label = conds(i).label;
-            data(j).inside = ones(nchannels,1);
-            data(j).avg.mom = cell(nchannels,1);
-            data(j).time = linspace(-0.5,1,ntime);
-            for k=1:nchannels
-                data(j).avg.mom{k} = data_var.signal(k,:,j); %[1 time]
-            end
-        end
-        
-        % save data
-        save(outfile,'data','-v7.3');
-        params.force = true;
     else
-        fprintf('source data exists: %s\n',outfile);
+        data_new_trials(1:ntrials,1) = true;
     end
-
+    
+    % generate data
+    data_var = var_gen.generate('time',ntime,'order',norder,'changepoints',changepoints{i});
+    
+    for j=1:ntrials
+        outfile2 = sprintf('%s-t%d',outfile,j);
+        params.conds(i).trials(j).file = outfile2;
+        params.conds(i).trials(j).force = data_new_trials(j);
+        
+        if data_new_trials(j)
+            % create trial data
+            data = [];
+            % create source analysis data
+            data.label = conds(i).label;
+            data.inside = ones(nchannels,1);
+            data.avg.mom = cell(nchannels,1);
+            data.time = linspace(-0.5,1,ntime);
+            for k=1:nchannels
+                data.avg.mom{k} = data_var.signal(k,:,j); %[1 time]
+            end
+            
+            % save data
+            save(outfile2,'data','-v7.3');
+        else
+            fprintf('trial %d source data exists: %s\n',j,outfile2);
+        end
+    end
 end
 
 k=1;

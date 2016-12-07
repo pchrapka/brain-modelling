@@ -109,9 +109,11 @@ job_al = cell(length(params_sd.conds),1);
 for i=1:length(params_sd.conds)
     % add data label
     name_brick = 'bricks.add_label';
-    job_al{i} = pipeline.add_job(name_brick, ...
-        params_sd.conds(i).opt_func,...
-        'files_in', params_sd.conds(i).file);
+    for j=1:length(params_sd.cond(i).trials);
+        job_al{i,j} = pipeline.add_job(name_brick, ...
+            params_sd.conds(i).opt_func,...
+            'files_in', params_sd.conds(i).file,'id',j);
+    end
 end
 
 job_lf = cell(length(params_sd.conds),1);
@@ -120,15 +122,39 @@ for j=1:length(params_sd.analysis)
         % add lattice filter sources
         name_brick = 'bricks.lattice_filter_sources';
         opt_func = params_sd.analysis(j).lf;
-        job_lf{i} = pipeline.add_job(name_brick,...
-            opt_func,'parent_job',job_al{i});
+        
+        % parse inputs to get number of filter trials
+        opt = feval(opt_func);
+        ptemp = inputParser();
+        ptemp.KeepUnmatched = true;
+        addParameter(ptemp,'trials',1,@isnumeric);
+        parse(ptemp,opt{:});
+        ntrials_filter = ptemp.Results.trials;
+        
+        % group data based on filter size
+        ntrials_data = length(params_sd.cond(i).trials);
+        ntrial_groups = floor(ntrials_data/ntrials_filter);
+        
+        job_groups = reshape(job_al{i,:}, ntrials_filter, ntrial_groups)';
+        error('check that this is the correct orientation');
+        job_groups_shifted = circshift(job_groups,1);
+        
+        % set up job params
+        for k=1:ntrial_groups
+            parent_job_trials = job_groups{k,:};
+            parent_job_warmup = job_groups_shifted{k,:};
+            job_lf{i,k} = pipeline.add_job(name_brick, opt_func,...
+                'parent_job_data',parent_job_trials,...
+                'parent_job_warmup',parent_job_warmup,...
+                'id',k);
+        end
     end
     
     if ~isempty(params_sd.analysis(j).fm)
         % add feature matrix
         name_brick = 'bricks.features_matrix';
         opt_func = params_sd.analysis(j).fm;
-        job_fm = pipeline.add_job(name_brick,opt_func,'parent_job',job_lf);
+        job_fm = pipeline.add_job(name_brick,opt_func,'parent_job',job_lf(:));
     else
         continue;
     end
