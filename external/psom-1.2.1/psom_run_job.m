@@ -163,9 +163,17 @@ try
     flag_failed = false;
    
     try
+        fprintf('a1\n');
+        disp(command);
+        disp(files_in);
+        disp(files_out);
+        disp(files_clean);
+        disp(opt);
         sub_eval(command,files_in,files_out,files_clean,opt)
         end_time = clock;
+        fprintf('a1.1\n');
     catch
+        fprintf('a2\n');
         end_time = clock;
         flag_failed = true;
         errmsg = lasterror;
@@ -177,6 +185,7 @@ try
         end
     end
     
+    fprintf('a3\n');
     %% Checking outputs
     msg = sprintf('Checking outputs');
     stars = repmat('*',[1 size(msg,2)]);
