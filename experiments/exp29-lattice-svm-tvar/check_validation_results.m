@@ -2,7 +2,9 @@
 
 
 % code to run analysis pipeline
-% pipeline = build_pipeline_lattice_svm('params_sd_tvar_p8_ch13');
+% pipeline = build_pipeline_lattice_svm('params_sd_tvar_p8_ch13','mode','batch');
+% pipeline.run();
+% pipeline = build_pipeline_lattice_svm('params_sd_tvar_p8_ch13','mode','session');
 % pipeline.run();
 
 params_subject = 'params_sd_tvar_p8_ch13';

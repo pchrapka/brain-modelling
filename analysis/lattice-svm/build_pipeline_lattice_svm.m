@@ -1,19 +1,28 @@
-function pipeline = build_pipeline_lattice_svm(params_subject)
+function pipeline = build_pipeline_lattice_svm(params_subject,varargin)
 %BUILD_PIPELINE_LATTICE_SVM builds pipeline for the lattice filter SVM
 %
 %   NOTE: depends on output from exp10_beamform_patch
 %
 %   params_subject (string)
 %       parameter file for subject data
+%
+%   Parameters
+%   ----------
+%   mode (default = 'session')
+%       pipeline operation mode, options: session, batch
+%       batch is useful for doing filtering in parallel
+%       session is better for svm portion
+
+p = inputParser();
+addRequired(p,'params_subject',@ischar);
+addParameter(p,'mode','session',@(x) any(validatestring(x,{'session','batch'})));
+parse(p,params_subject,varargin{:});
 
 %% set up output folder
 % use absolute directories
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 % pipeline folder
 outdir = fullfile(srcdir,'output');
-
-%% set up parallel pool
-setup_parfor();
 
 %% subject specific data
 
@@ -204,14 +213,23 @@ for j=1:length(params_sd.analysis)
 end
 
 % default pipeline options
-% NOTE i'm assuming i'm starting in the right directory
-pipeline.options.init_matlab = 'if ~exist(''VRC'',''file''), startup; end';
-pipeline.options.mode = 'batch';
-switch get_compname()
-    case {sprintf('blade16.ece.mcmaster.ca\n'),'blade16.ece.mcmaster.ca'}
-        pipeline.options.max_queued = 10;
-    otherwise
+switch p.Results.mode
+    case 'batch'
+        % NOTE i'm assuming i'm starting in the right directory
+        pipeline.options.init_matlab = 'if ~exist(''VRC'',''file''), startup; end';
+        pipeline.options.mode = 'batch';
+        switch get_compname()
+            case {sprintf('blade16.ece.mcmaster.ca\n'),'blade16.ece.mcmaster.ca'}
+                pipeline.options.max_queued = 10;
+            otherwise
+                pipeline.options.max_queued = 1;
+        end
+    case 'session'
+        setup_parfor();
+        pipeline.options.mode = 'session';
         pipeline.options.max_queued = 1;
+    otherwise
+        error('unknown mode');
 end
 
 % restart the whole pipeline if the restart flag is set
