@@ -112,7 +112,13 @@ for i=1:length(params_sd.conds)
     for j=1:length(params_sd.cond(i).trials);
         job_al{i,j} = pipeline.add_job(name_brick, ...
             params_sd.conds(i).opt_func,...
-            'files_in', params_sd.conds(i).file,'id',j);
+            'files_in', params_sd.conds(i).trials(j).file,'id',j);
+        
+        % set restart if the flag is set
+        if params_sd.cond(i).trials(j).restart
+            pipeline.options.restart{end+1} = job_al{i,j};
+            pipeline.options.type_restart = 'substring';
+        end
     end
 end
 
@@ -198,12 +204,19 @@ for j=1:length(params_sd.analysis)
 end
 
 % default pipeline options
-pipeline.options.mode = 'session';
-pipeline.options.max_queued = 1; % use one thread since all stages use parfor
+% NOTE i'm assuming i'm starting in the right directory
+pipeline.options.init_matlab = 'if ~exist(''VRC'',''file''), startup; end';
+pipeline.options.mode = 'batch';
+switch get_compname()
+    case {sprintf('blade16.ece.mcmaster.ca\n'),'blade16.ece.mcmaster.ca'}
+        pipeline.options.max_queued = 10;
+    otherwise
+        pipeline.options.max_queued = 1;
+end
 
-% restart the whole pipeline if the force flag is set
+% restart the whole pipeline if the restart flag is set
 % Only the case if the initial data changes
-if isfield(params_sd,'force')
+if isfield(params_sd,'restart')
     if params_sd.force
         pipeline.options.restart = 'al';
         pipeline.options.type_restart = 'substring';

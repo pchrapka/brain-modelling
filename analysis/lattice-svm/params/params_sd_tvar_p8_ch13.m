@@ -11,7 +11,7 @@ nchannels = 13;
 ntime = 358;
 
 params = [];
-params.force = false;
+params.restart = false;
 
 conds = [];
 conds(1).label = 'std';
@@ -59,7 +59,7 @@ for i=1:ncond
     for j=1:ntrials
         outfile2 = sprintf('%s-t%d',outfile,j);
         params.conds(i).trials(j).file = outfile2;
-        params.conds(i).trials(j).force = data_new_trials(j);
+        params.conds(i).trials(j).restart = data_new_trials(j);
         
         if data_new_trials(j)
             % create trial data
