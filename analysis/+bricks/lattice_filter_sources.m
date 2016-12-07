@@ -38,6 +38,8 @@ addParameter(p,'lambda',0.99,@isnumeric);
 addParameter(p,'verbose',0);
 parse(p,files_in,files_out,opt{:});
 
+disp(pwd);
+
 % flag for plotting ref coefficients
 plot_ref_coefs = false;
 
