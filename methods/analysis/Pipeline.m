@@ -436,9 +436,7 @@ classdef Pipeline < handle
             if iscell(job_code_parent)
                 code_new = [];
                 nparents = length(job_code_parent);
-                if nparents == 1
-                    code_new = job_code_parent;
-                elseif nparents <= 4
+                if nparents <= 4
                     for i=1:nparents
                         code_new = [code_new job_code_parent{i}];
                     end
@@ -454,8 +452,8 @@ classdef Pipeline < handle
                         end
                     end
                     pattern = '([\w\d]+)(id\d+)\>';
-                    result = regexp(job_code_parent{i}, pattern, 'tokens');
-                    code_new = [result{1}{1} 'id' min(ids) '-' max(ids)];
+                    result = regexp(job_code_parent{1}, pattern, 'tokens');
+                    code_new = sprintf('%sid%d_%d',result{1}{1},min(ids),max(ids));
                 end
                 job_code_parent = code_new;
             end

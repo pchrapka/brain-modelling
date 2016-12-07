@@ -135,7 +135,7 @@ classdef PipelineLatticeSVM < Pipeline
                     addParameter(p,'parent_job',@(x) ~isempty(x));
                     parse(p,varargin{:});
                     
-                    files_in = cell(length(p.Result.parent_job),1);
+                    files_in = cell(length(p.Results.parent_job),1);
                     for i=1:length(p.Results.parent_job)
                         files_in{i} = obj.pipeline.(p.Results.parent_job{i}).files_out;
                     end
