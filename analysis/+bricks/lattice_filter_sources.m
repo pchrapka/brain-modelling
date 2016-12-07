@@ -49,6 +49,14 @@ if p.Results.trials > 1
         otherwise
             error('Only MCMTQRDLSL1 is available for multiple trials');
     end
+    
+    if length(files_in.data) < p.Results.trials
+        error('not enough data trials');
+    end
+    
+    if length(files_in.warmup) < p.Results.trials
+        error('not enough warmup trials');
+    end
 end
 
 % load data
