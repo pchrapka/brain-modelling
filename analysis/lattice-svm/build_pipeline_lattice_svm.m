@@ -118,13 +118,13 @@ job_al = cell(length(params_sd.conds),1);
 for i=1:length(params_sd.conds)
     % add data label
     name_brick = 'bricks.add_label';
-    for j=1:length(params_sd.cond(i).trials);
+    for j=1:length(params_sd.conds(i).trials)
         job_al{i,j} = pipeline.add_job(name_brick, ...
             params_sd.conds(i).opt_func,...
             'files_in', params_sd.conds(i).trials(j).file,'id',j);
         
         % set restart if the flag is set
-        if params_sd.cond(i).trials(j).restart
+        if params_sd.conds(i).trials(j).restart
             pipeline.options.restart{end+1} = job_al{i,j};
             pipeline.options.type_restart = 'substring';
         end
@@ -147,7 +147,7 @@ for j=1:length(params_sd.analysis)
         ntrials_filter = ptemp.Results.trials;
         
         % group data based on filter size
-        ntrials_data = length(params_sd.cond(i).trials);
+        ntrials_data = length(params_sd.conds(i).trials);
         ntrial_groups = floor(ntrials_data/ntrials_filter);
         
         job_groups = reshape(job_al{i,:}, ntrials_filter, ntrial_groups)';

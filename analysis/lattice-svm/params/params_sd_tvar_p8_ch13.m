@@ -33,10 +33,10 @@ changepoints{2} = [50 120] + (ntime - 256);
 
 for i=1:ncond
     % set up params
-    params.conds(i).file = fullfile(outdir,...
-        sprintf('%s-%s.mat',strrep(func_name,'_','-'),conds(i).label));
+    params.conds(i).path = fullfile(outdir,...
+        sprintf('%s-%s',strrep(func_name,'_','-'),conds(i).label));
     params.conds(i).opt_func = conds(i).opt_func;
-    outfile = params.conds(i).file;
+    outpath = params.conds(i).path;
     
     var_gen = VARGenerator('vrc-cp-ch2-coupling2-rnd', ntrials, nchannels,'version',i);
     
@@ -46,7 +46,7 @@ for i=1:ncond
         % get number of trials already existing
         data_var = loadfile(var_gen.get_file());
         data_ntrials = size(data_var.signal,3);
-        if ntrials > data_trials
+        if ntrials > data_ntrials
             data_new_trials(data_ntrials+1:ntrials,1) = true;
         end
     else
@@ -57,11 +57,11 @@ for i=1:ncond
     data_var = var_gen.generate('time',ntime,'order',norder,'changepoints',changepoints{i});
     
     for j=1:ntrials
-        outfile2 = sprintf('%s-t%d',outfile,j);
-        params.conds(i).trials(j).file = outfile2;
+        outfile = fullfile(outpath,sprintf('trial%d.mat',j));
+        params.conds(i).trials(j).file = outfile;
         params.conds(i).trials(j).restart = data_new_trials(j);
         
-        if data_new_trials(j)
+        if data_new_trials(j) || ~exist(outfile,'file')
             % create trial data
             data = [];
             % create source analysis data
@@ -74,9 +74,9 @@ for i=1:ncond
             end
             
             % save data
-            save(outfile2,'data','-v7.3');
+            save_parfor(outfile,data);
         else
-            fprintf('trial %d source data exists: %s\n',j,outfile2);
+            fprintf('trial %d source data exists: %s\n',j,outfile);
         end
     end
 end
