@@ -6,7 +6,7 @@ function params = params_sd_tvar_p8_ch13()
 norder = 8;
 nsets_max = 120;
 ntrials_max = 8;
-ntrials = max(nsets_max*ntrials_max,2000);
+ntrials = nsets_max*ntrials_max;
 nchannels = 13;
 ntime = 358;
 
