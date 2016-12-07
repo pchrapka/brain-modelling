@@ -21,7 +21,8 @@ verbosity = 1;
 % suite = TestSuite.fromClass(?tests.TestSVM);
 % suite = TestSuite.fromClass(?tests.Test_plot_rc_feature_matrix);
 % suite = TestSuite.fromClass(?tests.TestVAR);
-suite = TestSuite.fromClass(?tests.TestVRC);
+% suite = TestSuite.fromClass(?tests.TestVRC);
+suite = TestSuite.fromClass(?tests.Test_rc2ar);
 % suite = TestSuite.fromClass(?tests.TestFilters);
 if verbosity > 0
     disp({suite.Name}');

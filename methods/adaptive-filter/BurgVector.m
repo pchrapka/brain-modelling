@@ -22,7 +22,7 @@ classdef BurgVector
         
         function obj = BurgVector(channels, order, varargin)
             %BurgVector constructor for BurgVector
-            %   BurgVector(ORDER, LAMBDA) creates a BurgVector object
+            %   BurgVector(channels, order, ...) creates a BurgVector object
             %
             %   channels (integer)
             %       number of channels
