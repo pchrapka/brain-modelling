@@ -150,17 +150,14 @@ for j=1:length(params_sd.analysis)
         ntrials_data = length(params_sd.conds(i).trials);
         ntrial_groups = floor(ntrials_data/ntrials_filter);
         
-        job_groups = reshape(job_al{i,:}, ntrials_filter, ntrial_groups)';
-        error('check that this is the correct orientation');
+        job_groups = reshape(job_al(i,:), ntrials_filter, ntrial_groups)';
         job_groups_shifted = circshift(job_groups,1);
         
         % set up job params
         for k=1:ntrial_groups
-            parent_job_trials = job_groups{k,:};
-            parent_job_warmup = job_groups_shifted{k,:};
             job_lf{i,k} = pipeline.add_job(name_brick, opt_func,...
-                'parent_job_data',parent_job_trials,...
-                'parent_job_warmup',parent_job_warmup,...
+                'parent_job_data',job_groups{k,:},...
+                'parent_job_warmup',job_groups_shifted{k,:},...
                 'id',k);
         end
     end
