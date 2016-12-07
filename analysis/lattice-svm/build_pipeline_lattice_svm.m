@@ -18,6 +18,24 @@ addRequired(p,'params_subject',@ischar);
 addParameter(p,'mode','session',@(x) any(validatestring(x,{'session','batch'})));
 parse(p,params_subject,varargin{:});
 
+switch p.Results.mode
+    case 'batch'
+        % only runs labeling and filtering in batch mode
+        fprintf('warning:\n');
+        fprintf([...
+            'batch mode only adds labeling and filtering jobs.\n'...
+            'this is to run those jobs in parallel on the first\n'...
+            'run of the pipeline. this will erase the history of\n'...
+            'the remainder of the jobs if they''ve already been completed.\n']);
+        response = input('Continue? (y)','s');
+        if isequal(response,'y') || isequal(response,'Y')
+        else
+            fprintf('stopping\n');
+            pipeline = [];
+            return;
+        end
+end
+
 %% set up output folder
 % use absolute directories
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
@@ -156,10 +174,17 @@ for j=1:length(params_sd.analysis)
         % set up job params
         for k=1:ntrial_groups
             job_lf{i,k} = pipeline.add_job(name_brick, opt_func,...
-                'parent_job_data',job_groups{k,:},...
-                'parent_job_warmup',job_groups_shifted{k,:},...
+                'parent_job',job_groups(k,:),... %for job naming
+                'parent_job_data',job_groups(k,:),...
+                'parent_job_warmup',job_groups_shifted(k,:),...
                 'id',k);
         end
+    end
+    
+    switch p.Results.mode
+        case 'batch'
+            % only run labeling and filtering in batch mode
+            continue;
     end
     
     if ~isempty(params_sd.analysis(j).fm)
@@ -200,7 +225,8 @@ for j=1:length(params_sd.analysis)
             % add train test
             name_brick = 'bricks.train_test_common';
             opt_func = params_sd.analysis(j).tt{k};
-            pipeline.add_job(name_brick,opt_func,'parent_job',job_fv,...
+            pipeline.add_job(name_brick,opt_func,...
+                'parent_job',job_fv,... % input and job code naming
                 'partition_job', job_pt, 'fdr_job', job_fd_train);
         end
     else
@@ -232,7 +258,7 @@ end
 % restart the whole pipeline if the restart flag is set
 % Only the case if the initial data changes
 if isfield(params_sd,'restart')
-    if params_sd.force
+    if params_sd.restart
         pipeline.options.restart = 'al';
         pipeline.options.type_restart = 'substring';
     end
