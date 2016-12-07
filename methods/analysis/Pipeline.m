@@ -435,8 +435,27 @@ classdef Pipeline < handle
             params_code = obj.get_params_code(brick_name, params_name);
             if iscell(job_code_parent)
                 code_new = [];
-                for i=1:length(job_code_parent)
-                    code_new = [code_new job_code_parent{i}];
+                nparents = length(job_code_parent);
+                if nparents == 1
+                    code_new = job_code_parent;
+                elseif nparents <= 4
+                    for i=1:nparents
+                        code_new = [code_new job_code_parent{i}];
+                    end
+                else
+                    ids = zeros(nparents,1);
+                    for i=1:nparents
+                        pattern = 'id(\d+)';
+                        result = regexp(job_code_parent{i}, pattern, 'tokens');
+                        if isempty(result)
+                            error('no ids and too many parents, add id to jobs');
+                        else
+                            ids(i) = str2double(result{1}{1});
+                        end
+                    end
+                    pattern = '([\w\d]+)(id\d+)\>';
+                    result = regexp(job_code_parent{i}, pattern, 'tokens');
+                    code_new = [result{1}{1} 'id' min(ids) '-' max(ids)];
                 end
                 job_code_parent = code_new;
             end
