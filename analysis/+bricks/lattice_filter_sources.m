@@ -38,8 +38,6 @@ addParameter(p,'lambda',0.99,@isnumeric);
 addParameter(p,'verbose',0);
 parse(p,files_in,files_out,opt{:});
 
-disp(pwd);
-
 % flag for plotting ref coefficients
 plot_ref_coefs = false;
 
@@ -96,10 +94,10 @@ end
 trace = LatticeTrace(filter,'fields',{'Kf'});
 
 % initialize lattice filter with noise
-warning('off','all');
+% warning('off','all');
 noise = gen_noise(nchannels, nsamples, p.Results.trials);
 trace.warmup(noise);
-warning('on','all');
+% warning('on','all');
 
 X_norm = zeros(nchannels,nsamples,p.Results.trials);
 X2_norm = X_norm;
@@ -114,7 +112,7 @@ for j=1:p.Results.trials
 end
 
 % warmup with data from previous trial
-trace.run(X2_norm,'verbosity',p.Results.verbose,'mode','none');
+trace.run(X2_norm,'verbosity',p.Results.verbose,'mode','none')
 
 % estimate the reflection coefficients
 %warning('off','all');

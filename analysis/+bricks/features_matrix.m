@@ -6,7 +6,7 @@ function features_matrix(files_in,files_out,opt)
 %   Input
 %   -----
 %   files_in (string/cell/struct)
-%       file name(s) of list of samples to process, see output of
+%       file name(s) of samples file(s) to process, see output of
 %       bricks.lattice_filter_sources
 %       
 %       struct version
@@ -59,19 +59,9 @@ if isstruct(files_in)
     if isempty(p.Results.file_in_field)
         error('file_in_field parameter is required');
     end
-    file_list = loadfile(files_in.(p.Results.file_in_field));
-elseif iscell(files_in)
-    file_list = {};
-    % concatenate the file lists
-    for i=1:length(files_in)
-        file_list_temp = loadfile(files_in{i});
-        % reshape to a vector
-        file_list_temp = reshape(file_list_temp,numel(file_list_temp),1);
-        % concatenate to list
-        file_list = [file_list; file_list_temp];
-    end
+    file_list = files_in.(p.Results.file_in_field);
 else
-    file_list = loadfile(files_in);
+    file_list = files_in;
 end
 
 % convert data
