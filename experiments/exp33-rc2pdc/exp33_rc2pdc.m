@@ -91,16 +91,47 @@ kb_check = squeeze(trace_check.trace.Kf(end,:,:,:));
 % checking against the original vrc process
 result = isequalntol(kf_check, kf_true,'AbsTol',0.3);
 
-idx = abs(kf_est) > 0;
+idx = abs(kf_check) > 0;
 accuracy_percent = sum(result(idx))/length(result(idx));
 fprintf('Kf is %0.0f%% OK\n',accuracy_percent*100);
 
 result = isequalntol(kb_check, kb_true,'AbsTol',0.3);
 
-idx = abs(kb_est) > 0;
+idx = abs(kb_check) > 0;
 accuracy_percent = sum(result(idx))/length(result(idx));
 fprintf('Kb is %0.0f%% OK\n',accuracy_percent*100);
 
 
 %% compute pdc
 % then asymp_pdc
+
+pf = eye(nchannels);
+A2 = -rcarrayformat(A,'format',3);
+pdc_true = pdc(A2,pf,'metric','euc');
+pdc_true.SS = ss_alg(A2, pf, 128);
+pdc_true.coh = coh_alg(pdc_true.SS);
+
+pf = eye(nchannels);
+A2 = -rcarrayformat(rc2ar(kf_check,kb_check),'format',3);
+pdc_check = pdc(A2,pf,'metric','euc');
+pdc_check.SS = ss_alg(A2, pf, 128);
+pdc_check.coh = coh_alg(pdc_check.SS);
+
+flg_print = [1 0 0 0 0 0 0];
+fs = 1;
+w_max = fs/2;
+ch_labels = [];
+flg_color = 0;
+flg_sigcolor = 1;
+
+h=figure;
+window_name = 'Truth';
+   set(h,'NumberTitle','off','MenuBar','none', ...
+      'Name', window_name )
+xplot(pdc_true,flg_print,fs,w_max,ch_labels,flg_color,flg_sigcolor);
+
+h=figure;
+window_name = 'Estimate';
+   set(h,'NumberTitle','off','MenuBar','none', ...
+      'Name', window_name )
+xplot(pdc_check,flg_print,fs,w_max,ch_labels,flg_color,flg_sigcolor);

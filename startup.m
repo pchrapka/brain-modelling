@@ -20,6 +20,7 @@ addpath(fullfile(pwd,'external','FEAST-v1.1.1','FEAST'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','MIToolbox'));
 addpath(genpath(fullfile(pwd,'external','AutomaticSpectra')));
 addpath(fullfile(pwd,'external','asymp_package_v2b','routines'));
+addpath(genpath(fullfile(pwd,'external','asymp_package_v2b','supporting')));
 
 %% add external packages with setup steps
 % Check fEAST has been compiled
@@ -81,6 +82,7 @@ addpath(fullfile(pwd,'methods','adaptive-filter'));
 addpath(fullfile(pwd,'methods','analysis'));
 addpath(fullfile(pwd,'methods','beamformer'));
 addpath(fullfile(pwd,'methods','classification'));
+addpath(fullfile(pwd,'methods','connectivity'));
 addpath(fullfile(pwd,'methods','modelling'));
 addpath(fullfile(pwd,'methods','stats'));
 addpath(fullfile(pwd,'methods','util'));
