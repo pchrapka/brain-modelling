@@ -9,13 +9,20 @@ p = inputParser();
 addRequired(p,'data_path',@ischar);
 p.parse(data_path,varargin{:});
 
-%% get true data
-
-% get parameters
+% get data name
 pattern = '(params_sd_[\d\w_]*)';
 out = regexp(data_path,pattern,'tokens');
 data_name = out{1}{1};
 
+% get filter name
+pattern = 'lf-([\d\w-]*)';
+out = regexp(data_path,pattern,'tokens');
+slug_filter = out{1}{1};
+filter_name = strrep(slug_filter,'-',' ');
+
+%% get true data
+
+% get parameters
 fh = str2func(data_name);
 params = fh('mode','short');
 
@@ -87,34 +94,40 @@ parfor i=1:ntrials
     trial_idx(i) = str2double(out{1}{1});
 end
 
-%% plot
-
-% get filter name
-pattern = 'lf-([\d\w-]*)';
-out = regexp(data_path,pattern,'tokens');
-slug_filter = out{1}{1};
-filter_name = strrep(slug_filter,'-',' ');
+%% plot overall nmse
 
 % plot
 h = figure;
-scatter(trial_idx,db(data_mse,'power'),'filled');
-ylim([10^(-4) 10^(1.3)]);
+scatter(trial_idx,data_mse,'filled');
 title(sprintf('NMSE over Trials: %s',filter_name));
 xlabel('Trials');
-ylabel('NMSE (dB)');
-
-%% save fig
-
-% create img dir
-outdir = fullfile(data_path,'img');
-if ~exist(outdir,'dir');
-    mkdir(outdir);
-end
+ylabel('NMSE (log scale)');
+ylim([10^(-4) 10^(1.3)]);
+set(gca,'xscale','log');
 
 % save dated and tagged file
 drawnow;
-save_fig_exp(outdir,...
+save_fig2('path',data_path,...
     'tag',sprintf('nmse-%s',slug_filter));
+close(h);
+
+%% plot nmse vs iteration for trial 1
+idx = 1;
+datafile = fullfile(data_path, result(idx).name);
+data = loadfile(datafile);
+
+% plot
+h = figure;
+plot_mse_vs_iteration(...
+    data.Kf, truth,...
+    'mode','log',...
+    'labels',{filter_name});
+ylim([10^(-1) 10^(3)]);
+
+% save dated and tagged file
+drawnow;
+save_fig2('path',data_path,...
+    'tag',sprintf('nmse-%s-trial%d',slug_filter,idx));
 close(h);
 
 end
