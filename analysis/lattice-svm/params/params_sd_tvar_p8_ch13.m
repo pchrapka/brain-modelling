@@ -1,5 +1,9 @@
-function params = params_sd_tvar_p8_ch13()
+function params = params_sd_tvar_p8_ch13(varargin)
 % params for time varying VAR, order = 8, channels = 13
+
+p = inputParser();
+addParameter(p,'mode','all',@(x) any(validatestring(x,{'all','short'})));
+p.parse(varargin{:});
 
 %% generate data
 
@@ -33,12 +37,13 @@ changepoints{2} = [50 120] + (ntime - 256);
 
 for i=1:ncond
     % set up params
+    params.conds(i) = conds(i);
     params.conds(i).path = fullfile(outdir,...
         sprintf('%s-%s',strrep(func_name,'_','-'),conds(i).label));
-    params.conds(i).opt_func = conds(i).opt_func;
     outpath = params.conds(i).path;
     
     var_gen = VARGenerator('vrc-cp-ch2-coupling2-rnd', ntrials, nchannels,'version',i);
+    params.var_gen(i) = var_gen;
     
     % determine new and old trials
     data_new_trials = false(ntrials,1);
@@ -79,6 +84,10 @@ for i=1:ncond
             fprintf('trial %d source data exists: %s\n',j,outfile);
         end
     end
+end
+
+if isequal(p.Results.mode,'short')
+    return;
 end
 
 k=1;
