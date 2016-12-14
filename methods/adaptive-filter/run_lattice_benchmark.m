@@ -71,11 +71,10 @@ nsims = p.Results.nsims;
 sim_params = p.Results.sim_params;
 nsim_params = length(sim_params);
 
-[expdir,~,~] = fileparts(p.Results.exp_path);
 if ~isempty(p.Results.name)
-    outdir = fullfile(expdir,p.Results.name,'output');
+    outdir = fullfile(p.Results.exp_path,p.Results.name,'output');
 else
-    outdir = fullfile(expdir,'output');
+    outdir = fullfile(p.Results.exp_path,'output');
 end
 if ~exist(outdir,'dir')
     mkdir(outdir);
