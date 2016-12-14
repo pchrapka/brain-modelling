@@ -20,6 +20,7 @@ addRequired(p,'params_subject',@ischar);
 addRequired(p,'filter_params',@iscell);
 addParameter(p,'tofile',false,@islogical);
 addParameter(p,'plot',false,@islogical);
+addParameter(p,'pipeline',[],@isstruct);
 parse(p,params_subject,filter_params,varargin{:});
 
 test = false;
@@ -32,7 +33,11 @@ else
 end
 
 % get pipeline
-pipeline = build_pipeline_lattice_svm(params_subject);
+if isempty(p.Results.pipeline)
+    pipeline = build_pipeline_lattice_svm(params_subject);
+else
+    pipeline = p.Results.pipeline;
+end
 
 for j=1:length(filter_params)
     fprintf(fid,'%s\n', filter_params{j});

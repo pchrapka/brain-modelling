@@ -19,4 +19,8 @@ params_name = {...
     'params_lf_MCMTLOCCDTWL2_mt5_p10_l098_n400',...
     };
 
-print_results_lattice_svm(params_subject,params_name,'tofile',true);
+if exist(pipeline,'var')
+    print_results_lattice_svm(params_subject,params_name,'tofile',true,'pipeline',pipeline);
+else
+    print_results_lattice_svm(params_subject,params_name,'tofile',true);
+end
