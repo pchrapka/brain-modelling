@@ -3,7 +3,7 @@
 params_varnocoupling
 
 %% run
-exp_path = mfilename('fullpath');
+exp_path = [mfilename('fullpath') '.m'];
 
 run_lattice_benchmark(...
     exp_path,...
