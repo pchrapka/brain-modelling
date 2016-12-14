@@ -276,8 +276,7 @@ classdef VRC < VARProcess
             p.addRequired('coefs',@(x) any(validatestring(x,{'Kf','Kb'})));
             p.parse(nsamples,coefs);
             
-            rc_time = repmat(obj.(coefs),[1,1,1,nsamples]);
-            rc_time = shiftdim(rc_time,3);
+            rc_time = repmat(shiftdim(obj.(coefs),-1),[nsamples,1,1,1]);
             
         end
         

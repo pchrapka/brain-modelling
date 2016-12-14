@@ -161,11 +161,9 @@ classdef VRCConstAndPulse < VARProcess
                         rc_coefs = obj.process_const.(coefs);
                 end
                 
-                rc_time(:,:,:,j) = rc_coefs;
+                rc_time(j,:,:,:) = rc_coefs;
                 
             end
-            
-            rc_time = shiftdim(rc_time,3);
             
         end
         
