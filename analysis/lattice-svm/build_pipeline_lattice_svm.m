@@ -264,4 +264,8 @@ if isfield(params_sd,'restart')
     end
 end
 
+%% save pipeline
+outfile = fullfile(pipedir,'pipeline.mat');
+save(outfile,'pipeline');
+
 end
