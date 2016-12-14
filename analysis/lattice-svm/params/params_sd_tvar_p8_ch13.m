@@ -60,7 +60,7 @@ for i=1:ncond
     
     % generate data
     var_gen_params = {'time',ntime,'order',norder,'changepoints',changepoints{i}};
-    params.var_gen_params(i) = var_gen_params;
+    params.var_gen_params{i} = var_gen_params;
     data_var = var_gen.generate(var_gen_params{:});
     
     for j=1:ntrials
