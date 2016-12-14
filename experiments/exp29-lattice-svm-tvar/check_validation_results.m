@@ -20,7 +20,7 @@ params_name = {...
     'params_lf_MCMTLOCCDTWL2_mt5_p10_l098',...
     };
 
-if exist(pipeline,'var')
+if exist('pipeline','var')
     print_results_lattice_svm(params_subject,params_name,'tofile',true,'pipeline',pipeline);
 else
     print_results_lattice_svm(params_subject,params_name,'tofile',true);
@@ -44,7 +44,7 @@ filters = {...
 
 for i=1:length(conds)
     for j=1:length(filters)
-        if exist(pipeline,'var')
+        if exist('pipeline','var')
             data_path = fullfile(pipeline.outdir,...
                 conds{i},filters{j});
         else

@@ -36,7 +36,8 @@ end
 datafile_true = params.var_gen(idx).get_file();
 data_true = loadfile(datafile_true);
 
-truth = data_true.process.Kf;
+var_gen_params = struct(params.var_gen_params(idx));
+truth = data_true.process.get_coefs_vs_time(var_gen_params.time,'Kf');
 
 %% get filtered data
 pattern = fullfile(data_path,'lattice-filtered-id*.mat');
@@ -45,8 +46,12 @@ result = dir(pattern);
 % prep truth
 datafile = fullfile(data_path,result(1).name);
 data = loadfile(datafile);
-nsamples = size(data.Kf,1);
-truth_mat = repmat(shiftdim(truth,-1),[nsamples,1,1,1]);
+if ~isequal(size(data.Kf), size(truth))
+    nsamples_true = size(truth,1);
+    nsamples_estimate = size(data.Kf,1);
+    nsamples_extra = nsamples_true - nsamples_estimate;
+    truth(1:nsamples_extra,:,:,:) = [];
+end
 
 % allocate mem
 ntrials = length(result);
@@ -58,7 +63,7 @@ for i=1:ntrials
     data = loadfile(datafile);
     
     % take nmse over all coefficients and all trials
-    data_mse(i) = nmse(data.Kf(:), truth_mat(:));
+    data_mse(i) = nmse(data.Kf(:), truth(:));
 end
 
 %% plot

@@ -35,9 +35,9 @@ changepoints = {};
 changepoints{1} = [20 100] + (ntime - 256);
 changepoints{2} = [50 120] + (ntime - 256);
 
+params.conds = conds;
 for i=1:ncond
     % set up params
-    params.conds(i) = conds(i);
     params.conds(i).path = fullfile(outdir,...
         sprintf('%s-%s',strrep(func_name,'_','-'),conds(i).label));
     outpath = params.conds(i).path;
@@ -59,7 +59,9 @@ for i=1:ncond
     end
     
     % generate data
-    data_var = var_gen.generate('time',ntime,'order',norder,'changepoints',changepoints{i});
+    var_gen_params = {'time',ntime,'order',norder,'changepoints',changepoints{i}};
+    params.var_gen_params(i) = var_gen_params;
+    data_var = var_gen.generate(var_gen_params{:});
     
     for j=1:ntrials
         outfile = fullfile(outpath,sprintf('trial%d.mat',j));
