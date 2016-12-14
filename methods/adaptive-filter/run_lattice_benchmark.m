@@ -71,10 +71,14 @@ nsims = p.Results.nsims;
 sim_params = p.Results.sim_params;
 nsim_params = length(sim_params);
 
+[expdir,~,ext] = fileparts(exp_path);
+if isempty(ext)
+    error('missing file name in exp_path');
+end
 if ~isempty(p.Results.name)
-    outdir = fullfile(p.Results.exp_path,p.Results.name,'output');
+    outdir = fullfile(expdir,p.Results.name,'output');
 else
-    outdir = fullfile(p.Results.exp_path,'output');
+    outdir = fullfile(expdir,'output');
 end
 if ~exist(outdir,'dir')
     mkdir(outdir);
@@ -226,7 +230,7 @@ for k=1:nsim_params
                 'labels',{sprintf('%d channels',nchannels)});
             % TODO fix labels
             drawnow;
-            save_fig_exp(outdir,...
+            save_fig_exp(exp_path,...
                 'tag',sprintf('mse-%s-%s-s%d',sim_param.data,slug_filter,j));
             close(h);
         end
@@ -244,7 +248,7 @@ for k=1:nsim_params
                 'labels',{sprintf('%d channels',nchannels)});
             % TODO fix labels
             drawnow;
-            save_fig_exp(outdir,...
+            save_fig_exp(exp_path,...
                 'tag',sprintf('nmse-%s-%s-s%d',sim_param.data,slug_filter,j));
             close(h);
         end
@@ -257,7 +261,7 @@ for k=1:nsim_params
         kf_unique = unique(kf_true_sims{1});
         hist(kf_unique,linspace(-1,1,20));
         drawnow;
-%         save_fig_exp(outdir,...
+%         save_fig_exp(exp_path,...
 %             'tag',sprintf('coefs-c%d-s%d',channels(i),j),...
 %             'formats',{'png'});
         close(h);
@@ -281,11 +285,11 @@ if p.Results.plot_avg_mse
         'mode','log',...
         'labels',labels);
     drawnow;
-    save_fig_exp(outdir,'tag',sprintf('mse-all-%s',tag));
+    save_fig_exp(exp_path,'tag',sprintf('mse-all-%s',tag));
     
     ylim([10^(-4) 10^(0)]);
     drawnow;
-    save_fig_exp(outdir,'tag',sprintf('mse-all-axis-%s',tag));
+    save_fig_exp(exp_path,'tag',sprintf('mse-all-axis-%s',tag));
 end
 
 if p.Results.plot_avg_nmse
@@ -297,11 +301,11 @@ if p.Results.plot_avg_nmse
         'normalized',true,...
         'labels',labels);
     drawnow;
-    save_fig_exp(outdir,'tag',sprintf('nmse-all-%s',tag));
+    save_fig_exp(exp_path,'tag',sprintf('nmse-all-%s',tag));
     
     ylim([10^(-1) 10^(3)]);
     drawnow;
-    save_fig_exp(outdir,'tag',sprintf('nmse-all-axis-%s',tag));
+    save_fig_exp(exp_path,'tag',sprintf('nmse-all-axis-%s',tag));
 end
 
 %% Print extra info
