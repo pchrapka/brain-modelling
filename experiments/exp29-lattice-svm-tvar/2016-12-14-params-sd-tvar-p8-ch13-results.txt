@@ -1,0 +1,552 @@
+params_lf_MQRDLSL2_p10_l099
+===========================
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MQRDLSL2-p10-l099/fm-lattice-thresh1dot5/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 54.50%
+train:
+	classification accuracy: 74.50%
+test:
+	classification accuracy: 40.00%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MQRDLSL2-p10-l099/fm-lattice-thresh1dot5/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 59.50%
+train:
+	classification accuracy: 82.50%
+test:
+	classification accuracy: 35.00%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MQRDLSL2-p10-l099/fm-lattice-thresh1dot5clamp/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 60.50%
+train:
+	classification accuracy: 77.00%
+test:
+	classification accuracy: 45.00%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MQRDLSL2-p10-l099/fm-lattice-thresh1dot5clamp/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 51.50%
+train:
+	classification accuracy: 83.50%
+test:
+	classification accuracy: 45.00%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MQRDLSL2-p10-l099/fm-lattice-nothresh-scalefw/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 51.00%
+train:
+	classification accuracy: 70.50%
+test:
+	classification accuracy: 50.00%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MQRDLSL2-p10-l099/fm-lattice-nothresh-scalefw/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 65.50%
+train:
+	classification accuracy: 81.00%
+test:
+	classification accuracy: 55.00%
+
+params_lf_MLOCCDTWL_p10_l099
+============================
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MLOCCDTWL-p10-l099/fm-lattice-thresh1dot5/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 56.50%
+train:
+	classification accuracy: 62.50%
+test:
+	classification accuracy: 50.00%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MLOCCDTWL-p10-l099/fm-lattice-thresh1dot5/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 52.00%
+train:
+	classification accuracy: 67.00%
+test:
+	classification accuracy: 55.00%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MLOCCDTWL-p10-l099/fm-lattice-thresh1dot5clamp/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 59.50%
+train:
+	classification accuracy: 64.00%
+test:
+	classification accuracy: 47.50%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MLOCCDTWL-p10-l099/fm-lattice-thresh1dot5clamp/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 61.50%
+train:
+	classification accuracy: 71.00%
+test:
+	classification accuracy: 47.50%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MLOCCDTWL-p10-l099/fm-lattice-nothresh-scalefw/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 53.00%
+train:
+	classification accuracy: 72.00%
+test:
+	classification accuracy: 52.50%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MLOCCDTWL-p10-l099/fm-lattice-nothresh-scalefw/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 52.50%
+train:
+	classification accuracy: 73.00%
+test:
+	classification accuracy: 42.50%
+
+params_lf_MLOCCDTWL_p10_l098
+============================
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MLOCCDTWL-p10-l098/fm-lattice-thresh1dot5/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 0.50%
+train:
+	classification accuracy: 51.50%
+test:
+	classification accuracy: 50.00%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MLOCCDTWL-p10-l098/fm-lattice-thresh1dot5/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 0.00%
+train:
+	classification accuracy: 59.50%
+test:
+	classification accuracy: 47.50%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MLOCCDTWL-p10-l098/fm-lattice-thresh1dot5clamp/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 0.00%
+train:
+	classification accuracy: 52.00%
+test:
+	classification accuracy: 47.50%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MLOCCDTWL-p10-l098/fm-lattice-thresh1dot5clamp/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 0.00%
+train:
+	classification accuracy: 51.50%
+test:
+	classification accuracy: 50.00%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MLOCCDTWL-p10-l098/fm-lattice-nothresh-scalefw/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 41.50%
+train:
+	classification accuracy: 70.00%
+test:
+	classification accuracy: 47.50%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MLOCCDTWL-p10-l098/fm-lattice-nothresh-scalefw/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 40.50%
+train:
+	classification accuracy: 73.50%
+test:
+	classification accuracy: 50.00%
+
+params_lf_MCMTQRDLSL1_mt5_p10_l099
+==================================
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l099/fm-lattice-thresh1dot5/pd-std-odd-tr30-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 58.33%
+train:
+	classification accuracy: 73.33%
+test:
+	classification accuracy: 47.50%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l099/fm-lattice-thresh1dot5/pd-std-odd-tr30-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 60.00%
+train:
+	classification accuracy: 73.33%
+test:
+	classification accuracy: 50.00%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l099/fm-lattice-thresh1dot5clamp/pd-std-odd-tr30-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 66.67%
+train:
+	classification accuracy: 81.67%
+test:
+	classification accuracy: 47.50%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l099/fm-lattice-thresh1dot5clamp/pd-std-odd-tr30-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 68.33%
+train:
+	classification accuracy: 81.67%
+test:
+	classification accuracy: 50.00%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l099/fm-lattice-nothresh-scalefw/pd-std-odd-tr30-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 55.00%
+train:
+	classification accuracy: 83.33%
+test:
+	classification accuracy: 55.00%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l099/fm-lattice-nothresh-scalefw/pd-std-odd-tr30-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 58.33%
+train:
+	classification accuracy: 86.67%
+test:
+	classification accuracy: 45.00%
+
+params_lf_MCMTQRDLSL1_mt5_p10_l098
+==================================
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l098/fm-lattice-thresh1dot5/pd-std-odd-tr30-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 61.67%
+train:
+	classification accuracy: 70.00%
+test:
+	classification accuracy: 45.00%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l098/fm-lattice-thresh1dot5/pd-std-odd-tr30-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 58.33%
+train:
+	classification accuracy: 70.00%
+test:
+	classification accuracy: 45.00%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l098/fm-lattice-thresh1dot5clamp/pd-std-odd-tr30-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 46.67%
+train:
+	classification accuracy: 68.33%
+test:
+	classification accuracy: 52.50%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l098/fm-lattice-thresh1dot5clamp/pd-std-odd-tr30-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 48.33%
+train:
+	classification accuracy: 71.67%
+test:
+	classification accuracy: 50.00%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l098/fm-lattice-nothresh-scalefw/pd-std-odd-tr30-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 63.33%
+train:
+	classification accuracy: 76.67%
+test:
+	classification accuracy: 47.50%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l098/fm-lattice-nothresh-scalefw/pd-std-odd-tr30-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 66.67%
+train:
+	classification accuracy: 78.33%
+test:
+	classification accuracy: 45.00%
+
+params_lf_MCMTQRDLSL1_mt5_p10_l09
+=================================
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l09/fm-lattice-thresh1dot5/pd-std-odd-tr30-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 53.33%
+train:
+	classification accuracy: 56.67%
+test:
+	classification accuracy: 55.00%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MCMTQRDLSL1-mt5-p10-l09/fm-lattice-thresh1dot5/pd-std-odd-tr30-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 48.33%
+train:
+	classification accuracy: 65.00%
+test:
+	classification accuracy: 50.00%
+
+params_lf_MCMTLOCCDTWL2_mt5_p10_l099
+====================================
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MCMTLOCCDTWL2-mt5-p10-l099/fm-lattice-thresh1dot5/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 55.00%
+train:
+	classification accuracy: 57.00%
+test:
+	classification accuracy: 52.50%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MCMTLOCCDTWL2-mt5-p10-l099/fm-lattice-thresh1dot5/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 55.00%
+train:
+	classification accuracy: 58.00%
+test:
+	classification accuracy: 52.50%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MCMTLOCCDTWL2-mt5-p10-l099/fm-lattice-thresh1dot5clamp/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 54.00%
+train:
+	classification accuracy: 55.50%
+test:
+	classification accuracy: 47.50%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MCMTLOCCDTWL2-mt5-p10-l099/fm-lattice-thresh1dot5clamp/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 23.00%
+train:
+	classification accuracy: 57.00%
+test:
+	classification accuracy: 47.50%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MCMTLOCCDTWL2-mt5-p10-l099/fm-lattice-nothresh-scalefw/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 37.00%
+train:
+	classification accuracy: 64.50%
+test:
+	classification accuracy: 42.50%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MCMTLOCCDTWL2-mt5-p10-l099/fm-lattice-nothresh-scalefw/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 53.50%
+train:
+	classification accuracy: 68.50%
+test:
+	classification accuracy: 42.50%
+
+params_lf_MCMTLOCCDTWL2_mt5_p10_l098
+====================================
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MCMTLOCCDTWL2-mt5-p10-l098/fm-lattice-thresh1dot5/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 0.00%
+train:
+	classification accuracy: 52.50%
+test:
+	classification accuracy: 52.50%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MCMTLOCCDTWL2-mt5-p10-l098/fm-lattice-thresh1dot5/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 0.50%
+train:
+	classification accuracy: 53.00%
+test:
+	classification accuracy: 52.50%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MCMTLOCCDTWL2-mt5-p10-l098/fm-lattice-thresh1dot5clamp/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 0.00%
+train:
+	classification accuracy: 51.50%
+test:
+	classification accuracy: 50.00%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MCMTLOCCDTWL2-mt5-p10-l098/fm-lattice-thresh1dot5clamp/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 0.00%
+train:
+	classification accuracy: 51.50%
+test:
+	classification accuracy: 50.00%
+
+fv-params_fv_rbf_20
+-------------------
+outdir:
+	al-std/lf-MCMTLOCCDTWL2-mt5-p10-l098/fm-lattice-nothresh-scalefw/pd-std-odd-tr100-te20/fd-20000/fv-rbf-20
+
+validation:
+	classification accuracy: 44.50%
+train:
+	classification accuracy: 71.00%
+test:
+	classification accuracy: 67.50%
+
+fv-params_fv_rbf_40
+-------------------
+outdir:
+	al-std/lf-MCMTLOCCDTWL2-mt5-p10-l098/fm-lattice-nothresh-scalefw/pd-std-odd-tr100-te20/fd-20000/fv-rbf-40
+
+validation:
+	classification accuracy: 47.00%
+train:
+	classification accuracy: 74.00%
+test:
+	classification accuracy: 67.50%
+
