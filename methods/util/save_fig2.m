@@ -20,7 +20,7 @@ addParameter(p,'path',pwd(),@ischar);
 addParameter(p,'tag','',@ischar);
 addParameter(p,'formats',{'png','eps'},@iscell);
 addParameter(p,'save_flag',true,@islogical);
-parse(p,mfilename,varargin{:});
+parse(p,varargin{:});
 
 if ~p.Results.save_flag
     return;

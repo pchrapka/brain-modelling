@@ -101,14 +101,14 @@ h = figure;
 scatter(trial_idx,data_mse,'filled');
 title(sprintf('NMSE over Trials: %s',filter_name));
 xlabel('Trials');
-ylabel('NMSE (log scale)');
-ylim([10^(-4) 10^(1.3)]);
-set(gca,'xscale','log');
+ylabel('NMSE');
+ylim([10^(-1) 10^(3)]);
+set(gca,'yscale','log');
 
 % save dated and tagged file
 drawnow;
 save_fig2('path',data_path,...
-    'tag',sprintf('nmse-%s',slug_filter));
+    'tag',sprintf('nmse-%s',slug_filter),'formats',{'png'});
 close(h);
 
 %% plot nmse vs iteration for trial 1
@@ -121,6 +121,7 @@ h = figure;
 plot_mse_vs_iteration(...
     data.Kf, truth,...
     'mode','log',...
+    'normalized',true,...
     'labels',{filter_name});
 ylim([10^(-1) 10^(3)]);
 

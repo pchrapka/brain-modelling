@@ -42,15 +42,15 @@ filters = {...
     'lf-MCMTLOCCDTWL2-mt5-p10-l098',...
     };
 
+if exist('pipeline','var')
+    pipedir = pipeline.outdir;
+else
+    pipedir = fullfile(get_project_dir(),'analysis','lattice-svm','output',...
+        'params_sd_tvar_p8_ch13');
+end
 for i=1:length(conds)
     for j=1:length(filters)
-        if exist('pipeline','var')
-            data_path = fullfile(pipeline.outdir,...
-                conds{i},filters{j});
-        else
-            data_path = fullfile(get_project_dir(),'analysis','lattice-svm','output',...
-                'params_sd_tvar_p8_ch13',conds{i},filters{j});
-        end
+        data_path = fullfile(pipedir,conds{i},filters{j});
         lattice_filter_perf(data_path);
     end
 end
