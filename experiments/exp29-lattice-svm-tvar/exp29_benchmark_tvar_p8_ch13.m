@@ -47,6 +47,12 @@ sim_params(k).data_params = data_params;
 sim_params(k).label = sim_params(k).filter.name;
 k = k+1;
 
+sim_params(k).filter = MCMTLOCCD_TWL3(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gamma);
+sim_params(k).data = data_type;
+sim_params(k).data_params = data_params;
+sim_params(k).label = sim_params(k).filter.name;
+k = k+1;
+
 %% run
 exp_path = [mfilename('fullpath') '.m'];
 
