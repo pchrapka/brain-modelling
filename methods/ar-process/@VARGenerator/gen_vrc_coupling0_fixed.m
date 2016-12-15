@@ -1,4 +1,4 @@
-function data = gen_vrc_coupling0_fixed(obj,varargin)
+function [process,nsamples] = gen_vrc_coupling0_fixed(obj,varargin)
 %
 %   Parameters
 %   ----------
@@ -9,7 +9,6 @@ p = inputParser();
 addParameter(p,'nsamples',100,@isnumeric);
 parse(p,varargin{:});
 
-ntrials = obj.nsims;
 nchannels = obj.nchannels;
 norder = 10;
 
@@ -37,7 +36,8 @@ for i=1:nchannels
 end
 vrc.coefs_set(vrc_coefs,vrc_coefs);
 
-% generate data
-data = obj.gen_process(vrc, 'nsamples', p.Results.nsamples);
+% set outputs
+process = vrc;
+nsamples = p.Results.nsamples;
 
 end

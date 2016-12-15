@@ -1,10 +1,13 @@
 classdef VARGenerator < handle
     
     properties (SetAccess = protected)
-        data_name;
+        process_name;
         nchannels;
-        nsims;
         version;
+        
+        hasprocess;
+        process;
+        nsamples;
     end
     
     methods (Access = protected)
@@ -18,18 +21,25 @@ classdef VARGenerator < handle
     
     methods
         
-        function obj = VARGenerator(data_name, nsims, nchannels, varargin)
+        function obj = VARGenerator(process_name, nchannels, varargin)
             %VARGenerator cosntructor
-            %   VARGenerator(data_name, nsims, nchannels)
+            %   VARGenerator(process_name, nchannels, ...)
             %
              %   Input
             %   -----
-            %   data_name (string)
+            %   process_name (string)
             %       data name,
             %       options:
-            %           'var-no-coupling'
-            %   nsims (integer)
-            %       number of simulations
+            %       vrc-coupling0-fixed
+            %           2 independent VRC processes
+            %       vrc-cp-ch2-coupling2-rnd
+            %           a VRCConstPulse process on 2 channels with 2
+            %           coupling coefficients, each process and coupling
+            %           coefficient is generated randomly
+            %       vrc-cp-ch2-coupling1-fixed
+            %           a VRCConstPulse process on 2 channels with 1
+            %           coupling coefficient, the processes and coupling
+            %           coefficient are fixed
             %   nchannels (integer)
             %       number of channels
             %
@@ -39,34 +49,82 @@ classdef VARGenerator < handle
             %       version number
             
             p = inputParser();
-            addRequired(p,'data_name',@ischar);
-            addRequired(p,'nsims',@isnumeric);
+            addRequired(p,'process_name',@ischar);
             addRequired(p,'nchannels',@isnumeric);
             addParameter(p,'version',1,@(x) isnumeric(x) || ischar(x));
-            p.parse(data_name, nsims, nchannels,varargin{:});
+            p.parse(process_name, nchannels,varargin{:});
             
-            obj.data_name = p.Results.data_name;
-            obj.nsims = p.Results.nsims;
+            obj.process_name = p.Results.process_name;
             obj.nchannels = p.Results.nchannels;
             obj.version = p.Results.version;
+            obj.hasprocess = false;
+            obj.process = [];
+            obj.nsamples = 0;
             
             outfile_sim = obj.get_file();
             if exist(outfile_sim,'file')
                 fprintf('generator exists\n');
+                obj.hasprocess = true;
+            end
+        end
+        
+        function configure(obj,varargin)
+            %CONFIGURE configures the VAR or VRC process
+            %   CONFIGURE configures the VAR or VRC process based on the
+            %   process_name specified in the constructor
+            %
+            %   Parameters
+            %   ----------
+            %   built-in process
+            %   ----------------
+            %   additional parameters may be required based on the
+            %   process_name, see TODO for more info
+            %
+            %   user process
+            %   ------------
+            %   process (VARProcess, default = [])
+            %       custom process
+            %   nsamples (integer, default = 500)
+            %       number of samples
+            
+            p = inputParser();
+            p.KeepUnmatched = true;
+            addParameter(p,'process',[],@(x) isa(x,'VARProcess'));
+            addParameter(p,'nsamples',500,@isnumeric);
+            parse(p,varargin{:});
+            
+            if obj.hasprocess
+                error('process already specified');
+            else
+                switch obj.process_name
+                    case 'var-no-coupling'
+                        [obj.process,obj.nsamples] = obj.gen_var_no_coupling(varargin{:});
+                    case 'vrc-coupling0-fixed'
+                        [obj.process,obj.nsamples] = obj.gen_vrc_coupling0_fixed(varargin{:});
+                    case 'vrc-cp-ch2-coupling2-rnd'
+                        [obj.process,obj.nsamples] = obj.gen_vrc_cp_ch2_coupling2_rnd(varargin{:});
+                    case 'vrc-cp-ch2-coupling1-fixed'
+                        [obj.process,obj.nsamples] = obj.gen_vrc_cp_ch2_coupling1_fixed(varargin{:});
+                    otherwise
+                        obj.process = p.Results.process;
+                        obj.nsamples = p.Results.nsamples;
+                end
+                obj.hasprocess = true;
             end
         end
         
         function data = generate(obj,varargin)
             %GENERATE generates VAR data
             %   GENERATE(obj) generates VAR data
+            %
+            %   Parameters
+            %   ----------
+            %   ntrials (integer, default = 100)
+            %       number of trials to generate
             
             p = inputParser();
-            p.KeepUnmatched = true;
-            addParameter(p,'process',[],@(x) isa(x,'VARProcess'));
-            parse(p,varargin{:});
-            
-            % FIXME this shouldn't have varargin since the parameters are
-            % fixed for the generator
+            addParameter(p,'ntrials',100,@isnumeric);
+            p.parse(varargin{:});
             
             % get the data file
             outfile_sim = obj.get_file();
@@ -77,23 +135,16 @@ classdef VARGenerator < handle
                 % if it doesn't, simulate data
                 fprintf('simulating: %s\n', slug_sim);
                 
-                switch obj.data_name
-                    case 'var-no-coupling'
-                        data = obj.gen_var_no_coupling(varargin{:});
-                    case 'vrc-coupling0-fixed'
-                        data = obj.gen_vrc_coupling0_fixed(varargin{:});
-                    case 'vrc-cp-ch2-coupling2-rnd'
-                        data = obj.gen_vrc_cp_ch2_coupling2_rnd(varargin{:});
-                    case 'vrc-cp-ch2-coupling1-fixed'
-                        data = obj.gen_vrc_cp_ch2_coupling1_fixed(varargin{:});
-                    otherwise
-                        fprintf('generating user process\n');
-                        data = obj.gen_process(p.Results.process,...
-                            struct2namevalue(p.Results.Unmatched));
+                if obj.hasprocess
+                    % FIXME nsamples should be fixed from somewhere
+                    data = obj.gen_process(...
+                        obj.process,varargin{:},...
+                        'nsamples',obj.nsamples);
+                    % save data
+                    save_parfor(outfile_sim, data);
+                else
+                    error('configure process first');
                 end
-                
-                % save data
-                save_parfor(outfile_sim, data);
                 
             else
                 % otherwise load data
@@ -101,25 +152,16 @@ classdef VARGenerator < handle
                 
                 % load data
                 data = loadfile(outfile_sim);
+                ntime = size(data.signal,2);
                 
-                % check if there are enough sims
-                nsims_data = size(data.signal,3);
-                if nsims_data < obj.nsims
-                    fprintf('simulating some more: %s\n', slug_sim);
-                    % get the var process object
-                    var_process = data.process;
-                    ntime = size(data.signal,2);
-                    
-                    % generate the extra sims
-                    for j=nsims_data:obj.nsims
-                        [signal, signal_norm,~] = var_process.simulate(ntime);
-                        data.signal(:,:,j) = signal;
-                        data.signal_norm(:,:,j) = signal_norm;
-                    end
-                    
-                    % save new data
-                    save_parfor(outfile_sim, data);
-                end
+                data_updated = obj.gen_process(...
+                    data.process,...
+                    'data',data,...
+                    'ntrials',p.Results.ntrials,...
+                    'nsamples',ntime);
+                
+                % save new data
+                save_parfor(outfile_sim, data_updated);
             end
             
         end
@@ -135,7 +177,7 @@ classdef VARGenerator < handle
             end
             
             outfile = fullfile(get_project_dir(), 'experiments', 'output-common', 'simulated',...
-                sprintf(format_string, obj.data_name, obj.nchannels, obj.version));
+                sprintf(format_string, obj.process_name, obj.nchannels, obj.version));
         end
         
     end

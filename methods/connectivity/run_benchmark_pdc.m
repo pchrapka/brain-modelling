@@ -90,12 +90,11 @@ end
 % load data
 % NOTE i'm assuming all filters have the same number of channels
 nchannels = sim_params(1).filter.nchannels;
-var_gen = VARGenerator(p.Results.data_name, nsims_generate*ntrials_max, nchannels);
-if ~isempty(p.Results.data_params)
-    data_var = var_gen.generate(p.Results.data_params{:});
-else
-    data_var = var_gen.generate();
+var_gen = VARGenerator(p.Results.data_name, nchannels);
+if ~isempty(p.Results.data_params) && ~var_gen.hasprocess
+    var_gen.configure(p.Results.data_params{:});
 end
+data_var = var_gen.generate('ntrials',nsims_generate*ntrials_max);
 % get the data time stamp
 data_time = get_timestamp(var_gen.get_file());
 

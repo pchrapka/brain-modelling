@@ -42,7 +42,7 @@ for i=1:ncond
         sprintf('%s-%s',strrep(func_name,'_','-'),conds(i).label));
     outpath = params.conds(i).path;
     
-    var_gen = VARGenerator('vrc-cp-ch2-coupling2-rnd', ntrials, nchannels,'version',i);
+    var_gen = VARGenerator('vrc-cp-ch2-coupling2-rnd', nchannels,'version',i);
     params.var_gen(i) = var_gen;
     
     % determine new and old trials
@@ -61,7 +61,10 @@ for i=1:ncond
     % generate data
     var_gen_params = {'time',ntime,'order',norder,'changepoints',changepoints{i}};
     params.var_gen_params{i} = var_gen_params;
-    data_var = var_gen.generate(var_gen_params{:});
+    if ~var_gen.hasprocess
+        var_gen.configure(var_gen_params{:});
+    end
+    data_var = var_gen.generate('ntrials',ntrials);
     
     for j=1:ntrials
         outfile = fullfile(outpath,sprintf('trial%d.mat',j));

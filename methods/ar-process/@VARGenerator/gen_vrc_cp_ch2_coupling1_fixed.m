@@ -1,9 +1,8 @@
-function data = gen_vrc_cp_ch2_coupling1_fixed(obj,varargin)
+function [process,nsamples] = gen_vrc_cp_ch2_coupling1_fixed(obj,varargin)
 
 p = inputParser();
 parse(p,varargin{:});
 
-% ntrials = obj.nsims;
 nchannels = obj.nchannels;
 
 norder = 10;
@@ -67,7 +66,8 @@ if ~stable
     error('not stable');
 end
 
-% generate data
-data = obj.gen_process(vrc_constpulse, 'nsamples', ntime);
+% set outputs
+process = vrc_constpulse;
+nsamples = ntime;
 
 end

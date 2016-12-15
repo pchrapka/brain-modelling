@@ -17,8 +17,9 @@ stable = false;
 while ~stable
     % vrc_type = 'vrc-coupling0-fixed';
     % vrc_type_params = {'nsamples',nsamples};
-    % vrc_gen = VARGenerator(vrc_type, nsims_generate*ntrials, nchannels, 'version', 'exp33');
-    % data_vrc = vrc_gen.generate(vrc_type_params{:});
+    % vrc_gen = VARGenerator(vrc_type, nchannels, 'version', 'exp33');
+    % vrc_gen.configure(vrc_type_params{:});
+    % data_vrc = vrc_gen.generate('ntrials',nsims_generate*ntrials);
     %
     % vrc_data_file = loadfile(vrc_gen.get_file());
     % vrc_process = vrc_data_file.process;
