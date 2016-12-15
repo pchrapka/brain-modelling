@@ -136,10 +136,10 @@ classdef VARGenerator < handle
                 fprintf('simulating: %s\n', slug_sim);
                 
                 if obj.hasprocess
-                    % FIXME nsamples should be fixed from somewhere
                     data = obj.gen_process(...
                         obj.process,varargin{:},...
                         'nsamples',obj.nsamples);
+                    
                     % save data
                     save_parfor(outfile_sim, data);
                 else
@@ -152,16 +152,19 @@ classdef VARGenerator < handle
                 
                 % load data
                 data = loadfile(outfile_sim);
-                ntime = size(data.signal,2);
+                [~,ntime,ntrials_data] = size(data.signal);
                 
-                data_updated = obj.gen_process(...
-                    data.process,...
-                    'data',data,...
-                    'ntrials',p.Results.ntrials,...
-                    'nsamples',ntime);
-                
-                % save new data
-                save_parfor(outfile_sim, data_updated);
+                if ntrials_data < p.Results.ntrials
+                    data_updated = obj.gen_process(...
+                        data.process,...
+                        'data',data,...
+                        'ntrials',p.Results.ntrials,...
+                        'nsamples',ntime);
+                    
+                    % save new data
+                    save_parfor(outfile_sim, data_updated);
+                    data = data_updated;
+                end
             end
             
         end
