@@ -56,6 +56,7 @@ addParameter(p,'sim_params',[]);
 addParameter(p,'warmup_noise',true,@islogical);
 addParameter(p,'warmup_data',false,@islogical);
 addParameter(p,'warmup_data_nsims',1,@isnumeric);
+addParameter(p,'normalized',false,@islogical);
 addParameter(p,'nsims',1,@isnumeric);
 addParameter(p,'force',false,@islogical);
 addParameter(p,'verbosity',0,@isnumeric);
@@ -128,7 +129,11 @@ for k=1:nsim_params
     data_time = get_timestamp(var_gen.get_file());
     
     % copy data
-    sources = data_var.signal;
+    if p.Results.normalized
+        sources = data_var.signal_norm;
+    else
+        sources = data_var.signal;
+    end
     data_true = data_var.true;
     
     % set up slugs

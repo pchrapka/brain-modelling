@@ -11,7 +11,7 @@ classdef VARGenerator < handle
     end
     
     methods (Access = protected)
-        data = gen_var_no_coupling(obj,varargin);
+        %data = gen_var_no_coupling(obj,varargin);
         data = gen_vrc_cp_ch2_coupling1_fixed(obj,varargin);
         data = gen_vrc_cp_ch2_coupling2_rnd(obj,varargin);
         data = gen_vrc_coupling0_fixed(obj,varargin);
