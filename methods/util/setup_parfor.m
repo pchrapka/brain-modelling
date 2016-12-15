@@ -11,7 +11,7 @@ switch comp_name
     case sprintf('blade16.ece.mcmaster.ca\n')
         if verLessThan('matlab', '8.2.0.29') % R2013b
             if matlabpool('size') == 0 
-                matlabpool('open', 10);
+                matlabpool('open', 12);
             end
         else
             % close the current pool
@@ -19,7 +19,7 @@ switch comp_name
                 delete(gcp);
             end
             % set up a new one
-            parpool('local', 10);
+            parpool('local', 20);
         end
     otherwise
         fprintf('%s: using default config\n', mfilename);
