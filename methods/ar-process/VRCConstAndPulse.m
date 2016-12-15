@@ -148,8 +148,8 @@ classdef VRCConstAndPulse < VARProcess
             p.addRequired('coefs',@(x) any(validatestring(x,{'Kf','Kb'})));
             p.parse(nsamples,coefs);
             
-            rc_time = zeros(obj.process_const.P, obj.process_const.K,...
-                obj.process_const.K, nsamples);
+            rc_time = zeros(nsamples, obj.process_const.P, obj.process_const.K,...
+                obj.process_const.K);
             
             % initialize rc_coefs
             rc_coefs = obj.process_const.(coefs);
