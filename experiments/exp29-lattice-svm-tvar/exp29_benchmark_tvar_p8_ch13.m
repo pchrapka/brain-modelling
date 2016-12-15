@@ -4,8 +4,8 @@
 nsims = 20;
 nchannels = 13;
 
-order_est = 10;
-lambda = 0.99;
+order_est = 8;
+lambda = 0.98;
 
 verbosity = 0;
 
