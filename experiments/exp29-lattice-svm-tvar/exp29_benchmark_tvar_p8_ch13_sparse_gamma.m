@@ -1,4 +1,4 @@
-%% exp29_benchmark_tvar_p8_ch13_mt_sparse_gamma
+%% exp29_benchmark_tvar_p8_ch13_sparse_gamma
 
 %% set options
 nsims = 20;
@@ -22,15 +22,14 @@ gamma = linspace(1,20,ngammas);
 
 k=1;
 config = [];
-config(k).filter = 'MCMTLOCCD_TWL2';
-config(k).name = 'mtsparse2gamma';
+config(k).filter = 'MLOCCD_TWL';
+config(k).name = 'sparsegamma';
 k=k+1;
-config(k).filter = 'MCMTLOCCD_TWL3';
-config(k).name = 'mtsparse3gamma';
+config(k).filter = 'MLOCCD_TWL2';
+config(k).name = 'sparse2gamma';
 k=k+1;
 nconfigs = length(config);
 
-ntrials = 5;
 
 for j=1:nconfigs
     k=1;
@@ -39,7 +38,7 @@ for j=1:nconfigs
     for i=1:ngammas
         
         filter_func = str2func(config(j).filter);
-        sim_params(k).filter = filter_func(nchannels,order_est,ntrials,...
+        sim_params(k).filter = filter_func(nchannels,order_est,...
             'lambda',lambda,'gamma',gamma(i));
         sim_params(k).data = data_type;
         sim_params(k).data_params = data_params;
