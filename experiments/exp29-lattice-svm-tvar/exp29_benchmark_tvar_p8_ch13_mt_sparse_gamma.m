@@ -18,7 +18,7 @@ params_sd_tvar_p8_ch13('mode','short');
 %% set up benchmark params
 
 ngammas = 6;
-gamma = linspace(1,20,ngammas);
+gamma = linspace(1,40,ngammas);
 
 k=1;
 config = [];
