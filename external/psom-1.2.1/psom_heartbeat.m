@@ -43,7 +43,6 @@ function [] = psom_heartbeat(file_heart,file_kill,pid)
 tic;
 flag_beat = true;
 while flag_beat
-    fprintf('in heartbeat for %d\n',pid);
     if exist('OCTAVE_VERSION','builtin')  
         [err,msg] = kill(pid,0); % use the kill octave command
     else
