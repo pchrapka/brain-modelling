@@ -63,7 +63,7 @@ while flag_beat
     if exist('OCTAVE_VERSION','builtin')  
         [res,msg] = system('sleep 5');
     else
-        sleep(5); 
+        pause(5); 
     end
 end
     
