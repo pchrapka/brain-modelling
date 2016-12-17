@@ -104,7 +104,6 @@ if flag_char && strcmp(ext_f,'.mat')
     file_finished  = [path_f filesep name_job '.finished'];
     file_profile   = [path_f filesep name_job '.profile.mat'];
     file_heartbeat = [path_f filesep name_job '.heartbeat.mat'];
-    file_heartbeatlog = [path_f filesep name_job '.heartbeat.log'];
     file_kill      = [path_f filesep name_job '.kill'];
 end 
 
@@ -136,9 +135,9 @@ if flag_psom && flag_heartbeat
     main_pid = feature('getpid');
     cmd = sprintf('psom_heartbeat(''%s'',''%s'',%i)',file_heartbeat,file_kill,main_pid);
     if strcmp(gb_psom_language,'octave')
-        instr_heartbeat = sprintf('"%s" %s "addpath(''%s''), %s,exit" > "%s" 2>&1',gb_psom_command_octave,gb_psom_opt_matlab,gb_psom_path_psom,cmd,file_heartbeatlog);
+        instr_heartbeat = sprintf('"%s" %s "addpath(''%s''), %s,exit"',gb_psom_command_octave,gb_psom_opt_matlab,gb_psom_path_psom,cmd);
     else 
-        instr_heartbeat = sprintf('"%s" %s "addpath(''%s''), %s,exit" > "%s" 2>&1',gb_psom_command_matlab,gb_psom_opt_matlab,gb_psom_path_psom,cmd,file_heartbeatlog);
+        instr_heartbeat = sprintf('"%s" %s "addpath(''%s''), %s,exit"',gb_psom_command_matlab,gb_psom_opt_matlab,gb_psom_path_psom,cmd);
     end 
     system([instr_heartbeat '&']);
 end

@@ -243,7 +243,7 @@ switch p.Results.mode
         pipeline.options.mode = 'batch';
         switch get_compname()
             case {sprintf('blade16.ece.mcmaster.ca\n'),'blade16.ece.mcmaster.ca'}
-                pipeline.options.max_queued = 10;
+                pipeline.options.max_queued = 22;
             otherwise
                 pipeline.options.max_queued = 1;
         end

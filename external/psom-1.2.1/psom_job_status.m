@@ -178,11 +178,9 @@ for num_j = 1:nb_jobs
                 curr_status{num_j} = 'running';
             else
                 try
-                    fprintf('trying to read heartbeat: %s\n',file_heartbeat);
                     refresh_time = load(file_heartbeat);
                     test_change = etime(refresh_time.curr_time,tab_refresh(num_j,:,1))>1;
                 catch
-                    fprintf('failed reading heartbeat: %s\n',file_heartbeat);
                     % The heartbeat is unreadable
                     % Assume this is a race condition
                     % Consider no heartbeat was detected
@@ -190,7 +188,6 @@ for num_j = 1:nb_jobs
                 end
 
                 if test_change
-                    fprintf('heard a heartbeat\n');
                     % I heard a heartbeat!    
                     tab_refresh(num_j,:,1) = refresh_time.curr_time;
                     tab_refresh(num_j,:,2) = clock;
@@ -200,7 +197,6 @@ for num_j = 1:nb_jobs
                     elapsed_time = etime(clock,tab_refresh(num_j,:,2));
                     if elapsed_time > 30
                         % huho 30 seconds without a heartbeat, he's dead Jim
-                        fprintf('died no hearbeat\n');
                         curr_status{num_j} = 'failed';
                     else
                         curr_status{num_j} = 'running';
