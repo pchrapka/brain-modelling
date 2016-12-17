@@ -54,6 +54,11 @@ addParameter(p,'data2feature',@ischar);
 addParameter(p,'file_in_field','',@ischar);
 parse(p,files_in,files_out,opt{:});
 
+if ~isparfor()
+    % fail if parallel execution isn't set up
+    return;
+end
+
 % load the file list
 if isstruct(files_in)
     if isempty(p.Results.file_in_field)

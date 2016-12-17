@@ -37,6 +37,11 @@ addRequired(p,'files_in',@ischar);
 addRequired(p,'files_out',@ischar);
 parse(p,files_in,files_out,opt{:});
 
+if ~isparfor()
+    % fail if parallel execution isn't set up
+    return;
+end
+
 % load the data
 data_in = loadfile(files_in);
 

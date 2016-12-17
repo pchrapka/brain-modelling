@@ -36,6 +36,8 @@ switch p.Results.mode
         end
 end
 
+parfor_close();
+
 %% set up output folder
 % use absolute directories
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
@@ -183,12 +185,6 @@ for j=1:length(params_sd.analysis)
                 'parent_job_warmup',job_groups_shifted(k,:),...
                 'id',k);
         end
-    end
-    
-    switch p.Results.mode
-        case 'batch'
-            % only run labeling and filtering in batch mode
-            continue;
     end
     
     if ~isempty(params_sd.analysis(j).fm)
