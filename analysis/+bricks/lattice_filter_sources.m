@@ -20,6 +20,8 @@ function lattice_filter_sources(files_in,files_out,opt)
 %       filter order
 %   lambda (scalar, default = 0.99)
 %       exponential weighting factor between 0 and 1
+%   gamma (scalar, default = 10)
+%       regularization parameter for sparse filters
 %   trials (scalar, default = 1)
 %       number of trials to include for lattice filtering
 %   nout (scalar, default = [])
@@ -35,6 +37,7 @@ addParameter(p,'trials',1,@isnumeric);
 addParameter(p,'nout',[],@isnumeric);
 addParameter(p,'order',4,@isnumeric);
 addParameter(p,'lambda',0.99,@isnumeric);
+addParameter(p,'gamma',10,@isnumeric);
 addParameter(p,'verbose',0);
 parse(p,files_in,files_out,opt{:});
 
@@ -76,15 +79,11 @@ switch p.Results.filter
     case 'MCMTQRDLSL1'
         filter = MCMTQRDLSL1(nchannels, p.Results.order,p.Results.trials, p.Results.lambda);
     case 'MLOCCDTWL'
-        sigma = 10^(-1);
-        gamma = sqrt(2*sigma^2*nsamples*log(p.Results.order*nchannels^2));
         filter = MLOCCD_TWL(nchannels, p.Results.order,...
-            'lambda', p.Results.lambda,'gamma',gamma);
+            'lambda', p.Results.lambda,'gamma',p.Results.gamma);
     case 'MCMTLOCCD_TWL2'
-        sigma = 10^(-1);
-        gamma = sqrt(2*sigma^2*nsamples*log(p.Results.order*nchannels^2));
         filter = MCMTLOCCD_TWL2(nchannels, p.Results.order, p.Results.trials,...
-            'lambda', p.Results.lambda,'gamma',gamma);
+            'lambda', p.Results.lambda,'gamma',p.Results.gamma);
     case 'MQRDLSL2'
         filter = MQRDLSL2(nchannels, p.Results.order, p.Results.lambda);
     otherwise
