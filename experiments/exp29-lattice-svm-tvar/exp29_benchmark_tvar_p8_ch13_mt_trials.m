@@ -18,7 +18,8 @@ params_sd_tvar_p8_ch13('mode','short');
 %% set up benchmark params
 
 ntrials_tests = 6;
-ntrials = linspace(5,48,ntrial_tests);
+ntrials = linspace(5,48,ntrials_tests);
+ntrials = ceil(ntrials);
 
 sigma = 10^(-1);
 gamma = sqrt(2*sigma^2*nsamples*log(nchannels));
@@ -44,7 +45,7 @@ for j=1:nconfigs
     k=1;
     sim_params = [];
     
-    for i=1:ntrials_test
+    for i=1:ntrials_tests
         
         filter_func = str2func(config(j).filter);
         sim_params(k).filter = filter_func(nchannels,order_est,ntrials(i),...
