@@ -9,6 +9,8 @@ p = inputParser();
 addRequired(p,'data_path',@ischar);
 p.parse(data_path,varargin{:});
 
+fprintf('working on:\n%s\n',data_path);
+
 % get data name
 pattern = '(params_sd_[\d\w_]*)';
 out = regexp(data_path,pattern,'tokens');
