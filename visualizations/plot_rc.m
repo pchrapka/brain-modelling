@@ -35,12 +35,12 @@ function plot_rc(data,varargin)
 %       reflection coefficients outside of this range are set to NaNs
 
 p = inputParser();
-p.addRequired('data',@isstruct);
-p.addParameter('mode','image-all',@ischar);
-p.addParameter('clim',[-1.5 1.5],@(x) isvector(x) || isequal(x,'none'));
-p.addParameter('abs',false,@islogical);
-p.addParameter('threshold','none',@(x) isnumeric(x) || isequal(x,'none'));
-p.parse(data,varargin{:});
+addRequired(p,'data',@isstruct);
+addParameter(p,'mode','image-all',@ischar);
+addParameter(p,'clim',[-1.5 1.5],@(x) isvector(x) || isequal(x,'none'));
+addParameter(p,'abs',false,@islogical);
+addParameter(p,'threshold','none',@(x) isnumeric(x) || isequal(x,'none'));
+parse(p,data,varargin{:});
 
 switch p.Results.mode
     case 'image-all'
