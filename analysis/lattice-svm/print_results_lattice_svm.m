@@ -20,7 +20,7 @@ addRequired(p,'params_subject',@ischar);
 addRequired(p,'filter_params',@iscell);
 addParameter(p,'tofile',false,@islogical);
 addParameter(p,'plot',false,@islogical);
-addParameter(p,'pipeline',[],@isstruct);
+addParameter(p,'pipeline',[],@(x) isa(x,'Pipeline'));
 parse(p,params_subject,filter_params,varargin{:});
 
 test = false;
