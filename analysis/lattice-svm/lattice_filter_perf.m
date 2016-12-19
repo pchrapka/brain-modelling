@@ -134,6 +134,8 @@ close(h);
 %% plot rc for trial 1
 
 mode = 'image-order';
+
+h = figure;
 plot_rc(data,'mode',mode);
 % save dated and tagged file
 drawnow;
@@ -143,6 +145,8 @@ close(h);
 
 truth2 = [];
 truth2.Kf = truth;
+
+h = figure;
 plot_rc(truth2,'mode',mode);
 % save dated and tagged file
 drawnow;
