@@ -3,6 +3,7 @@ function params = params_sd_tvar_p8_ch13(varargin)
 
 p = inputParser();
 addParameter(p,'mode','all',@(x) any(validatestring(x,{'all','short'})));
+addParameter(p,'verbosity',0,@isnumeric);
 p.parse(varargin{:});
 
 %% generate data
@@ -86,7 +87,9 @@ for i=1:ncond
             % save data
             save_parfor(outfile,data);
         else
-            fprintf('trial %d source data exists: %s\n',j,outfile);
+            if p.Results.verbosity > 0
+                fprintf('trial %d source data exists: %s\n',j,outfile);
+            end
         end
     end
 end
