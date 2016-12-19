@@ -131,4 +131,23 @@ save_fig2('path',data_path,...
     'tag',sprintf('nmse-%s-trial%d',slug_filter,idx));
 close(h);
 
+%% plot rc for trial 1
+
+mode = 'image-order';
+plot_rc(data,'mode',mode);
+% save dated and tagged file
+drawnow;
+save_fig2('path',data_path,...
+    'tag',sprintf('rc-%s-%s-trial%d',mode,slug_filter,idx));
+close(h);
+
+truth2 = [];
+truth2.Kf = truth;
+plot_rc(truth2,'mode',mode);
+% save dated and tagged file
+drawnow;
+save_fig2('path',data_path,...
+    'tag',sprintf('rc-%s-truth',mode));
+close(h);
+
 end
