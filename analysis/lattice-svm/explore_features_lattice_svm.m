@@ -13,12 +13,18 @@ function explore_features_lattice_svm(params_subject,filter_params)
 p = inputParser();
 p.addRequired('params_subject',@ischar);
 p.addRequired('filter_params',@iscell);
+addParameter(p,'pipeline',[],@(x) isa(x,'Pipeline'));
 p.parse(params_subject,filter_params);
 
 test = false;
 
 % get pipeline
-pipeline = build_pipeline_lattice_svm(params_subject);
+if isempty(p.Results.pipeline)
+    pipeline = build_pipeline_lattice_svm(params_subject);
+else
+    pipeline = p.Results.pipeline;
+end
+    
 
 for j=1:length(filter_params)
     fprintf('%s\n', filter_params{j});
