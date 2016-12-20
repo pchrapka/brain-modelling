@@ -14,6 +14,9 @@ function sources = bf_get_sources(data)
 %       source matrix of size [sources time]
 
 if isfield(data,'avg')
+    if ~islogical(data.inside)
+        error('inside index is not logical');
+    end
     % get source data
     temp = data.avg.mom(data.inside);
     % convert to matrix [patches x time]
