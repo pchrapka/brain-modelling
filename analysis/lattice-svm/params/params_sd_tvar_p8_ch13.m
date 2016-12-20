@@ -77,7 +77,7 @@ for i=1:ncond
             data = [];
             % create source analysis data
             data.label = conds(i).label;
-            data.inside = ones(nchannels,1);
+            data.inside = true(nchannels,1);
             data.avg.mom = cell(nchannels,1);
             data.time = linspace(-0.5,1,ntime);
             for k=1:nchannels
