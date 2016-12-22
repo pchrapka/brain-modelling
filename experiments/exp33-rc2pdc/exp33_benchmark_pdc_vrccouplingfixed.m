@@ -1,4 +1,4 @@
-%% exp33_benchmark_pdc_varnocoupling
+%% exp33_benchmark_pdc_vrccouplingfixed
 
 
 %% set options
@@ -10,9 +10,9 @@ lambda = 0.99;
 
 verbosity = 0;
 
-data_type = 'vrc-coupling0-fixed';
-nsamples = 2000;
-data_params = {'nsamples', nsamples};
+data_type = 'vrc-cp-ch2-coupling1-fixed';
+nsamples = 358;
+data_params = {};
 
 %% set up benchmark params
 
