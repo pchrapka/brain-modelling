@@ -30,7 +30,8 @@ if isempty(p.Results.data)
     data.signal_norm = zeros(obj.nchannels, p.Results.nsamples, p.Results.ntrials);
 
     % save true coefficients
-    data.true = process.get_coefs_vs_time(p.Results.nsamples,'Kf');
+    data.true.Kf = process.get_coefs_vs_time(p.Results.nsamples,'Kf');
+    data.true.Kb = process.get_coefs_vs_time(p.Results.nsamples,'Kb');
     
     % start at the beginning
     idx_start = 1;
