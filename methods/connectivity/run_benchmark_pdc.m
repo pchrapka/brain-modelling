@@ -110,6 +110,16 @@ data_time = get_timestamp(var_gen.get_file());
 
 % copy data
 sources = data_var.signal;
+if ~isfield(data_var.true,'Kf')
+    % add both kf and kb coefs to the data file
+    nsamples = size(data_var.signal,2);
+    data_var.true = [];
+    data_var.true.Kf = data_var.process.get_coefs_vs_time(nsamples,'Kf');
+    data_var.true.Kb = data_var.process.get_coefs_vs_time(nsamples,'Kb');
+    data = data_var;
+    save(var_gen.get_file(),'data');
+    clear data;
+end
 data_true = data_var.true;
 
 % set up data slug

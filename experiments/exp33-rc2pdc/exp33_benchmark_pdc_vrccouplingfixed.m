@@ -55,10 +55,10 @@ k = k+1;
 sim_params(k).filter = BurgVectorWindow(nchannels,order_est,'nwindow',60,'ntrials',5);
 k = k+1;
 
-sim_params(k).filter = BurgVector(nchannels,order_est,'nsamples',nsamples/4);
+sim_params(k).filter = BurgVector(nchannels,order_est,'nsamples',ceil(nsamples/4));
 k = k+1;
 
-sim_params(k).filter = BurgVector(nchannels,order_est,'nsamples',nsamples/2);
+sim_params(k).filter = BurgVector(nchannels,order_est,'nsamples',ceil(nsamples/2));
 k = k+1;
 
 sim_params(k).filter = BurgVector(nchannels,order_est,'nsamples',nsamples);
