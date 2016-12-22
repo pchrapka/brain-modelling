@@ -128,7 +128,11 @@ parfor k=1:nsim_params
     
     % copy sim parameters
     sim_param = sim_params(k);
-    ntrials = sim_param.filter.ntrials;
+    if isprop(sim_param.filter, 'ntrials')
+        ntrials = sim_param.filter.ntrials;
+    else
+        ntrials = 1;
+    end
     
     % set up filter slug
     slug_filter = sim_param.filter.name;
