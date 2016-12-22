@@ -122,7 +122,8 @@ slug_data = strrep(data_file,'_','-');
 large_error = zeros(nsim_params,1);
 large_error_name = cell(nsim_params,1);
 
-estimate = cell(nsim_params,1);
+estimate_kf = cell(nsim_params,1);
+estimate_kb = cell(nsim_params,1);
 
 parfor k=1:nsim_params
     
@@ -154,7 +155,7 @@ parfor k=1:nsim_params
     if p.Results.force || fresh || ~exist(outfile,'file')
         fprintf('running: %s\n', slug_data_filt)
         
-        trace = LatticeTrace(sim_param.filter,'fields',{'Kf'});
+        trace = LatticeTrace(sim_param.filter,'fields',{'Kf','Kb'});
         
         ntime = size(sources,2);
         
@@ -189,20 +190,23 @@ parfor k=1:nsim_params
         
         trace.name = trace.filter.name;
         
-        estimate{k} = trace.trace.Kf;
+        estimate_kf{k} = trace.trace.Kf;
+        estimate_kb{k} = trace.trace.Kb;
         
         % save data
         data = [];
-        data.estimate = estimate{k};
+        data.estimate.Kf = estimate_kf{k};
+        data.estimate.Kb = estimate_kb{k};
         save_parfor(outfile,data);
     else
         fprintf('loading: %s\n', slug_data_filt);
         % load data
         data = loadfile(outfile);
-        estimate{k} = data.estimate;
+        estimate_kf{k} = data.estimate.Kf;
+        estimate_kb{k} = data.estimate.Kb;
     end
     
-    data_mse = mse_iteration(estimate{k},data_true);
+    data_mse = mse_iteration(estimate_kf{k},data_true.Kf);
     if any(data_mse > 10)
         large_error_name{k} = slug_data_filt;
         large_error(k) = true;
@@ -211,7 +215,7 @@ end
     
 if p.Results.plot_pdc
     % plot true pdc
-    result = rc2pdc(data_true(end,:,:,:));
+    result = rc2pdc(squeeze(data_true.Kf(end,:,:,:)),squeeze(data_true.Kb(end,:,:,:)));
     window_title = 'Truth';
     plot_pdc(result,window_title);
     
@@ -219,7 +223,7 @@ if p.Results.plot_pdc
     drawnow;
     save_fig_exp(script_name,...
         'tag',sprintf('pdc-%s-%s',p.Results.data_name,'truth'));
-    close(h);
+    close(gcf);
     
     for k=1:nsim_params
         
@@ -231,7 +235,7 @@ if p.Results.plot_pdc
         slug_filter = strrep(slug_filter,' ','-');
         
         % plot filter pdc
-        result = rc2pdc(estimate{k}(end,:,:,:));
+        result = rc2pdc(squeeze(estimate_kf{k}(end,:,:,:)),squeeze(estimate_kb{k}(end,:,:,:)));
         window_title = sim_param.filter.name;
         plot_pdc(result,window_title);
             
@@ -239,7 +243,7 @@ if p.Results.plot_pdc
         drawnow;
         save_fig_exp(script_name,...
             'tag',sprintf('pdc-%s-%s',p.Results.data_name,slug_filter));
-        close(h);
+        close(gcf);
     end
 end
 
@@ -257,8 +261,9 @@ end
 
 function result = rc2pdc(Kf,Kb)
 
-pf = eye(nchannels);
 A2 = -rcarrayformat(rc2ar(Kf,Kb),'format',3);
+nchannels = size(A2,1);
+pf = eye(nchannels);
 result = pdc(A2,pf,'metric','euc');
 result.SS = ss_alg(A2, pf, 128);
 result.coh = coh_alg(result.SS);
