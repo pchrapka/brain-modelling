@@ -63,12 +63,17 @@ k = k+1;
 %% add analysis steps
 for i=1:length(param_list)
     field = param_list(i).field;
-    step_name = get_analysis_step_name(params_sd.(field),param_list(i).prefix);
-    ftb_handle = str2func(['ftb.' param_list(i).class]);
-    step = ftb_handle(params_sd.(field),step_name);
     
-    % add step
-    pipeline.add(step);
+    if isfield(params_sd,field)
+        step_name = get_analysis_step_name(params_sd.(field),param_list(i).prefix);
+        ftb_handle = str2func(['ftb.' param_list(i).class]);
+        step = ftb_handle(params_sd.(field),step_name);
+        
+        % add step
+        pipeline.add(step);
+    else
+        fprintf('missing %s params\n',field);
+    end
 
 end
 

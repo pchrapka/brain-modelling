@@ -25,6 +25,7 @@ parse(p,dataset,data_name,stimulus);
 
 params_eeg = [];
 params_eeg.name = [stimulus '-' data_name(1:3)];
+params_eeg.mode = 'continuous';
 
 params_eeg.ft_definetrial = [];
 params_eeg.ft_definetrial.dataset = dataset;
@@ -42,11 +43,23 @@ params_eeg.ft_definetrial.trialdef.poststim = 0.3; % in seconds
 
 % assuming data was already de-artifacted
 %params_eeg.ft_preprocessing.method = 'trial';
+params_eeg.ft_preprocessing.dataset = dataset;
 params_eeg.ft_preprocessing.continuous = 'yes';
 params_eeg.ft_preprocessing.detrend = 'no';
-params_eeg.ft_preprocessing.demean = 'yes';
+params_eeg.ft_preprocessing.demean = 'no'; % filter should handle this
 %params_eeg.ft_preprocessing.baselinewindow = [-0.2 0];
 params_eeg.ft_preprocessing.channel = 'EEG';
+params_eeg.ft_preprocessing.bpfilter = 'yes';
+params_eeg.ft_preprocessing.bpfreq = [0.3 100];
+params_eeg.ft_preprocessing.bpfilttype = 'firws';
+%use default for other bp filter params
+
+% reject trials that exceed 140 uV
+params_eeg.ft_artifact_threshold.continuous = 'no';
+params_eeg.ft_artifact_threshold.bpfilter = 'no';
+params_eeg.ft_artifact_threshold.artfctdef.threshold.min = -140;
+params_eeg.ft_artifact_threshold.artfctdef.threshold.max = 140;
+params_eeg.ft_rejectartifact.artfctdef.reject = 'complete';
 
 params_eeg.ft_timelockanalysis.covariance = 'yes';
 params_eeg.ft_timelockanalysis.covariancewindow = 'all'; % should be default
