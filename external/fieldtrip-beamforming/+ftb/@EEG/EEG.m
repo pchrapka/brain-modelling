@@ -7,6 +7,7 @@ classdef EEG < ftb.AnalysisStep
         definetrial;
         preprocessed;
         timelock;
+        rejectartifact;
     end
     
     methods(Access = private)
@@ -44,6 +45,7 @@ classdef EEG < ftb.AnalysisStep
             obj.definetrial = '';
             obj.preprocessed = '';
             obj.timelock = '';
+            obj.rejectartifact = '';
         end
         
         function obj = add_prev(obj,prev)
@@ -68,9 +70,9 @@ classdef EEG < ftb.AnalysisStep
             %       root folder for the analysis output
             
             % init output folder and files
-            [obj.definetrial,obj.preprocessed,obj.timelock] = ...
+            [obj.definetrial,obj.preprocessed,obj.timelock,obj.rejectartifact] = ...
                 obj.init_output(analysis_folder,...
-                'properties',{'definetrial','preprocessed','timelock'});
+                'properties',{'definetrial','preprocessed','timelock','rejectartifact'});
             
             obj.init_called = true;
         end
@@ -136,9 +138,9 @@ classdef EEG < ftb.AnalysisStep
                     cfgin.showlabels = 'yes';
                     ft_multiplotER(cfgin, ftb.util.loadvar(obj.timelock));
                     
-                case 'preprocessed'
+                case {'preprocessed','rejectartifact'}
                     
-                    ft_databrowser(cfgin,ftb.util.loadvar(obj.preprocessed));
+                    ft_databrowser(cfgin,ftb.util.loadvar(obj.(mode)));
                     
                 otherwise
                     error(['ftb:' mfilename],...
