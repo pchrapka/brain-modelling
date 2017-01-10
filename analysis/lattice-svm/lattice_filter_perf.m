@@ -46,7 +46,8 @@ datafile_true = params.var_gen(idx).get_file();
 data_true = loadfile(datafile_true);
 
 var_gen_params = struct(params.var_gen_params{idx}{:});
-truth = data_true.process.get_coefs_vs_time(var_gen_params.time,'Kf');
+truth = data_true.true;
+% truth = data_true.process.get_coefs_vs_time(var_gen_params.time,'Kf');
 
 %% get filtered data
 pattern = fullfile(data_path,'lattice-filtered-id*.mat');
@@ -72,7 +73,7 @@ if ~isequal(norder_true,norder_est)
     if norder_est < norder_max
         data.Kf(end,norder_max,end,end) = 0;
     end
-    if norder_true <norder_max
+    if norder_true < norder_max
         truth(end,norder_max,end,end) = 0;
     end
 end
@@ -83,7 +84,8 @@ data_mse = zeros(ntrials,1);
 trial_idx = zeros(ntrials,1);
 
 % for each filtered trial
-parfor i=1:ntrials
+% parfor i=1:ntrials
+for i=1:ntrials
     datafile = fullfile(data_path,result(i).name);
     data = loadfile(datafile);
     
