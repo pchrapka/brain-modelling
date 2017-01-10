@@ -13,6 +13,11 @@ classdef EEG < ftb.AnalysisStep
     methods(Access = private)
         obj = process_default(obj);
         %obj = process_subtract(obj);
+        obj = process_artifact(obj);
+        obj = process_timelock(obj);
+        obj = process_preprocessing(obj,varargin);
+        obj = process_definetrial(obj);
+        obj = process_redefinetrial(obj);
     end
     
     methods
