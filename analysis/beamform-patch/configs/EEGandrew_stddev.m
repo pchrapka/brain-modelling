@@ -56,7 +56,7 @@ params_eeg.ft_preprocessing.bpfilttype = 'firws';
 
 % reject trials that exceed 140 uV
 params_eeg.ft_artifact_threshold.continuous = 'no';
-params_eeg.ft_artifact_threshold.bpfilter = 'no';
+params_eeg.ft_artifact_threshold.artfctdef.bpfilter = 'no';
 params_eeg.ft_artifact_threshold.artfctdef.threshold.min = -140;
 params_eeg.ft_artifact_threshold.artfctdef.threshold.max = 140;
 params_eeg.ft_rejectartifact.artfctdef.reject = 'complete';
