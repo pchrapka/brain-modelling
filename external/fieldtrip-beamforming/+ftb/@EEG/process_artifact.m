@@ -36,7 +36,7 @@ if isfield(obj.config, 'ft_rejectartifact')
         end
         
         % rejectartifact
-        cfg = obj.config.rejectartifact;
+        cfg = obj.config.ft_rejectartifact;
         cfg.inputfile = obj.preprocessed;
         % add artifactual trials for rejection
         for i=1:length(artifacts)
