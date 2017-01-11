@@ -3,7 +3,11 @@ function obj = process_timelock(obj)
 % ft_timelockanalysis
 if obj.check_file(obj.timelock)
     cfgin = obj.config.ft_timelockanalysis;
-    cfgin.inputfile = obj.preprocessed;
+    if obj.check_file(obj.rejectartifact)
+        cfgin.inputfile = obj.rejectartifact;
+    else
+        cfgin.inputfile = obj.preprocessed;
+    end
     cfgin.outputfile = obj.timelock;
     
     ft_timelockanalysis(cfgin);
