@@ -8,6 +8,6 @@ Use python 2.7
 
 ```jupyter notebook```
 
-conda create --name mne python=2.7 ipython
+conda create --name mne python=2.7 ipython jupyter
 source activate mne
-conda install mne pysurfer
+conda install mne pysurfer nilearn
