@@ -101,13 +101,13 @@ cfg_at.artfctdef.threshold.bpfilter = 'no';
 cfg_at.artfctdef.threshold.min = -140;
 cfg_at.artfctdef.threshold.max = 140;
 
-[~,data_artifact] = ft_artifact_threshold(cfg_at, data_preprocessed);
+[~,data_artifact] = ft_artifact_threshold(cfg_at, data_redefined);
 
 cfg_ra = [];
 cfg_ra.artfctdef.reject = 'complete';
 cfg_ra.artfctdef.threshold = data_artifact;
 
-data_rejectartifact = ft_rejectartifact(cfg_ra, data_preprocessed);
+data_rejectartifact = ft_rejectartifact(cfg_ra, data_redefined);
 
 if save_files
     save_tag(data_rejectartifact, 'tag', 'ft_rejectartifact', 'overwrite', true, 'outpath', outdir);
