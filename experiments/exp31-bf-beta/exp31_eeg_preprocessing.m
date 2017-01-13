@@ -12,7 +12,7 @@ script_name = mfilename('fullpath');
 if isempty(script_name)
     [~,work_dir,~] = fileparts(pwd);
     if isequal(work_dir,'exp31-bf-beta')
-        script_dir = work_dir;
+        script_dir = pwd;
     else
         error('cd to exp31-bf-beta');
     end
@@ -43,11 +43,29 @@ cfg_pp.bpfilttype = 'firws';
 %use default for other bp filter params
 
 % preprocess data
-data_preprocessed = ft_preprocessing(cfg_pp);
+data_preprocessed1 = ft_preprocessing(cfg_pp);
 
 if save_files
-    save_tag(data_preprocessed, 'tag', 'ft_preprocessing', 'overwrite', true, 'outpath', outdir);
+    save_tag(data_preprocessed1, 'tag', 'ft_preprocessing1', 'overwrite', true, 'outpath', outdir);
 end
+
+ft_databrowser([],data_preprocessed1);
+
+ 
+%% ft_preprocessing 2
+cfg_pp2 = [];
+cfg_pp2.channel = {'all','-D32','-C10'};
+data_preprocessed2 = ft_preprocessing(cfg_pp2, data_preprocessed1);
+
+ft_databrowser([],data_preprocessed2);
+
+if save_files
+    save_tag(data_preprocessed2, 'tag', 'ft_preprocessing2', 'overwrite', true, 'outpath', outdir);
+end
+
+clear data_preprocessed1
+data_preprocessed = data_preprocessed2;
+clear data_preprocessed2
 
 %% ft_definetrial
 cfg_dt = [];
@@ -77,12 +95,13 @@ end
 %% ft_artifact_threshold
 % reject trials that exceed 140 uV
 cfg_at = [];
+cfg_at.trl = data_definetrial.trl;
 cfg_at.continuous = 'no';
 cfg_at.artfctdef.threshold.bpfilter = 'no';
 cfg_at.artfctdef.threshold.min = -140;
 cfg_at.artfctdef.threshold.max = 140;
 
-[~,data_artifact] = ft_artifact_threshold(cfg_at);
+[~,data_artifact] = ft_artifact_threshold(cfg_at, data_preprocessed);
 
 cfg_ra = [];
 cfg_ra.artfctdef.reject = 'complete';
