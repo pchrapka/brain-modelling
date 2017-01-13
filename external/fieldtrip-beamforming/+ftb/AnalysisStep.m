@@ -240,10 +240,6 @@ classdef AnalysisStep < handle
             end
             
             nprops = length(p.Results.properties);
-            if nargout < nprops
-                error(['ftb:' mfilename],...
-                    'not enough output arguments');
-            end
             
             % set up file for each property
             for i=1:nprops
