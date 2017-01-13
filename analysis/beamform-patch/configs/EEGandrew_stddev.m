@@ -48,7 +48,13 @@ params_eeg.ft_preprocessing.continuous = 'yes';
 params_eeg.ft_preprocessing.detrend = 'no';
 params_eeg.ft_preprocessing.demean = 'no'; % filter should handle this
 %params_eeg.ft_preprocessing.baselinewindow = [-0.2 0];
-params_eeg.ft_preprocessing.channel = 'EEG';
+switch data_name(1:3)
+    case 's06'
+        params_eeg.ft_preprocessing.channel = {'EEG','-D32','-C10'};
+    otherwise
+        warning('check for bad EEG channels and update %s',mfilename);
+        params_eeg.ft_preprocessing.channel = 'EEG';
+end
 params_eeg.ft_preprocessing.bpfilter = 'yes';
 params_eeg.ft_preprocessing.bpfreq = [0.3 100];
 params_eeg.ft_preprocessing.bpfilttype = 'firws';
