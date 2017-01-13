@@ -223,7 +223,7 @@ classdef AnalysisStep < handle
             %   
             %   Parameters
             %   ----------
-            %   properties (cell array)
+            %   properties (cell array or string)
             %       cell array of class specific properties for which
             %       output files are required
             %
@@ -235,7 +235,7 @@ classdef AnalysisStep < handle
             % parse inputs
             p = inputParser;
             addRequired(p,'analysis_folder',@(x) ~isempty(x) && ischar(x));
-            addParameter(p,'properties',{},@iscell);
+            addParameter(p,'properties',{},@(x) iscell(x) || ischar(x));
             parse(p,analysis_folder,varargin{:});
             
             % create folder for analysis step, name accounts for dependencies
@@ -244,7 +244,13 @@ classdef AnalysisStep < handle
                 mkdir(obj.folder)
             end
             
-            nprops = length(p.Results.properties);
+            properties = p.Results.properties;
+            if ischar(p.Results.properties)
+                properties = {p.Results.properties};
+            end
+            
+            nprops = length(properties);
+            
             if nargout < nprops
                 error(['ftb:' mfilename],...
                     'not enough output arguments');
@@ -253,7 +259,7 @@ classdef AnalysisStep < handle
             % set up file for each property
             varargout = cell(nprops,1);
             for i=1:nprops
-                property = p.Results.properties{i};
+                property = properties{i};
                 varargout{i} = fullfile(obj.folder, [property '.mat']);
             end
             
