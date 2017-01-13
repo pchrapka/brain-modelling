@@ -1,15 +1,24 @@
 
 %% options
 
-save_files = false;
+save_files = true;
 
 subject_num = 6;
 deviant_percent = 10;
 stimulus = 'std';
 % stimulus = 'odd';
 
-script_name = [mfilename('fullpath') '.m'];
-[script_dir,~,~] = fileparts(script_name);
+script_name = mfilename('fullpath');
+if isempty(script_name)
+    [~,work_dir,~] = fileparts(pwd);
+    if isequal(work_dir,'exp31-bf-beta')
+        script_dir = work_dir;
+    else
+        error('cd to exp31-bf-beta');
+    end
+else
+    [script_dir,~,~] = fileparts([script_name '.m']);
+end
 outdir = fullfile(script_dir,'output');
 
 %% data file

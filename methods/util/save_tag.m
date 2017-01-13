@@ -12,9 +12,9 @@ if isempty(p.Results.outpath) && isempty(p.Results.outfile)
 end
 
 if isempty(p.Results.outfile)
-    outfile = p.Results.outfile;
-else
     outfile = fullfile(p.Results.outpath,sprintf('%s.mat',p.Results.tag));
+else
+    outfile = p.Results.outfile;
 end
 
 if exist(outfile,'file')
