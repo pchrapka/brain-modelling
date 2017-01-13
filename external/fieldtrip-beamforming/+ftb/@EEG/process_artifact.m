@@ -18,6 +18,16 @@ if isfield(obj.config, 'ft_rejectartifact')
         % load output of ft_definetrial
         cfgdef = ftb.util.loadvar(obj.definetrial);
         
+        % figure out input file
+        switch obj.config.mode
+            case 'continuous'
+                inputfile = obj.redefinetrial;
+            case 'trial'
+                inputfile = obj.preprocessed;
+            otherwise
+                error('missing output for mode %s',obj.config.mode);
+        end
+        
         artifacts = [];
         artifacts.name = '';
         artifacts.value = [];
@@ -26,7 +36,7 @@ if isfield(obj.config, 'ft_rejectartifact')
             ft_func = funcs_artifact{i};
             if isfield(obj.config,ft_func)
                 cfg = obj.config.(ft_func);
-                cfg.inputfile = obj.preprocessed;
+                cfg.inputfile = inputfile;
                 cfg.trl = cfgdef.trl;
                 
                 fh = str2func(ft_func);
@@ -37,15 +47,7 @@ if isfield(obj.config, 'ft_rejectartifact')
         
         % ft_rejectartifact
         cfg = obj.config.ft_rejectartifact;
-        % figure out input file
-        switch obj.config.mode
-            case 'continuous'
-                cfg.inputfile = obj.redefinetrial;
-            case 'trial'
-                cfg.inputfile = obj.preprocessed;
-            otherwise
-                error('missing output for mode %s',obj.config.mode);
-        end
+        cfg.inputfile = inputfile;
         
         % add artifactual trials for rejection
         for i=1:length(artifacts)
