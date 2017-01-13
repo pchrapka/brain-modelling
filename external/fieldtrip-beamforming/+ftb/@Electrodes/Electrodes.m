@@ -80,8 +80,7 @@ classdef Electrodes < ftb.AnalysisStep
             %       root folder for the analysis output
             
             % init output folder and files
-            [obj.elec,obj.elec_aligned] = ...
-                obj.init_output(analysis_folder,...
+            obj.init_output(analysis_folder,...
                 'properties',{'elec','elec_aligned'});
             
             if isfield(obj.config,'fiducials')

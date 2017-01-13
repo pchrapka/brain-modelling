@@ -5,6 +5,7 @@ classdef EEG < ftb.AnalysisStep
     properties(SetAccess = protected)
         config;
         definetrial;
+        redefinetrial;
         preprocessed;
         timelock;
         rejectartifact;
@@ -48,6 +49,7 @@ classdef EEG < ftb.AnalysisStep
             end
             
             obj.definetrial = '';
+            obj.redefinetrial = '';
             obj.preprocessed = '';
             obj.timelock = '';
             obj.rejectartifact = '';
@@ -75,9 +77,8 @@ classdef EEG < ftb.AnalysisStep
             %       root folder for the analysis output
             
             % init output folder and files
-            [obj.definetrial,obj.preprocessed,obj.timelock,obj.rejectartifact] = ...
-                obj.init_output(analysis_folder,...
-                'properties',{'definetrial','preprocessed','timelock','rejectartifact'});
+            obj.init_output(analysis_folder,...
+                'properties',{'definetrial','redefinetrial','preprocessed','timelock','rejectartifact'});
             
             obj.init_called = true;
         end

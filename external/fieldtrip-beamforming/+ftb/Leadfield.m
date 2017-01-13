@@ -61,7 +61,7 @@ classdef Leadfield < ftb.AnalysisStep
             %       root folder for the analysis output
             
             % init output folder and files
-            obj.leadfield = obj.init_output(analysis_folder,...
+            obj.init_output(analysis_folder,...
                 'properties',{'leadfield'});
             
             obj.init_called = true;

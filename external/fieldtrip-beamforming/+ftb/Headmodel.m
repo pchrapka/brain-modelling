@@ -61,7 +61,7 @@ classdef Headmodel < ftb.AnalysisStep
             %       root folder for the analysis output
             
             % init output folder and files
-            obj.mri_headmodel = obj.init_output(analysis_folder,...
+            obj.init_output(analysis_folder,...
                 'properties',{'mri_headmodel'});
             
             obj.init_called = true;

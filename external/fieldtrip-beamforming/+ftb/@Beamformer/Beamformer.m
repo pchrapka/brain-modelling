@@ -62,7 +62,7 @@ classdef Beamformer < ftb.AnalysisStep
             %       root folder for the analysis output
             
             % init output folder and files
-            [obj.sourceanalysis] = obj.init_output(analysis_folder,...
+            obj.init_output(analysis_folder,...
                 'properties',{'sourceanalysis'});
             
             obj.init_called = true;
