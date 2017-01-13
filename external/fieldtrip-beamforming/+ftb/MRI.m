@@ -67,8 +67,11 @@ classdef MRI < ftb.AnalysisStep
             %       root folder for the analysis output
             
             % init output folder and files
-            obj.init_output(analysis_folder,...
-                'properties',{'mri_mat','mri_segmented','mri_mesh'});
+            properties = {'mri_mat','mri_segmented','mri_mesh'};
+            for i=1:length(properties)
+                obj.(properties{i}) = obj.init_output(analysis_folder,...
+                    'properties',properties{i});
+            end
             
             % set the init flag
             obj.init_called = true;

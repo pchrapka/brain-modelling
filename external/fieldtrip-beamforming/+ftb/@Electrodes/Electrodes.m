@@ -80,8 +80,11 @@ classdef Electrodes < ftb.AnalysisStep
             %       root folder for the analysis output
             
             % init output folder and files
-            obj.init_output(analysis_folder,...
-                'properties',{'elec','elec_aligned'});
+            properties = {'elec','elec_aligned'};
+            for i=1:length(properties)
+                obj.(properties{i}) = obj.init_output(analysis_folder,...
+                    'properties',properties{i});
+            end
             
             if isfield(obj.config,'fiducials')
                 obj.set_fiducial_channels(obj.config.fiducials{:});

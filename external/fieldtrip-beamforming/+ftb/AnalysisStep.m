@@ -212,7 +212,7 @@ classdef AnalysisStep < handle
             end
         end
         
-        function obj = init_output(obj,analysis_folder,varargin)
+        function [varargout] = init_output(obj,analysis_folder,varargin)
             %INIT_OUTPUT initializes the output for the step
             %   INIT_OUTPUT(analysis_folder ,['properties', {}])
             %
@@ -226,6 +226,11 @@ classdef AnalysisStep < handle
             %   properties (cell array)
             %       cell array of class specific properties for which
             %       output files are required
+            %
+            %   Output
+            %   ------
+            %   property_file (vararout)
+            %       output path and file for each property
             
             % parse inputs
             p = inputParser;
@@ -240,11 +245,16 @@ classdef AnalysisStep < handle
             end
             
             nprops = length(p.Results.properties);
+            if nargout < nprops
+                error(['ftb:' mfilename],...
+                    'not enough output arguments');
+            end
             
             % set up file for each property
+            varargout = cell(nprops,1);
             for i=1:nprops
                 property = p.Results.properties{i};
-                obj.(property) = fullfile(obj.folder, [property '.mat']);
+                varargout{i} = fullfile(obj.folder, [property '.mat']);
             end
             
         end

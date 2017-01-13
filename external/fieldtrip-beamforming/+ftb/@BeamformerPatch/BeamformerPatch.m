@@ -101,8 +101,11 @@ classdef BeamformerPatch < ftb.Beamformer
             obj.lf.init(obj.folder);
             
             % init output folder and files
-            obj.init_output(analysis_folder,...
-                'properties',{'patches'});
+            properties = {'patches'};
+            for i=1:length(properties)
+                obj.(properties{i}) = obj.init_output(analysis_folder,...
+                    'properties',properties{i});
+            end
             
             obj.init_called = true;
         end
