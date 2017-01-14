@@ -56,7 +56,7 @@ param_list(k).prefix = 'EEG';
 k = k+1;
 
 param_list(k).field = 'bf';
-param_list(k).class = 'BeamformerPatchTrial';
+param_list(k).class = 'BeamformerPatch';
 param_list(k).prefix = 'BFPatch';
 k = k+1;
 
