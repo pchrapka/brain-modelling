@@ -29,9 +29,9 @@ function source = compute_lcmv_patch_filters(...
 %       mode of operation, chooses how many grid points are set for the
 %       beamforming step
 %       all - all points inside a patch are selected and contain the patch
-%       filter
+%       filter (useful for plotting)
 %       single - one point inside a patch is selected and contains the
-%       patch filter
+%       patch filter (useful for saving memory)
 %   
 %   Output
 %   ------
