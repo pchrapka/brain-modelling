@@ -1,8 +1,8 @@
-function source = beamformer_lcmv_patch(...
+function source = compute_lcmv_patch_filters(...
     data, leadfield, patches, varargin)
-%BEAMFORMER_LCMV_PATCH computes filters for an LCMV beamformer that
+%COMPUTE_LCMV_PATCH_FILTERS computes filters for an LCMV beamformer that
 %operates on patches instead of point sources
-%   [source] = BEAMFORMER_LCMV_PATCH(data, leadfield, patches, ...)
+%   [source] = COMPUTE_LCMV_PATCH_FILTERS(data, leadfield, patches, ...)
 %   computes filters for an LCMV beamformer that operates on patches
 %   instead of point sources. This is useful for coarse beamforming.
 %
@@ -60,6 +60,24 @@ source = [];
 source.filters = cell(size(leadfield.leadfield));
 source.patch_labels = cell(size(leadfield.leadfield));
 source.inside = false(size(leadfield.inside));
+
+% NOTE when supplying ft_sourceanalysis with filters, i can only specify
+% one per grid point, not per trial, so this function can only operate on a
+% single covariance
+
+% check number of covariance repetitions
+ndims_cov = length(size(data.cov));
+if ndims_cov == 3
+    ntrials = size(data.cov,1);
+else
+    ntrials = 1;
+end
+
+if ntrials > 1
+    fprintf('averaging cov');
+    warning('can only precompute filters with one cov');
+    data.cov = mean(data.cov,1);
+end
 
 % computer filter for each patch
 for i=1:length(patches)

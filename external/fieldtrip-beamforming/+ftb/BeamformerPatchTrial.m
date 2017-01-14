@@ -116,13 +116,13 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                     % computer filters
                     % NOTE if mode == 'all' each source struct takes up a
                     % few MBs, if there are 1000 trials, that's a few GBs
-                    source = ftb.BeamformerPatch.beamformer_lcmv_patch(...
+                    data_filters = ftb.BeamformerPatch.compute_lcmv_patch_filters(...
                         timelock, leadfield, patches_list,'mode','single');
                     
                     % save filters
-                    leadfield.filter = source.filters;
-                    leadfield.filter_label = source.patch_labels;
-                    leadfield.inside = source.inside;
+                    leadfield.filter = data_filters.filters;
+                    leadfield.filter_label = data_filters.patch_labels;
+                    leadfield.inside = data_filters.inside;
                     save(obj.lf.leadfield, 'leadfield');
                     
                     % source analysis

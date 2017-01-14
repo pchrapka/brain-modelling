@@ -5,11 +5,12 @@ classdef BeamformerPatch < ftb.Beamformer
     properties
         % original ftb.Beamformer properties
         lf;  % leadfield Object with filters
+        %eeg; % eeg Object with modified timelock data
         patches; % patch file
     end
     
     methods (Static, Access = protected)
-        [source, patches] = beamformer_lcmv_patch(...
+        [source, patches] = compute_lcmv_patch_filters(...
             data, leadfield, atlasfile, patches, varargin);
     end
     
@@ -81,6 +82,7 @@ classdef BeamformerPatch < ftb.Beamformer
             
             % create leadfield object
             obj.lf = ftb.Leadfield(obj.config,'patchfilt');
+            %obj.eeg = ftb.EEG(obj.config,'eegmod');
             
             obj.patches = '';
         end
@@ -99,6 +101,7 @@ classdef BeamformerPatch < ftb.Beamformer
             
             % init Leadfield object
             obj.lf.init(obj.folder);
+            %obj.eeg.init(obj.folder);
             
             % init output folder and files
             properties = {'patches'};
@@ -122,6 +125,10 @@ classdef BeamformerPatch < ftb.Beamformer
             elecObj = obj.get_dep('ftb.Electrodes');
             hmObj = obj.get_dep('ftb.Headmodel');
             
+            if ~isfield(obj.config,'singletrial')
+                obj.config.singletrial = 'no';
+            end
+            
             if obj.check_file(obj.patches)
                 % load data
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
@@ -144,29 +151,92 @@ classdef BeamformerPatch < ftb.Beamformer
                     strrep(class(obj),'ftb.',''));
             end
             
+%             % modify timelock file if singletrial option set
+%             if isequal(obj.config.singletrial,'yes')
+%                 % use average covariance of all trials to compute one
+%                 % filter
+%                 if obj.check_file(obj.eeg.timelock)
+%                     timelock = ftb.util.loadvar(eegObj.timelock);
+%                     
+%                     [out_folder,~,~] = fileparts(obj.eeg.timelock);
+%                     params = [];
+%                     params.ft_definetrial = [];
+%                     fake_file = fullfile(out_folder, 'fake.mat');
+%                     save(fake_file,'params');
+%                     
+%                     obj.eeg.load_file('definetrial',fake_file);
+%                     obj.eeg.load_file('redefinetrial',fake_file);
+%                     obj.eeg.load_file('preprocessed',fake_file);
+%                     
+%                     if isfield(timelock, 'cov') && length(size(timelock.cov))==3
+%                         ntrials = size(timelock.cov,1);
+%                     elseif isfield(timelock, 'trial') && length(size(timelock.trial))==3
+%                         ntrials = size(timelock.trial,1);
+%                     else
+%                         ntrials = 1;
+%                         error('requires multiple trials');
+%                     end
+%                     
+%                     % modify timelock
+%                     % average the single-trial covariance matrices
+%                     data = mean(timelock.cov,1);
+%                     % copy the average covariance matrix for every individual trial
+%                     timelock.cov = repmat(data, [ntrials 1 1]);
+%                     
+%                     % save
+%                     tmp_timelock_file = fullfile(out_folder,'temp.mat');
+%                     save(tmp_timelock_file, 'timelock');
+%                    
+%                     % load timelock data into ftb.EEG object
+%                     obj.eeg.load_file('timelock', tmp_timelock_file);
+%                     
+%                 else
+%                     fprintf('%s: skipping eeg mod, already exists\n',...
+%                         strrep(class(obj),'ftb.',''));
+%                 end
+%             end
+            
             % precompute filters
             if obj.check_file(obj.lf.leadfield)
                 % load data
-                data = ftb.util.loadvar(eegObj.timelock);
+                
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
                 patches_list = ftb.util.loadvar(obj.patches);
+                timelock = ftb.util.loadvar(eegObj.timelock);
+%                 if isequal(obj.config.singletrial,'yes')
+%                     timelock = ftb.util.loadvar(obj.eeg.timelock);
+%                 else
+%                     timelock = ftb.util.loadvar(eegObj.timelock);
+%                 end
                 
-                % computer filters
-                source = ftb.BeamformerPatch.beamformer_lcmv_patch(...
-                    data, leadfield, patches_list);
+                % check for get_basis params
+                if ~isfield(obj.config,'compute_lcmv_patch_filters')
+                    obj.config.compute_lcmv_patch_filters = {};
+                end
+                    
+                % compute filters
+                data_filters = ftb.BeamformerPatch.compute_lcmv_patch_filters(...
+                    timelock, leadfield, patches_list, obj.config.compute_lcmv_patch_filters{:});
                 
                 % save filters
-                leadfield.filter = source.filters;
-                leadfield.filter_label = source.patch_labels;
+                leadfield.filter = data_filters.filters;
+                leadfield.filter_label = data_filters.patch_labels;
+                leadfield.inside = data_filters.inside;
                 save(obj.lf.leadfield, 'leadfield');
             else
-                fprintf('%s: skipping beamformer_lcmv_patch, already exists\n',...
+                fprintf('%s: skipping compute_lcmv_patch_filters, already exists\n',...
                     strrep(class(obj),'ftb.',''));
             end
             
             % source analysis
             % -----
             % process source analysis
+%             if isequal(obj.config.singletrial,'yes')
+%                 % use modified timelock
+%                 obj.process_deps(obj.eeg,obj.lf,elecObj,hmObj);
+%             else
+%                 obj.process_deps(eegObj,obj.lf,elecObj,hmObj);
+%             end
             obj.process_deps(eegObj,obj.lf,elecObj,hmObj);
         end
         
