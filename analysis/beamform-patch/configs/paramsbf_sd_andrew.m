@@ -6,10 +6,12 @@ function params = paramsbf_sd_andrew(subject_num,deviant_percent,stimulus)
 %% create data specific configs
 MRIicbm152();
 HMicbm152_dipoli_cm();
-BFPatchAAL();
+% BFPatchAAL();
 params_elec = Eandrew_warpgr_cm(elec_file, data_name);
 
 params_eeg = EEGandrew_stddev(data_file, data_name, stimulus);
+
+params_bf = BFPatchAAL_andrew(data_name);
 
 %% assign configs for analysis
 params = [];
@@ -18,6 +20,6 @@ params.hm = 'HMicbm152-dipoli-cm.mat';
 params.elec = params_elec;
 params.lf = 'L1cm-norm-tight.mat';
 params.eeg = params_eeg;
-params.bf = 'BFPatchAAL.mat';
+params.bf = params_bf;
 
 end
