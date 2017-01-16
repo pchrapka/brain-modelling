@@ -125,9 +125,9 @@ classdef BeamformerPatch < ftb.Beamformer
             elecObj = obj.get_dep('ftb.Electrodes');
             hmObj = obj.get_dep('ftb.Headmodel');
             
-            if ~isfield(obj.config,'singletrial')
-                obj.config.singletrial = 'no';
-            end
+%             if ~isfield(obj.config,'singletrial')
+%                 obj.config.singletrial = 'no';
+%             end
             
             if obj.check_file(obj.patches)
                 % load data

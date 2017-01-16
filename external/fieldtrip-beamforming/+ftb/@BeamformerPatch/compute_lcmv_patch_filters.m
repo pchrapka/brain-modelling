@@ -76,7 +76,7 @@ end
 if ntrials > 1
     fprintf('averaging cov');
     warning('can only precompute filters with one cov');
-    data.cov = mean(data.cov,1);
+    data.cov = squeeze(mean(data.cov,1));
 end
 
 % computer filter for each patch
