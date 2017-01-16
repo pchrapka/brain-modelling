@@ -74,13 +74,13 @@ else
 end
 
 if ntrials > 1
-    fprintf('averaging cov\n');
-    warning('can only precompute filters with one cov');
-    data.cov = squeeze(mean(data.cov,1));
+    error('can only precompute filters with one cov, use singletrial option in BeamformerPatch');
 end
 
+fprintf('computing filters...\n');
 % computer filter for each patch
 for i=1:length(patches)
+    fprintf('computing filter for patch %d\n',i);
 
     if isempty(patches(i).U)
         filter = zeros(1,size(data.cov,1));

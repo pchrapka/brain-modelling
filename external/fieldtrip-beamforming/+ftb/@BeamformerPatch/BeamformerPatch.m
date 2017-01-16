@@ -125,9 +125,9 @@ classdef BeamformerPatch < ftb.Beamformer
             elecObj = obj.get_dep('ftb.Electrodes');
             hmObj = obj.get_dep('ftb.Headmodel');
             
-%             if ~isfield(obj.config,'singletrial')
-%                 obj.config.singletrial = 'no';
-%             end
+            if ~isfield(obj.config,'singletrial')
+                obj.config.singletrial = 'no';
+            end
             
             if obj.check_file(obj.patches)
                 % load data
@@ -208,6 +208,14 @@ classdef BeamformerPatch < ftb.Beamformer
 %                 else
 %                     timelock = ftb.util.loadvar(eegObj.timelock);
 %                 end
+
+                if isequal(obj.config.singletrial,'yes')
+                    fprintf('%s: averaging cov from trials\n',strrep(class(obj),'ftb.',''));
+                    ndims_cov = length(size(timelock.cov));
+                    if ndims_cov == 3
+                        timelock.cov = squeeze(mean(timelock.cov,1));
+                    end
+                end
                 
                 % check for get_basis params
                 if ~isfield(obj.config,'compute_lcmv_patch_filters')
