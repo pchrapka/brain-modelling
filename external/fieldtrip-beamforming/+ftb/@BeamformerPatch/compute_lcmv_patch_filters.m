@@ -74,7 +74,7 @@ else
 end
 
 if ntrials > 1
-    fprintf('averaging cov');
+    fprintf('averaging cov\n');
     warning('can only precompute filters with one cov');
     data.cov = squeeze(mean(data.cov,1));
 end
