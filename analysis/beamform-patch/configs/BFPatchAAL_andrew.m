@@ -2,6 +2,7 @@ function cfg = BFPatchAAL_andrew(data_name)
 % BFPatchAAL
 
 cfg = [];
+cfg.name = data_name(1:3);
 cfg.cortical_patches_name = 'aal';
 cfg.compute_lcmv_patch_filters = {'mode','single','fixedori',true}; % for saving mem
 % cfg.compute_lcmv_patch_filters = {'mode','all','fixedori',true}; % for plotting
