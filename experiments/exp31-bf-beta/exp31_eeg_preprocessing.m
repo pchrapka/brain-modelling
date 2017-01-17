@@ -2,7 +2,6 @@
 
 %% options
 
-save_files = false;
 interactive = false;
 
 subject_num = 6;
@@ -108,7 +107,7 @@ threshold = 40;
 cfg_at.artfctdef.threshold.min = -1*threshold;
 cfg_at.artfctdef.threshold.max = threshold;
 
-file_art_at = run_ft_function('ft_artifact_threshold',cfg_at,'datain',file_art_rt,params{:},'tag','art','dataidx',2);
+file_art_at = run_ft_function('ft_artifact_threshold',cfg_at,'datain',file_art_rt,params{:},'tag','art');
 
 % [~,data_artifact] = ft_artifact_threshold(cfg_at, data_redefined_art);
 
@@ -164,6 +163,7 @@ file_dt = run_ft_function('ft_definetrial',cfg_dt,params{:});
 
 cfg_rt = ftb.util.loadvar(file_art_dt);
 file_rt = run_ft_function('ft_redefinetrial',cfg_rt,'datain',file_pp,params{:});
+clear cfg_rt
 
 % if save_files
 %     save_tag(data_redefined, 'tag', 'ft_redefinetrial', 'overwrite', true, 'outpath', outdir);
@@ -172,7 +172,9 @@ file_rt = run_ft_function('ft_redefinetrial',cfg_rt,'datain',file_pp,params{:});
 %% ft_rejectartifact
 cfg_ra = [];
 cfg_ra.artfctdef.reject = 'complete';
-cfg_ra.artfctdef.threshold = data_artifact;
+data_artifact = ftb.util.loadvar(file_art_at);
+cfg_ra.artfctdef.threshold = data_artifact{2};
+clear data_artifact
 
 % data_rejectartifact = ft_rejectartifact(cfg_ra, data_redefined);
 
