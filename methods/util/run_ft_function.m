@@ -30,9 +30,9 @@ function outfile = run_ft_function(fname,config,varargin)
 %       index to select data from datain file
 
 p = inputParser();
-addRequired(p,'fname',@(x) exist(x,'file'));
+addRequired(p,'fname',@(x) ischar(x) && exist(x,'file'));
 addRequired(p,'config',@isstruct);
-addOptional(p,'datain','',@(x) isstruct(x) || ischar(x));
+addParameter(p,'datain','',@(x) isstruct(x) || ischar(x));
 addParameter(p,'recompute',false,@islogical);
 addParameter(p,'save',false,@islogical);
 addParameter(p,'overwrite',false,@islogical);
