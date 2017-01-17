@@ -2,7 +2,7 @@
 
 %% options
 
-save_files = true;
+save_files = false;
 interactive = false;
 
 subject_num = 6;

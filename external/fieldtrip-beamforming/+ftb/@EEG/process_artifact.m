@@ -28,9 +28,10 @@ if isfield(obj.config, 'ft_rejectartifact')
                 error('missing output for mode %s',obj.config.mode);
         end
         
+        nfuncs = length(funcs_artifact);
         artifacts = [];
-        artifacts.name = '';
-        artifacts.value = [];
+        artifacts(nfuncs).name = '';
+        artifacts(nfuncs).value = [];
         for i=1:length(funcs_artifact)
             % run through all specified artifact detection functions
             ft_func = funcs_artifact{i};
@@ -47,14 +48,16 @@ if isfield(obj.config, 'ft_rejectartifact')
         
         % ft_rejectartifact
         cfg = obj.config.ft_rejectartifact;
-        cfg.inputfile = inputfile;
         
         % add artifactual trials for rejection
         for i=1:length(artifacts)
-            cfg.artfctdef.(artifacts(i).name).artifact = artifacts(i).value;
+            if ~isempty(artifacts(i).name)
+                cfg.artfctdef.(artifacts(i).name).artifact = artifacts(i).value;
+            end
         end
         
-        data = ft_rejectartifact(cfg);
+        data_input = ftb.util.loadvar(inputfile);
+        data = ft_rejectartifact(cfg, data_input);
         save(obj.rejectartifact, 'data','-v7.3');
         clear data;
     else
