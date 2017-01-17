@@ -173,9 +173,9 @@ cfg_ra.artfctdef.threshold = data_artifact;
 
 data_rejectartifact = ft_rejectartifact(cfg_ra, data_redefined);
 
-if save_files
-    save_tag(data_rejectartifact, 'tag', 'ft_rejectartifact', 'overwrite', true, 'outpath', outdir);
-end
+% if save_files
+save_tag(data_rejectartifact, 'tag', 'ft_rejectartifact', 'overwrite', true, 'outpath', outdir);
+% end
 
 %% ft_timelock
 
@@ -187,6 +187,6 @@ cfg_tl.removemean = 'yes';
 
 data_timelock = ft_timelockanalysis(cfg_tl,data_rejectartifact);
 
-if save_files
-    save_tag(data_timelock, 'tag', 'ft_timelockanalysis', 'overwrite', true, 'outpath', outdir);
-end
+% if save_files
+save_tag(data_timelock, 'tag', 'ft_timelockanalysis', 'overwrite', true, 'outpath', outdir);
+% end
