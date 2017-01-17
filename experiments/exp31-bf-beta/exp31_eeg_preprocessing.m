@@ -161,7 +161,7 @@ file_dt = run_ft_function('ft_definetrial',cfg_dt,params{:});
 
 % data_redefined = ft_redefinetrial(data_definetrial, data_preprocessed);
 
-cfg_rt = ftb.util.loadvar(file_art_dt);
+cfg_rt = ftb.util.loadvar(file_dt);
 file_rt = run_ft_function('ft_redefinetrial',cfg_rt,'datain',file_pp,params{:});
 clear cfg_rt
 
