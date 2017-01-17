@@ -79,8 +79,12 @@ else
     
     fh = str2func(fname);
     nout = nargout(fname);
-    data = cell(nout,1);
-    [data{:}] = fh(config,params{:});
+    if nout > 1
+        data = cell(nout,1);
+        [data{:}] = fh(config,params{:});
+    else
+        data = fh(config,params{:});
+    end
     
     if p.Results.save
         save_tag(data, 'overwrite', p.Results.overwrite, 'outfile', outfile);
