@@ -1,7 +1,7 @@
-function params_eeg = EEGandrew_stddev(dataset, data_name, stimulus)
-% EEGANDREW_STDDEV creates a subject specific config for ftb.EEG
-%   EEGANDREW_STDDEV(dataset, data_name, stimulus) creates a subject
-%   specific config for ftb.EEG
+function params_eeg = EEGandrew_stddev_mmn(dataset, data_name, stimulus)
+% EEGANDREW_STDDEV_MMN creates a subject specific config for ftb.EEG
+%   EEGANDREW_STDDEV_MMN(dataset, data_name, stimulus) creates a subject
+%   specific config for ftb.EEG, this config specifically looks at the MMN
 %
 %   Input
 %   -----
@@ -38,8 +38,8 @@ switch stimulus
         params_eeg.ft_definetrial.trialdef.eventtype = 'STATUS';
         params_eeg.ft_definetrial.trialdef.eventvalue = {2}; % deviant
 end
-params_eeg.ft_definetrial.trialdef.prestim = 0.5; % in seconds
-params_eeg.ft_definetrial.trialdef.poststim = 1; % in seconds
+params_eeg.ft_definetrial.trialdef.prestim = 0.1; % in seconds
+params_eeg.ft_definetrial.trialdef.poststim = 0.3; % in seconds
 
 % assuming data was already de-artifacted
 %params_eeg.ft_preprocessing.method = 'trial';
