@@ -43,6 +43,8 @@ addParameter(p,'tag','',@ischar);
 addParameter(p,'dataidx',0,@isnumeric);
 parse(p,fname,config,varargin{:});
 
+clear config
+
 outfile = '';
 if p.Results.save
     % generate outfile name
@@ -75,15 +77,16 @@ else
         else
             params = {datain};
         end
+        clear datain;
     end
     
     fh = str2func(fname);
     nout = nargout(fname);
     if nout > 1
         data = cell(nout,1);
-        [data{:}] = fh(config,params{:});
+        [data{:}] = fh(p.Results.config,params{:});
     else
-        data = fh(config,params{:});
+        data = fh(p.Results.config,params{:});
     end
     
     if p.Results.save
