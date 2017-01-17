@@ -10,12 +10,15 @@ function outfile = run_ft_function(fname,config,varargin)
 %       fieldtrip function name
 %   config (struct)
 %       fieldtrip function config
-%   datain (struct/string, optional)
-%       optional data input for fieldtrip function, can be specified as the
-%       data struct or as a filename
 %   
 %   Parameters
 %   ----------
+%   datain (struct/string, optional)
+%       optional data input for fieldtrip function, can be specified as the
+%       data struct or as a filename
+%   dataidx (integer, optional)
+%       index to select data from datain file
+%
 %   recompute (logical)
 %       flag for recomputing data
 %   save (logical)
@@ -26,8 +29,7 @@ function outfile = run_ft_function(fname,config,varargin)
 %       output path for data files, only applies if save = true
 %   tag (string, optional)
 %       additional tag for the data file name
-%   dataidx (integer, optional)
-%       index to select data from datain file
+%
 
 p = inputParser();
 addRequired(p,'fname',@(x) ischar(x) && exist(x,'file'));

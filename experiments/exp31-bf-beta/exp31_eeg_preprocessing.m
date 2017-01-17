@@ -88,7 +88,7 @@ file_art_dt = run_ft_function('ft_definetrial',cfg_dt,params{:},'tag','art');
 % data_definetrial = ft_definetrial(cfg_dt);
 
 cfg_rt = ftb.util.loadvar(file_art_dt);
-file_art_rt = run_ft_function('ft_redefinetrial',cfg_rt,file_art_pp,params{:},'tag','art');
+file_art_rt = run_ft_function('ft_redefinetrial',cfg_rt,'datain',file_art_pp,params{:},'tag','art');
 
 % data_redefined_art = ft_redefinetrial(data_definetrial, data_preprocessed_art);
 
@@ -108,7 +108,7 @@ threshold = 40;
 cfg_at.artfctdef.threshold.min = -1*threshold;
 cfg_at.artfctdef.threshold.max = threshold;
 
-file_art_at = run_ft_function('ft_artifact_threshold',cfg_at,file_art_rt,params{:},'tag','art','dataidx',2);
+file_art_at = run_ft_function('ft_artifact_threshold',cfg_at,'datain',file_art_rt,params{:},'tag','art','dataidx',2);
 
 % [~,data_artifact] = ft_artifact_threshold(cfg_at, data_redefined_art);
 
@@ -163,7 +163,7 @@ file_dt = run_ft_function('ft_definetrial',cfg_dt,params{:});
 % data_redefined = ft_redefinetrial(data_definetrial, data_preprocessed);
 
 cfg_rt = ftb.util.loadvar(file_art_dt);
-file_rt = run_ft_function('ft_redefinetrial',cfg_rt,file_pp,params{:});
+file_rt = run_ft_function('ft_redefinetrial',cfg_rt,'datain',file_pp,params{:});
 
 % if save_files
 %     save_tag(data_redefined, 'tag', 'ft_redefinetrial', 'overwrite', true, 'outpath', outdir);
@@ -176,7 +176,7 @@ cfg_ra.artfctdef.threshold = data_artifact;
 
 % data_rejectartifact = ft_rejectartifact(cfg_ra, data_redefined);
 
-file_ra = run_ft_function('ft_rejectartifact',cfg_ra,file_rt,params{:});
+file_ra = run_ft_function('ft_rejectartifact',cfg_ra,'datain',file_rt,params{:});
 
 % if save_files
 % save_tag(data_rejectartifact, 'tag', 'ft_rejectartifact', 'overwrite', true, 'outpath', outdir);
@@ -191,7 +191,7 @@ cfg_tl.keeptrials = 'yes'; % should be default
 cfg_tl.removemean = 'yes';
 
 % data_timelock = ft_timelockanalysis(cfg_tl,data_rejectartifact);
-file_tl = run_ft_function('ft_timelockanalysis',cfg_tl,file_ra,params{:});
+file_tl = run_ft_function('ft_timelockanalysis',cfg_tl,'datain',file_ra,params{:});
 
 % if save_files
 % save_tag(data_timelock, 'tag', 'ft_timelockanalysis', 'overwrite', true, 'outpath', outdir);
