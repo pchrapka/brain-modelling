@@ -82,7 +82,7 @@ classdef BeamformerPatch < ftb.Beamformer
             
             % create leadfield object
             obj.lf = ftb.Leadfield(obj.config,'patchfilt');
-            obj.eeg = ftb.EEG(obj.config,'eegmod');
+            obj.eeg = ftb.EEG(obj.config,'modtimelock');
             
             obj.patches = '';
         end
