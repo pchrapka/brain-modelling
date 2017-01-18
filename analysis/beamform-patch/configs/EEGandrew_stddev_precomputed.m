@@ -27,7 +27,7 @@ dataset_name = [stimulus '-' data_name(1:3)];
 
 params_eeg = [];
 params_eeg.name = dataset_name;
-params_eeg.mode = 'continuous';
+params_eeg.mode = 'trial';
 
 script_dir = fullfile(get_project_dir(), 'experiments', 'exp31-bf-beta');
 outdir = fullfile(script_dir,'output',dataset_name);
