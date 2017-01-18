@@ -47,7 +47,7 @@ cfg_pp.dataset = dataset;   % needs dataset field in this case
 cfg_pp.continuous = 'yes';
 cfg_pp.detrend = 'no';
 cfg_pp.demean = 'no';       % filter should handle this
-cfg_pp.baselinewindow = [-0.1 0];
+% cfg_pp.baselinewindow = [-0.1 0];
 cfg_pp.channel = {'EEG','-D32','-C10'};
 cfg_pp.bpfilter = 'yes';
 cfg_pp.bpfreq = [1 60];
@@ -56,9 +56,6 @@ cfg_pp.bpfiltord = 3;
 %use default for other bp filter params
 
 file_art_pp = run_ft_function('ft_preprocessing',cfg_pp,params{:},'tag','art');
-
-% % preprocess data
-% data_preprocessed_art1 = ft_preprocessing(cfg_pp);
 
 if interactive
     data = ftb.util.loadvar(file_art_pp);
@@ -81,22 +78,20 @@ end
 cfg_dt.trialdef.prestim = 0.5; % in seconds
 cfg_dt.trialdef.poststim = 1; % in seconds
 
-file_art_dt = run_ft_function('ft_definetrial',cfg_dt,params{:},'tag','art');
-
 % define the trial
-% data_definetrial = ft_definetrial(cfg_dt);
+file_art_dt = run_ft_function('ft_definetrial',cfg_dt,params{:},'tag','art');
 
 cfg_rt = ftb.util.loadvar(file_art_dt);
 file_art_rt = run_ft_function('ft_redefinetrial',cfg_rt,'datain',file_art_pp,params{:},'tag','art');
 clear cfg_rt;
 
-% data_redefined_art = ft_redefinetrial(data_definetrial, data_preprocessed_art);
+%% ft_preprocessing
 
-% if save_files
-%     save_tag(data_redefined_art, 'tag', 'ft_redefinetrial_art', 'overwrite', true, 'outpath', outdir);
-% end
-% 
-% clear data_preprocessed_art
+cfg_pp = [];
+cfg_pp.baselinewindow = [-0.1 0];
+
+file_art_pp2 = run_ft_function('ft_preprocessing',cfg_pp,params{:},'datain',file_art_rt,'tag','2-art');
+
 
 %% ft_artifact_threshold
 % reject trials that exceed 140 uV
@@ -110,10 +105,8 @@ threshold = 40;
 cfg_at.artfctdef.threshold.min = -1*threshold;
 cfg_at.artfctdef.threshold.max = threshold;
 
-file_art_at = run_ft_function('ft_artifact_threshold',cfg_at,'datain',file_art_rt,params{:},'tag','art');
+file_art_at = run_ft_function('ft_artifact_threshold',cfg_at,'datain',file_art_pp2,params{:},'tag','art');
 clear cfg_at
-
-% [~,data_artifact] = ft_artifact_threshold(cfg_at, data_redefined_art);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% preprocess
@@ -135,13 +128,6 @@ cfg_pp.bpfiltord = 4; % use default
 
 file_pp = run_ft_function('ft_preprocessing',cfg_pp,params{:});
 
-% % preprocess data
-% data_preprocessed = ft_preprocessing(cfg_pp);
-% 
-% if save_files
-%     save_tag(data_preprocessed, 'tag', 'ft_preprocessing', 'overwrite', true, 'outpath', outdir);
-% end
-
 %% ft_definetrial
 cfg_dt = [];
 cfg_dt.dataset = dataset;
@@ -157,21 +143,11 @@ end
 cfg_dt.trialdef.prestim = 0.5; % in seconds
 cfg_dt.trialdef.poststim = 1; % in seconds
 
-
-% define the trial
-% data_definetrial = ft_definetrial(cfg_dt);
-
 file_dt = run_ft_function('ft_definetrial',cfg_dt,params{:});
-
-% data_redefined = ft_redefinetrial(data_definetrial, data_preprocessed);
 
 cfg_rt = ftb.util.loadvar(file_dt);
 file_rt = run_ft_function('ft_redefinetrial',cfg_rt,'datain',file_pp,params{:});
 clear cfg_rt
-
-% if save_files
-%     save_tag(data_redefined, 'tag', 'ft_redefinetrial', 'overwrite', true, 'outpath', outdir);
-% end
 
 %% ft_rejectartifact
 cfg_ra = [];
@@ -180,14 +156,8 @@ data_artifact = ftb.util.loadvar(file_art_at);
 cfg_ra.artfctdef.threshold.artifact = data_artifact{2};
 clear data_artifact
 
-% data_rejectartifact = ft_rejectartifact(cfg_ra, data_redefined);
-
 file_ra = run_ft_function('ft_rejectartifact',cfg_ra,'datain',file_rt,params{:});
 clear cfg_ra;
-
-% if save_files
-% save_tag(data_rejectartifact, 'tag', 'ft_rejectartifact', 'overwrite', true, 'outpath', outdir);
-% end
 
 %% ft_timelock
 
@@ -197,9 +167,4 @@ cfg_tl.covariancewindow = 'all'; % should be default
 cfg_tl.keeptrials = 'yes'; % should be default
 cfg_tl.removemean = 'yes';
 
-% data_timelock = ft_timelockanalysis(cfg_tl,data_rejectartifact);
 file_tl = run_ft_function('ft_timelockanalysis',cfg_tl,'datain',file_ra,params{:});
-
-% if save_files
-% save_tag(data_timelock, 'tag', 'ft_timelockanalysis', 'overwrite', true, 'outpath', outdir);
-% end
