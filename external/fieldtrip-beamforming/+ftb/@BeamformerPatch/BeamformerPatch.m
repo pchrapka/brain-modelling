@@ -179,7 +179,7 @@ classdef BeamformerPatch < ftb.Beamformer
                     fprintf('%s: averaging cov from trials\n',strrep(class(obj),'ftb.',''));
                     % modify timelock
                     % average the single-trial covariance matrices
-                    data = squeeze(mean(timelock.cov,1));
+                    data = mean(timelock.cov,1);
                     % copy the average covariance matrix for every individual trial
                     timelock.cov = repmat(data, [ntrials 1 1]);
                     
