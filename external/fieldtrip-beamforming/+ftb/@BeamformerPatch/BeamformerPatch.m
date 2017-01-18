@@ -5,7 +5,7 @@ classdef BeamformerPatch < ftb.Beamformer
     properties
         % original ftb.Beamformer properties
         lf;  % leadfield Object with filters
-        %eeg; % eeg Object with modified timelock data
+        eeg; % eeg Object with modified timelock data
         patches; % patch file
     end
     
@@ -82,7 +82,7 @@ classdef BeamformerPatch < ftb.Beamformer
             
             % create leadfield object
             obj.lf = ftb.Leadfield(obj.config,'patchfilt');
-            %obj.eeg = ftb.EEG(obj.config,'eegmod');
+            obj.eeg = ftb.EEG(obj.config,'eegmod');
             
             obj.patches = '';
         end
@@ -101,7 +101,7 @@ classdef BeamformerPatch < ftb.Beamformer
             
             % init Leadfield object
             obj.lf.init(obj.folder);
-            %obj.eeg.init(obj.folder);
+            obj.eeg.init(obj.folder);
             
             % init output folder and files
             properties = {'patches'};
@@ -125,8 +125,8 @@ classdef BeamformerPatch < ftb.Beamformer
             elecObj = obj.get_dep('ftb.Electrodes');
             hmObj = obj.get_dep('ftb.Headmodel');
             
-            if ~isfield(obj.config,'singletrial')
-                obj.config.singletrial = 'no';
+            if ~isfield(obj.config,'cov_avg')
+                obj.config.cov_avg = 'no';
             end
             
             if obj.check_file(obj.patches)
@@ -151,50 +151,46 @@ classdef BeamformerPatch < ftb.Beamformer
                     strrep(class(obj),'ftb.',''));
             end
             
-%             % modify timelock file if singletrial option set
-%             if isequal(obj.config.singletrial,'yes')
-%                 % use average covariance of all trials to compute one
-%                 % filter
-%                 if obj.check_file(obj.eeg.timelock)
-%                     timelock = ftb.util.loadvar(eegObj.timelock);
-%                     
-%                     [out_folder,~,~] = fileparts(obj.eeg.timelock);
-%                     params = [];
-%                     params.ft_definetrial = [];
-%                     fake_file = fullfile(out_folder, 'fake.mat');
-%                     save(fake_file,'params');
-%                     
-%                     obj.eeg.load_file('definetrial',fake_file);
-%                     obj.eeg.load_file('redefinetrial',fake_file);
-%                     obj.eeg.load_file('preprocessed',fake_file);
-%                     
-%                     if isfield(timelock, 'cov') && length(size(timelock.cov))==3
-%                         ntrials = size(timelock.cov,1);
-%                     elseif isfield(timelock, 'trial') && length(size(timelock.trial))==3
-%                         ntrials = size(timelock.trial,1);
-%                     else
-%                         ntrials = 1;
-%                         error('requires multiple trials');
-%                     end
-%                     
-%                     % modify timelock
-%                     % average the single-trial covariance matrices
-%                     data = mean(timelock.cov,1);
-%                     % copy the average covariance matrix for every individual trial
-%                     timelock.cov = repmat(data, [ntrials 1 1]);
-%                     
-%                     % save
-%                     tmp_timelock_file = fullfile(out_folder,'temp.mat');
-%                     save(tmp_timelock_file, 'timelock');
-%                    
-%                     % load timelock data into ftb.EEG object
-%                     obj.eeg.load_file('timelock', tmp_timelock_file);
-%                     
-%                 else
-%                     fprintf('%s: skipping eeg mod, already exists\n',...
-%                         strrep(class(obj),'ftb.',''));
-%                 end
-%             end
+            % modify timelock file if cov_avg option set
+            if isequal(obj.config.cov_avg,'yes')
+                % use average covariance of all trials to compute one
+                % filter
+                if obj.check_file(obj.eeg.timelock)
+                    timelock = ftb.util.loadvar(eegObj.timelock);
+                    
+                    [out_folder,~,~] = fileparts(obj.eeg.timelock);
+                    data = [];
+                    fake_file = fullfile(out_folder, 'fake.mat');
+                    save(fake_file,'data');
+                    
+                    obj.eeg.load_file('definetrial',fake_file);
+                    obj.eeg.load_file('redefinetrial',fake_file);
+                    obj.eeg.load_file('preprocessed',fake_file);
+                    
+                    if isfield(timelock, 'cov') && length(size(timelock.cov))==3
+                        ntrials = size(timelock.cov,1);
+                    elseif isfield(timelock, 'trial') && length(size(timelock.trial))==3
+                        ntrials = size(timelock.trial,1);
+                    else
+                        ntrials = 1;
+                        error('requires multiple trials');
+                    end
+                    
+                    fprintf('%s: averaging cov from trials\n',strrep(class(obj),'ftb.',''));
+                    % modify timelock
+                    % average the single-trial covariance matrices
+                    data = squeeze(mean(timelock.cov,1));
+                    % copy the average covariance matrix for every individual trial
+                    timelock.cov = repmat(data, [ntrials 1 1]);
+                    
+                    % save
+                    save(obj.eeg.timelock, 'timelock');
+                    
+                else
+                    fprintf('%s: skipping modified timelock, already exists\n',...
+                        strrep(class(obj),'ftb.',''));
+                end
+            end
             
             % precompute filters
             if obj.check_file(obj.lf.leadfield)
@@ -202,18 +198,17 @@ classdef BeamformerPatch < ftb.Beamformer
                 
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
                 patches_list = ftb.util.loadvar(obj.patches);
-                timelock = ftb.util.loadvar(eegObj.timelock);
-%                 if isequal(obj.config.singletrial,'yes')
-%                     timelock = ftb.util.loadvar(obj.eeg.timelock);
-%                 else
-%                     timelock = ftb.util.loadvar(eegObj.timelock);
-%                 end
+                if isequal(obj.config.cov_avg,'yes')
+                    timelock = ftb.util.loadvar(obj.eeg.timelock);
+                else
+                    timelock = ftb.util.loadvar(eegObj.timelock);
+                end
 
-                if isequal(obj.config.singletrial,'yes')
-                    fprintf('%s: averaging cov from trials\n',strrep(class(obj),'ftb.',''));
+                if isequal(obj.config.cov_avg,'yes')
                     ndims_cov = length(size(timelock.cov));
                     if ndims_cov == 3
-                        timelock.cov = squeeze(mean(timelock.cov,1));
+                        % choose one since they're all the same
+                        timelock.cov = squeeze(timelock.cov(1,:,:));
                     end
                 end
                 
@@ -239,13 +234,12 @@ classdef BeamformerPatch < ftb.Beamformer
             % source analysis
             % -----
             % process source analysis
-%             if isequal(obj.config.singletrial,'yes')
-%                 % use modified timelock
-%                 obj.process_deps(obj.eeg,obj.lf,elecObj,hmObj);
-%             else
-%                 obj.process_deps(eegObj,obj.lf,elecObj,hmObj);
-%             end
-            obj.process_deps(eegObj,obj.lf,elecObj,hmObj);
+            if isequal(obj.config.cov_avg,'yes')
+                % use modified timelock
+                obj.process_deps(obj.eeg,obj.lf,elecObj,hmObj);
+            else
+                obj.process_deps(eegObj,obj.lf,elecObj,hmObj);
+            end
         end
         
         function plot_beampattern(obj,seed,varargin)
