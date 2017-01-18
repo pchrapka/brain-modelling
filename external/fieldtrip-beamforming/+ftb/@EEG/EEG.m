@@ -83,7 +83,11 @@ classdef EEG < ftb.AnalysisStep
                     'properties',properties{i});
             end
             
+            % set the init flag
             obj.init_called = true;
+            
+            % load any files specified in the config
+            obj.load_files();
         end
         
         function obj = process(obj)

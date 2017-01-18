@@ -164,7 +164,7 @@ classdef AnalysisStep < handle
                 
                 % load data
                 data = ftb.util.loadvar(filename);
-                save(obj.(property),'data');
+                save(obj.(property),'data','-v7.3');
             else
                 fprintf('%s: skipping load_file, already exists\n',...
                     strrep(class(obj),'ftb.',''));
