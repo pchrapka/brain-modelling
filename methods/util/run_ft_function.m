@@ -56,12 +56,13 @@ if p.Results.save
         error('specify output path to save output');
     end
     outfile = fullfile(p.Results.outpath,sprintf('%s.mat',tag));
+    [filepath,filename,~] = fileparts(outfile);
 end
 
 
 % check if it exists
 if p.Results.save && exist(outfile,'file') && ~p.Results.recompute
-    fprintf('%s: %s output already exists\n',mfilename,fname);
+    fprintf('%s: %s output already exists\n\tfilename: %s\n\tfilepath: %s\n',mfilename,fname,filename,filepath);
 else
     params = {};
     if ~isempty(p.Results.datain)
@@ -92,6 +93,7 @@ else
     end
     
     if p.Results.save
+        fprintf('%s: saving output\n\tfilename: %s\n\tpath: %s\n',mfilename,filename,filepath);
         save_tag(data, 'overwrite', p.Results.overwrite, 'outfile', outfile);
     end
 end
