@@ -168,3 +168,15 @@ cfg_tl.keeptrials = 'yes'; % should be default
 cfg_tl.removemean = 'yes';
 
 file_tl = run_ft_function('ft_timelockanalysis',cfg_tl,'datain',file_ra,params{:});
+
+%% compute lambda for regularization
+
+data_timelock = ftb.util.loadvar(file_tl);
+% average the single-trial covariance matrices
+cov_avg = mean(data_timelock.cov,1);
+clear data_timelock;
+
+ratio = 1;
+percent = ratio/100;
+lambda = percent * trace(cov_avg)/size(cov_avg,1);
+fprintf('regularization for %0.2f%%: %g\n',percent,lambda);
