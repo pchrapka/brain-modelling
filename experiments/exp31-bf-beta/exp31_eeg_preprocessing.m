@@ -88,6 +88,7 @@ file_art_dt = run_ft_function('ft_definetrial',cfg_dt,params{:},'tag','art');
 
 cfg_rt = ftb.util.loadvar(file_art_dt);
 file_art_rt = run_ft_function('ft_redefinetrial',cfg_rt,'datain',file_art_pp,params{:},'tag','art');
+clear cfg_rt;
 
 % data_redefined_art = ft_redefinetrial(data_definetrial, data_preprocessed_art);
 
@@ -99,8 +100,10 @@ file_art_rt = run_ft_function('ft_redefinetrial',cfg_rt,'datain',file_art_pp,par
 
 %% ft_artifact_threshold
 % reject trials that exceed 140 uV
+data_dt = ftb.util.loadvar(file_art_dt);
 cfg_at = [];
-cfg_at.trl = data_definetrial.trl;
+cfg_at.trl = data_dt.trl;
+clear data_dt
 cfg_at.continuous = 'no';
 cfg_at.artfctdef.threshold.bpfilter = 'no';
 threshold = 40;
@@ -108,6 +111,7 @@ cfg_at.artfctdef.threshold.min = -1*threshold;
 cfg_at.artfctdef.threshold.max = threshold;
 
 file_art_at = run_ft_function('ft_artifact_threshold',cfg_at,'datain',file_art_rt,params{:},'tag','art');
+clear cfg_at
 
 % [~,data_artifact] = ft_artifact_threshold(cfg_at, data_redefined_art);
 
@@ -173,12 +177,13 @@ clear cfg_rt
 cfg_ra = [];
 cfg_ra.artfctdef.reject = 'complete';
 data_artifact = ftb.util.loadvar(file_art_at);
-cfg_ra.artfctdef.threshold = data_artifact{2};
+cfg_ra.artfctdef.threshold.artifact = data_artifact{2};
 clear data_artifact
 
 % data_rejectartifact = ft_rejectartifact(cfg_ra, data_redefined);
 
 file_ra = run_ft_function('ft_rejectartifact',cfg_ra,'datain',file_rt,params{:});
+clear cfg_ra;
 
 % if save_files
 % save_tag(data_rejectartifact, 'tag', 'ft_rejectartifact', 'overwrite', true, 'outpath', outdir);
