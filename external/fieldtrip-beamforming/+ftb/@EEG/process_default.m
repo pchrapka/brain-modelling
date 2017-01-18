@@ -7,7 +7,7 @@ switch obj.config.mode
         
     case 'trial'
         obj.process_definetrial();
-        obj.process_preprocessing('postDefineTrial',true);
+        obj.process_preprocessing('PreDefineTrial',false);
         
     otherwise
         fprintf('add mode field to config with either continuous or trial\n');
