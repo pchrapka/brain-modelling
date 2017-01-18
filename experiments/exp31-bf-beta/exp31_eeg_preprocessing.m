@@ -88,6 +88,7 @@ clear cfg_rt;
 %% ft_preprocessing
 
 cfg_pp = [];
+cfg_pp.demean = 'yes';
 cfg_pp.baselinewindow = [-0.1 0];
 
 file_art_pp2 = run_ft_function('ft_preprocessing',cfg_pp,params{:},'datain',file_art_rt,'tag','2-art');
@@ -101,7 +102,7 @@ cfg_at.trl = data_dt.trl;
 clear data_dt
 cfg_at.continuous = 'no';
 cfg_at.artfctdef.threshold.bpfilter = 'no';
-threshold = 40;
+threshold = 60;
 cfg_at.artfctdef.threshold.min = -1*threshold;
 cfg_at.artfctdef.threshold.max = threshold;
 
