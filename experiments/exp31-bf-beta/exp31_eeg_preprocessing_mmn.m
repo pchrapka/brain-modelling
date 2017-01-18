@@ -106,7 +106,7 @@ cfg_at.artfctdef.threshold.max = 140;
 
 cfg_ra = [];
 cfg_ra.artfctdef.reject = 'complete';
-cfg_ra.artfctdef.threshold = data_artifact;
+cfg_ra.artfctdef.threshold.artifact = data_artifact;
 
 data_rejectartifact = ft_rejectartifact(cfg_ra, data_redefined);
 

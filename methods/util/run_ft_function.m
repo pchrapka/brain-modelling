@@ -61,7 +61,7 @@ end
 
 % check if it exists
 if p.Results.save && exist(outfile,'file') && ~p.Results.recompute
-    fprintf('%s output already exists\n',fname);
+    fprintf('%s: %s output already exists\n',mfilename,fname);
 else
     params = {};
     if ~isempty(p.Results.datain)
@@ -79,6 +79,8 @@ else
         end
         clear datain;
     end
+    
+    fprintf('%s: running %s\n',mfilename,fname);
     
     fh = str2func(fname);
     nout = nargout(fname);
