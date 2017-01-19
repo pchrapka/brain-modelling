@@ -29,14 +29,8 @@ function run_lattice_filter(script_name,datain,varargin)
 %       flag for warming up the filter with noise, this helps with filter
 %       initialization
 %   warmup_data (logical, default = false)
-%       flag for warming up the filter with simulated data, this helps with
-%       filter initialization
-%   warmup_data_ntrials (integer, default = 1)
-%       selects number of trials to pass through filter for warmup, relevant
-%       only if warmup_data = true
-%       remember that this needs to match with the number of trials
-%       specified in the filter
-%       FIXME is this parameter redundant then?
+%       flag for warming up the filter with data, this helps with filter
+%       initialization
 %   force (logical, default = false)
 %       force recomputation
 %   verbosity (integer, default = 0)
@@ -53,7 +47,6 @@ addParameter(p,'name','lf1',@ischar);
 addParameter(p,'filters',[]);
 addParameter(p,'warmup_noise',true,@islogical);
 addParameter(p,'warmup_data',false,@islogical);
-addParameter(p,'warmup_data_ntrials',1,@isnumeric);
 addParameter(p,'force',false,@islogical);
 addParameter(p,'verbosity',0,@isnumeric);
 addParameter(p,'plot_pdc',true,@islogical);
@@ -110,7 +103,7 @@ estimate_kb = cell(nfilters,1);
 % copy fields for parfor, don't want to pass another copy of datain if it's
 % a struct
 options = copyfields(p.Results,[],{...
-    'warmup_noise','warmup_data','warmup_data_ntrials','force','verbosity'});
+    'warmup_noise','warmup_data','force','verbosity'});
 
 nchannels = filters{1}.nchannels;
 
@@ -126,7 +119,7 @@ parfor k=1:nfilters
     end
     
     if p.Results.warmup_data
-        ntrials_req = ntrials + options.warmup_data_ntrials;
+        ntrials_req = 2*ntrials;
     else
         ntrials_req = ntrials;
     end
@@ -180,11 +173,11 @@ parfor k=1:nfilters
         % warmup filter with simulated data
         if options.warmup_data
             % use last
-            idx_start = options.warmup_data_ntrials + 1;
+            idx_start = ntrials + 1;
             idx_end = idx_start + ntrials - 1;
             
             idx_start_wu = 1;
-            idx_end_wu = idx_start_wu + options.warmup_data_ntrials - 1;
+            idx_end_wu = idx_start_wu + ntrials - 1;
             
             % warm up filter on some data
             warning('off','all');

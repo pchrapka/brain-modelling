@@ -20,7 +20,6 @@ switch patches_type
         nchannels = 106;
 end
 ntrials = 20;
-ntrials_warmup = ntrials;
 
 nsamples = 800; % TODO remove
 
@@ -98,7 +97,7 @@ else
     save_tag(sources,'tag',name,'outfile',outfile);
 end
 
-ntrials_max = ntrials + ntrials_warmup;
+ntrials_max = 2*ntrials;
 sources = sources(:,:,1:ntrials_max);
 
 %% run
@@ -111,7 +110,6 @@ run_lattice_filter(...
     'filters', filters,...
     'warmup_noise', true,...
     'warmup_data', true,...
-    'warmup_data_ntrials',ntrials_warmup,...
     'force',false,...
     'plot_pdc', true);
 
