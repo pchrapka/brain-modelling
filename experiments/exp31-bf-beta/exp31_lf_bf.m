@@ -86,18 +86,20 @@ setup_parfor();
 outfile = fullfile('output',[name '.mat']);
 
 if exist(outfile,'file')
-    source = loadfile(outfile);
+    sources = loadfile(outfile);
 else
     % TODO get data name
     data = loadfile(pipeline.steps{end}.sourceanalysis);
     sources = bf_get_sources(data);
     clear data;
-    ntrials_max = ntrials + ntrials_warmup;
-    sources = sources(:,:,1:ntrials_max);
+    
     % data should be [channels time trials]
     % NOTE don't put in more data than required i.e. ntrials + ntrials_warmup
     save_tag(sources,'tag',name,'outfile',outfile);
 end
+
+ntrials_max = ntrials + ntrials_warmup;
+sources = sources(:,:,1:ntrials_max);
 
 %% run
 script_name = [mfilename('fullpath') '.m'];

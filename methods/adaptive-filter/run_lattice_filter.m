@@ -48,7 +48,7 @@ function run_lattice_filter(script_name,datain,varargin)
 %% parse inputs
 p = inputParser();
 addRequired(p,'script_name',@ischar);
-addRequired(p,'datain',@(x) ismatrix(x) || ischar(x));
+addRequired(p,'datain',@(x) isnumeric(x) || ischar(x));
 addParameter(p,'name','lf1',@ischar);
 addParameter(p,'filters',[]);
 addParameter(p,'warmup_noise',true,@islogical);
@@ -82,7 +82,6 @@ setup_parfor();
 %% set up data
 
 % load data
-% nchannels = filters(1).filter.nchannels;
 if ischar(p.Results.datain)
     % from file
     datain = loadfile(p.Results.datain);
@@ -94,6 +93,9 @@ else
     data_time = now();
 end
 data_dims = size(datain);
+if length(data_dims) == 2
+    data_dims(3) = 1;
+end
 
 
 %% loop over params
@@ -110,7 +112,10 @@ estimate_kb = cell(nfilters,1);
 options = copyfields(p.Results,[],{...
     'warmup_noise','warmup_data','warmup_data_ntrials','force','verbosity'});
 
+nchannels = filters{1}.nchannels;
+
 parfor k=1:nfilters
+% for k=1:nfilters
     
     % copy sim parameters
     filter = filters{k};
@@ -129,7 +134,7 @@ parfor k=1:nfilters
     % check data size and filter size
     if data_dims(1) ~= filter.nchannels
         error('channel mismatch between data and filter %s',filter.name);
-    elseif data_dims(3) ~= ntrials_req
+    elseif data_dims(3) < ntrials_req
         fprintf('trials\n\trequired: %d\n\thave: %d\n',ntrials_req,data_dims(3));
         error('trial mismatch between data and filter %s',filter.name);
     end
@@ -162,7 +167,13 @@ parfor k=1:nfilters
             
             % run filter on noise
             warning('off','all');
-            trace.warmup(noise);
+            try
+                trace.warmup(noise);
+            catch me
+                msgText = getReport(me);
+                warning('on','all');
+                warning(msgText);
+            end
             warning('on','all');
         end
         
@@ -177,7 +188,13 @@ parfor k=1:nfilters
             
             % warm up filter on some data
             warning('off','all');
-            trace.warmup(datain(:,:,idx_start_wu:idx_end_wu));
+            try
+                trace.warmup(datain(:,:,idx_start_wu:idx_end_wu));
+            catch me
+                msgText = getReport(me);
+                warning('on','all');
+                warning(msgText);
+            end
             warning('on','all');
         else
             idx_start = 1;
@@ -186,9 +203,15 @@ parfor k=1:nfilters
         
         % run the filter on data
         warning('off','all');
-        trace.run(datain(:,:,idx_start:idx_end),...
-            'verbosity',options.verbosity,...
-            'mode','none');
+        try
+            trace.run(datain(:,:,idx_start:idx_end),...
+                'verbosity',options.verbosity,...
+                'mode','none');
+        catch me
+            msgText = getReport(me);
+            warning('on','all');
+            warning(msgText);
+        end
         warning('on','all');
         
         trace.name = trace.filter.name;
