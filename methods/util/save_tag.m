@@ -1,4 +1,20 @@
 function save_tag(data, varargin)
+%
+%   Input
+%   -----
+%   data
+%       data to be saved
+%
+%   Parameters
+%   ----------
+%   tag (string)
+%       tag for file name, default = output
+%   outpath (string)
+%       destination path for file
+%   outfile (string)
+%       file name for saved data, overrides tag and outpath
+%   overwrite (logical, default = false)
+%       flag to overwrite existing file
 
 p = inputParser();
 addParameter(p,'tag','output',@ischar);

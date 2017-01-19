@@ -21,6 +21,25 @@ if isfield(data,'avg')
     temp = data.avg.mom(data.inside);
     % convert to matrix [patches x time]
     sources = cell2mat(temp);
+elseif isfield(data,'trial')
+    if ~islogical(data.inside)
+        error('inside index is not logical');
+    end
+    ntrials = length(data.trial);
+    nsources = sum(data.inside);
+    temp = data.trial(1).mom(data.inside);
+    ntime = length(temp{1});
+    sources = zeros(nsources, ntime, ntrials);
+    
+    % copy vars for parfor
+    data_trial = data.trial;
+    data_inside = data.inside;
+    parfor i=1:ntrials
+        % get source data
+        temp = data_trial(i).mom(data_inside);
+        % convert to matrix [patches x time]
+        sources(:,:,i) = cell2mat(temp);
+    end
 else
     error('unknown data struct');
 end

@@ -3,16 +3,26 @@
 stimulus = 'std';
 subject = 6;
 deviant_percent = 10;
+% patches_type = 'aal';
+patches_type = 'aal-coarse-13';
 
 [~,data_name,~] = get_data_andrew(subject,deviant_percent);
 
-pipeline = build_pipeline_beamformer(paramsbf_sd_andrew(subject,deviant_percent,stimulus)); 
+pipeline = build_pipeline_beamformer(paramsbf_sd_andrew(...
+    subject,deviant_percent,stimulus,'patches',patches_type)); 
 pipeline.process();
 
 %% set options
-nchannels = 13;
+switch patches_type
+    case 'aal-coarse-13'
+        nchannels = 13;
+    case 'aal'
+        nchannels = 106;
+end
 ntrials = 20;
 ntrials_warmup = 5;
+
+nsamples = 800; % TODO remove
 
 order_est = 10;
 lambda = 0.99;
@@ -71,16 +81,23 @@ filters{k} = BurgVector(nchannels,order_est,'nsamples',nsamples);
 k = k+1;
 
 %% load data
+setup_parfor();
 
-% TODO get data name
-data = loadfile(pipeline.steps{end}.sourceanalysis);
-error('fix bf_get_sources to deal with multiple trials');
-sources = bf_get_sources(data);
-clear data;
-ntrials_max = ntrials + ntrials_warmup;
-sources = sources(:,:,1:ntrials_max);
-% data should be [channels time trials]
-% NOTE don't put in more data than required i.e. ntrials + ntrials_warmup
+outfile = fullfile('output',[name '.mat']);
+
+if exist(outfile,'file')
+    source = loadfile(outfile);
+else
+    % TODO get data name
+    data = loadfile(pipeline.steps{end}.sourceanalysis);
+    sources = bf_get_sources(data);
+    clear data;
+    ntrials_max = ntrials + ntrials_warmup;
+    sources = sources(:,:,1:ntrials_max);
+    % data should be [channels time trials]
+    % NOTE don't put in more data than required i.e. ntrials + ntrials_warmup
+    save_tag(sources,'tag',name,'outfile',outfile);
+end
 
 %% run
 script_name = [mfilename('fullpath') '.m'];

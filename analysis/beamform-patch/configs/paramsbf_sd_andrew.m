@@ -1,5 +1,9 @@
-function params = paramsbf_sd_andrew(subject_num,deviant_percent,stimulus)
+function params = paramsbf_sd_andrew(subject_num,deviant_percent,stimulus,varargin)
 % params for subject from Andrew's beta study
+
+p = inputParser();
+addParameter(p,'patches','aal',@(x) any(validatestring(x,{'aal','aal-coarse-13'})));
+parse(p,varargin{:});
 
 [data_file,data_name,elec_file] = get_data_andrew(subject_num,deviant_percent);
 
@@ -12,7 +16,12 @@ params_elec = Eandrew_warpgr_cm(elec_file, data_name);
 % params_eeg = EEGandrew_stddev(data_file, data_name, stimulus);
 params_eeg = EEGandrew_stddev_precomputed(data_file, data_name, stimulus);
 
-params_bf = BFPatchAAL_andrew(data_name);
+switch p.Results.patches
+    case 'aal'
+        params_bf = BFPatchAAL_andrew(data_name);
+    case 'aal-coarse-13'
+        params_bf = BFPatchAAL13_andrew(data_name);
+end
 
 %% assign configs for analysis
 params = [];
