@@ -20,7 +20,7 @@ switch patches_type
         nchannels = 106;
 end
 ntrials = 20;
-ntrials_warmup = 5;
+ntrials_warmup = ntrials;
 
 nsamples = 800; % TODO remove
 

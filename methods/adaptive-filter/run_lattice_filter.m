@@ -34,6 +34,9 @@ function run_lattice_filter(script_name,datain,varargin)
 %   warmup_data_ntrials (integer, default = 1)
 %       selects number of trials to pass through filter for warmup, relevant
 %       only if warmup_data = true
+%       remember that this needs to match with the number of trials
+%       specified in the filter
+%       FIXME is this parameter redundant then?
 %   force (logical, default = false)
 %       force recomputation
 %   verbosity (integer, default = 0)
