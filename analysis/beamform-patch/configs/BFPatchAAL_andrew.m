@@ -2,7 +2,6 @@ function cfg = BFPatchAAL_andrew(data_name)
 % BFPatchAAL
 
 cfg = [];
-cfg.name = data_name(1:3);
 cfg.cortical_patches_name = 'aal';
 cfg.cov_avg = 'yes';
 cfg.compute_lcmv_patch_filters = {'mode','single','fixedori',true}; % for saving mem
@@ -17,6 +16,10 @@ switch data_name(1:3)
     otherwise
         warning('update bad EEG channels for ft_sourceanalysis in %s',mfilename);
 end
+
+cfg.name = sprintf('%s-%s',...
+    cfg.cortical_patches_name,...
+    cfg.ft_sourceanalysis.method);
 
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 save(fullfile(srcdir, [strrep(mfilename,'_','-') '.mat']),'cfg');
