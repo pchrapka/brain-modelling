@@ -78,7 +78,7 @@ setup_parfor();
 if ischar(p.Results.datain)
     % from file
     datain = loadfile(p.Results.datain);
-    if ~ismatrix(datain)
+    if ~isnumeric(datain)
         error('data in .mat file must be a matrix');
     end
     data_time = get_timestamp(p.Results.datain);
@@ -249,7 +249,7 @@ if p.Results.plot_pdc
     for k=1:nfilters
         
         % copy params
-        filter = filters(k);
+        filter = filters{k};
         
         % set up filter slug
         slug_filter = filter.name;
@@ -263,7 +263,7 @@ if p.Results.plot_pdc
         % save
         drawnow;
         save_fig_exp(script_name,...
-            'tag',sprintf('pdc-%s-%s',p.Results.data_name,slug_filter));
+            'tag',sprintf('pdc-%s',slug_filter));
         close(gcf);
     end
 end
