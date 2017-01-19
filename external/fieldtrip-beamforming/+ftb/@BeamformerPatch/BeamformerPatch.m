@@ -157,16 +157,7 @@ classdef BeamformerPatch < ftb.Beamformer
                 % filter
                 if obj.check_file(obj.eeg.timelock)
                     timelock = ftb.util.loadvar(eegObj.timelock);
-                    
-                    [out_folder,~,~] = fileparts(obj.eeg.timelock);
-                    data = [];
-                    fake_file = fullfile(out_folder, 'fake.mat');
-                    save(fake_file,'data');
-                    
-                    obj.eeg.load_file('definetrial',fake_file);
-                    obj.eeg.load_file('redefinetrial',fake_file);
-                    obj.eeg.load_file('preprocessed',fake_file);
-                    
+                                        
                     if isfield(timelock, 'cov') && length(size(timelock.cov))==3
                         ntrials = size(timelock.cov,1);
                     elseif isfield(timelock, 'trial') && length(size(timelock.trial))==3
