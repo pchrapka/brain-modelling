@@ -94,18 +94,26 @@ else
     
     % data should be [channels time trials]
     % NOTE don't put in more data than required i.e. ntrials + ntrials_warmup
-    save_tag(sources,'tag',name,'outfile',outfile);
+    save_tag(sources,'outfile',outfile);
 end
 
+% check max trials
+% don't put in more data than required i.e. ntrials + ntrials_warmup
 ntrials_max = 2*ntrials;
-sources = sources(:,:,1:ntrials_max);
+outfile = fullfile('output',sprintf('%s-trials%d.mat',name,ntrials_max));
+
+if ~exist(outfile,'file')
+    sources = sources(:,:,1:ntrials_max);
+    save_tag(sources,'outfile',outfile);
+    clear sources
+end
 
 %% run
 script_name = [mfilename('fullpath') '.m'];
 
 run_lattice_filter(...
     script_name,...
-    sources,...
+    outfile,...
     'name',name,...
     'filters', filters,...
     'warmup_noise', true,...
