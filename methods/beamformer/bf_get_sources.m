@@ -11,7 +11,7 @@ function sources = bf_get_sources(data)
 %   Output
 %   ------
 %   sources (matrix)
-%       source matrix of size [sources time]
+%       source matrix of size [sources time] or [source time trials]
 
 if isfield(data,'avg')
     if ~islogical(data.inside)

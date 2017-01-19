@@ -23,7 +23,7 @@ addRequired(p,'data_name',@ischar);
 addRequired(p,'stimulus',@(x) any(validatestring(x,{'std','odd'})));
 parse(p,dataset,data_name,stimulus);
 
-dataset_name = [stimulus '-' data_name(1:3)];
+dataset_name = [stimulus '-' data_name];
 
 params_eeg = [];
 params_eeg.name = dataset_name;
