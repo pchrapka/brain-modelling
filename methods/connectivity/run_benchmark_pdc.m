@@ -269,17 +269,6 @@ end
 
 end
 
-function result = rc2pdc(Kf,Kb)
-
-A2 = -rcarrayformat(rc2ar(Kf,Kb),'format',3);
-nchannels = size(A2,1);
-pf = eye(nchannels);
-result = pdc(A2,pf,'metric','euc');
-result.SS = ss_alg(A2, pf, 128);
-result.coh = coh_alg(result.SS);
-
-end
-
 function plot_pdc(pdc_result,name)
 flg_print = [1 0 0 0 0 0 0];
 fs = 1;
