@@ -15,7 +15,7 @@ function plot_pdc_dynamic_from_lf_files(files,varargin)
 p = inputParser();
 addRequired(p,'files',@(x) ischar(x) || iscell(x))
 % addParameter(p,'type','pdc-dynamic',@(x) any(validatestring(x,{'pdc-dynamic'})));
-parse(files,varargin{:});
+parse(p,files,varargin{:});
 
 if ischar(p.Results.files)
     files = {p.Results.files};
@@ -28,6 +28,7 @@ for i=1:length(files)
     % create pdc output file name
     [path,name,~] = fileparts(files{i});
     outfile_pdc = fullfile(path,sprintf('%s-pdc-dynamic.mat',name));
+    fprintf('plotting pdc for %s\n',name);
     
     % check freshness
     if exist(outfile_pdc,'file')

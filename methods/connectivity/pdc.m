@@ -58,18 +58,18 @@ Af = A_to_f(A, nFreqs);
 
 % Variables initialization
 pdc_result = zeros(nChannels,nChannels,nFreqs);
-disp('----------------------------------------------------------------------');
-switch lower(metric)
-    case {'euc'}
-        disp('                       Original PDC estimation')
-    case {'diag'}
-        disp('                      Generalized PDC estimation')
-    case {'info'}
-        disp('                     Information PDC estimation')
-    otherwise
-        error('Unknown metric.')
-end;
-disp('======================================================================');
+% disp('----------------------------------------------------------------------');
+% switch lower(metric)
+%     case {'euc'}
+%         disp('                       Original PDC estimation')
+%     case {'diag'}
+%         disp('                      Generalized PDC estimation')
+%     case {'info'}
+%         disp('                     Information PDC estimation')
+%     otherwise
+%         error('Unknown metric.')
+% end;
+% disp('======================================================================');
 
 % gamma = bigautocorr(x, p);
 % omega = kron(inv(gamma), pf);

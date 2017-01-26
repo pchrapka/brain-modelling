@@ -43,13 +43,17 @@ result = rc2pdc(squeeze(Kf(1,:,:,:)),squeeze(Kb(1,:,:,:)));
 result_pdc = zeros([nsamples size(result.pdc)]);
 if options.specden
     result_SS = zeros([nsamples size(result.SS)]);
+else
+    result_SS = zeros(nsamples,1);
 end
 if options.coherence
     result_coh = zeros([nsamples size(result.coh)]);
+else
+    result_coh = zeros(nsamples,1);
 end
 
-% TODO Set this up as parfor
-for i=1:nsamples
+% convert each sample
+parfor i=1:nsamples
     
     fprintf('sample %d/%d\n',i,nsamples);
     
@@ -79,10 +83,10 @@ end
 % save results
 result.pdc = result_pdc;
 if options.specden
-    result.SS = result_pdc;
+    result.SS = result_SS;
 end
 if options.coherence
-    result.coh = result_pdc;
+    result.coh = result_coh;
 end
 
 end
