@@ -35,8 +35,8 @@ name = sprintf('lf-bf-ch%d-%s-%s',nchannels,data_name,stimulus);
 k=1;
 filters = {};
 
-filters{k} = MCMTQRDLSL1(nchannels,order_est,ntrials,lambda);
-k = k+1;
+% filters{k} = MCMTQRDLSL1(nchannels,order_est,ntrials,lambda);
+% k = k+1;
 
 filters{k} = MQRDLSL1(nchannels,order_est,lambda);
 k = k+1;
@@ -61,23 +61,23 @@ k = k+1;
 filters{k} = MCMTLOCCD_TWL2(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gamma);
 k = k+1;
 
-filters{k} = BurgVectorWindow(nchannels,order_est,'nwindow',30);
-k = k+1;
-
-filters{k} = BurgVectorWindow(nchannels,order_est,'nwindow',60);
-k = k+1;
-
-filters{k} = BurgVectorWindow(nchannels,order_est,'nwindow',60,'ntrials',ntrials);
-k = k+1;
-
-filters{k} = BurgVector(nchannels,order_est,'nsamples',nsamples/4);
-k = k+1;
-
-filters{k} = BurgVector(nchannels,order_est,'nsamples',nsamples/2);
-k = k+1;
-
-filters{k} = BurgVector(nchannels,order_est,'nsamples',nsamples);
-k = k+1;
+% filters{k} = BurgVectorWindow(nchannels,order_est,'nwindow',30);
+% k = k+1;
+% 
+% filters{k} = BurgVectorWindow(nchannels,order_est,'nwindow',60);
+% k = k+1;
+% 
+% filters{k} = BurgVectorWindow(nchannels,order_est,'nwindow',60,'ntrials',ntrials);
+% k = k+1;
+% 
+% filters{k} = BurgVector(nchannels,order_est,'nsamples',nsamples/4);
+% k = k+1;
+% 
+% filters{k} = BurgVector(nchannels,order_est,'nsamples',nsamples/2);
+% k = k+1;
+% 
+% filters{k} = BurgVector(nchannels,order_est,'nsamples',nsamples);
+% k = k+1;
 
 %% load data
 setup_parfor();
@@ -87,8 +87,9 @@ outfile = fullfile('output',[name '.mat']);
 if exist(outfile,'file')
     sources = loadfile(outfile);
 else
-    % TODO get data name
+    % load data
     data = loadfile(pipeline.steps{end}.sourceanalysis);
+    % extract data
     sources = bf_get_sources(data);
     clear data;
     
