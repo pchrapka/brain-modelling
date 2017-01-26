@@ -126,4 +126,11 @@ outfiles = run_lattice_filter(...
 
 plot_pdc_dynamic_from_lf_files(outfiles);
 
+for i=1:length(outfiles)
+    data = loadfile(outfiles{i});
+    h = figure;
+    set(h,'NumberTitle','off','MenuBar','none', 'Name', outfiles{i} );
+    plot_rc_dynamic(data.estimate.Kf);
+end
+
 
