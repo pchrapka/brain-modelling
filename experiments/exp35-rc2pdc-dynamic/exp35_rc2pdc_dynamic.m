@@ -20,6 +20,9 @@ data_vrc = vrc_gen.generate('ntrials',ntrials);
 
 vrc_data_file = loadfile(vrc_gen.get_file());
 
+%% plot dynamic rc
+plot_rc_dynamic(vrc_data_file.true.Kf);
+
 %% dynamic pdc
 npoints = size(vrc_data_file.signal,2);
 result = rc2pdc_dynamic(...
