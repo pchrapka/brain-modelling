@@ -122,17 +122,7 @@ outfiles = run_lattice_filter(...
     'plot_pdc', false);
 
 %% plot
-for i=1:length(outfiles)
-    data = loadfile(outfiles{i});
-    
-    % convert to pdc
-    result = rc2pdc_dynamic(data.estimate.Kf,data.estimate.Kb,'metric','euc');
-    
-    % plot
-    h = figure;
-    set(h,'NumberTitle','off','MenuBar','none', 'Name', outfiles{i} );
-    plot_pdc_dynamic(result);
-    
-end
+
+plot_pdc_dynamic_from_lf_files(outfiles);
 
 
