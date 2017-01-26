@@ -67,7 +67,7 @@ k = k+1;
 filters{k} = BurgVectorWindow(nchannels,order_est,'nwindow',60);
 k = k+1;
 
-filters{k} = BurgVectorWindow(nchannels,order_est,'nwindow',60,'ntrials',5);
+filters{k} = BurgVectorWindow(nchannels,order_est,'nwindow',60,'ntrials',ntrials);
 k = k+1;
 
 filters{k} = BurgVector(nchannels,order_est,'nsamples',nsamples/4);
@@ -108,10 +108,10 @@ if ~exist(outfile,'file')
     clear sources
 end
 
-%% run
+%% run lattice filters
 script_name = [mfilename('fullpath') '.m'];
 
-run_lattice_filter(...
+outfiles = run_lattice_filter(...
     script_name,...
     outfile,...
     'name',name,...
@@ -119,6 +119,6 @@ run_lattice_filter(...
     'warmup_noise', true,...
     'warmup_data', true,...
     'force',false,...
-    'plot_pdc', true);
+    'plot_pdc', false);
 
 
