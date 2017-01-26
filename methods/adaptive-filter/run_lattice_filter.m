@@ -1,4 +1,4 @@
-function run_lattice_filter(script_name,datain,varargin)
+function outfiles = run_lattice_filter(script_name,datain,varargin)
 %
 %   Input
 %   -----
@@ -38,6 +38,12 @@ function run_lattice_filter(script_name,datain,varargin)
 %
 %   plot_pdc (logical, default = true)
 %       flag for plotting the pdc for each filter
+%
+%   Output
+%   ------
+%   outfiles (cell array)
+%       cell array of file names, files contain filtered data for each
+%       filter, same order as filters parameter
 
 %% parse inputs
 p = inputParser();
@@ -106,6 +112,7 @@ options = copyfields(p.Results,[],{...
     'warmup_noise','warmup_data','force','verbosity'});
 
 nchannels = filters{1}.nchannels;
+outfiles = cell(nfilters,1);
 
 parfor k=1:nfilters
 % for k=1:nfilters
@@ -136,6 +143,7 @@ parfor k=1:nfilters
     slug_filter = filter.name;
     slug_filter = strrep(slug_filter,' ','-');
     outfile = fullfile(outdir,[slug_filter '.mat']);
+    outfiles{k} = outfile;
     
     fresh = false;
     
@@ -277,17 +285,6 @@ if any(large_error > 0)
         end
     end
 end
-
-end
-
-function result = rc2pdc(Kf,Kb)
-
-A2 = -rcarrayformat(rc2ar(Kf,Kb),'format',3);
-nchannels = size(A2,1);
-pf = eye(nchannels);
-result = pdc(A2,pf,'metric','euc');
-result.SS = ss_alg(A2, pf, 128);
-result.coh = coh_alg(result.SS);
 
 end
 
