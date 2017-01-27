@@ -1,6 +1,11 @@
 function save_fig_exp(mfilename,varargin)
 %SAVE_FIG_EXP save figure from an experiment
-%   SAVE_FIG_EXP(...) save figure from an experiment
+%   SAVE_FIG_EXP(mfilename,...) save figure from an experiment
+%
+%   Input
+%   -----
+%   mfilename (string)
+%       filename of m-file, including path
 %
 %   Parameters
 %   ----------

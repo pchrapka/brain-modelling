@@ -1,4 +1,4 @@
-%% exp31_lf_bf
+%% exp31_lf_bf_sparse_gamma
 
 stimulus = 'std';
 subject = 6;
@@ -31,53 +31,12 @@ verbosity = 0;
 name = sprintf('lf-bf-ch%d-%s-%s',nchannels,data_name,stimulus);
 
 %% set up benchmark params
+gammas = linspace(1,30,10);
 
-k=1;
 filters = {};
-
-% filters{k} = MCMTQRDLSL1(nchannels,order_est,ntrials,lambda);
-% k = k+1;
-
-filters{k} = MQRDLSL1(nchannels,order_est,lambda);
-k = k+1;
-
-filters{k} = MQRDLSL2(nchannels,order_est,lambda);
-k = k+1;
-
-filters{k} = MQRDLSL3(nchannels,order_est,lambda);
-k = k+1;
-
-sigma = 10^(-1);
-gamma = sqrt(2*sigma^2*nsamples*log(nchannels));
-filters{k} = MLOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma);
-k = k+1;
-
-filters{k} = MLOCCD_TWL(nchannels,order_est,'lambda',lambda,'gamma',gamma*2);
-k = k+1;
-
-filters{k} = MLOCCD_TWL2(nchannels,order_est,'lambda',lambda,'gamma',gamma);
-k = k+1;
-
-filters{k} = MCMTLOCCD_TWL2(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gamma);
-k = k+1;
-
-% filters{k} = BurgVectorWindow(nchannels,order_est,'nwindow',30);
-% k = k+1;
-% 
-% filters{k} = BurgVectorWindow(nchannels,order_est,'nwindow',60);
-% k = k+1;
-% 
-% filters{k} = BurgVectorWindow(nchannels,order_est,'nwindow',60,'ntrials',ntrials);
-% k = k+1;
-% 
-% filters{k} = BurgVector(nchannels,order_est,'nsamples',nsamples/4);
-% k = k+1;
-% 
-% filters{k} = BurgVector(nchannels,order_est,'nsamples',nsamples/2);
-% k = k+1;
-% 
-% filters{k} = BurgVector(nchannels,order_est,'nsamples',nsamples);
-% k = k+1;
+for k=1:length(gammas)    
+    filters{k} = MCMTLOCCD_TWL2(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gammas(k));
+end
 
 %% load data
 setup_parfor();
@@ -127,12 +86,17 @@ outfiles = run_lattice_filter(...
 % plot_pdc_dynamic_from_lf_files(outfiles);
 
 for i=1:length(outfiles)
+    % load
     data = loadfile(outfiles{i});
-    h = figure;
     [~,name,~] = fileparts(outfiles{i});
+    
+    % plot
+    h = figure;
     set(h,'NumberTitle','off','MenuBar','none', 'Name', name );
     set(h, 'Position', [50, 50, 1100, 900]);
     plot_rc_dynamic(data.estimate.Kf);
+    
+    % save
     save_fig_exp(script_name,'tag', [name '-rc-dynamic']);
 end
 
