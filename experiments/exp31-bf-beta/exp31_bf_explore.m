@@ -41,7 +41,7 @@ cfg.viewmode = 'vertical';
 ft_databrowser(cfg,data);
 
 %% compute phase-locked avg
-avg = zeros(size(data.trial{1});
+avg = zeros(size(data.trial{1}));
 for i=1:ntrials
     avg = avg + data.trial{i};
 end
