@@ -124,7 +124,7 @@ outfiles = run_lattice_filter(...
 
 %% plot
 
-plot_pdc_dynamic_from_lf_files(outfiles);
+% plot_pdc_dynamic_from_lf_files(outfiles);
 
 for i=1:length(outfiles)
     data = loadfile(outfiles{i});

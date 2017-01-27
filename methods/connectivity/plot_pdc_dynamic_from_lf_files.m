@@ -43,6 +43,7 @@ for i=1:length(files)
         
         % convert to pdc
         result = rc2pdc_dynamic(data.estimate.Kf,data.estimate.Kb,'metric','euc');
+        save_parfor(outfile_pdc,result);
     else
         result = loadfile(outfile_pdc);
     end
