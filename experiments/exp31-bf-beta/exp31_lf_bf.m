@@ -129,7 +129,8 @@ outfiles = run_lattice_filter(...
 for i=1:length(outfiles)
     data = loadfile(outfiles{i});
     h = figure;
-    set(h,'NumberTitle','off','MenuBar','none', 'Name', outfiles{i} );
+    [~,name,~] = fileparts(outfiles{i});
+    set(h,'NumberTitle','off','MenuBar','none', 'Name', name );
     plot_rc_dynamic(data.estimate.Kf);
 end
 
