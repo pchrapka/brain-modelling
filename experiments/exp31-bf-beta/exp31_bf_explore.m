@@ -14,8 +14,17 @@ pipeline.process();
 
 %%
 
-% eeg = loadfile(pipeline.steps{end-1}.preprocessed);
+eeg = loadfile('output/std-s06-10/ft_rejectartifact.mat');
 sources = loadfile(pipeline.steps{end}.sourceanalysis);
+lf = loadfile(pipeline.steps{end}.lf.leadfield);
 
 % convert source analysis to EEG data structure
-data = [];
+data = copyfields(eeg,[],{'fsample','trialinfo','sampleinfo'});
+data.label = lf.filter_label(lf.inside);
+for i=1:ntrials
+    data.trial{i} = cell2mat(sources.trial(i).mom(sources.inside));
+    data.time{i} = source.time;
+end
+
+%%
+ft_databrowser([],data);
