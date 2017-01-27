@@ -39,3 +39,33 @@ end
 cfg = [];
 cfg.viewmode = 'vertical';
 ft_databrowser(cfg,data);
+
+%% compute phase-locked avg
+avg = zeros(size(data.trial{1});
+for i=1:ntrials
+    avg = avg + data.trial{i};
+end
+avg = avg/ntrials;
+
+data_phaselocked = data;
+data_phaselocked.trial = {};
+data_phaselocked.trial{1} = avg;
+data_phaselocked.time = {};
+data_phaselocked.time{1} = data.time{1};
+
+%%
+cfg = [];
+cfg.viewmode = 'vertical';
+ft_databrowser(cfg,data_phaselocked);
+
+%% compute induced response
+data_induced = data;
+for i=1:ntrials
+    data_induced.trial{i} = data.trial{i} - avg;
+end
+
+%%
+cfg = [];
+cfg.viewmode = 'vertical';
+ft_databrowser(cfg,data_induced);
+
