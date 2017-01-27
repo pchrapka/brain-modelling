@@ -47,11 +47,11 @@ for i=1:ntrials
 end
 avg = avg/ntrials;
 
-data_phaselocked = data;
-data_phaselocked.trial = {};
+data_phaselocked = copyfields(data,[],{'fsamples','label'});
 data_phaselocked.trial{1} = avg;
-data_phaselocked.time = {};
 data_phaselocked.time{1} = data.time{1};
+data_phaselocked.trialinfo = data.trialinfo(1);
+data_phaselocked.sampleinfo = data.sampleinfo(1,:);
 
 %%
 cfg = [];
