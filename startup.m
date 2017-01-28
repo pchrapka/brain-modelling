@@ -9,6 +9,7 @@ addpath(fullfile(pwd,'..','data-headmodel','mni152'));
 %% add external packages
 addpath(fullfile(pwd,'external'));
 addpath(fullfile(pwd,'external','subaxis'));
+addpath(fullfile(pwd,'external','kronm'));
 addpath(fullfile(pwd,'external','tsa'));
 addpath(fullfile(pwd,'external','lumberjack'));
 addpath(fullfile(pwd,'external','export_fig'));
