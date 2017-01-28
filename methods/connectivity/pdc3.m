@@ -1,4 +1,4 @@
-function c = pdc2(A,pf,varargin)
+function c=pdc3(A,pf,varargin)
 
 %Compute connectivity measure given by "option" from series j-->i.
 %
@@ -74,93 +74,47 @@ pdc_result = zeros(nChannels,nChannels,nFreqs);
 % gamma = bigautocorr(x, p);
 % omega = kron(inv(gamma), pf);
 % omega_evar = 2*pinv(Dup(nChannels))*kron(pf, pf)*pinv(Dup(nChannels)).';
-
-for ff = 1:nFreqs,
-    %f = (ff-1)/(2*nFreqs); %Corrected 7/25/2011, f starting at 0 rad/s.
-    %Ca = fCa(f, p, nChannels);
-    %omega2 = Ca*omega*Ca';
-    %L = fChol(omega2);
     
-    a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
-    a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)
-    
-    for i = 1:nChannels,
-        for j = 1:nChannels,
+for i = 1:nChannels,
+    for j = 1:nChannels,
+        
+        Iij = fIij(i, j, nChannels);
+        Ij = fIj(j, nChannels);
+        
+        for ff = 1:nFreqs,
+            %f = (ff-1)/(2*nFreqs); %Corrected 7/25/2011, f starting at 0 rad/s.
+            %Ca = fCa(f, p, nChannels);
+            %omega2 = Ca*omega*Ca';
+            %L = fChol(omega2);
             
-            %Iij = fIij(i, j, nChannels);
-            %Ij = fIj(j, nChannels);
+            a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
+            a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)
             %For diag or info case, include evar in the expression'
             switch lower(metric)
                 case {'euc'}
-                    %Iije = Iij;
-                    %Ije = Ij;
-                    
-                    Q = cell(1,2);
-                    Q{2} = eye(2);
-                    Q{1} = fIij(i,j,nChannels);
-                    num = a.'*kronm(Q,a);
-                    
-                    Q = cell(1,3);
-                    Q{3} = eye(2);
-                    Q{2} = fIj(j,nChannels);
-                    Q{1} = eye(nChannels);
-                    den = a.'*kronm(Q,a);
+                    Iije = Iij;
+                    Ije = Ij;
                     
                 case {'diag'}
                     evar_d = mdiag(pf);
-                    %evar_d_big = kron(eye(2*nChannels), evar_d);
-                    %Iije = Iij*pinv(evar_d_big);
-                    %Ije = Ij*pinv(evar_d_big);
-                    
-                    R = cell(1,2);
-                    R{2} = pinv(eye(2*nChannels));
-                    R{1} = pinv(evar_d);
-                    r = kronm(R,a);
-                    Q = cell(1,2);
-                    Q{2} = eye(2);
-                    Q{1} = fIij(i,j,nChannels);
-                    num = a.'*kronm(Q,r);
-                    
-                    Q = cell(1,3);
-                    Q{3} = eye(2);
-                    Q{2} = fIj(j,nChannels);
-                    Q{1} = eye(nChannels);
-                    den = a.'*kronm(Q,r);
-                    
+                    evar_d_big = kron(eye(2*nChannels), evar_d);
+                    Iije = Iij*pinv(evar_d_big);
+                    Ije = Ij*pinv(evar_d_big);
                     
                 case {'info'}
                     evar_d = mdiag(pf);
-                    %evar_d_big = kron(eye(2*nChannels), evar_d);
-                    %Iije = Iij*pinv(evar_d_big);
+                    evar_d_big = kron(eye(2*nChannels), evar_d);
+                    Iije = Iij*pinv(evar_d_big);
                     
-                    %evar_big = kron(eye(2*nChannels), pf);
-                    %Ije = Ij*pinv(evar_big)*Ij;
-                    
-                    R = cell(1,2);
-                    R{2} = pinv(eye(2*nChannels));
-                    R{1} = pinv(evar_d);
-                    r = kronm(R,a);
-                    Q = cell(1,2);
-                    Q{2} = eye(2);
-                    Q{1} = fIij(i,j,nChannels);
-                    num = a.'*kronm(Q,r);
-                    
-                    S = cell(1,2);
-                    S{2} = pinv(eye(2*nChannels));
-                    S{1} = pinv(pf);
-                    s = kronm(S,a);
-                    Q = cell(1,3);
-                    Q{3} = eye(2);
-                    Q{2} = fIj(j,nChannels);
-                    Q{1} = eye(nChannels);
-                    den = a.'*kronm(Q,s);
+                    evar_big = kron(eye(2*nChannels), pf);
+                    Ije = Ij*pinv(evar_big)*Ij;
                     
                 otherwise
                     error('Unknown metric.')
             end;
             
-            %num = a.'*Iije*a;
-            %den = a.'*Ije*a;
+            num = a.'*Iije*a;
+            den = a.'*Ije*a;
             pdc_result(i, j, ff) = num/den;
             % If alpha == 0, do not calculate statistics for faster PDC
             % computation.
@@ -227,22 +181,22 @@ end
 % end;
 
 %==========================================================================
-function Iij = fIij(i, j, n)
+function c = fIij(i, j, n)
 %'''Returns Iij of the formula'''
 Iij = zeros(1,n^2);
 Iij(n*(j-1)+i) = 1;
 Iij = diag(Iij);
-% c = kron(eye(2), Iij);
+c = kron(eye(2), Iij);
 end
 
 %==========================================================================
-function Ij =  fIj(j, n)
+function c =  fIj(j, n)
 %'''Returns Ij of the formula'''
 Ij = zeros(1,n);
 Ij(j) = 1;
 Ij = diag(Ij);
-%Ij = kron(Ij, eye(n));
-%c = kron(eye(2), Ij);
+Ij = kron(Ij, eye(n));
+c = kron(eye(2), Ij);
 end
 
 %==========================================================================
