@@ -196,7 +196,8 @@ function c =  fIj(j, n)
 Ij = zeros(1,n);
 Ij(j) = 1;
 Ij = diag(Ij);
-Ij = kron(Ij, eye(n));
+Ij = kroneye(Ij,n);
+% Ij = kron(Ij, eye(n));
 c = blkdiag(Ij,Ij);
 % c = kron(eye(2), Ij);
 end

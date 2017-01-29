@@ -1,4 +1,4 @@
-function K = kron_test(A,n)
+function K = kroneye(A,n)
 % computes kron(A,eye(n))
 
 C = cell(n,1);
