@@ -75,52 +75,83 @@ pdc_result = zeros(nChannels,nChannels,nFreqs);
 % omega = kron(inv(gamma), pf);
 % omega_evar = 2*pinv(Dup(nChannels))*kron(pf, pf)*pinv(Dup(nChannels)).';
 
-for ff = 1:nFreqs,
-    %f = (ff-1)/(2*nFreqs); %Corrected 7/25/2011, f starting at 0 rad/s.
-    %Ca = fCa(f, p, nChannels);
-    %omega2 = Ca*omega*Ca';
-    %L = fChol(omega2);
-    
-    a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
-    a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)
-    
-    for i = 1:nChannels,
-        for j = 1:nChannels,
-            
-            Iij = fIij(i, j, nChannels);
-            Ij = fIj(j, nChannels);
-            %For diag or info case, include evar in the expression'
-            switch lower(metric)
-                case {'euc'}
-                    Iije = Iij;
-                    Ije = Ij;
+switch lower(metric)
+    case {'euc'}
+        
+        if verLessThan('matlab','7.15')
+            % 2012
+            fIij_func = @fIij_blkdiag;
+            fIj_func = @fIj_kron_blkdiag;
+        else
+            % 2015a
+            fIij_func = @fIij_kron;
+            fIj_func = @fIj_kron;
+        end
+        
+        for i = 1:nChannels,
+            for j = 1:nChannels,
+                
+                Iije = fIij_func(i, j, nChannels);
+                Ije = fIj_func(j, nChannels);
+                
+                for ff = 1:nFreqs,
                     
-                case {'diag'}
-                    evar_d = mdiag(pf);
-                    evar_d_big = kron(eye(2*nChannels), evar_d);
-                    Iije = Iij*pinv(evar_d_big);
-                    Ije = Ij*pinv(evar_d_big);
+                    a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
+                    a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)
                     
-                case {'info'}
-                    evar_d = mdiag(pf);
-                    evar_d_big = kron(eye(2*nChannels), evar_d);
-                    Iije = Iij*pinv(evar_d_big);
-                    
-                    evar_big = kron(eye(2*nChannels), pf);
-                    Ije = Ij*pinv(evar_big)*Ij;
-                    
-                otherwise
-                    error('Unknown metric.')
+                    num = a.'*Iije*a;
+                    den = a.'*Ije*a;
+                    pdc_result(i, j, ff) = num/den;
+                end;
             end;
-            
-            num = a.'*Iije*a;
-            den = a.'*Ije*a;
-            pdc_result(i, j, ff) = num/den;
-            % If alpha == 0, do not calculate statistics for faster PDC
-            % computation.
         end;
-    end;
-end;
+        
+    case {'diag','info'}
+        pinv_eye = pinv(eye(2*nChannels));
+        evar_d = mdiag(pf);
+        pinv_evar_d = pinv(evar_d);
+        if isequal(lower(metric),'info')
+            pinv_pf = pinv(pf);
+        end
+        
+        for ff = 1:nFreqs,
+            
+            a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
+            a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)
+            
+            r = kronvec(pinv_eye,pinv_evar_d,a);
+            if isequal(lower(metric),'info')
+                r2 = kronvec(pinv_eye,pinv_pf,a);
+            end
+            
+            for i = 1:nChannels,
+                for j = 1:nChannels,
+                    
+                    Iij = fIij(i, j, nChannels);
+                    Ij = fIj(j, nChannels);
+                    
+                    %For diag or info case, include evar in the expression'
+                    switch lower(metric)
+                        
+                        case {'diag'}
+                            
+                            num = a.'*kronvec(eye(2),Iij,r);
+                            den = a.'*kronvec(blkdiag(Ij,Ij),eye(nChannels),r);
+                            
+                            
+                        case {'info'}
+                            
+                            num = a.'*kronvec(eye(2),Iij,r);
+                            den = a.'*kronvec(blkdiag(Ij,Ij),eye(nChannels),r2);
+                            
+                    end;
+                    
+                    pdc_result(i, j, ff) = num/den;
+                end;
+            end;
+        end;
+        
+end
 
 c.pdc=pdc_result;
 c.metric=metric;
@@ -181,22 +212,44 @@ end
 % end;
 
 %==========================================================================
-function c = fIij(i, j, n)
+function Iij = fIij(i, j, n)
 %'''Returns Iij of the formula'''
 Iij = zeros(1,n^2);
 Iij(n*(j-1)+i) = 1;
 Iij = diag(Iij);
-c = kron(eye(2), Iij);
+end
+
+function c = fIij_kron(i, j, n)
+%'''Returns Iij of the formula'''
+c = kron(eye(2), fIij(i,j,n));
+end
+
+function c = fIij_blkdiag(i, j, n)
+%'''Returns Iij of the formula'''
+Iij = fIij(i,j,n);
+c = blkdiag(Iij,Iij);
 end
 
 %==========================================================================
-function c =  fIj(j, n)
+function Ij =  fIj(j, n)
 %'''Returns Ij of the formula'''
 Ij = zeros(1,n);
 Ij(j) = 1;
 Ij = diag(Ij);
+end
+
+function c =  fIj_kron(j, n)
+%'''Returns Ij of the formula'''
+Ij = fIj(j,n);
 Ij = kron(Ij, eye(n));
 c = kron(eye(2), Ij);
+end
+
+function c =  fIj_kron_blkdiag(j, n)
+%'''Returns Ij of the formula'''
+Ij = fIj(j,n);
+Ij = kron(Ij, eye(n));
+c = blkdiag(Ij, Ij);
 end
 
 %==========================================================================

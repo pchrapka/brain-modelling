@@ -75,18 +75,17 @@ pdc_result = zeros(nChannels,nChannels,nFreqs);
 % omega = kron(inv(gamma), pf);
 % omega_evar = 2*pinv(Dup(nChannels))*kron(pf, pf)*pinv(Dup(nChannels)).';
 
-if verLessThan('matlab','7.15')
-    % 2012
-    fIij_func = @fIij_blkdiag;
-    fIj_func = @fIj_kron_blkdiag;
-else
-    % 2015a
-    fIij_func = @fIij_kron;
-    fIj_func = @fIj_kron;
-end
-
 switch lower(metric)
     case {'euc'}
+        if verLessThan('matlab','7.15')
+            % 2012
+            fIij_func = @fIij_blkdiag;
+            fIj_func = @fIj_kron_blkdiag;
+        else
+            % 2015a
+            fIij_func = @fIij_kron;
+            fIj_func = @fIj_kron;
+        end
         
         for i = 1:nChannels,
             for j = 1:nChannels,
