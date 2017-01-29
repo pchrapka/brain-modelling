@@ -38,20 +38,20 @@ telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('pdc time: %e\n',avgtime);
 
-% pdc2 - uses kronm, slow with reshape operations
-% tstart = tic;
-% for k=1:niter
-%     Kftemp = squeeze(vrc_data_file.true.Kf(1,:,:,:));
-%     Kbtemp = squeeze(vrc_data_file.true.Kb(1,:,:,:));
-%     A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
-%     
-%     nchannels = size(A2,1);
-%     pf = eye(nchannels);
-%     out = pdc2(A2,pf,'metric','euc');
-% end
-% telapsed = toc(tstart);
-% avgtime = telapsed/niter;
-% fprintf('pdc2 time: %e\n',avgtime);
+%pdc2 - uses kronm, slow with reshape operations
+tstart = tic;
+for k=1:niter
+    Kftemp = squeeze(vrc_data_file.true.Kf(1,:,:,:));
+    Kbtemp = squeeze(vrc_data_file.true.Kb(1,:,:,:));
+    A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
+    
+    nchannels = size(A2,1);
+    pf = eye(nchannels);
+    out = pdc2(A2,pf,'metric','euc');
+end
+telapsed = toc(tstart);
+avgtime = telapsed/niter;
+fprintf('pdc2 time: %e\n',avgtime);
 
 % pdc3 - switched freq to inner loop
 tstart = tic;
@@ -84,6 +84,23 @@ end
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('pdc4 time: %e\n',avgtime);
+
+% pdc5
+%   - freq outer loop
+%   - used kronvec
+tstart = tic;
+for k=1:niter
+    Kftemp = squeeze(vrc_data_file.true.Kf(1,:,:,:));
+    Kbtemp = squeeze(vrc_data_file.true.Kb(1,:,:,:));
+    A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
+    
+    nchannels = size(A2,1);
+    pf = eye(nchannels);
+    out = pdc5(A2,pf,'metric','euc');
+end
+telapsed = toc(tstart);
+avgtime = telapsed/niter;
+fprintf('pdc5 time: %e\n',avgtime);
 
 
 
