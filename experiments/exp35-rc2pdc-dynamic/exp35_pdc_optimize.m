@@ -33,89 +33,140 @@ pf = eye(nchannels);
 
 %% dynamic pdc
 niter = 30;
-metric = 'info';
-fprintf('pdc profiling for metric: %s\n',metric);
-tstart = tic;
-for k=1:niter
-    out = pdc_orig(A2,pf,'metric',metric);
+metrics = {'euc','info','diag'};
+for i=1:length(metrics)
+    metric = metrics{i};
+    
+    fprintf('pdc profiling for metric: %s\n',metric);
+    tstart = tic;
+    for k=1:niter
+        out = pdc_orig(A2,pf,'metric',metric);
+    end
+    telapsed = toc(tstart);
+    avgtime = telapsed/niter;
+    avgtime_benchmark = avgtime;
+    fprintf('pdc time: %e\n',avgtime);
+    
+    % %pdc2 - uses kronm, slow with reshape operations
+    % tstart = tic;
+    % for k=1:niter
+    %     out = pdc2(A2,pf,'metric',metric);
+    % end
+    % telapsed = toc(tstart);
+    % avgtime = telapsed/niter;
+    % fprintf('pdc2 time: %e\n',avgtime);
+    % fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+    %
+    % % pdc3 - switched freq to inner loop
+    % tstart = tic;
+    % for k=1:niter
+    %     out = pdc3(A2,pf,'metric',metric);
+    % end
+    % telapsed = toc(tstart);
+    % avgtime = telapsed/niter;
+    % fprintf('pdc3 time: %e\n',avgtime);
+    % fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+    %
+    % % pdc4
+    % %   - switched freq to inner loop
+    % %   - added blkdiag and kroneye speedups
+    % tstart = tic;
+    % for k=1:niter
+    %     out = pdc4(A2,pf,'metric',metric);
+    % end
+    % telapsed = toc(tstart);
+    % avgtime = telapsed/niter;
+    % fprintf('pdc4 time: %e\n',avgtime);
+    % fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+    %
+    % % pdc5
+    % %   - freq outer loop
+    % %   - used kronvec for Iije
+    % %   - used kronvec + blkdiag for Ije
+    % tstart = tic;
+    % for k=1:niter
+    %     out = pdc5(A2,pf,'metric',metric);
+    % end
+    % telapsed = toc(tstart);
+    % avgtime = telapsed/niter;
+    % fprintf('pdc5 time: %e\n',avgtime);
+    % fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+    %
+    % % pdc6
+    % %   - freq outer loop
+    % %   - used kronvec for Iije
+    % %   - used kronvec + blkdiag for Ije
+    % %   - avoid recomputing some matrices, applies to diag and info metrics
+    % tstart = tic;
+    % for k=1:niter
+    %     out = pdc6(A2,pf,'metric',metric);
+    % end
+    % telapsed = toc(tstart);
+    % avgtime = telapsed/niter;
+    % fprintf('pdc6 time: %e\n',avgtime);
+    % fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+    %
+    % % pdc7
+    % %   - freq inner loop
+    % %   - used kronvec for Iije
+    % %   - used kronvec + blkdiag for Ije
+    % %   - avoid recomputing some matrices, applies to diag and info metrics
+    % tstart = tic;
+    % for k=1:niter
+    %     out = pdc7(A2,pf,'metric',metric);
+    % end
+    % telapsed = toc(tstart);
+    % avgtime = telapsed/niter;
+    % fprintf('pdc7 time: %e\n',avgtime);
+    % fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+    
+    % pdc8
+    %   euc
+    %   - freq inner loop
+    %   - Iij
+    %       2012: blkdiag
+    %       2015 kron
+    %   - Ij
+    %       2012: kron + blkdiag
+    %       2015 kron
+    %   info, diag
+    %   - freq inner loop
+    %   - avoid recomputing some matrices, applies to diag and info metrics
+    %   - used kronvec for Iij
+    %   - used kronvec + blkdiag for Ij
+    tstart = tic;
+    for k=1:niter
+        out = pdc8(A2,pf,'metric',metric);
+    end
+    telapsed = toc(tstart);
+    avgtime = telapsed/niter;
+    fprintf('pdc8 time: %e\n',avgtime);
+    fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+    
+    % pdc9
+    %   euc
+    %   - freq inner loop
+    %   - Iij
+    %       2012: blkdiag
+    %       2015 kron
+    %   - Ij
+    %       2012: kron + blkdiag
+    %       2015 kron
+    %   info, diag
+    %   - freq outer loop
+    %   - avoid recomputing some matrices
+    %   - used kronvec for Iij
+    %   - used kronvec + blkdiag for Ij
+    %   - compute r once per freq
+    tstart = tic;
+    for k=1:niter
+        out = pdc9(A2,pf,'metric',metric);
+    end
+    telapsed = toc(tstart);
+    avgtime = telapsed/niter;
+    fprintf('pdc9 time: %e\n',avgtime);
+    fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 end
-telapsed = toc(tstart);
-avgtime = telapsed/niter;
-avgtime_benchmark = avgtime;
-fprintf('pdc time: %e\n',avgtime);
-
-%pdc2 - uses kronm, slow with reshape operations
-tstart = tic;
-for k=1:niter
-    out = pdc2(A2,pf,'metric',metric);
-end
-telapsed = toc(tstart);
-avgtime = telapsed/niter;
-fprintf('pdc2 time: %e\n',avgtime);
-fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
-
-% pdc3 - switched freq to inner loop
-tstart = tic;
-for k=1:niter
-    out = pdc3(A2,pf,'metric',metric);
-end
-telapsed = toc(tstart);
-avgtime = telapsed/niter;
-fprintf('pdc3 time: %e\n',avgtime);
-fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
-
-% pdc4 
-%   - switched freq to inner loop
-%   - added blkdiag and kroneye speedups
-tstart = tic;
-for k=1:niter
-    out = pdc4(A2,pf,'metric',metric);
-end
-telapsed = toc(tstart);
-avgtime = telapsed/niter;
-fprintf('pdc4 time: %e\n',avgtime);
-fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
-
-% pdc5
-%   - freq outer loop
-%   - used kronvec for Iije
-%   - used kronvec + blkdiag for Ije
-tstart = tic;
-for k=1:niter
-    out = pdc5(A2,pf,'metric',metric);
-end
-telapsed = toc(tstart);
-avgtime = telapsed/niter;
-fprintf('pdc5 time: %e\n',avgtime);
-fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
-
-% pdc6
-%   - freq outer loop
-%   - used kronvec for Iije
-%   - used kronvec + blkdiag for Ije
-%   - avoid recomputing some matrices, applies to diag and info metrics
-tstart = tic;
-for k=1:niter
-    out = pdc6(A2,pf,'metric',metric);
-end
-telapsed = toc(tstart);
-avgtime = telapsed/niter;
-fprintf('pdc6 time: %e\n',avgtime);
-fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
-
-% pdc7
-%   - freq inner loop
-%   - used kronvec for Iije
-%   - used kronvec + blkdiag for Ije
-%   - avoid recomputing some matrices, applies to diag and info metrics
-tstart = tic;
-for k=1:niter
-    out = pdc7(A2,pf,'metric',metric);
-end
-telapsed = toc(tstart);
-avgtime = telapsed/niter;
-fprintf('pdc7 time: %e\n',avgtime);
-fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 
 
 
