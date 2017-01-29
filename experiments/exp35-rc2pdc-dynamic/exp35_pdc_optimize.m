@@ -112,6 +112,8 @@ n = 10;
 i = 5;
 j = 7;
 a = randn(2*n^2,1);
+m = 1;
+b = {};
 
 tstart = tic;
 for k=1:niter
@@ -119,8 +121,9 @@ for k=1:niter
     Iij(n*(j-1)+i) = 1;
     Iij = diag(Iij);
     C = kron(eye(2), Iij);
-    b = C*a;
+    b{m} = C*a;
 end
+m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('kron avg time: %e\n',avgtime);
@@ -132,8 +135,12 @@ for k=1:niter
     Iij = diag(Iij);
     C = blkdiag(Iij,Iij);
     %C = kron(eye(2), Iij);
-    b = C*a;
+    b{m} = C*a;
 end
+if ~isequal(b{m},b{1})
+    fprintf('\tincorrect final answer\n');
+end
+m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('blkdiag avg time: %e\n',avgtime);
@@ -144,14 +151,20 @@ for k=1:niter
     Iij(n*(j-1)+i) = 1;
     Iij = diag(Iij);
     %C = kron(eye(2), Iij);
-    b = kronvec(eye(2),Iij,a);
+    b{m} = kronvec(eye(2),Iij,a);
 end
+if ~isequal(b{m},b{1})
+    fprintf('\tincorrect final answer\n');
+end
+m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('kronvec avg time: %e\n',avgtime);
 
 %% fIj
 fprintf('fIj\n');
+m = 1;
+b = {};
 
 tstart = tic;
 for k=1:niter
@@ -160,8 +173,9 @@ for k=1:niter
     Ij = diag(Ij);
     Ij = kron(Ij, eye(n));
     C = kron(eye(2), Ij);
-    b = C*a;
+    b{m} = C*a;
 end
+m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('kron avg time: %e\n',avgtime);
@@ -174,8 +188,12 @@ for k=1:niter
     Ij = kron(Ij, eye(n));
     %C = kron(eye(2), Ij);
     C = blkdiag(Ij,Ij);
-    b = C*a;
+    b{m} = C*a;
 end
+if ~isequal(b{m},b{1})
+    fprintf('\tincorrect final answer\n');
+end
+m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('blkdiag avg time: %e\n',avgtime);
@@ -189,8 +207,12 @@ for k=1:niter
     Ij = kroneye(Ij,n);
     %C = kron(eye(2), Ij);
     C = blkdiag(Ij,Ij);
-    b = C*a;
+    b{m} = C*a;
 end
+if ~isequal(b{m},b{1})
+    fprintf('\tincorrect final answer\n');
+end
+m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('blkdiag+kroneye avg time: %e\n',avgtime);
@@ -202,8 +224,12 @@ for k=1:niter
     Ij = diag(Ij);
     %Ij = kron(Ij, eye(n));
     %C = kron(eye(2), Ij);
-    b = kronvec(blkdiag(Ij,Ij),eye(n),a);
+    b{m} = kronvec(blkdiag(Ij,Ij),eye(n),a);
 end
+if ~isequal(b{m},b{1})
+    fprintf('\tincorrect final answer\n');
+end
+m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('kronvec+blkdiag avg time: %e\n',avgtime);
@@ -215,8 +241,12 @@ for k=1:niter
     Ij = diag(Ij);
     %Ij = kron(Ij, eye(n));
     %C = kron(eye(2), Ij);
-    b = kronvec(eye(2),kroneye(Ij,n),a);
+    b{m} = kronvec(eye(2),kroneye(Ij,n),a);
 end
+if ~isequal(b{m},b{1})
+    fprintf('\tincorrect final answer\n');
+end
+m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('kronvec+kroneye avg time: %e\n',avgtime);
