@@ -105,17 +105,21 @@ fprintf('pdc5 time: %e\n',avgtime);
 
 
 %% fIij
+fprintf('fIij\n');
+
 niter = 10000;
 n = 10;
 i = 5;
 j = 7;
+a = randn(2*n^2,1);
 
 tstart = tic;
 for k=1:niter
     Iij = zeros(1,n^2);
     Iij(n*(j-1)+i) = 1;
     Iij = diag(Iij);
-    c = kron(eye(2), Iij);
+    C = kron(eye(2), Iij);
+    b = C*a;
 end
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
@@ -126,14 +130,28 @@ for k=1:niter
     Iij = zeros(1,n^2);
     Iij(n*(j-1)+i) = 1;
     Iij = diag(Iij);
-    c = blkdiag(Iij,Iij);
-    %c = kron(eye(2), Iij);
+    C = blkdiag(Iij,Iij);
+    %C = kron(eye(2), Iij);
+    b = C*a;
 end
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('blkdiag avg time: %e\n',avgtime);
 
+tstart = tic;
+for k=1:niter
+    Iij = zeros(1,n^2);
+    Iij(n*(j-1)+i) = 1;
+    Iij = diag(Iij);
+    %C = kron(eye(2), Iij);
+    b = kronvec(eye(2),Iij,a);
+end
+telapsed = toc(tstart);
+avgtime = telapsed/niter;
+fprintf('kronvec avg time: %e\n',avgtime);
+
 %% fIj
+fprintf('fIj\n');
 
 tstart = tic;
 for k=1:niter
@@ -141,11 +159,26 @@ for k=1:niter
     Ij(j) = 1;
     Ij = diag(Ij);
     Ij = kron(Ij, eye(n));
-    c = kron(eye(2), Ij);
+    C = kron(eye(2), Ij);
+    b = C*a;
 end
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('kron avg time: %e\n',avgtime);
+
+tstart = tic;
+for k=1:niter
+    Ij = zeros(1,n);
+    Ij(j) = 1;
+    Ij = diag(Ij);
+    Ij = kron(Ij, eye(n));
+    %C = kron(eye(2), Ij);
+    C = blkdiag(Ij,Ij);
+    b = C*a;
+end
+telapsed = toc(tstart);
+avgtime = telapsed/niter;
+fprintf('blkdiag avg time: %e\n',avgtime);
 
 tstart = tic;
 for k=1:niter
@@ -154,9 +187,36 @@ for k=1:niter
     Ij = diag(Ij);
     %Ij = kron(Ij, eye(n));
     Ij = kroneye(Ij,n);
-    %c = kron(eye(2), Ij);
-    c = blkdiag(Ij,Ij);
+    %C = kron(eye(2), Ij);
+    C = blkdiag(Ij,Ij);
+    b = C*a;
 end
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
-fprintf('blkdiag avg time: %e\n',avgtime);
+fprintf('blkdiag+kroneye avg time: %e\n',avgtime);
+
+tstart = tic;
+for k=1:niter
+    Ij = zeros(1,n);
+    Ij(j) = 1;
+    Ij = diag(Ij);
+    %Ij = kron(Ij, eye(n));
+    %C = kron(eye(2), Ij);
+    b = kronvec(blkdiag(Ij,Ij),eye(n),a);
+end
+telapsed = toc(tstart);
+avgtime = telapsed/niter;
+fprintf('kronvec+blkdiag avg time: %e\n',avgtime);
+
+tstart = tic;
+for k=1:niter
+    Ij = zeros(1,n);
+    Ij(j) = 1;
+    Ij = diag(Ij);
+    %Ij = kron(Ij, eye(n));
+    %C = kron(eye(2), Ij);
+    b = kronvec(eye(2),kroneye(Ij,n),a);
+end
+telapsed = toc(tstart);
+avgtime = telapsed/niter;
+fprintf('kronvec+kroneye avg time: %e\n',avgtime);
