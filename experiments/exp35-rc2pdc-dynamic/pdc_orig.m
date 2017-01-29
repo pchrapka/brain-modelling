@@ -1,4 +1,4 @@
-function c = pdc5(A,pf,varargin)
+function c=pdc(A,pf,varargin)
 
 %Compute connectivity measure given by "option" from series j-->i.
 %
@@ -75,13 +75,6 @@ pdc_result = zeros(nChannels,nChannels,nFreqs);
 % omega = kron(inv(gamma), pf);
 % omega_evar = 2*pinv(Dup(nChannels))*kron(pf, pf)*pinv(Dup(nChannels)).';
 
-% switch lower(metric)
-%     case {'diag','info'}
-%         pinv_eye = pinv(eye(2*nChannels));
-%         pinv_evar_d = pinv(evar_d);
-%         pinv_pf = pinv(pf);
-% end
-
 for ff = 1:nFreqs,
     %f = (ff-1)/(2*nFreqs); %Corrected 7/25/2011, f starting at 0 rad/s.
     %Ca = fCa(f, p, nChannels);
@@ -94,53 +87,34 @@ for ff = 1:nFreqs,
     for i = 1:nChannels,
         for j = 1:nChannels,
             
-            %Iij = fIij(i, j, nChannels);
-            %Ij = fIj(j, nChannels);
+            Iij = fIij(i, j, nChannels);
+            Ij = fIj(j, nChannels);
             %For diag or info case, include evar in the expression'
             switch lower(metric)
                 case {'euc'}
-                    %Iije = Iij;
-                    %Ije = Ij;
-                    
-                    num = a.'*kronvec(eye(2),fIij(i,j,nChannels),a);
-                    
-                    Ije = fIj(j,nChannels);
-                    den = a.'*kronvec(blkdiag(Ije,Ije),eye(nChannels),a);
+                    Iije = Iij;
+                    Ije = Ij;
                     
                 case {'diag'}
                     evar_d = mdiag(pf);
-                    %evar_d_big = kron(eye(2*nChannels), evar_d);
-                    %Iije = Iij*pinv(evar_d_big);
-                    %Ije = Ij*pinv(evar_d_big);
-                    
-                    r = kronvec(pinv(eye(2*nChannels)),pinv(evar_d),a);
-                    num = a.'*kronvec(eye(2),fIij(i,j,nChannels),r);
-                    
-                    Ije = fIj(j,nChannels);
-                    den = a.'*kronvec(blkdiag(Ije,Ije),eye(nChannels),r);
-                    
+                    evar_d_big = kron(eye(2*nChannels), evar_d);
+                    Iije = Iij*pinv(evar_d_big);
+                    Ije = Ij*pinv(evar_d_big);
                     
                 case {'info'}
                     evar_d = mdiag(pf);
-                    %evar_d_big = kron(eye(2*nChannels), evar_d);
-                    %Iije = Iij*pinv(evar_d_big);
+                    evar_d_big = kron(eye(2*nChannels), evar_d);
+                    Iije = Iij*pinv(evar_d_big);
                     
-                    %evar_big = kron(eye(2*nChannels), pf);
-                    %Ije = Ij*pinv(evar_big)*Ij;
-                    
-                    r = kronvec(pinv(eye(2*nChannels)),pinv(evar_d),a);
-                    num = a.'*kronvec(eye(2),fIij(i,j,nChannels),r);
-                    
-                    r = kronvec(pinv(eye(2*nChannels)),pinv(pf),a);
-                    Ije = fIj(j,nChannels);
-                    den = a.'*kronvec(blkdiag(Ije,Ije),eye(nChannels),r);
+                    evar_big = kron(eye(2*nChannels), pf);
+                    Ije = Ij*pinv(evar_big)*Ij;
                     
                 otherwise
                     error('Unknown metric.')
             end;
             
-            %num = a.'*Iije*a;
-            %den = a.'*Ije*a;
+            num = a.'*Iije*a;
+            den = a.'*Ije*a;
             pdc_result(i, j, ff) = num/den;
             % If alpha == 0, do not calculate statistics for faster PDC
             % computation.
@@ -207,22 +181,22 @@ end
 % end;
 
 %==========================================================================
-function Iij = fIij(i, j, n)
+function c = fIij(i, j, n)
 %'''Returns Iij of the formula'''
 Iij = zeros(1,n^2);
 Iij(n*(j-1)+i) = 1;
 Iij = diag(Iij);
-% c = kron(eye(2), Iij);
+c = kron(eye(2), Iij);
 end
 
 %==========================================================================
-function Ij =  fIj(j, n)
+function c =  fIj(j, n)
 %'''Returns Ij of the formula'''
 Ij = zeros(1,n);
 Ij(j) = 1;
 Ij = diag(Ij);
-%Ij = kron(Ij, eye(n));
-%c = kron(eye(2), Ij);
+Ij = kron(Ij, eye(n));
+c = kron(eye(2), Ij);
 end
 
 %==========================================================================

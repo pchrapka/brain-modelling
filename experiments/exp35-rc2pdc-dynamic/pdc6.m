@@ -1,4 +1,4 @@
-function c = pdc5(A,pf,varargin)
+function c = pdc6(A,pf,varargin)
 
 %Compute connectivity measure given by "option" from series j-->i.
 %
@@ -75,12 +75,13 @@ pdc_result = zeros(nChannels,nChannels,nFreqs);
 % omega = kron(inv(gamma), pf);
 % omega_evar = 2*pinv(Dup(nChannels))*kron(pf, pf)*pinv(Dup(nChannels)).';
 
-% switch lower(metric)
-%     case {'diag','info'}
-%         pinv_eye = pinv(eye(2*nChannels));
-%         pinv_evar_d = pinv(evar_d);
-%         pinv_pf = pinv(pf);
-% end
+switch lower(metric)
+    case {'diag','info'}
+        pinv_eye = pinv(eye(2*nChannels));
+        evar_d = mdiag(pf);
+        pinv_evar_d = pinv(evar_d);
+        pinv_pf = pinv(pf);
+end
 
 for ff = 1:nFreqs,
     %f = (ff-1)/(2*nFreqs); %Corrected 7/25/2011, f starting at 0 rad/s.
@@ -108,12 +109,11 @@ for ff = 1:nFreqs,
                     den = a.'*kronvec(blkdiag(Ije,Ije),eye(nChannels),a);
                     
                 case {'diag'}
-                    evar_d = mdiag(pf);
                     %evar_d_big = kron(eye(2*nChannels), evar_d);
                     %Iije = Iij*pinv(evar_d_big);
                     %Ije = Ij*pinv(evar_d_big);
                     
-                    r = kronvec(pinv(eye(2*nChannels)),pinv(evar_d),a);
+                    r = kronvec(pinv_eye,pinv_evar_d,a);
                     num = a.'*kronvec(eye(2),fIij(i,j,nChannels),r);
                     
                     Ije = fIj(j,nChannels);
@@ -121,17 +121,16 @@ for ff = 1:nFreqs,
                     
                     
                 case {'info'}
-                    evar_d = mdiag(pf);
                     %evar_d_big = kron(eye(2*nChannels), evar_d);
                     %Iije = Iij*pinv(evar_d_big);
                     
                     %evar_big = kron(eye(2*nChannels), pf);
                     %Ije = Ij*pinv(evar_big)*Ij;
                     
-                    r = kronvec(pinv(eye(2*nChannels)),pinv(evar_d),a);
+                    r = kronvec(pinv_eye,pinv_evar_d,a);
                     num = a.'*kronvec(eye(2),fIij(i,j,nChannels),r);
                     
-                    r = kronvec(pinv(eye(2*nChannels)),pinv(pf),a);
+                    r = kronvec(pinv_eye,pinv_pf,a);
                     Ije = fIj(j,nChannels);
                     den = a.'*kronvec(blkdiag(Ije,Ije),eye(nChannels),r);
                     

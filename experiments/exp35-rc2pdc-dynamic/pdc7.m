@@ -1,4 +1,4 @@
-function c = pdc5(A,pf,varargin)
+function c = pdc7(A,pf,varargin)
 
 %Compute connectivity measure given by "option" from series j-->i.
 %
@@ -75,65 +75,62 @@ pdc_result = zeros(nChannels,nChannels,nFreqs);
 % omega = kron(inv(gamma), pf);
 % omega_evar = 2*pinv(Dup(nChannels))*kron(pf, pf)*pinv(Dup(nChannels)).';
 
-% switch lower(metric)
-%     case {'diag','info'}
-%         pinv_eye = pinv(eye(2*nChannels));
-%         pinv_evar_d = pinv(evar_d);
-%         pinv_pf = pinv(pf);
-% end
+switch lower(metric)
+    case {'diag','info'}
+        pinv_eye = pinv(eye(2*nChannels));
+        evar_d = mdiag(pf);
+        pinv_evar_d = pinv(evar_d);
+        pinv_pf = pinv(pf);
+end
 
-for ff = 1:nFreqs,
-    %f = (ff-1)/(2*nFreqs); %Corrected 7/25/2011, f starting at 0 rad/s.
-    %Ca = fCa(f, p, nChannels);
-    %omega2 = Ca*omega*Ca';
-    %L = fChol(omega2);
     
-    a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
-    a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)
-    
-    for i = 1:nChannels,
-        for j = 1:nChannels,
+for i = 1:nChannels,
+    for j = 1:nChannels,
+        
+        Iij = fIij(i, j, nChannels);
+        Ij = fIj(j, nChannels);
+        
+        for ff = 1:nFreqs,
+            %f = (ff-1)/(2*nFreqs); %Corrected 7/25/2011, f starting at 0 rad/s.
+            %Ca = fCa(f, p, nChannels);
+            %omega2 = Ca*omega*Ca';
+            %L = fChol(omega2);
             
-            %Iij = fIij(i, j, nChannels);
-            %Ij = fIj(j, nChannels);
+            a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
+            a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)
             %For diag or info case, include evar in the expression'
             switch lower(metric)
                 case {'euc'}
                     %Iije = Iij;
                     %Ije = Ij;
                     
-                    num = a.'*kronvec(eye(2),fIij(i,j,nChannels),a);
-                    
-                    Ije = fIj(j,nChannels);
-                    den = a.'*kronvec(blkdiag(Ije,Ije),eye(nChannels),a);
+                    num = a.'*kronvec(eye(2),Iij,a);
+
+                    den = a.'*kronvec(blkdiag(Ij,Ij),eye(nChannels),a);
                     
                 case {'diag'}
-                    evar_d = mdiag(pf);
                     %evar_d_big = kron(eye(2*nChannels), evar_d);
                     %Iije = Iij*pinv(evar_d_big);
                     %Ije = Ij*pinv(evar_d_big);
                     
-                    r = kronvec(pinv(eye(2*nChannels)),pinv(evar_d),a);
-                    num = a.'*kronvec(eye(2),fIij(i,j,nChannels),r);
-                    
-                    Ije = fIj(j,nChannels);
-                    den = a.'*kronvec(blkdiag(Ije,Ije),eye(nChannels),r);
+                    r = kronvec(pinv_eye,pinv_evar_d,a);
+                    num = a.'*kronvec(eye(2),Iij,r);
+                   
+                    den = a.'*kronvec(blkdiag(Ij,Ij),eye(nChannels),r);
                     
                     
                 case {'info'}
-                    evar_d = mdiag(pf);
                     %evar_d_big = kron(eye(2*nChannels), evar_d);
                     %Iije = Iij*pinv(evar_d_big);
                     
                     %evar_big = kron(eye(2*nChannels), pf);
                     %Ije = Ij*pinv(evar_big)*Ij;
                     
-                    r = kronvec(pinv(eye(2*nChannels)),pinv(evar_d),a);
-                    num = a.'*kronvec(eye(2),fIij(i,j,nChannels),r);
+                    r = kronvec(pinv_eye,pinv_evar_d,a);
+                    num = a.'*kronvec(eye(2),Iij,r);
                     
-                    r = kronvec(pinv(eye(2*nChannels)),pinv(pf),a);
-                    Ije = fIj(j,nChannels);
-                    den = a.'*kronvec(blkdiag(Ije,Ije),eye(nChannels),r);
+                    r = kronvec(pinv_eye,pinv_pf,a);
+                    den = a.'*kronvec(blkdiag(Ij,Ij),eye(nChannels),r);
                     
                 otherwise
                     error('Unknown metric.')

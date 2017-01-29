@@ -22,68 +22,59 @@ data_vrc = vrc_gen.generate('ntrials',ntrials);
 
 vrc_data_file = loadfile(vrc_gen.get_file());
 
+%% dynamic pdc prep
+
+Kftemp = squeeze(vrc_data_file.true.Kf(1,:,:,:));
+Kbtemp = squeeze(vrc_data_file.true.Kb(1,:,:,:));
+A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
+
+nchannels = size(A2,1);
+pf = eye(nchannels);
+
 %% dynamic pdc
 niter = 30;
+metric = 'info';
+fprintf('pdc profiling for metric: %s\n',metric);
 tstart = tic;
 for k=1:niter
-    Kftemp = squeeze(vrc_data_file.true.Kf(1,:,:,:));
-    Kbtemp = squeeze(vrc_data_file.true.Kb(1,:,:,:));
-    A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
-    
-    nchannels = size(A2,1);
-    pf = eye(nchannels);
-    out = pdc(A2,pf,'metric','euc');
+    out = pdc_orig(A2,pf,'metric',metric);
 end
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
+avgtime_benchmark = avgtime;
 fprintf('pdc time: %e\n',avgtime);
 
 %pdc2 - uses kronm, slow with reshape operations
 tstart = tic;
 for k=1:niter
-    Kftemp = squeeze(vrc_data_file.true.Kf(1,:,:,:));
-    Kbtemp = squeeze(vrc_data_file.true.Kb(1,:,:,:));
-    A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
-    
-    nchannels = size(A2,1);
-    pf = eye(nchannels);
-    out = pdc2(A2,pf,'metric','euc');
+    out = pdc2(A2,pf,'metric',metric);
 end
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('pdc2 time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 
 % pdc3 - switched freq to inner loop
 tstart = tic;
 for k=1:niter
-    Kftemp = squeeze(vrc_data_file.true.Kf(1,:,:,:));
-    Kbtemp = squeeze(vrc_data_file.true.Kb(1,:,:,:));
-    A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
-    
-    nchannels = size(A2,1);
-    pf = eye(nchannels);
-    out = pdc3(A2,pf,'metric','euc');
+    out = pdc3(A2,pf,'metric',metric);
 end
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('pdc3 time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 
 % pdc4 
 %   - switched freq to inner loop
 %   - added blkdiag and kroneye speedups
 tstart = tic;
 for k=1:niter
-    Kftemp = squeeze(vrc_data_file.true.Kf(1,:,:,:));
-    Kbtemp = squeeze(vrc_data_file.true.Kb(1,:,:,:));
-    A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
-    
-    nchannels = size(A2,1);
-    pf = eye(nchannels);
-    out = pdc4(A2,pf,'metric','euc');
+    out = pdc4(A2,pf,'metric',metric);
 end
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('pdc4 time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 
 % pdc5
 %   - freq outer loop
@@ -91,17 +82,40 @@ fprintf('pdc4 time: %e\n',avgtime);
 %   - used kronvec + blkdiag for Ije
 tstart = tic;
 for k=1:niter
-    Kftemp = squeeze(vrc_data_file.true.Kf(1,:,:,:));
-    Kbtemp = squeeze(vrc_data_file.true.Kb(1,:,:,:));
-    A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
-    
-    nchannels = size(A2,1);
-    pf = eye(nchannels);
-    out = pdc5(A2,pf,'metric','euc');
+    out = pdc5(A2,pf,'metric',metric);
 end
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('pdc5 time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+
+% pdc6
+%   - freq outer loop
+%   - used kronvec for Iije
+%   - used kronvec + blkdiag for Ije
+%   - avoid recomputing some matrices, applies to diag and info metrics
+tstart = tic;
+for k=1:niter
+    out = pdc6(A2,pf,'metric',metric);
+end
+telapsed = toc(tstart);
+avgtime = telapsed/niter;
+fprintf('pdc6 time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+
+% pdc7
+%   - freq inner loop
+%   - used kronvec for Iije
+%   - used kronvec + blkdiag for Ije
+%   - avoid recomputing some matrices, applies to diag and info metrics
+tstart = tic;
+for k=1:niter
+    out = pdc7(A2,pf,'metric',metric);
+end
+telapsed = toc(tstart);
+avgtime = telapsed/niter;
+fprintf('pdc7 time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 
 
 
@@ -127,6 +141,7 @@ end
 m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
+avgtime_benchmark = avgtime;
 fprintf('kron avg time: %e\n',avgtime);
 
 tstart = tic;
@@ -145,6 +160,7 @@ m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('blkdiag avg time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 
 tstart = tic;
 for k=1:niter
@@ -161,6 +177,7 @@ m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('kronvec avg time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 
 %% fIj
 fprintf('fIj\n');
@@ -179,6 +196,7 @@ end
 m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
+avgtime_benchmark = avgtime;
 fprintf('kron avg time: %e\n',avgtime);
 
 tstart = tic;
@@ -198,6 +216,7 @@ m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('blkdiag avg time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 
 tstart = tic;
 for k=1:niter
@@ -217,6 +236,7 @@ m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('blkdiag+kroneye avg time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 
 tstart = tic;
 for k=1:niter
@@ -234,6 +254,7 @@ m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('kronvec+blkdiag avg time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 
 tstart = tic;
 for k=1:niter
@@ -251,3 +272,4 @@ m = m+1;
 telapsed = toc(tstart);
 avgtime = telapsed/niter;
 fprintf('kronvec+kroneye avg time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
