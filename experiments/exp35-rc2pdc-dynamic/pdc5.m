@@ -75,6 +75,13 @@ pdc_result = zeros(nChannels,nChannels,nFreqs);
 % omega = kron(inv(gamma), pf);
 % omega_evar = 2*pinv(Dup(nChannels))*kron(pf, pf)*pinv(Dup(nChannels)).';
 
+% switch lower(metric)
+%     case {'diag','info'}
+%         pinv_eye = pinv(eye(2*nChannels));
+%         pinv_evar_d = pinv(evar_d);
+%         pinv_pf = pinv(pf);
+% end
+
 for ff = 1:nFreqs,
     %f = (ff-1)/(2*nFreqs); %Corrected 7/25/2011, f starting at 0 rad/s.
     %Ca = fCa(f, p, nChannels);
@@ -95,17 +102,10 @@ for ff = 1:nFreqs,
                     %Iije = Iij;
                     %Ije = Ij;
                     
-                    %Q = cell(1,2);
-                    %Q{2} = eye(2);
-                    %Q{1} = fIij(i,j,nChannels);
                     num = a.'*kronvec(eye(2),fIij(i,j,nChannels),a);
                     
-                    %Q = cell(1,3);
-                    %Q{3} = eye(2);
-                    %Q{2} = fIj(j,nChannels);
-                    %Q{1} = eye(nChannels);
-                    den = a.'*kronvec(eye(2),kroneye(fIj(j,nChannels),nChannels),a);
-                    %den = a.'*kronm(Q,a);
+                    Ije = fIj(j,nChannels);
+                    den = a.'*kronvec(blkdiag(Ije,Ije),eye(nChannels),a);
                     
                 case {'diag'}
                     evar_d = mdiag(pf);
@@ -113,20 +113,11 @@ for ff = 1:nFreqs,
                     %Iije = Iij*pinv(evar_d_big);
                     %Ije = Ij*pinv(evar_d_big);
                     
-                    R = cell(1,2);
-                    R{2} = pinv(eye(2*nChannels));
-                    R{1} = pinv(evar_d);
-                    r = kronm(R,a);
-                    Q = cell(1,2);
-                    Q{2} = eye(2);
-                    Q{1} = fIij(i,j,nChannels);
-                    num = a.'*kronm(Q,r);
+                    r = kronvec(pinv(eye(2*nChannels)),pinv(evar_d),a);
+                    num = a.'*kronvec(eye(2),fIij(i,j,nChannels),r);
                     
-                    Q = cell(1,3);
-                    Q{3} = eye(2);
-                    Q{2} = fIj(j,nChannels);
-                    Q{1} = eye(nChannels);
-                    den = a.'*kronm(Q,r);
+                    Ije = fIj(j,nChannels);
+                    den = a.'*kronvec(blkdiag(Ije,Ije),eye(nChannels),a);
                     
                     
                 case {'info'}
@@ -137,24 +128,12 @@ for ff = 1:nFreqs,
                     %evar_big = kron(eye(2*nChannels), pf);
                     %Ije = Ij*pinv(evar_big)*Ij;
                     
-                    R = cell(1,2);
-                    R{2} = pinv(eye(2*nChannels));
-                    R{1} = pinv(evar_d);
-                    r = kronm(R,a);
-                    Q = cell(1,2);
-                    Q{2} = eye(2);
-                    Q{1} = fIij(i,j,nChannels);
-                    num = a.'*kronm(Q,r);
+                    r = kronvec(pinv(eye(2*nChannels)),pinv(evar_d),a);
+                    num = a.'*kronvec(eye(2),fIij(i,j,nChannels),r);
                     
-                    S = cell(1,2);
-                    S{2} = pinv(eye(2*nChannels));
-                    S{1} = pinv(pf);
-                    s = kronm(S,a);
-                    Q = cell(1,3);
-                    Q{3} = eye(2);
-                    Q{2} = fIj(j,nChannels);
-                    Q{1} = eye(nChannels);
-                    den = a.'*kronm(Q,s);
+                    r = kronvec(pinv(eye(2*nChannels)),pinv(pf),a);
+                    Ije = fIj(j,nChannels);
+                    den = a.'*kronvec(blkdiag(Ije,Ije),eye(nChannels),r);
                     
                 otherwise
                     error('Unknown metric.')

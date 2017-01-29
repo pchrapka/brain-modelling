@@ -87,7 +87,8 @@ fprintf('pdc4 time: %e\n',avgtime);
 
 % pdc5
 %   - freq outer loop
-%   - used kronvec
+%   - used kronvec for Iije
+%   - used kronvec + blkdiag for Ije
 tstart = tic;
 for k=1:niter
     Kftemp = squeeze(vrc_data_file.true.Kf(1,:,:,:));
