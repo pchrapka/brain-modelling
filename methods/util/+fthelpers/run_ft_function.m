@@ -32,6 +32,7 @@ function outfile = run_ft_function(fname,config,varargin)
 %
 
 p = inputParser();
+p.KeepUnmatched = true;
 addRequired(p,'fname',@(x) ischar(x) && exist(x,'file'));
 addRequired(p,'config',@isstruct);
 addParameter(p,'datain','',@(x) isstruct(x) || ischar(x));
@@ -79,6 +80,11 @@ else
             params = {datain};
         end
         clear datain;
+    end
+    
+    if ~iempty(p.Unmatched)
+        params2 = struct2namevalue(p.Unmatched);
+        params = [params params2];
     end
     
     fprintf('%s: running %s\n',mfilename,fname);
