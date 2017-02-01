@@ -61,8 +61,13 @@ cfg_dt.dataset = dataset;
 % use default function
 switch stimulus
     case 'std'
-        cfg_dt.trialdef.eventtype = 'STATUS';
-        cfg_dt.trialdef.eventvalue = {1}; % standard
+        cfg_dt.trialfun= 'fthelpers.ft_trialfun_triplet';
+        cfg_dt.trialmid.eventtype = 'STATUS';
+        cfg_dt.trialmid.eventvalue = 1; % standard
+        cfg_dt.trialpre.eventtype = 'STATUS';
+        cfg_dt.trialpre.eventvalue = 1; % standard
+        cfg_dt.trialpost.eventtype = 'STATUS';
+        cfg_dt.trialpost.eventvalue = 1; % standard
     case 'odd'
         cfg_dt.trialdef.eventtype = 'STATUS';
         cfg_dt.trialdef.eventvalue = {2}; % deviant
