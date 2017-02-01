@@ -1,25 +1,26 @@
 function [trl,event] = ft_trialfun_triplet(cfg)
-% selects events in between two specified events
+% selects the events in between two events
 %
 %   fields required in config
+%   cfg.trialmid
+%       describes middle event
 %   cfg.trialmid.eventtype
 %   cfg.trialmid.eventvalue
+%   cfg.trialmid.prestim
+%   cfg.trialmid.poststim
+%
+%   cfg.trialpre
+%       describes preceeding event
 %   cfg.trialpre.eventtype
 %   cfg.trialpre.eventvalue
+%
+%   cfg.trialpost
+%       describes following event
 %   cfg.trialpost.eventtype
 %   cfg.trialpost.eventvalue
-%   cfg.prestim
-%   cfg.poststim
 
 if ~isfield(cfg,'dataset') || isempty(cfg.dataset)
     error('MATLAB:nonExistentField','missing dataset');
-end
-
-if ~isfield(cfg,'prestim')
-    error('missing prestim');
-end
-if ~isfield(cfg,'poststim')
-    error('missing poststim');
 end
 
 % check eventvalue
@@ -45,6 +46,13 @@ for i=1:length(fields)
         errorr([mfilename ':input'],...
             '%s definition can only contain one event value',fields{i});
     end
+end
+
+if ~isfield(cfg.trialmid,'prestim')
+    error('missing prestim');
+end
+if ~isfield(cfg.trialmid,'poststim')
+    error('missing poststim');
 end
 
 %% the first part is common to all trial functions
@@ -82,9 +90,9 @@ pre_post_check = intersect(pre_check,post_event-1);
 % select samples
 EVsample = [event(pre_post_check).sample]';
 
-trloff = round(-cfg.prestim * hdr.Fs);
+trloff = round(-cfg.trialmid.prestim * hdr.Fs);
 trloff = repmat(trloff,length(pre_post_check),1);
-trldur = round((cfg.prestim + cfg.poststim)*hdr.Fs) - 1;
+trldur = round((cfg.trialmid.prestim + cfg.trialmid.poststim)*hdr.Fs) - 1;
 trlbeg = EVsample + trloff;
 trlend = trlbeg + trldur;
 

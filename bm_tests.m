@@ -7,12 +7,13 @@ verbosity = 1;
 
 %% Run all tests
 % suite = TestSuite.fromPackage('tests');
-% 
-% % Show tests
-% if verbosity > 0
-%     disp({suite.Name}');
-% end
-% result = run(suite);
+suite = TestSuite.fromPackage('fthelpers');
+
+% Show tests
+if verbosity > 0
+    disp({suite.Name}');
+end
+result = run(suite);
 
 %% Included in all
 % Run some subsets
@@ -22,12 +23,12 @@ verbosity = 1;
 % suite = TestSuite.fromClass(?tests.Test_plot_rc_feature_matrix);
 % suite = TestSuite.fromClass(?tests.TestVAR);
 % suite = TestSuite.fromClass(?tests.TestVRC);
-suite = TestSuite.fromClass(?tests.Test_rc2ar);
+% suite = TestSuite.fromClass(?tests.Test_rc2ar);
 % suite = TestSuite.fromClass(?tests.TestFilters);
-if verbosity > 0
-    disp({suite.Name}');
-end
-result = run(suite);
+% if verbosity > 0
+%     disp({suite.Name}');
+% end
+% result = run(suite);
 
 %% Not included in all
 % Test_ft_trialfun_preceed

@@ -17,14 +17,14 @@ classdef Test_ft_trialfun_triplet < matlab.unittest.TestCase
             testCase.config.dataset = testCase.dataset;
             
             testCase.config.trialmid.eventtype = 'STATUS';
-            testCase.config.trialmid.eventvalue = {1}; % standard
+            testCase.config.trialmid.eventvalue = 1; % standard
             testCase.config.trialpre.eventtype = 'STATUS';
-            testCase.config.trialpre.eventvalue = {2}; % standard
+            testCase.config.trialpre.eventvalue = 1; % standard
             testCase.config.trialpost.eventtype = 'STATUS';
-            testCase.config.trialpost.eventvalue = {1}; % deviant
+            testCase.config.trialpost.eventvalue = 1; % standard
             
-            testCase.config.prestim = 0.2; % in seconds
-            testCase.config.poststim = 0.5; % in seconds
+            testCase.config.trialmid.prestim = 0.2; % in seconds
+            testCase.config.trialmid.poststim = 0.5; % in seconds
 
         end
     end
@@ -37,6 +37,15 @@ classdef Test_ft_trialfun_triplet < matlab.unittest.TestCase
             
             testCase.verifyEqual(size(trl),[279 3]);
             testCase.verifyFalse(isempty(event));
+        end
+        
+        function test_ft_trialfun_triplet_data(testCase)
+            cfg = testCase.config;
+            
+            [trl,~] = ft_trialfun_triplet(cfg);
+            
+            % check trials found
+            testCase.verifyEqual(trl(1,:),[279 3]);
         end
         
         function test_ft_definetrial(testCase)
