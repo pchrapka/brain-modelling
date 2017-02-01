@@ -29,7 +29,7 @@ params_eeg = [];
 params_eeg.name = dataset_name;
 params_eeg.mode = 'trial';
 
-script_dir = fullfile(get_project_dir(), 'experiments', 'exp31-bf-beta');
+script_dir = fullfile(get_project_dir(), 'analysis', 'pdc-analysis');
 outdir = fullfile(script_dir,'output',dataset_name);
 
 fakefile = [tempname '.mat'];
