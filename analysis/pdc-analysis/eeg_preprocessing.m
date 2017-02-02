@@ -1,25 +1,45 @@
 function eeg_preprocessing(subject, deviant_percent, stimulus, varargin)
+%EEG_PREPROCESSING preprocesses EEG data according to Andrew's method
+%   EEG_PREPROCESSING(subject, deviant_percent, stimulus) preprocesses EEG
+%   data according to Andrew's method
+%
+%   Input
+%   -----
+%   subject (integer)
+%       subject number, ranges from 1-10
+%   deviant_percent (integer)
+%       percentage of deviant trials 10 or 20
+%   stimulus (string)
+%       stimulus type, can be std or odd
+%
+%   Parameters
+%   ----------
+%   outdir (string, default = pwd)
+%       output directory
+%   patches (string, default = 'aal')
+%       patch model, can be aal or aal-coarse-13
 
 p = inputParser();
 addRequired(p,'subject',@isnumeric);
 addRequired(p,'deviant_percent',@(x) isequal(x,10) || isequal(x,20));
 addRequired(p,'stimulus',@(x) any(validatestring(x,{'std','odd'})));
 addParameter(p,'patches','aal',@(x) any(validatestring(x,{'aal','aal-coarse-13'})));
-parse(p,subject, deviant_percent, stimulus,varargin{:});
+addParameter(p,'outdir','',@ischar);
+parse(p,subject, deviant_percent, stimulus, varargin{:});
 
-script_name = mfilename('fullpath');
-[script_dir,~,~] = fileparts([script_name '.m']);
+if isempty(p.Results.outdir)
+    outdir = pwd;
+    warning('no output directory specified\nusing default %s',outdir);
+else
+    outdir = p.Results.outdir;
+    if ~exist(outdir,'dir')
+        mkdir(outdir);
+    end
+end
 
 %% options
 
 interactive = false;
-
-%% data file
-[data_file,data_name,elec_file] = get_data_andrew(subject,deviant_percent);
-
-dataset = data_file;
-data_name2 = sprintf('%s-%s',stimulus,data_name);
-outdir = fullfile(script_dir,'output',data_name2);
 
 params = {...
     'recompute', false,...
@@ -27,6 +47,10 @@ params = {...
     'overwrite', true,...
     'outpath', outdir,...
     };
+
+%% get data
+
+[dataset,~,~] = get_data_andrew(subject,deviant_percent);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% de-artifact

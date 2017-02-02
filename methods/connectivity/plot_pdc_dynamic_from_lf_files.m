@@ -11,14 +11,29 @@ function plot_pdc_dynamic_from_lf_files(files,varargin)
 %
 %   Parameters
 %   ----------
+%   outdir (string, default = pwd)
+%       output directory
+%   save (logical, default = false)
+%       flag to save figure
 
 p = inputParser();
 addRequired(p,'files',@(x) ischar(x) || iscell(x))
-% addParameter(p,'type','pdc-dynamic',@(x) any(validatestring(x,{'pdc-dynamic'})));
+addParameter(p,'save',false,@islogical);
+addParameter(p,'outdir','',@ischar);
 parse(p,files,varargin{:});
 
 if ischar(p.Results.files)
     files = {p.Results.files};
+end
+
+if isempty(p.Results.outdir)
+    outdir = pwd;
+    warning('no output directory specified\nusing default %s',outdir);
+else
+    outdir = p.Results.outdir;
+    if ~exist(outdir,'dir')
+        mkdir(outdir);
+    end
 end
 
 for i=1:length(files)
@@ -53,6 +68,11 @@ for i=1:length(files)
     h = figure;
     set(h,'NumberTitle','off','MenuBar','none', 'Name', files{i} );
     plot_pdc_dynamic(result);
+    
+    if p.Results.save
+        % save
+        save_fig_exp(outdir,'tag', [name '-rc-dynamic']);
+    end
     
 end
 

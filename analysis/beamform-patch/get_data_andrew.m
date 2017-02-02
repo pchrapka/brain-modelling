@@ -1,4 +1,32 @@
 function [data_file,data_name,elec_file] = get_data_andrew(subject_num,deviant_percent)
+%GET_DATA_ANDREW function to retrieve data paths for Andrew's data
+%   [data_file, data_name, elec_file] =
+%       GET_DATA_ANDREW(subject_num,deviant_percent) 
+%   function to retrieve data paths for Andrew's data
+%
+%   Input
+%   -----
+%   subject_num (integer)
+%       subject number, ranges from 1-10
+%   deviant_percent (integer)
+%       percentage of deviant trials 10 or 20
+%
+%   Input
+%   -----
+%   subject_num (integer)
+%       subject number, ranges from 1-10
+%   deviant_percent (integer)
+%       percentage of deviant trials 10 or 20
+%
+%   Output
+%   ------
+%   data_file (string)
+%       absolute data file path
+%   data_name (string)
+%       data name string with the following form s[subject number]-[deviant
+%       percent], ex. s03-10
+%   elec_file (string)
+%       electrode file with modified electrode names to be uniform in case
 
 p = inputParser();
 addRequired(p,'subject_num',@(x) x >= 1 && x <= 10);

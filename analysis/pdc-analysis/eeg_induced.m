@@ -1,20 +1,41 @@
-function eeg_induced(subject, deviant_percent, stimulus, varargin)
+function eeg_induced(sources_file, eeg_file, lf_file, varargin)
+%EEG_INDUCED computes induced sources from source analysis
+%   EEG_INDUCED(sources_file, eeg_file, lf_file, ...) computes induced
+%   sources from source analysis
+%
+%   Input
+%   -----
+%   sources_file (string)
+%       absolute file name of source analysis data
+%   eeg_file (string)
+%       absolute file name of final preprocessed eeg data, not timelocked
+%   lf_file (string)
+%       absolute file name of leadfield object from ftb.BeamformerPatch
+%       object in beamformer pipeline
+%
+%   Parameters
+%   ----------
+%   outdir (string, default = pwd)
+%       output directory
 
 p = inputParser();
-addRequired(p,'subject',@isnumeric);
-addRequired(p,'deviant_percent',@(x) isequal(x,10) || isequal(x,20));
-addRequired(p,'stimulus',@(x) any(validatestring(x,{'std','odd'})));
-addParameter(p,'patches','aal',@(x) any(validatestring(x,{'aal','aal-coarse-13'})));
-parse(p,subject, deviant_percent, stimulus,varargin{:});
+addRequired(p,'sources_file',@ischar);
+addRequired(p,'eeg_file',@ischar);
+addRequired(p,'lf_file',@ischar);
+addParameter(p,'outdir','',@ischar);
+parse(p,sources_file,eeg_file,lf_file,varargin{:});
 
-script_name = mfilename('fullpath');
-[script_dir,~,~] = fileparts([script_name '.m']);
+if isempty(p.Results.outdir)
+    outdir = pwd;
+    warning('no output directory specified\nusing default %s',outdir);
+else
+    outdir = p.Results.outdir;
+    if ~exist(outdir,'dir')
+        mkdir(outdir);
+    end
+end
 
-%%
-[~,data_name,~] = get_data_andrew(subject,deviant_percent);
-
-data_name2 = sprintf('%s-%s',stimulus,data_name);
-outdir = fullfile(script_dir,'output',data_name2);
+%% options
 
 params = {...
     'recompute', false,...
@@ -23,20 +44,12 @@ params = {...
     'outpath', outdir,...
     };
 
-%% beamforming
+%% load leadfield data
 
-pipeline = build_pipeline_beamformer(paramsbf_sd_andrew(...
-    subject,deviant_percent,stimulus,'patches',p.Results.patches_type)); 
-pipeline.process();
-
-%%
-
-eeg_file = fullfile('output',data_name2,'ft_rejectartifact.mat');
-lf = loadfile(pipeline.steps{end}.lf.leadfield);
+lf = loadfile(lf_file);
 
 %% convert source analysis to EEG data structure
 
-sources_file = pipeline.steps{end}.sourceanalysis;
 params2 = {sources_file, eeg_file, 'labels', lf.filter_label(lf.inside)};
 params2 = [params2 params];
 file_eeg = fthelpers.run_ft_function('fthelpers.ft_sources2trials',[],params2{:});
