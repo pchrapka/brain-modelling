@@ -52,7 +52,8 @@ else
 end
 
 %% create data struct
-fields_required = {'fsample','trialinfo','sampleinfo'};
+% fields_required = {'fsample','trialinfo','sampleinfo'};
+fields_required = {'fsample','sampleinfo'};
 for i=1:length(fields_required)
     if ~isfield(eeg,fields_required{i})
         error('missing field %s',fields_required{i});

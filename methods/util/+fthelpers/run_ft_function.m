@@ -34,7 +34,7 @@ function outfile = run_ft_function(fname,config,varargin)
 p = inputParser();
 p.KeepUnmatched = true;
 addRequired(p,'fname',@(x) ischar(x));
-addRequired(p,'config',@isstruct);
+addRequired(p,'config',@(x) isstruct(x) || isempty(x));
 addParameter(p,'datain','',@(x) isstruct(x) || ischar(x));
 addParameter(p,'recompute',false,@islogical);
 addParameter(p,'save',false,@islogical);
