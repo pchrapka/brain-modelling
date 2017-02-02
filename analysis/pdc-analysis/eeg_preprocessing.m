@@ -40,7 +40,12 @@ cfg_pp.continuous = 'yes';
 cfg_pp.detrend = 'no';
 cfg_pp.demean = 'no';       % filter should handle this
 % cfg_pp.baselinewindow = [-0.1 0];
-cfg_pp.channel = {'EEG','-D32','-C10'};
+switch subject
+    case 6
+        cfg_pp.channel = {'EEG','-D32','-C10'};
+    otherwise
+        cfg_pp.channel = {'EEG'};
+end
 cfg_pp.bpfilter = 'yes';
 cfg_pp.bpfreq = [1 60];
 cfg_pp.bpfilttype = 'but';
@@ -120,7 +125,12 @@ cfg_pp.dataset = dataset;   % needs dataset field in this case
 cfg_pp.continuous = 'yes';
 cfg_pp.detrend = 'no';
 cfg_pp.demean = 'no';       % filter should handle this
-cfg_pp.channel = {'EEG','-D32','-C10'};
+switch subject
+    case 6
+        cfg_pp.channel = {'EEG','-D32','-C10'};
+    otherwise
+        cfg_pp.channel = {'EEG'};
+end
 cfg_pp.bpfilter = 'yes';
 cfg_pp.bpfreq = [15 25];
 cfg_pp.bpfilttype = 'but';
@@ -135,14 +145,22 @@ cfg_dt.dataset = dataset;
 % use default function
 switch stimulus
     case 'std'
-        cfg_dt.trialdef.eventtype = 'STATUS';
-        cfg_dt.trialdef.eventvalue = {1}; % standard
+        cfg_dt.trialfun= 'fthelpers.ft_trialfun_triplet';
+        cfg_dt.trialmid.eventtype = 'STATUS';
+        cfg_dt.trialmid.eventvalue = 1; % standard
+        cfg_dt.trialpre.eventtype = 'STATUS';
+        cfg_dt.trialpre.eventvalue = 1; % standard
+        cfg_dt.trialpost.eventtype = 'STATUS';
+        cfg_dt.trialpost.eventvalue = 1; % standard
+        
+        cfg_dt.trialmid.prestim = 0.5; % in seconds
+        cfg_dt.trialmid.poststim = 1; % in seconds
     case 'odd'
         cfg_dt.trialdef.eventtype = 'STATUS';
         cfg_dt.trialdef.eventvalue = {2}; % deviant
+        cfg_dt.trialdef.prestim = 0.5; % in seconds
+        cfg_dt.trialdef.poststim = 1; % in seconds
 end
-cfg_dt.trialdef.prestim = 0.5; % in seconds
-cfg_dt.trialdef.poststim = 1; % in seconds
 
 file_dt = fthelpers.run_ft_function('ft_definetrial',cfg_dt,params{:});
 
