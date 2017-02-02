@@ -33,13 +33,12 @@ sources_file = pipeline.steps{end}.sourceanalysis;
 eeg_induced(sources_file, eeg_file, lf_file, 'outdir',outdir);
 
 %% set lattice options
-switch patches_type
-    case 'aal-coarse-13'
-        nchannels = 13;
-    case 'aal'
-        nchannels = 106;
-end
+lf = loadfile(lf_file);
+patch_labels = lf.filter_label(lf.inside);
+npatch_labels = length(patch_labels);
+clear lf;
 
+nchannels = npatch_labels;
 ntrials = 20;
 order_est = 10;
 lambda = 0.99;
