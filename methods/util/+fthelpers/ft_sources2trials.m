@@ -70,7 +70,7 @@ for i=1:ntrials
 end
 
 %% add labels
-nsources = size(sources.trial(1),1);
+nsources = size(out.trial{1},1);
 if isempty(p.Results.labels)
     out.label = cell(nsources,1);
 else
