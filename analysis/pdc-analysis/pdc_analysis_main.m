@@ -46,11 +46,17 @@ gamma = 1;
 
 verbosity = 0;
 
-filter = MCMTLOCCD_TWL2(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gamma);
+filters = [];
+k=1;
+
+filter{k} = MCMTLOCCD_TWL2(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gamma);
+k = k+1;
 
 %% lattice filter
 
-lf_files = lattice_filter_sources(filter, sources_file, 'outdir', outdir);
+lf_files = lattice_filter_sources(filters, sources_file,...
+    'ntrials_max',100,...
+    'outdir', outdir);
 
 %% compute and plot pdc
 save_figs = true;
