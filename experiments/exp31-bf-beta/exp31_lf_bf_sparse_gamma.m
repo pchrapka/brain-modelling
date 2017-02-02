@@ -53,18 +53,17 @@ else
     clear data;
     
     % data should be [channels time trials]
-    % NOTE don't put in more data than required i.e. ntrials + ntrials_warmup
     save_tag(sources,'outfile',outfile);
 end
 
 % check max trials
 % don't put in more data than required i.e. ntrials + ntrials_warmup
 ntrials_max = 2*ntrials;
-outfile = fullfile('output',sprintf('%s-trials%d.mat',name,ntrials_max));
+sourcesfile = fullfile('output',sprintf('%s-trials%d.mat',name,ntrials_max));
 
-if ~exist(outfile,'file')
+if ~exist(sourcesfile,'file')
     sources = sources(:,:,1:ntrials_max);
-    save_tag(sources,'outfile',outfile);
+    save_tag(sources,'outfile',sourcesfile);
     clear sources
 end
 
@@ -73,7 +72,7 @@ script_name = [mfilename('fullpath') '.m'];
 
 outfiles = run_lattice_filter(...
     script_name,...
-    outfile,...
+    sourcesfile,...
     'name',name,...
     'filters', filters,...
     'warmup_noise', true,...
@@ -85,19 +84,6 @@ outfiles = run_lattice_filter(...
 
 % plot_pdc_dynamic_from_lf_files(outfiles);
 
-for i=1:length(outfiles)
-    % load
-    data = loadfile(outfiles{i});
-    [~,name,~] = fileparts(outfiles{i});
-    
-    % plot
-    h = figure;
-    set(h,'NumberTitle','off','MenuBar','none', 'Name', name );
-    set(h, 'Position', [50, 50, 1100, 900]);
-    plot_rc_dynamic(data.estimate.Kf);
-    
-    % save
-    save_fig_exp(script_name,'tag', [name '-rc-dynamic']);
-end
+plot_rc_dynamic_from_lf_files(outfiles,'outdir',script_name,'save', true);
 
 
