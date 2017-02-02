@@ -1,6 +1,6 @@
-function eeg_preprocessing(subject, deviant_percent, stimulus, varargin)
-%EEG_PREPROCESSING preprocesses EEG data according to Andrew's method
-%   EEG_PREPROCESSING(subject, deviant_percent, stimulus) preprocesses EEG
+function eeg_preprocessing_andrew(subject, deviant_percent, stimulus, varargin)
+%EEG_PREPROCESSING_ANDREW preprocesses EEG data according to Andrew's method
+%   EEG_PREPROCESSING_ANDREW(subject, deviant_percent, stimulus) preprocesses EEG
 %   data according to Andrew's method
 %
 %   Input
