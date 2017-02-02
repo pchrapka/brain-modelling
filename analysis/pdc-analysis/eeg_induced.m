@@ -66,6 +66,6 @@ file_phaselocked = fthelpers.run_ft_function('fthelpers.ft_phaselocked',[],'data
 cfg = [];
 cfg.trials = file_eeg;
 cfg.phaselocked = file_phaselocked;
-file_induced = fthelpers.run_ft_function('fthelpers.ft_induced',cfgparams{:});
+file_induced = fthelpers.run_ft_function('fthelpers.ft_induced',cfg,params{:});
 
 end
