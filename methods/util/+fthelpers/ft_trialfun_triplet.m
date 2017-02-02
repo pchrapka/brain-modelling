@@ -27,7 +27,8 @@ end
 fields = {'trialmid','trialpre','trialpost'};
 for i=1:length(fields)
     if ~isfield(cfg,fields{i})
-        error('missing field %s',fields{i});
+        error(['MATLAB:nonExistentField'],...
+            'missing field %s',fields{i});
     end
     
     if ~ischar(cfg.(fields{i}).eventtype)
@@ -42,8 +43,8 @@ for i=1:length(fields)
         end
 %    elseif ischar(cfg.(fields{i}).eventvalue)
 %        cfg.(fields{i}).eventvalue = {cfg.(fields{i}).eventvalue};
-    else
-        errorr([mfilename ':input'],...
+    elseif ~ischar(cfg.(fields{i}).eventvalue)
+        error([mfilename ':input'],...
             '%s definition can only contain one event value',fields{i});
     end
 end
@@ -68,18 +69,18 @@ EVvalue    = {event.value}';
 EVtype     = {event.type}';
 
 % select potential pre events of same type
-pre_event_type = find(strcmp(cfg.trialpre.eventtype, EVtype)==1);
-pre_event_value = find(strcmp(cfg.trialpre.eventvalue, EVvalue)==1);
+pre_event_type = find(ismatch(cfg.trialpre.eventtype, EVtype)==1);
+pre_event_value = find(ismatch(cfg.trialpre.eventvalue, EVvalue)==1);
 pre_event = intersect(pre_event_type,pre_event_value); % indices
 
 % select potential mid events
-mid_event_type = find(strcmp(cfg.trialmid.eventtype, EVtype)==1);
-mid_event_value = find(strcmp(cfg.trialmid.eventvalue, EVvalue)==1);
+mid_event_type = find(ismatch(cfg.trialmid.eventtype, EVtype)==1);
+mid_event_value = find(ismatch(cfg.trialmid.eventvalue, EVvalue)==1);
 mid_event = intersect(mid_event_type,mid_event_value); % indices
 
 % select potential post events
-post_event_type = find(strcmp(cfg.trialpost.eventtype, EVtype)==1);
-post_event_value = find(strcmp(cfg.trialpost.eventvalue, EVvalue)==1);
+post_event_type = find(ismatch(cfg.trialpost.eventtype, EVtype)==1);
+post_event_value = find(ismatch(cfg.trialpost.eventvalue, EVvalue)==1);
 post_event = intersect(post_event_type,post_event_value); % indices
 
 % select mid events where the pre event matches
@@ -88,16 +89,26 @@ pre_check = intersect(pre_event+1,mid_event);
 pre_post_check = intersect(pre_check,post_event-1);
 
 % select samples
-EVsample = [event(pre_post_check).sample]';
-
-trloff = round(-cfg.trialmid.prestim * hdr.Fs);
-trloff = repmat(trloff,length(pre_post_check),1);
-trldur = round((cfg.trialmid.prestim + cfg.trialmid.poststim)*hdr.Fs) - 1;
-trlbeg = EVsample + trloff;
-trlend = trlbeg + trldur;
+if isempty(pre_post_check)
+    trlbeg = [];
+    trlend = [];
+    trloff = [];
+else
+    EVsample = [event(pre_post_check).sample]';
+    
+    trloff = round(-cfg.trialmid.prestim * hdr.Fs);
+    trloff = repmat(trloff,length(pre_post_check),1);
+    trldur = round((cfg.trialmid.prestim + cfg.trialmid.poststim)*hdr.Fs) - 1;
+    trlbeg = EVsample + trloff;
+    trlend = trlbeg + trldur;
+end
 
 %% the last part is again common to all trial functions
 % return the trl matrix (required)
 trl = [trlbeg trlend trloff];
 
+end
+
+function out = ismatch(value, list)
+out = cellfun(@(x) isequal(x,value), list, 'UniformOutput', true);
 end

@@ -4,6 +4,11 @@ classdef Test_ft_trialfun_triplet < matlab.unittest.TestCase
         dataset;
     end
     
+    properties (TestParameter)
+        trialfield = {'trialpre','trialmid','trialpost'};
+    end
+    
+    
     methods (TestClassSetup)
         function setup(testCase)
             
@@ -33,84 +38,64 @@ classdef Test_ft_trialfun_triplet < matlab.unittest.TestCase
         function test_ft_trialfun_triplet(testCase)
             cfg = testCase.config;
             
-            [trl,event] = ft_trialfun_triplet(cfg);
+            [trl,event] = fthelpers.ft_trialfun_triplet(cfg);
             
-            testCase.verifyEqual(size(trl),[279 3]);
+            testCase.verifyEqual(size(trl),[2518 3]);
             testCase.verifyFalse(isempty(event));
         end
         
         function test_ft_trialfun_triplet_data(testCase)
             cfg = testCase.config;
             
-            [trl,~] = ft_trialfun_triplet(cfg);
+            [trl,~] = fthelpers.ft_trialfun_triplet(cfg);
             
             % check trials found
-            testCase.verifyEqual(trl(1,:),[279 3]);
+            testCase.verifyEqual(trl(5,:),[109968 111401 -410]);
         end
         
         function test_ft_definetrial(testCase)
             cfg = testCase.config;
-            cfg.trialfun = 'ft_trialfun_triplet';
+            cfg.trialfun = 'fthelpers.ft_trialfun_triplet';
             
             cfgout = ft_definetrial(cfg);
             
-            testCase.verifyEqual(size(cfgout.trl),[279 3]);
+            testCase.verifyEqual(size(cfgout.trl),[2518 3]);
             testCase.verifyFalse(isempty(cfgout.event));
         end
         
-        function test_ft_trialfun_triplet_error_trialpre_eventvalue(testCase)
+        function test_ft_trialfun_triplet_error_eventvalue(testCase,trialfield)
             cfg = testCase.config;
             
-            cfg.trialpre.eventvalue = {'S 16'}; % deviant
-            testCase.verifyError(@() ft_trialfun_triplet(cfg),...
-                'ft_trialfun_triplet:trialpre');
+            cfg.(trialfield).eventvalue = {'S 16'}; % deviant
+            testCase.verifyError(@() fthelpers.ft_trialfun_triplet(cfg),...
+                'ft_trialfun_triplet:input');
             
-            cfg.trialpre.eventvalue = {'S 16','S 11'};
-            testCase.verifyError(@() ft_trialfun_triplet(cfg),...
-                'ft_trialfun_triplet:trialpre');
-        end
-        
-        function test_ft_trialfun_triplet_error_trialpost_eventvalue(testCase)
-            cfg = testCase.config;
+            cfg.(trialfield).eventvalue = {'S 16','S 11'};
+            testCase.verifyError(@() fthelpers.ft_trialfun_triplet(cfg),...
+                'ft_trialfun_triplet:input');
             
-            cfg.trialpost.eventvalue = {'S 16'}; % deviant
-            testCase.verifyError(@() ft_trialfun_triplet(cfg),...
-                'ft_trialfun_triplet:trialpost');
-            
-            cfg.trialpost.eventvalue = {'S 16','S 11'};
-            testCase.verifyError(@() ft_trialfun_triplet(cfg),...
-                'ft_trialfun_triplet:trialpost');
+            cfg.(trialfield).eventvalue = [1 2];
+            testCase.verifyError(@() fthelpers.ft_trialfun_triplet(cfg),...
+                'ft_trialfun_triplet:input');
         end
         
         function test_ft_trialfun_triplet_error_dataset(testCase)
             cfg = testCase.config;
             cfg.dataset = '';
             
-            testCase.verifyError(@() ft_trialfun_triplet(cfg),...
+            testCase.verifyError(@() fthelpers.ft_trialfun_triplet(cfg),...
                 'MATLAB:nonExistentField');
         end
         
-        function test_ft_trialfun_triplet_error_trialpost(testCase)
+        function test_ft_trialfun_triplet_error_trialfield(testCase,trialfield)
             cfg = testCase.config;
-            cfg = rmfield(cfg,'trialpost');
-            testCase.verifyError(@() ft_trialfun_triplet(cfg),...
+            cfg = rmfield(cfg,trialfield);
+            testCase.verifyError(@() fthelpers.ft_trialfun_triplet(cfg),...
                 'MATLAB:nonExistentField');
             
             cfg = testCase.config;
-            cfg.trialpost = [];
-            testCase.verifyError(@() ft_trialfun_triplet(cfg),...
-                'MATLAB:nonStrucReference');
-        end
-        
-        function test_ft_trialfun_triplet_error_trialdef(testCase)
-            cfg = testCase.config;
-            cfg = rmfield(cfg,'trialdef');
-            testCase.verifyError(@() ft_trialfun_triplet(cfg),...
-                'MATLAB:nonExistentField');
-            
-            cfg = testCase.config;
-            cfg.trialdef = [];
-            testCase.verifyError(@() ft_trialfun_triplet(cfg),...
+            cfg.(trialfield) = [];
+            testCase.verifyError(@() fthelpers.ft_trialfun_triplet(cfg),...
                 'MATLAB:nonStrucReference');
         end
         

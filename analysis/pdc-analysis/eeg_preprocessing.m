@@ -68,12 +68,15 @@ switch stimulus
         cfg_dt.trialpre.eventvalue = 1; % standard
         cfg_dt.trialpost.eventtype = 'STATUS';
         cfg_dt.trialpost.eventvalue = 1; % standard
+        
+        cfg_dt.trialmid.prestim = 0.5; % in seconds
+        cfg_dt.trialmid.poststim = 1; % in seconds
     case 'odd'
         cfg_dt.trialdef.eventtype = 'STATUS';
         cfg_dt.trialdef.eventvalue = {2}; % deviant
+        cfg_dt.trialdef.prestim = 0.5; % in seconds
+        cfg_dt.trialdef.poststim = 1; % in seconds
 end
-cfg_dt.trialdef.prestim = 0.5; % in seconds
-cfg_dt.trialdef.poststim = 1; % in seconds
 
 % define the trial
 file_art_dt = fthelpers.run_ft_function('ft_definetrial',cfg_dt,params{:},'tag','art');
