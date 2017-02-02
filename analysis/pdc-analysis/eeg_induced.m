@@ -63,8 +63,9 @@ file_phaselocked = fthelpers.run_ft_function('fthelpers.ft_phaselocked',[],'data
 
 %% compute induced response
 
-params2 = {file_phaselocked};
-params2 = [params2 params];
-file_induced = fthelpers.run_ft_function('fthelpers.ft_induced',[],'datain',file_eeg,params2{:});
+cfg = [];
+cfg.trials = file_eeg;
+cfg.phaselocked = file_phaselocked;
+file_induced = fthelpers.run_ft_function('fthelpers.ft_induced',cfgparams{:});
 
 end

@@ -28,7 +28,7 @@ for i=1:length(fields)
     field = fields{i};
     
     if ~isfield(cfg,field)
-        error('missing sources %s',field);
+        error('missing %s',field);
     end
     
     if ~isstruct(cfg.(field)) && ~ischar(cfg.(field))
