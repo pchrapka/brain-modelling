@@ -82,7 +82,7 @@ else
         clear datain;
     end
     
-    if ~iempty(p.Unmatched)
+    if ~isempty(p.Unmatched)
         params2 = struct2namevalue(p.Unmatched);
         params = [params params2];
     end

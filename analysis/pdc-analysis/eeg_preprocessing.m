@@ -1,11 +1,11 @@
 function eeg_preprocessing(subject, deviant_percent, stimulus, varargin)
 
 p = inputParser();
-addRequired(p,'subjecct',@isnumeric);
+addRequired(p,'subject',@isnumeric);
 addRequired(p,'deviant_percent',@(x) isequal(x,10) || isequal(x,20));
 addRequired(p,'stimulus',@(x) any(validatestring(x,{'std','odd'})));
 addParameter(p,'patches','aal',@(x) any(validatestring(x,{'aal','aal-coarse-13'})));
-parse(p,varargin{:});
+parse(p,subject, deviant_percent, stimulus,varargin{:});
 
 script_name = mfilename('fullpath');
 [script_dir,~,~] = fileparts([script_name '.m']);
@@ -15,7 +15,7 @@ script_name = mfilename('fullpath');
 interactive = false;
 
 %% data file
-[data_file,data_name,elec_file] = get_data_andrew(subject_num,deviant_percent);
+[data_file,data_name,elec_file] = get_data_andrew(subject,deviant_percent);
 
 dataset = data_file;
 data_name2 = sprintf('%s-%s',stimulus,data_name);

@@ -124,16 +124,16 @@ outfiles = run_lattice_filter(...
 
 %% plot
 
-% plot_pdc_dynamic_from_lf_files(outfiles);
+plot_pdc_dynamic_from_lf_files(outfiles);
 
-for i=1:length(outfiles)
-    data = loadfile(outfiles{i});
-    h = figure;
-    [~,name,~] = fileparts(outfiles{i});
-    set(h,'NumberTitle','off','MenuBar','none', 'Name', name );
-    set(h, 'Position', [50, 50, 1100, 900]);
-    plot_rc_dynamic(data.estimate.Kf);
-    save_fig_exp(script_name,'tag', [name '-rc-dynamic']);
-end
+% for i=1:length(outfiles)
+%     data = loadfile(outfiles{i});
+%     h = figure;
+%     [~,name,~] = fileparts(outfiles{i});
+%     set(h,'NumberTitle','off','MenuBar','none', 'Name', name );
+%     set(h, 'Position', [50, 50, 1100, 900]);
+%     plot_rc_dynamic(data.estimate.Kf);
+%     save_fig_exp(script_name,'tag', [name '-rc-dynamic']);
+% end
 
 

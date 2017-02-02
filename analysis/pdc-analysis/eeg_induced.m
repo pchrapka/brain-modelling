@@ -1,11 +1,11 @@
 function eeg_induced(subject, deviant_percent, stimulus, varargin)
 
 p = inputParser();
-addRequired(p,'subjecct',@isnumeric);
+addRequired(p,'subject',@isnumeric);
 addRequired(p,'deviant_percent',@(x) isequal(x,10) || isequal(x,20));
 addRequired(p,'stimulus',@(x) any(validatestring(x,{'std','odd'})));
 addParameter(p,'patches','aal',@(x) any(validatestring(x,{'aal','aal-coarse-13'})));
-parse(p,varargin{:});
+parse(p,subject, deviant_percent, stimulus,varargin{:});
 
 script_name = mfilename('fullpath');
 [script_dir,~,~] = fileparts([script_name '.m']);
