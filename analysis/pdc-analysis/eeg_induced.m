@@ -26,7 +26,7 @@ params = {...
 %% beamforming
 
 pipeline = build_pipeline_beamformer(paramsbf_sd_andrew(...
-    subject,deviant_percent,stimulus,'patches',patches_type)); 
+    subject,deviant_percent,stimulus,'patches',p.Results.patches_type)); 
 pipeline.process();
 
 %%
