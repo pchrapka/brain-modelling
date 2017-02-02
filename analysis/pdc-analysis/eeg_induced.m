@@ -50,9 +50,12 @@ lf = loadfile(lf_file);
 
 %% convert source analysis to EEG data structure
 
-params2 = {sources_file, eeg_file, 'labels', lf.filter_label(lf.inside)};
+params2 = {'labels', lf.filter_label(lf.inside)};
 params2 = [params2 params];
-file_eeg = fthelpers.run_ft_function('fthelpers.ft_sources2trials',[],params2{:});
+cfg = [];
+cfg.eeg = eeg_file;
+cfg.sources = sources_file;
+file_eeg = fthelpers.run_ft_function('fthelpers.ft_sources2trials',cfg,params2{:});
 
 %% compute phase-locked avg
 
