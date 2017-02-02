@@ -33,7 +33,7 @@ function outfile = run_ft_function(fname,config,varargin)
 
 p = inputParser();
 p.KeepUnmatched = true;
-addRequired(p,'fname',@(x) ischar(x) && exist(x,'file'));
+addRequired(p,'fname',@(x) ischar(x));
 addRequired(p,'config',@isstruct);
 addParameter(p,'datain','',@(x) isstruct(x) || ischar(x));
 addParameter(p,'recompute',false,@islogical);
