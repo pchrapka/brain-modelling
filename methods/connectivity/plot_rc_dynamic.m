@@ -56,16 +56,16 @@ h = [];
 for j=1:nchannels
     for i=1:nchannels
         % data
-            h = subplot2(nchannels, nchannels, (i-1)*nchannels + j);
-            
-            switch format_orig
-                case 3
-                    data_plot = squeeze(data(:,i,j,:))';
-                case 1
-                    data_plot = squeeze(data(:,:,i,j))';
-            end
-            
-            imagesc(data_plot,p.Results.clim);
+        h = subplot2(nchannels, nchannels, (i-1)*nchannels + j);
+        
+        switch format_orig
+            case 3
+                data_plot = squeeze(data(:,i,j,:))';
+            case 1
+                data_plot = squeeze(data(:,:,i,j))';
+        end
+        
+        imagesc(data_plot,p.Results.clim);
         
         % axis label
         if i == nchannels,

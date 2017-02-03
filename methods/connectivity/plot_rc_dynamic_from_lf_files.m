@@ -14,11 +14,15 @@ function plot_rc_dynamic_from_lf_files(files,varargin)
 %       output directory
 %   save (logical, default = false)
 %       flag to save figure
+%   mode (string, default = 'tiled')
+%       plot mode: tiled, summary
 
 p = inputParser();
 addRequired(p,'files',@(x) ischar(x) || iscell(x))
 addParameter(p,'save',false,@islogical);
 addParameter(p,'outdir','',@ischar);
+options_mode = {'tiled','summary'};
+addParameter(p,'mode','tiled',@(x) any(validatestring(x,options_mode)));
 parse(p,files,varargin{:});
 
 if ischar(p.Results.files)
@@ -45,7 +49,14 @@ for i=1:length(files)
     h = figure;
     set(h,'NumberTitle','off','MenuBar','none', 'Name', name );
     set(h, 'Position', [50, 50, 1100, 900]);
-    plot_rc_dynamic(data.estimate.Kf);
+    switch p.Results.mode
+        case 'tiled'
+            plot_rc_dynamic(data.estimate.Kf);
+        case 'summary'
+            plot_rc_dynamic_summary(data.estimate.Kf);
+        otherwise
+            error('unknown mode %s',p.Results.mode);
+    end
     
     if p.Results.save
         % save
