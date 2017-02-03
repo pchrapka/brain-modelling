@@ -12,10 +12,14 @@ function plot_rc_dynamic_from_lf_files(files,varargin)
 %   ----------
 %   outdir (string, default = pwd)
 %       output directory
+%       [] - use working directory
+%       'data' - same directory where data is located
+%       somepath - any regular path
 %   save (logical, default = false)
 %       flag to save figure
 %   mode (string, default = 'tiled')
 %       plot mode: tiled, summary
+%       summary is useful when a large number of channels are involved
 
 p = inputParser();
 addRequired(p,'files',@(x) ischar(x) || iscell(x))
@@ -29,9 +33,12 @@ if ischar(p.Results.files)
     files = {p.Results.files};
 end
 
+usedatadir = false;
 if isempty(p.Results.outdir)
     outdir = pwd;
     warning('no output directory specified\nusing default %s',outdir);
+elseif isequal(p.Results.outdir,'data');
+    usedatadir = true;
 else
     outdir = p.Results.outdir;
     if ~exist(outdir,'dir')
@@ -53,15 +60,20 @@ for i=1:length(files)
     switch p.Results.mode
         case 'tiled'
             plot_rc_dynamic(data.estimate.Kf);
+            save_tag = '-rc-dynamic';
         case 'summary'
             plot_rc_dynamic_summary(data.estimate.Kf);
+            save_tag = '-rc-dynamic-summary';
         otherwise
             error('unknown mode %s',p.Results.mode);
     end
     
     if p.Results.save
+        if usedatadir
+            outdir = path;
+        end
         % save
-        save_fig_exp(outdir,'tag', [name '-rc-dynamic']);
+        save_fig_exp(outdir,'tag', [name save_tag]);
     end
     
 end

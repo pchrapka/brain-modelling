@@ -59,8 +59,11 @@ for j=1:nchannels
     end
 end
 
+title('Reflection Coefficient - Channel Pair Summary');
 imagesc(data_plot);
 colorbar();
+xlabel('Channels');
+ylabel('Channels');
 
 ticks = 1:nchannels;
 if isempty(p.Results.ChannelLabels)
