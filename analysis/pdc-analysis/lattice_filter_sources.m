@@ -14,6 +14,12 @@ function lf_files = lattice_filter_sources(filter, source_analysis, varargin)
 %   ----------
 %   outdir (string, default = pwd)
 %       output directory
+%   ntrials_max (integer, default = 40)
+%       maximum number of trials to pass to filter function
+%   samples (integer, default = all)
+%       sample indices to be used for filtering
+%   verbosity (integer, default = 0)
+%       verbosity level
 %
 %   Output
 %   ------
@@ -25,6 +31,8 @@ addRequired(p,'filter',@(x) iscell(x));
 addRequired(p,'source_analysis',@(x) isstruct(x) || ischar(x));
 addParameter(p,'outdir','',@ischar);
 addParameter(p,'ntrials_max',40,@isnumeric);
+addParameter(p,'samples',[],@isnumeric);
+addParameter(p,'verbosity',0,@isnumeric);
 parse(p,filter,source_analysis,varargin{:});
 
 if isempty(p.Results.outdir)
@@ -41,8 +49,16 @@ name = sprintf('lf-sources-ch%d',filter{1}.nchannels);
 
 %% load data
 
-sources_mini_file = fullfile(outdir,...
-    sprintf('%s-trials%d.mat',name,p.Results.ntrials_max));
+if isempty(p.Results.samples)
+    sources_mini_file = fullfile(outdir,...
+        sprintf('%s-trials%d-samplesall.mat',...
+        name, p.Results.ntrials_max));
+else
+    sources_mini_file = fullfile(outdir,...
+        sprintf('%s-trials%d-samples%d-%d.mat',...
+        name, p.Results.ntrials_max, min(p.Results.samples), max(p.Results.samples)));
+end
+
 if ~exist(sources_mini_file,'file')
     
     % extract sources from the pipeline
@@ -68,8 +84,14 @@ if ~exist(sources_mini_file,'file')
         error('only %d trial available',ntrials);
     end
     
+    if isempty(p.Results.samples)
+        sample_idx = 1:size(sources,2);
+    else
+        sample_idx = p.Results.samples;
+    end
+    
     % don't put in more data than required i.e. ntrials + ntrials_warmup
-    sources = sources(:,:,1:p.Results.ntrials_max);
+    sources = sources(:,sample_idx,1:p.Results.ntrials_max);
     save_tag(sources,'outfile',sources_mini_file);
     clear sources
 end
@@ -88,6 +110,7 @@ lf_files = run_lattice_filter(...
     'warmup_noise', true,...
     'warmup_data', true,...
     'force',false,...
+    'verbosity',p.Results.verbosity,...
     'plot_pdc', false);
 
 end

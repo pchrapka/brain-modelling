@@ -44,8 +44,6 @@ order_est = 10;
 lambda = 0.99;
 gamma = 1;
 
-verbosity = 0;
-
 filters = [];
 k=1;
 
@@ -54,9 +52,14 @@ k = k+1;
 
 %% lattice filter
 
+verbosity = 2;
 lf_files = lattice_filter_sources(filters, sources_file,...
+    'verbosity',verbosity,...
+    'samples',[1:100],...
     'ntrials_max',100,...
     'outdir', outdir);
+
+%% [maybe] remove 300 ms at beg and end
 
 %% compute and plot pdc
 save_figs = true;
