@@ -60,6 +60,7 @@ for j=1:nchannels
 end
 
 imagesc(data_plot);
+colorbar();
 
 ticks = 1:nchannels;
 if isempty(p.Results.ChannelLabels)

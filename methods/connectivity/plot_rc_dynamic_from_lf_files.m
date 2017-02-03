@@ -42,6 +42,7 @@ end
 for i=1:length(files)
     
     % load
+    print_msg_filename(files{i},'loading');
     data = loadfile(files{i});
     [~,name,~] = fileparts(files{i});
     

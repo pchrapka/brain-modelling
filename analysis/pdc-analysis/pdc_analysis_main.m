@@ -47,7 +47,10 @@ gamma = 1;
 filters = [];
 k=1;
 
-filters{k} = MCMTLOCCD_TWL2(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gamma);
+% filters{k} = MCMTLOCCD_TWL2(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gamma);
+% k = k+1;
+
+filters{k} = MCMTLOCCD_TWL2(nchannels,order_est,2*ntrials,'lambda',lambda,'gamma',gamma);
 k = k+1;
 
 %% lattice filter
@@ -55,7 +58,7 @@ k = k+1;
 verbosity = 2;
 lf_files = lattice_filter_sources(filters, sources_file,...
     'verbosity',verbosity,...
-    'samples',[1:100],...
+    ...'samples',[1:100],...
     'ntrials_max',100,...
     'outdir', outdir);
 
