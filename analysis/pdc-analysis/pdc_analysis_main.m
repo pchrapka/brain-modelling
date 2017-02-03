@@ -63,6 +63,11 @@ lf_files = lattice_filter_sources(filters, sources_file,...
 
 %% compute and plot pdc
 save_figs = true;
+plot_mode = 'summary';
 
-plot_rc_dynamic_from_lf_files(lf_files, 'outdir', outdir, 'save', save_figs);
-plot_pdc_dynamic_from_lf_files(lf_files, 'outdir', outdir, 'save', save_figs);
+plot_rc_dynamic_from_lf_files(lf_files,...
+    'mode', plot_mode,...
+    'outdir', outdir,...
+    'save', save_figs);
+
+% plot_pdc_dynamic_from_lf_files(lf_files, 'outdir', outdir, 'save', save_figs);
