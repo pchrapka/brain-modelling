@@ -39,6 +39,7 @@ options = copyfields(p.Results,[],...
     {'specden','coherence','metric'});
 
 % Convert to PDC to get sizes
+fprintf('getting data size\n');
 result = rc2pdc(squeeze(Kf(1,:,:,:)),squeeze(Kb(1,:,:,:)));
 result_pdc = zeros([nsamples size(result.pdc)]);
 if options.specden
