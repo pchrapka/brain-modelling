@@ -39,9 +39,8 @@ options = copyfields(p.Results,[],...
     {'specden','coherence','metric'});
 
 %% get sizes for data strucs
-fprintf('getting data size\n');
-
 %% pdc
+fprintf('getting pdc data size\n');
 Kftemp = squeeze(Kf(1,:,:,:));
 Kbtemp = squeeze(Kb(1,:,:,:));
 A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
@@ -52,6 +51,7 @@ result_pdc = zeros([nsamples size(result.pdc)]);
 
 %% spectral density
 if options.specden
+    fprintf('getting ss data size\n');
     result.SS = ss_alg(A2, pf, 128);
     result_SS = zeros([nsamples size(result.SS)]);
 else
@@ -60,6 +60,7 @@ end
 
 %% coherence
 if options.coherence
+    fprintf('getting coherence data size\n');
     result.coh = coh_alg(squeeze(result.SS(1,:,:,:)));
     result_coh = zeros([nsamples size(result.coh)]);
 else
