@@ -50,32 +50,32 @@ else
 end
 
 for i=1:length(files)
+    % set up save params
+    [data_path,name,~] = fileparts(files{i});
     flag_save = p.Results.save;
     if usedatadir
-        outdir = path;
+        outdir = data_path;
     end
     
-    fresh = false;
-    data_time = get_timestamp(files{i});
-    
     % create pdc output file name
-    [path,name,~] = fileparts(files{i});
-    outfile_pdc = fullfile(path,sprintf('%s-pdc-dynamic.mat',name));
-    fprintf('plotting pdc for %s\n',name);
+    outfile_pdc = fullfile(data_path,sprintf('%s-pdc-dynamic.mat',name));
     
-    % check freshness
+    % check pdc freshness
+    fresh = false;
     if exist(outfile_pdc,'file')
+        data_time = get_timestamp(files{i});
         pdc_time = get_timestamp(outfile_pdc);
         if data_time > pdc_time
             fresh = true;
         end
     end
     
-    % convert to pdc
+    % load pdc
     if fresh || ~exist(outfile_pdc,'file')
+        fprintf('computing pdc from rc for %s\n',name);
         data = loadfile(files{i});
         
-        % convert to pdc
+        % convert rc to pdc
         result = rc2pdc_dynamic(data.estimate.Kf,data.estimate.Kb,'metric','euc');
         save_parfor(outfile_pdc,result);
     else
@@ -85,6 +85,7 @@ for i=1:length(files)
     % plot
     h = figure;
     set(h,'NumberTitle','off','MenuBar','none', 'Name', files{i} );
+    fprintf('plotting pdc for %s\n',name);
     
     switch p.Results.mode
         case 'tiled'

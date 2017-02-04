@@ -47,11 +47,15 @@ else
 end
 
 for i=1:length(files)
+    % set up save params
+    [data_path,name,~] = fileparts(files{i});
+    if usedatadir
+        outdir = data_path;
+    end
     
     % load
     print_msg_filename(files{i},'loading');
     data = loadfile(files{i});
-    [~,name,~] = fileparts(files{i});
     
     % plot
     h = figure;
@@ -69,9 +73,6 @@ for i=1:length(files)
     end
     
     if p.Results.save
-        if usedatadir
-            outdir = path;
-        end
         % save
         save_fig_exp(outdir,'tag', [name save_tag]);
     end
