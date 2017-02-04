@@ -114,8 +114,8 @@ options = copyfields(p.Results,[],{...
 nchannels = filters{1}.nchannels;
 outfiles = cell(nfilters,1);
 
-parfor k=1:nfilters
-% for k=1:nfilters
+% parfor k=1:nfilters
+for k=1:nfilters
     
     % copy sim parameters
     filter = filters{k};
@@ -164,6 +164,7 @@ parfor k=1:nfilters
         
         % warmup filter with noise
         if options.warmup_noise
+            fprintf('warming up with noise\n');
             noise = gen_noise(nchannels, ntime, ntrials);
             
             % run filter on noise
@@ -180,6 +181,8 @@ parfor k=1:nfilters
         
         % warmup filter with simulated data
         if options.warmup_data
+            fprintf('warming up with data\n');
+            
             % use last
             idx_start = ntrials + 1;
             idx_end = idx_start + ntrials - 1;
