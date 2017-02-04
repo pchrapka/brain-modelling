@@ -38,22 +38,36 @@ end
 options = copyfields(p.Results,[],...
     {'specden','coherence','metric'});
 
-% Convert to PDC to get sizes
+%% get sizes for data strucs
 fprintf('getting data size\n');
-result = rc2pdc(squeeze(Kf(1,:,:,:)),squeeze(Kb(1,:,:,:)));
+
+%% pdc
+Kftemp = squeeze(Kf(1,:,:,:));
+Kbtemp = squeeze(Kb(1,:,:,:));
+A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
+nchannels = size(A2,1);
+pf = eye(nchannels);
+result.pdc = pdc(A2,pf,'metric',options.metric);
 result_pdc = zeros([nsamples size(result.pdc)]);
+
+%% spectral density
 if options.specden
+    result.SS = ss_alg(A2, pf, 128);
     result_SS = zeros([nsamples size(result.SS)]);
 else
     result_SS = zeros(nsamples,1);
 end
+
+%% coherence
 if options.coherence
+    result.coh = coh_alg(squeeze(result.SS(1,:,:,:)));
     result_coh = zeros([nsamples size(result.coh)]);
 else
     result_coh = zeros(nsamples,1);
 end
+clear result;
 
-% convert each sample
+%% convert each sample
 parfor i=1:nsamples
     
     fprintf('sample %d/%d\n',i,nsamples);
