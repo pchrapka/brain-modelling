@@ -69,7 +69,7 @@ end
 clear result;
 
 %% convert each sample
-parfor i=1:nsamples
+for i=1:nsamples
     
     fprintf('sample %d/%d\n',i,nsamples);
     

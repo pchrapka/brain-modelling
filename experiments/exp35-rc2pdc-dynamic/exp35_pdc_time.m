@@ -4,7 +4,8 @@ nchannels = 20;
 norder = 10;
 metric = 'euc';
 
-channels = [5 10 20 40];
+channels = [5 10 20 40 100];
+% channels = [5 10 20 30];
 telapsed = zeros(size(channels));
 
 sparsity = 0.2;
@@ -38,7 +39,7 @@ for i=1:length(channels)
     pf = eye(nchannels);
     
     tstart = tic;
-    out = pdc10(A2,pf,'metric',metric);
+    out = pdc11(A2,pf,'metric',metric);
     telapsed(i) = toc(tstart);
     
 end
