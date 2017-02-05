@@ -6,7 +6,7 @@ fprintf('fIij\n');
 % niter = 10000;
 % n = 5;
 
-niter = 1;
+niter = 10;
 n = 100;
 
 i = randsample(n,1);
@@ -27,7 +27,7 @@ for k=1:niter
     Iij(n*(j-1)+i) = 1;
     Iij = diag(Iij);
     C = kron(eye(2), Iij);
-    b{m} = C*a;
+    b{m} = a'*C*a;
 end
 telapsed = toc(tstart);
 m = m+1;
@@ -42,7 +42,7 @@ for k=1:niter
     Iij = diag(Iij);
     C = blkdiag(Iij,Iij);
     %C = kron(eye(2), Iij);
-    b{m} = C*a;
+    b{m} = a'*C*a;
 end
 telapsed = toc(tstart);
 if ~isequal(b{m},b{1})
@@ -59,7 +59,7 @@ for k=1:niter
     Iij(n*(j-1)+i) = 1;
     Iij = diag(Iij);
     %C = kron(eye(2), Iij);
-    b{m} = kronvec(eye(2),Iij,a);
+    b{m} = a'*kronvec(eye(2),Iij,a);
 end
 telapsed = toc(tstart);
 if ~isequal(b{m},b{1})
@@ -75,7 +75,7 @@ for k=1:niter
     select = false(n^2,1);
     select(n*(j-1)+i) = true;
     select = [select; select];
-    b{m} = a.*select;
+    b{m} = a'* (select.*a);
 end
 telapsed = toc(tstart);
 if ~isequal(b{m},b{1})
@@ -84,6 +84,23 @@ end
 m = m+1;
 avgtime = telapsed/niter;
 fprintf('method1 avg time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+
+tstart = tic;
+for k=1:niter
+    select = false(n^2,1);
+    select(n*(j-1)+i) = true;
+    select = [select; select];
+    c = a(select);
+    b{m} = c'*c;
+end
+telapsed = toc(tstart);
+if ~isequal(b{m},b{1})
+    fprintf('\tincorrect final answer\n');
+end
+m = m+1;
+avgtime = telapsed/niter;
+fprintf('method2 avg time: %e\n',avgtime);
 fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 
 %% fIj
@@ -98,7 +115,7 @@ for k=1:niter
     Ij = diag(Ij);
     Ij = kron(Ij, eye(n));
     C = kron(eye(2), Ij);
-    b{m} = C*a;
+    b{m} = a'*C*a;
 end
 telapsed = toc(tstart);
 m = m+1;
@@ -114,7 +131,7 @@ for k=1:niter
     Ij = kron(Ij, eye(n));
     %C = kron(eye(2), Ij);
     C = blkdiag(Ij,Ij);
-    b{m} = C*a;
+    b{m} = a'*C*a;
 end
 telapsed = toc(tstart);
 if ~isequal(b{m},b{1})
@@ -134,7 +151,7 @@ for k=1:niter
     Ij = kroneye(Ij,n);
     %C = kron(eye(2), Ij);
     C = blkdiag(Ij,Ij);
-    b{m} = C*a;
+    b{m} = a'*C*a;
 end
 telapsed = toc(tstart);
 if ~isequal(b{m},b{1})
@@ -153,7 +170,7 @@ for k=1:niter
     Ij = diag(Ij);
     %Ij = kron(Ij, eye(n));
     %C = kron(eye(2), Ij);
-    b{m} = kronvec(blkdiag(Ij,Ij),eye(n),a);
+    b{m} = a'*kronvec(blkdiag(Ij,Ij),eye(n),a);
 end
 telapsed = toc(tstart);
 if ~isequal(b{m},b{1})
@@ -171,7 +188,7 @@ for k=1:niter
     Ij = diag(Ij);
     %Ij = kron(Ij, eye(n));
     %C = kron(eye(2), Ij);
-    b{m} = kronvec(eye(2),kroneye(Ij,n),a);
+    b{m} = a'*kronvec(eye(2),kroneye(Ij,n),a);
 end
 telapsed = toc(tstart);
 if ~isequal(b{m},b{1})
@@ -189,7 +206,7 @@ for k=1:niter
     idxend = idxbeg + n -1;
     select(idxbeg:idxend) = true;
     select = [select; select];
-    b{m} = a.*select;
+    b{m} = a'*(a.*select);
 end
 telapsed = toc(tstart);
 if ~isequal(b{m},b{1})
@@ -198,4 +215,23 @@ end
 m = m+1;
 avgtime = telapsed/niter;
 fprintf('method1 avg time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+
+tstart = tic;
+for k=1:niter
+    select = false(n^2,1);
+    idxbeg = (j-1)*n+1;
+    idxend = idxbeg + n -1;
+    select(idxbeg:idxend) = true;
+    select = [select; select];
+    c = a(select);
+    b{m} = c'*c;
+end
+telapsed = toc(tstart);
+if ~isequal(b{m},b{1})
+    fprintf('\tincorrect final answer\n');
+end
+m = m+1;
+avgtime = telapsed/niter;
+fprintf('method2 avg time: %e\n',avgtime);
 fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
