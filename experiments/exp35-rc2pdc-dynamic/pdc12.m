@@ -78,7 +78,7 @@ pdc_result = zeros(nChannels,nChannels,nFreqs);
 switch lower(metric)
     case {'euc'}
         
-        parfor ff = 1:nFreqs,
+        for ff = 1:nFreqs,
             
             a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
             a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)
@@ -105,7 +105,7 @@ switch lower(metric)
             pinv_pf = pinv(pf);
         end
         
-        parfor ff = 1:nFreqs,
+        for ff = 1:nFreqs,
             
             a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
             a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)

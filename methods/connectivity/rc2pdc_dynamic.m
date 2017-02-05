@@ -90,7 +90,7 @@ clear result;
 for i=1:nsamples
     
     fprintf('sample %d/%d - ',i,nsamples);
-    
+        
     Kftemp = squeeze(Kf(i,:,:,:));
     Kbtemp = squeeze(Kb(i,:,:,:));
     A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);

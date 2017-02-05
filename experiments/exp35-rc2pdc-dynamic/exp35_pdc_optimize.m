@@ -26,7 +26,7 @@ ntrials = 1;
 % Kb = vrc_data_file.Kb(1,:,:,:);
 
 %% set up random matrices
-nchannels = 4;
+nchannels = 10;
 Kf = zeros(1,nchannels,nchannels,norder);
 Kf(1,:,:,:) = rand(nchannels,nchannels,norder);
 Kb = Kf;
@@ -260,6 +260,30 @@ for i=1:length(metrics)
     m = m+1;
     avgtime = telapsed/niter;
     fprintf('pdc11 time: %e\n',avgtime);
+    fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+    
+    % pdc12
+    %   euc
+    %   - freq outer loop
+    %   - selector
+    %   - don't duplicate j's
+    %   info, diag
+    %   - freq outer loop
+    %   - avoid recomputing some matrices
+    %   - selector
+    %   - compute r once per freq
+    %   - don't duplicate j's
+    tstart = tic;
+    for k=1:niter
+        out{m} = pdc12(A2,pf,'metric',metric);
+    end
+    telapsed = toc(tstart);
+    if ~isequal(out{m},out{1})
+        fprintf('\tincorrect final answer\n');
+    end
+    m = m+1;
+    avgtime = telapsed/niter;
+    fprintf('pdc12 time: %e\n',avgtime);
     fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 end
 
