@@ -17,6 +17,8 @@ function result = rc2pdc_dynamic(Kf,Kb,varargin)
 %       flag to compute spectral density
 %   coherence (logical, default = false)
 %       flag to compute spectrum
+%   downsample (integer, default = 'none')
+%       downsampling 
 
 p = inputParser();
 addRequired(p,'Kf',@(x) length(size(x)) == 4);
@@ -24,6 +26,7 @@ addRequired(p,'Kb',@(x) length(size(x)) == 4);
 addParameter(p,'specden',false,@islogical);
 addParameter(p,'coherence',false,@islogical);
 addParameter(p,'metric','euc',@ischar);
+addParameter(p,'downsample','none',@(x) isnumeric(x)  || isequal(x,'none'));
 parse(p,Kf,Kb,varargin{:});
 
 if size(Kf) ~= size(Kb)
@@ -37,6 +40,21 @@ end
 
 options = copyfields(p.Results,[],...
     {'specden','coherence','metric'});
+
+%% downsample
+if ~isequal(p.Results.downsample,'none')
+    fprintf('downsampling by %d\n',p.Results.downsample);
+    % create index
+    idx_mini = false(p.Results.downsample,1);
+    idx_mini(1) = true;
+    
+    ntimes = floor(nsamples/p.Results.downsample);
+    idx = repmat(idx_mini,ntimes,1);
+    
+    Kf = Kf(idx,:,:,:);
+    Kb = Kb(idx,:,:,:);
+    nsamples = size(Kf,1);
+end 
 
 %% get sizes for data strucs
 %% pdc

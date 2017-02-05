@@ -57,32 +57,8 @@ for i=1:length(files)
         outdir = data_path;
     end
     
-    % create pdc output file name
-    outfile_pdc = fullfile(data_path,sprintf('%s-pdc-dynamic.mat',name));
-    
-    % check pdc freshness
-    fresh = false;
-    if exist(outfile_pdc,'file')
-        data_time = get_timestamp(files{i});
-        pdc_time = get_timestamp(outfile_pdc);
-        if data_time > pdc_time
-            fresh = true;
-        end
-    end
-    
-    % load pdc
-    if fresh || ~exist(outfile_pdc,'file')
-        fprintf('computing pdc from rc for %s\n',name);
-        print_msg_filename(files{i},'loading');
-        data = loadfile(files{i});
-        
-        % convert rc to pdc
-        result = rc2pdc_dynamic(data.estimate.Kf,data.estimate.Kb,'metric','euc');
-        save_parfor(outfile_pdc,result);
-    else
-        print_msg_filename(outfile_pdc,'loading');
-        result = loadfile(outfile_pdc);
-    end
+    print_msg_filename(files{i},'loading');
+    result = loadfile(files{i});
     
     % plot
     h = figure;
