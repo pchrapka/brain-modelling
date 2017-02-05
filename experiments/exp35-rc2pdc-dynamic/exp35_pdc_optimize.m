@@ -26,7 +26,7 @@ ntrials = 1;
 % Kb = vrc_data_file.Kb(1,:,:,:);
 
 %% set up random matrices
-nchannels = 15;
+nchannels = 20;
 Kf = zeros(1,nchannels,nchannels,norder);
 Kf(1,:,:,:) = rand(nchannels,nchannels,norder);
 Kb = Kf;
@@ -44,32 +44,32 @@ pf = eye(nchannels);
 niter = 1;
 metrics = {...
     'euc',...
-    ...'info',...
-    ...'diag',...
+    'info',...
+    'diag',...
     };
 avgtime_benchmark = 1;
 for i=1:length(metrics)
     metric = metrics{i};
     
     fprintf('pdc profiling for metric: %s\n',metric);
-    tstart = tic;
-    for k=1:niter
-        out = pdc_orig(A2,pf,'metric',metric);
-    end
-    telapsed = toc(tstart);
-    avgtime = telapsed/niter;
-    avgtime_benchmark = avgtime;
-    fprintf('pdc time: %e\n',avgtime);
+%     tstart = tic;
+%     for k=1:niter
+%         out = pdc_orig(A2,pf,'metric',metric);
+%     end
+%     telapsed = toc(tstart);
+%     avgtime = telapsed/niter;
+%     avgtime_benchmark = avgtime;
+%     fprintf('pdc time: %e\n',avgtime);
     
-    %pdc2 - uses kronm, slow with reshape operations
-    tstart = tic;
-    for k=1:niter
-        out = pdc2(A2,pf,'metric',metric);
-    end
-    telapsed = toc(tstart);
-    avgtime = telapsed/niter;
-    fprintf('pdc2 time: %e\n',avgtime);
-    fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+%     %pdc2 - uses kronm, slow with reshape operations
+%     tstart = tic;
+%     for k=1:niter
+%         out = pdc2(A2,pf,'metric',metric);
+%     end
+%     telapsed = toc(tstart);
+%     avgtime = telapsed/niter;
+%     fprintf('pdc2 time: %e\n',avgtime);
+%     fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
     %
     % % pdc3 - switched freq to inner loop
     % tstart = tic;
@@ -179,6 +179,26 @@ for i=1:length(metrics)
     telapsed = toc(tstart);
     avgtime = telapsed/niter;
     fprintf('pdc9 time: %e\n',avgtime);
+    fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+    
+    % pdc10
+    %   euc
+    %   - freq outer loop
+    %   - Iij - kronvec
+    %   - Ij - kronvec
+    %   info, diag
+    %   - freq outer loop
+    %   - avoid recomputing some matrices
+    %   - used kronvec for Iij
+    %   - used kronvec + blkdiag for Ij
+    %   - compute r once per freq
+    tstart = tic;
+    for k=1:niter
+        out = pdc10(A2,pf,'metric',metric);
+    end
+    telapsed = toc(tstart);
+    avgtime = telapsed/niter;
+    fprintf('pdc10 time: %e\n',avgtime);
     fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 end
 

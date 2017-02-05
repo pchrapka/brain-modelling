@@ -12,7 +12,7 @@ function AL = A_to_f(A, nf)
 
 [nChannels, nChannels, p] = size(A);
 Jimag=sqrt(-1);
-%# expoentes sao o array de expoentes da fft, com todas frequencias 
+% # expoentes sao o array de expoentes da fft, com todas frequencias 
 %  por todos lags
 
 exponents = reshape((-Jimag*pi*kron(0:(nf-1),(1:p))/nf),p,nf).';
