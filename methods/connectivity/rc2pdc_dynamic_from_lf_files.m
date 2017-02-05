@@ -53,7 +53,8 @@ for i=1:length(files)
         data = loadfile(files{i});
         
         % convert rc to pdc
-        result = rc2pdc_dynamic(data.estimate.Kf,data.estimate.Kb,p.params{:});
+        result = rc2pdc_dynamic(data.estimate.Kf,data.estimate.Kb,...
+            p.Results.params{:});
         save_parfor(outfile_pdc,result);
     else
         fprintf('already computed pdc from rc for %s\n',name);
