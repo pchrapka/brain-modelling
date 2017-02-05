@@ -71,7 +71,7 @@ clear result;
 %% convert each sample
 for i=1:nsamples
     
-    fprintf('sample %d/%d\n',i,nsamples);
+    fprintf('sample %d/%d - ',i,nsamples);
     
     Kftemp = squeeze(Kf(i,:,:,:));
     Kbtemp = squeeze(Kb(i,:,:,:));
@@ -79,7 +79,12 @@ for i=1:nsamples
     
     nchannels = size(A2,1);
     pf = eye(nchannels);
+    
+    tstart = tic;
     out = pdc(A2,pf,'metric',options.metric);
+    telapsed = toc(tstart);
+    fprintf('%0.2f\n',telapsed);
+    
     if options.specden
         result_SS(i,:,:,:) = ss_alg(A2, pf, 128);
     end
