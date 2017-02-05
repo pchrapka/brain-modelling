@@ -83,7 +83,7 @@ for i=1:nsamples
     tstart = tic;
     out = pdc(A2,pf,'metric',options.metric);
     telapsed = toc(tstart);
-    fprintf('%0.2f\n',telapsed);
+    fprintf('%0.2fs\n',telapsed);
     
     if options.specden
         result_SS(i,:,:,:) = ss_alg(A2, pf, 128);
