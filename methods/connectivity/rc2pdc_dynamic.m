@@ -46,7 +46,7 @@ Kbtemp = squeeze(Kb(1,:,:,:));
 A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
 nchannels = size(A2,1);
 pf = eye(nchannels);
-result.pdc = pdc(A2,pf,'metric',options.metric);
+result = pdc(A2,pf,'metric',options.metric);
 result_pdc = zeros([nsamples size(result.pdc)]);
 
 %% spectral density
