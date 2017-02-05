@@ -12,28 +12,42 @@ nsamples = 500;
 ntrials = 1;
 
 %% set up vrc
-vrc_type = 'vrc-cp-ch2-coupling2-rnd';
-vrc_type_params = {}; % use default
-vrc_gen = VARGenerator(vrc_type, nchannels, 'version', 1);
-if ~vrc_gen.hasprocess
-    vrc_gen.configure(vrc_type_params{:});
-end
-data_vrc = vrc_gen.generate('ntrials',ntrials);
+% vrc_type = 'vrc-cp-ch2-coupling2-rnd';
+% vrc_type_params = {}; % use default
+% vrc_gen = VARGenerator(vrc_type, nchannels, 'version', 1);
+% if ~vrc_gen.hasprocess
+%     vrc_gen.configure(vrc_type_params{:});
+% end
+% data_vrc = vrc_gen.generate('ntrials',ntrials);
+% 
+% vrc_data_file = loadfile(vrc_gen.get_file());
 
-vrc_data_file = loadfile(vrc_gen.get_file());
+% Kf = vrc_data_file.Kf(1,:,:,:);
+% Kb = vrc_data_file.Kb(1,:,:,:);
+
+%% set up random matrices
+nchannels = 15;
+Kf = zeros(1,nchannels,nchannels,norder);
+Kf(1,:,:,:) = rand(nchannels,nchannels,norder);
+Kb = Kf;
 
 %% dynamic pdc prep
 
-Kftemp = squeeze(vrc_data_file.true.Kf(1,:,:,:));
-Kbtemp = squeeze(vrc_data_file.true.Kb(1,:,:,:));
+Kftemp = squeeze(Kf(1,:,:,:));
+Kbtemp = squeeze(Kb(1,:,:,:));
 A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
 
 nchannels = size(A2,1);
 pf = eye(nchannels);
 
 %% dynamic pdc
-niter = 30;
-metrics = {'euc','info','diag'};
+niter = 1;
+metrics = {...
+    'euc',...
+    ...'info',...
+    ...'diag',...
+    };
+avgtime_benchmark = 1;
 for i=1:length(metrics)
     metric = metrics{i};
     
@@ -47,15 +61,15 @@ for i=1:length(metrics)
     avgtime_benchmark = avgtime;
     fprintf('pdc time: %e\n',avgtime);
     
-    % %pdc2 - uses kronm, slow with reshape operations
-    % tstart = tic;
-    % for k=1:niter
-    %     out = pdc2(A2,pf,'metric',metric);
-    % end
-    % telapsed = toc(tstart);
-    % avgtime = telapsed/niter;
-    % fprintf('pdc2 time: %e\n',avgtime);
-    % fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+    %pdc2 - uses kronm, slow with reshape operations
+    tstart = tic;
+    for k=1:niter
+        out = pdc2(A2,pf,'metric',metric);
+    end
+    telapsed = toc(tstart);
+    avgtime = telapsed/niter;
+    fprintf('pdc2 time: %e\n',avgtime);
+    fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
     %
     % % pdc3 - switched freq to inner loop
     % tstart = tic;
@@ -120,28 +134,28 @@ for i=1:length(metrics)
     % fprintf('pdc7 time: %e\n',avgtime);
     % fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
     
-    % pdc8
-    %   euc
-    %   - freq inner loop
-    %   - Iij
-    %       2012: blkdiag
-    %       2015 kron
-    %   - Ij
-    %       2012: kron + blkdiag
-    %       2015 kron
-    %   info, diag
-    %   - freq inner loop
-    %   - avoid recomputing some matrices, applies to diag and info metrics
-    %   - used kronvec for Iij
-    %   - used kronvec + blkdiag for Ij
-    tstart = tic;
-    for k=1:niter
-        out = pdc8(A2,pf,'metric',metric);
-    end
-    telapsed = toc(tstart);
-    avgtime = telapsed/niter;
-    fprintf('pdc8 time: %e\n',avgtime);
-    fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+%     % pdc8
+%     %   euc
+%     %   - freq inner loop
+%     %   - Iij
+%     %       2012: blkdiag
+%     %       2015 kron
+%     %   - Ij
+%     %       2012: kron + blkdiag
+%     %       2015 kron
+%     %   info, diag
+%     %   - freq inner loop
+%     %   - avoid recomputing some matrices, applies to diag and info metrics
+%     %   - used kronvec for Iij
+%     %   - used kronvec + blkdiag for Ij
+%     tstart = tic;
+%     for k=1:niter
+%         out = pdc8(A2,pf,'metric',metric);
+%     end
+%     telapsed = toc(tstart);
+%     avgtime = telapsed/niter;
+%     fprintf('pdc8 time: %e\n',avgtime);
+%     fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
     
     % pdc9
     %   euc
@@ -173,8 +187,12 @@ end
 %% fIij
 fprintf('fIij\n');
 
-niter = 10000;
-n = 10;
+% niter = 10000;
+% n = 10;
+
+niter = 1;
+n = 100;
+
 i = 5;
 j = 7;
 a = randn(2*n^2,1);
