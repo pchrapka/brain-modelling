@@ -11,10 +11,10 @@ n = 100;
 
 i = randsample(n,1);
 j = randsample(n,1);
-a = 1:(n^2);
-a = [a a];
-a = a(:);
-% a = randn(2*n^2,1);
+a = 1:2*(n^2);
+% a = [a a];
+% a = a(:);
+a = randn(2*n^2,1);
 m = 1;
 b = {};
 
@@ -101,6 +101,23 @@ end
 m = m+1;
 avgtime = telapsed/niter;
 fprintf('method2 avg time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+
+tstart = tic;
+for k=1:niter
+    select = zeros(2,1);
+    select(1) = n*(j-1)+i;
+    select(2) = n^2 + select(1);
+    c = a(select);
+    b{m} = c'*c;
+end
+telapsed = toc(tstart);
+if ~isequal(b{m},b{1})
+    fprintf('\tincorrect final answer\n');
+end
+m = m+1;
+avgtime = telapsed/niter;
+fprintf('method3 avg time: %e\n',avgtime);
 fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 
 %% fIj
@@ -234,4 +251,23 @@ end
 m = m+1;
 avgtime = telapsed/niter;
 fprintf('method2 avg time: %e\n',avgtime);
+fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+
+tstart = tic;
+for k=1:niter
+    idxbeg = (j-1)*n+1;
+    idxend = idxbeg + n -1;
+    idxbeg2 = idxbeg + n^2;
+    idxend2 = idxend + n^2;
+    select = [(idxbeg:idxend)'; (idxbeg2:idxend2)'];
+    c = a(select);
+    b{m} = c'*c;
+end
+telapsed = toc(tstart);
+if ~isequal(b{m},b{1})
+    fprintf('\tincorrect final answer\n');
+end
+m = m+1;
+avgtime = telapsed/niter;
+fprintf('method3 avg time: %e\n',avgtime);
 fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);

@@ -26,7 +26,7 @@ ntrials = 1;
 % Kb = vrc_data_file.Kb(1,:,:,:);
 
 %% set up random matrices
-nchannels = 20;
+nchannels = 40;
 Kf = zeros(1,nchannels,nchannels,norder);
 Kf(1,:,:,:) = rand(nchannels,nchannels,norder);
 Kb = Kf;
@@ -70,7 +70,7 @@ for i=1:length(metrics)
 %         out{m} = pdc2(A2,pf,'metric',metric);
 %     end
 %     telapsed = toc(tstart);
-%     if ~isequal(out{m},out{1})
+%     if ~isequalntol(out{m}.pdc,out{1}.pdc,'AbsTol',eps*10)
 %         fprintf('\tincorrect final answer\n');
 %     end
 %     m = m+1;
@@ -84,7 +84,7 @@ for i=1:length(metrics)
 %         out{m} = pdc3(A2,pf,'metric',metric);
 %     end
 %     telapsed = toc(tstart);
-%     if ~isequal(out{m},out{1})
+%     if ~isequalntol(out{m}.pdc,out{1}.pdc,'AbsTol',eps*10)
 %         fprintf('\tincorrect final answer\n');
 %     end
 %     m = m+1;
@@ -100,7 +100,7 @@ for i=1:length(metrics)
 %         out{m} = pdc4(A2,pf,'metric',metric);
 %     end
 %     telapsed = toc(tstart);
-%     if ~isequal(out{m},out{1})
+%     if ~isequalntol(out{m}.pdc,out{1}.pdc,'AbsTol',eps*10)
 %         fprintf('\tincorrect final answer\n');
 %     end
 %     m = m+1;
@@ -117,7 +117,7 @@ for i=1:length(metrics)
 %         out{m} = pdc5(A2,pf,'metric',metric);
 %     end
 %     telapsed = toc(tstart);
-%     if ~isequal(out{m},out{1})
+%     if ~isequalntol(out{m}.pdc,out{1}.pdc,'AbsTol',eps*10)
 %         fprintf('\tincorrect final answer\n');
 %     end
 %     m = m+1;
@@ -135,7 +135,7 @@ for i=1:length(metrics)
 %         out{m} = pdc6(A2,pf,'metric',metric);
 %     end
 %     telapsed = toc(tstart);
-%     if ~isequal(out{m},out{1})
+%     if ~isequalntol(out{m}.pdc,out{1}.pdc,'AbsTol',eps*10)
 %         fprintf('\tincorrect final answer\n');
 %     end
 %     m = m+1;
@@ -153,7 +153,7 @@ for i=1:length(metrics)
 %         out{m} = pdc7(A2,pf,'metric',metric);
 %     end
 %     telapsed = toc(tstart);
-%     if ~isequal(out{m},out{1})
+%     if ~isequalntol(out{m}.pdc,out{1}.pdc,'AbsTol',eps*10)
 %         fprintf('\tincorrect final answer\n');
 %     end
 %     m = m+1;
@@ -180,7 +180,7 @@ for i=1:length(metrics)
 %         out{m} = pdc8(A2,pf,'metric',metric);
 %     end
 %     telapsed = toc(tstart);
-%     if ~isequal(out{m},out{1})
+%     if ~isequalntol(out{m}.pdc,out{1}.pdc,'AbsTol',eps*10)
 %         fprintf('\tincorrect final answer\n');
 %     end
 %     m = m+1;
@@ -208,7 +208,7 @@ for i=1:length(metrics)
 %         out{m} = pdc9(A2,pf,'metric',metric);
 %     end
 %     telapsed = toc(tstart);
-%     if ~isequal(out{m},out{1})
+%     if ~isequalntol(out{m}.pdc,out{1}.pdc,'AbsTol',eps*10)
 %         fprintf('\tincorrect final answer\n');
 %     end
 %     m = m+1;
@@ -232,7 +232,7 @@ for i=1:length(metrics)
 %         out{m} = pdc10(A2,pf,'metric',metric);
 %     end
 %     telapsed = toc(tstart);
-%     if ~isequal(out{m},out{1})
+%     if ~isequalntol(out{m}.pdc,out{1}.pdc,'AbsTol',eps*10)
 %         fprintf('\tincorrect final answer\n');
 %     end
 %     m = m+1;
@@ -254,8 +254,10 @@ for i=1:length(metrics)
         out{m} = pdc11(A2,pf,'metric',metric);
     end
     telapsed = toc(tstart);
-    if ~isequal(out{m},out{1})
+    if ~isequalntol(out{m}.pdc,out{1}.pdc,'AbsTol',eps*10)
         fprintf('\tincorrect final answer\n');
+        d = out{m}.pdc - out{1}.pdc;
+        fprintf('\t%g\n',norm(d(:)));
     end
     m = m+1;
     avgtime = telapsed/niter;
@@ -278,8 +280,10 @@ for i=1:length(metrics)
         out{m} = pdc12(A2,pf,'metric',metric);
     end
     telapsed = toc(tstart);
-    if ~isequal(out{m},out{1})
+    if ~isequalntol(out{m}.pdc,out{1}.pdc,'AbsTol',eps*10)
         fprintf('\tincorrect final answer\n');
+        d = out{m}.pdc - out{1}.pdc;
+        fprintf('\t%g\n',norm(d(:)));
     end
     m = m+1;
     avgtime = telapsed/niter;
@@ -304,12 +308,42 @@ for i=1:length(metrics)
         out{m} = pdc13(A2,pf,'metric',metric);
     end
     telapsed = toc(tstart);
-    if ~isequal(out{m},out{1})
+    if ~isequalntol(out{m}.pdc,out{1}.pdc,'AbsTol',eps*10)
         fprintf('\tincorrect final answer\n');
+        d = out{m}.pdc - out{1}.pdc;
+        fprintf('\t%g\n',norm(d(:)));
     end
     m = m+1;
     avgtime = telapsed/niter;
     fprintf('pdc13 time: %e\n',avgtime);
+    fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
+    
+     % pdc14
+    %   euc
+    %   - freq outer loop
+    %   - selector
+    %   - don't duplicate j's
+    %   - use selector as small index
+    %   info, diag
+    %   - freq outer loop
+    %   - avoid recomputing some matrices
+    %   - selector
+    %   - compute r once per freq
+    %   - don't duplicate j's
+    %   - use selector as small index
+    tstart = tic;
+    for k=1:niter
+        out{m} = pdc14(A2,pf,'metric',metric);
+    end
+    telapsed = toc(tstart);
+    if ~isequalntol(out{m}.pdc,out{1}.pdc,'AbsTol',eps*10)
+        fprintf('\tincorrect final answer\n');
+        d = out{m}.pdc - out{1}.pdc;
+        fprintf('\t%g\n',norm(d(:)));
+    end
+    m = m+1;
+    avgtime = telapsed/niter;
+    fprintf('pdc14 time: %e\n',avgtime);
     fprintf('improvement: %0.2f\n',avgtime_benchmark/avgtime);
 end
 
