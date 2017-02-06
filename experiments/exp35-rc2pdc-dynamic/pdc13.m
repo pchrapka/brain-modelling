@@ -1,4 +1,4 @@
-function c=pdc(A,pf,varargin)
+function c=pdc13(A,pf,varargin)
 
 %Compute connectivity measure given by "option" from series j-->i.
 %
@@ -78,7 +78,7 @@ pdc_result = zeros(nChannels,nChannels,nFreqs);
 switch lower(metric)
     case {'euc'}
         
-        parfor ff = 1:nFreqs,
+        for ff = 1:nFreqs,
             
             a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
             a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)
@@ -107,7 +107,7 @@ switch lower(metric)
             pinv_pf = pinv(pf);
         end
         
-        parfor ff = 1:nFreqs,
+        for ff = 1:nFreqs,
             
             a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
             a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)
@@ -218,20 +218,19 @@ end
 %==========================================================================
 function select = fIij_selector(i, j, n)
 %'''Returns selector for Iij of the formula'''
-select = zeros(2,1);
-select(1) = n*(j-1)+i;
-select(2) = n^2 + select(1);
+select = false(n^2,1);
+select(n*(j-1)+i) = true;
+select = [select; select];
 end
 
 %==========================================================================
 function select =  fIj_selector(j, n)
 %'''Returns selector for Ij of the formula'''
+select = false(n^2,1);
 idxbeg = (j-1)*n+1;
 idxend = idxbeg + n -1;
-idxbeg2 = idxbeg + n^2;
-idxend2 = idxend + n^2;
-
-select = [(idxbeg:idxend)'; (idxbeg2:idxend2)'];
+select(idxbeg:idxend) = true;
+select = [select; select];
 end
 
 %==========================================================================
