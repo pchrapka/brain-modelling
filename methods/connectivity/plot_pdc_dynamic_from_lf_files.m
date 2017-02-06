@@ -78,7 +78,7 @@ for i=1:length(files)
                 p.Results.params{1},p.Results.params{2});
         case 'single-largest'
             p2 = inputParser();
-            addParameter(p,'nplots',5,@isnumeric);
+            addParameter(p2,'nplots',5,@isnumeric);
             parse(p2,p.Results.params{:});
             
             % summarize data
