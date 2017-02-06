@@ -27,7 +27,7 @@ p = inputParser();
 addRequired(p,'files',@(x) ischar(x) || iscell(x))
 addParameter(p,'save',false,@islogical);
 addParameter(p,'outdir','',@ischar);
-options_mode = {'tiled','summary'};
+options_mode = {'tiled','summary','single','single-largest'};
 addParameter(p,'mode','tiled',@(x) any(validatestring(x,options_mode)));
 addParameter(p,'params',{},@iscell);
 parse(p,files,varargin{:});
