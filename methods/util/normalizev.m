@@ -9,5 +9,6 @@ function out = normalizev(signal)
 
 nsamples = size(signal,2);
 out = signal./repmat(std(signal,0,2),1,nsamples);
+out(isnan(out)) = 0;
 
 end
