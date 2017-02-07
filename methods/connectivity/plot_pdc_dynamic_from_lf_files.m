@@ -97,7 +97,7 @@ for i=1:length(files)
                     idxj_cur, idxi_cur);
                 
                 % save
-                save_fig_exp(outdir,'tag', [name save_tag]);
+                save_fig2('path',outdir,'tag', [name save_tag]);
             end
             % don't use common save
             flag_save = false;
@@ -107,7 +107,7 @@ for i=1:length(files)
     
     if flag_save
         % save
-        save_fig_exp(outdir,'tag', [name save_tag]);
+        save_fig2('path',outdir,'tag', [name save_tag]);
     end
     
 end

@@ -113,6 +113,7 @@ switch lower(metric)
             a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)
             
             r = kronvec(pinv_eye,pinv_evar_d,a);
+            r2 = 0;
             if isequal(lower(metric),'info')
                 r2 = kronvec(pinv_eye,pinv_pf,a);
             end
@@ -120,6 +121,7 @@ switch lower(metric)
             for j = 1:nChannels,
                 
                 Ij_selector = fIj_selector(j, nChannels);
+                den = 0;
                 
                 switch lower(metric)
                     case {'diag'}
@@ -135,6 +137,7 @@ switch lower(metric)
                 for i = 1:nChannels,
                     
                     Iij_selector = fIij_selector(i,j,nChannels);
+                    num = 0;
                     
                     %For diag or info case, include evar in the expression'
                     switch lower(metric)

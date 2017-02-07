@@ -75,7 +75,7 @@ for i=1:length(files)
     
     if p.Results.save
         % save
-        save_fig_exp(outdir,'tag', [name save_tag]);
+        save_fig2('path', outdir,'tag', [name save_tag]);
     end
     
 end
