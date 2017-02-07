@@ -228,20 +228,25 @@ for k=1:nfilters
         data.estimate.Kf = estimate_kf{k};
         data.estimate.Kb = estimate_kb{k};
         save_parfor(outfile,data);
+        
+        % check mse from 0
+        data_true_kf = zeros(size(estimate_kf{k}));
+        data_mse = mse_iteration(estimate_kf{k},data_true_kf);
+        if any(data_mse > 10)
+            large_error_name{k} = slug_filter;
+            large_error(k) = true;
+        end
+        
     else
-        fprintf('loading: %s\n', slug_filter);
-        % load data
-        data = loadfile(outfile);
-        estimate_kf{k} = data.estimate.Kf;
-        estimate_kb{k} = data.estimate.Kb;
-    end
-    
-    % check mse from 0
-    data_true_kf = zeros(size(estimate_kf{k}));
-    data_mse = mse_iteration(estimate_kf{k},data_true_kf);
-    if any(data_mse > 10)
-        large_error_name{k} = slug_filter;
-        large_error(k) = true;
+        % only load if we're doing something with it
+        % tedious with large files
+        if p.Results.plot_pdc
+            fprintf('loading: %s\n', slug_filter);
+            % load data
+            data = loadfile(outfile);
+            estimate_kf{k} = data.estimate.Kf;
+            estimate_kb{k} = data.estimate.Kb;
+        end
     end
 end
     
