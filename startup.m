@@ -1,7 +1,8 @@
 %% setup paths and environment
-
 % add the current directory
 addpath(pwd);
+
+startup_project;
 
 %% add data
 addpath(fullfile(pwd,'..','data-headmodel','mni152'));
