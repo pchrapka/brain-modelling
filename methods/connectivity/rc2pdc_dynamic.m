@@ -61,7 +61,7 @@ end
 fprintf('getting pdc data size\n');
 Kftemp = squeeze(Kf(1,:,:,:));
 Kbtemp = squeeze(Kb(1,:,:,:));
-A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
+A2 = rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3,'transpose',false);
 nchannels = size(A2,1);
 pf = eye(nchannels);
 result = pdc(A2,pf,'metric',options.metric);
@@ -93,7 +93,7 @@ for i=1:nsamples
         
     Kftemp = squeeze(Kf(i,:,:,:));
     Kbtemp = squeeze(Kb(i,:,:,:));
-    A2 = -rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
+    A2 = rcarrayformat(rc2ar(Kftemp,Kbtemp),'format',3);
     
     nchannels = size(A2,1);
     pf = eye(nchannels);

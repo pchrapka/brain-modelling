@@ -11,7 +11,7 @@ function result = rc2pdc(Kf,Kb)
 %       backward reflection coefficients, [order channels channels] or
 %       [channels channels order]
 
-A2 = -rcarrayformat(rc2ar(Kf,Kb),'format',3);
+A2 = rcarrayformat(rc2ar(Kf,Kb),'format',3,'transpose',false);
 nchannels = size(A2,1);
 pf = eye(nchannels);
 result = pdc(A2,pf,'metric','euc');

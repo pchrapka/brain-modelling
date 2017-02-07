@@ -22,6 +22,7 @@ function out = rcarrayformat(coefs,varargin)
 p = inputParser();
 addRequired(p,'coefs',@(x) length(size(x)) == 3);
 addParameter(p,'format',1,@isnumeric);
+addParameter(p,'transpose',false,@islogical);
 parse(p,coefs,varargin{:});
 
 % check original format
@@ -58,11 +59,17 @@ end
 for i=1:norder
     switch p.Results.format
         case 1
-            out(i,:,:) = coefs(:,:,i);
+            out(i,:,:) = transpose_rc(squeeze(coefs(:,:,i)), p.Results.transpose);
         case 3
-            out(:,:,i) = coefs(i,:,:);
+            out(:,:,i) = transpose_rc(squeeze(coefs(i,:,:)), p.Results.transpose);
     end
 end
     
 
+end
+
+function coefs = transpose_rc(coefs,flag)
+if flag
+    coefs = coefs';
+end
 end
