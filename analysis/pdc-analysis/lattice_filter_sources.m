@@ -100,7 +100,7 @@ end
 %% run lattice filters
 setup_parfor();
 
-script_name = [outdir '.m'];
+script_name = [fullfile(outdir,slug_samples) '.m'];
 
 lf_files = run_lattice_filter(...
     script_name,...
