@@ -59,6 +59,7 @@ for i=1:length(files)
     
     % plot
     h = figure;
+    colormap('jet');
     set(h,'NumberTitle','off','MenuBar','none', 'Name', name );
     set(h, 'Position', [50, 50, 1100, 900]);
     switch p.Results.mode

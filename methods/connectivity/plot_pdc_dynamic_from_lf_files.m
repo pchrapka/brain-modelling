@@ -62,6 +62,7 @@ for i=1:length(files)
     
     % plot
     h = figure;
+    colormap('jet');
     set(h,'NumberTitle','off','MenuBar','none', 'Name', files{i} );
     fprintf('plotting pdc for %s\n',name);
     
