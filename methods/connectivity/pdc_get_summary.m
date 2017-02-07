@@ -14,12 +14,8 @@ function [data_metric, jchannel_idx, ichannel_idx] = pdc_get_summary(data)
 %       corresponding ith-channel index, also column index
 
 p = inputParser();
-fs_default = 1;
 addRequired(p,'data',@isstruct);
-addParameter(p,'w_max',0.5,@(x) isnumeric(x) && x <= 0.5); % not sure about this
-addParameter(p,'fs',fs_default,@isnumeric);
-addParameter(p,'ChannelLabels',{},@iscell);
-parse(p,data,varargin{:});
+parse(p,data);
 
 dims = size(data.pdc);
 ndims = length(dims);
