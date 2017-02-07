@@ -88,8 +88,6 @@ clear result;
 %% convert each sample
 parfor i=1:nsamples
     
-    fprintf('sample %d/%d - ',i,nsamples);
-    
     Kftemp = squeeze(Kf(i,:,:,:));
     Kbtemp = squeeze(Kb(i,:,:,:));
     pdc_sample = rc2pdc(Kftemp, Kbtemp,...
@@ -97,7 +95,8 @@ parfor i=1:nsamples
         'specden', options.specden,...
         'coherence', options.coherence,...
         'parfor', false);
-    fprintf('%0.2fs\n',pdc_sample.telapsed);
+    
+    fprintf('sample %d/%d - %0.2fs\n',i,nsamples,pdc_sample.telapsed);
     
     if options.specden
         result_SS(i,:,:,:) = pdc_sample.SS;
