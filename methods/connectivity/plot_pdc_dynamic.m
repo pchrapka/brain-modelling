@@ -3,7 +3,7 @@ function plot_pdc_dynamic(data,varargin)
 p = inputParser();
 fs_default = 1;
 addRequired(p,'data',@isstruct);
-addParameter(p,'w_max',0.5,@(x) isnumeric(x) && x <= 0.5); % not sure about this
+addParameter(p,'w',[0 0.5],@(x) length(x) == 2 && isnumeric(2)); % not sure about this
 addParameter(p,'fs',fs_default,@isnumeric);
 addParameter(p,'ChannelLabels',{},@iscell);
 parse(p,data,varargin{:});
@@ -19,14 +19,32 @@ end
 
 fs = p.Results.fs;
 
-w_max = p.Results.w_max;
-w = 0:fs/(2*nfreqs):w_max-fs/(2*nfreqs);
-nPlotPoints = length(w);
-w_min = w(1);
+if p.Results.w(1) < 0 || p.Results.w(2) > 0.5
+    disp(p.Results.w);
+    error('w range too wide should be between [0 0.5]');
+end
+    
+w = 0:nfreqs-1;
+w = w/(2*nfreqs);
+
+w_idx = (w >= p.Results.w(1)) & (w <= p.Results.w(2));
+f = w(w_idx)*fs;
+freq_idx = 1:nfreqs;
+freq_idx = freq_idx(w_idx);
+nPlotPoints = length(freq_idx);
 
 hylabel = 0;
 hxlabel = 0;
-ytick = linspace(1, nPlotPoints, 6);
+
+nticks = 6;
+ytick = linspace(1, nPlotPoints, nticks);
+yticklabel = cell(nticks,1);
+for i=1:nticks
+    yticklabel{i} = '';
+end
+yticklabel{1} = sprintf('%0.2f',p.Results.w(1)*fs);
+yticklabel{nticks} = sprintf('%0.2f',p.Results.w(2)*fs);
+
 h = [];
 
 for j=1:nchannels
@@ -36,7 +54,7 @@ for j=1:nchannels
             h = subplot2(nchannels, nchannels, (i-1)*nchannels + j);
             
             %data_plot = zeros(nPlotPoints,nsamples);
-            data_plot = abs(squeeze(data.pdc(:,i,j,1:nPlotPoints))');
+            data_plot = abs(squeeze(data.pdc(:,i,j,freq_idx))');
 %             for n=1:nsamples
 %                 
 %                 % TODO maybe this would be faster by squeezing
@@ -58,14 +76,14 @@ for j=1:nchannels
                
                set(h,...
                    'YTick', ytick, ...
-                   'YTickLabel',[' 0';'  ';'  ';'  ';'  ';'.5'],...
+                   'YTickLabel', yticklabel,...
                    'FontSize',10);
             else
                 hxlabel(j) = labelitx(j,p.Results.ChannelLabels);
                 set(h,...
                     'YtickLabel', []);
             end;
-        elseif i == 1 & j == 2
+        elseif i == 1 && j == 2
             hylabel(i)=labelity(i,p.Results.ChannelLabels);
             set(h,...
                 'XtickLabel', [],...
@@ -80,7 +98,7 @@ for j=1:nchannels
             set(h,...
                 'XtickLabel', [],...
                 'YTick', ytick, ...
-                'YTickLabel',[' 0';'  ';'  ';'  ';'  ';'.5'],...
+                'YTickLabel', yticklabel,...
                 'FontSize',10);
             if i == nchannels,
                 set(h,'FontSize',10,'FontWeight','bold');

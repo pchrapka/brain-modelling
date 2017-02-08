@@ -21,7 +21,7 @@ for i=1:ntrials
 end
 avg = avg/ntrials;
 
-out = copyfields(data,[],{'fsamples','label'});
+out = copyfields(data,[],{'fsample','label'});
 out.trial{1} = avg;
 out.time{1} = data.time{1};
 if isfield(data,'trialinfo')

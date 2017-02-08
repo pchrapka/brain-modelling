@@ -3,7 +3,7 @@ function plot_pdc_dynamic_summary(data,varargin)
 p = inputParser();
 fs_default = 1;
 addRequired(p,'data',@isstruct);
-addParameter(p,'w_max',0.5,@(x) isnumeric(x) && x <= 0.5); % not sure about this
+addParameter(p,'w',[0 0.5],@(x) length(x) == 2 && isnumeric(2)); % not sure about this
 addParameter(p,'fs',fs_default,@isnumeric);
 addParameter(p,'ChannelLabels',{},@iscell);
 parse(p,data,varargin{:});
@@ -19,9 +19,18 @@ end
 
 fs = p.Results.fs;
 
-w_max = p.Results.w_max;
-w = 0:fs/(2*nfreqs):w_max-fs/(2*nfreqs);
-nPlotPoints = length(w);
+if p.Results.w(1) < 0 || p.Results.w(2) > 0.5
+    disp(p.Results.w);
+    error('w range too wide should be between [0 0.5]');
+end
+    
+w = 0:nfreqs-1;
+w = w/(2*nfreqs);
+
+w_idx = (w >= p.Results.w(1)) & (w <= p.Results.w(2));
+f = w(w_idx)*fs;
+freq_idx = 1:nfreqs;
+freq_idx = freq_idx(w_idx);
 
 data_plot = zeros(nchannels, nchannels);
 for j=1:nchannels
@@ -29,7 +38,7 @@ for j=1:nchannels
         % data
         if j ~= i
             
-            data_temp = abs(squeeze(data.pdc(:,i,j,1:nPlotPoints))');
+            data_temp = abs(squeeze(data.pdc(:,i,j,freq_idx))');
             
             data_plot(j,i) = sum(data_temp(:));
         end

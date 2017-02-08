@@ -64,8 +64,12 @@ end
 %%
 fprintf('coupling coefficients\n');
 for i=1:norder
+    fprintf('order %d\n',i);
     disp(result.A(:,:,i));
 end
+
+fprintf('summed together\n');
+disp(sum(result.A,3));
 
 %% lattice filter
 
@@ -74,7 +78,8 @@ k=1;
 
 norder_est = 10;
 lambda = 0.99;
-gamma = 1;
+% gamma = 1;
+gamma = 0.1;
 filters{k} = MCMTLOCCD_TWL2(nchannels,norder_est,ntrials,'lambda',lambda,'gamma',gamma);
 k = k+1;
 
@@ -110,7 +115,12 @@ pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
 if flag_plots
     plot_mode = 'tiled';
     save_figs = true;
+    params_pdc = {...
+        'fs',fsample,...
+        'w',freq_range/fsample,...
+        };
     plot_pdc_dynamic_from_lf_files(pdc_files,...
+        'params',params_pdc,...
         'mode', plot_mode,...
         'outdir', 'data',...
         'save', save_figs);
@@ -118,9 +128,9 @@ end
 
 %% compare sparse LF coefficients with mcarns2
 if flag_check
-    Kf = zeros(1,nchannels,nchannels,norder_est);
+    Kf = zeros(2,nchannels,nchannels,norder_est);
     Kb = Kf;
-    [npf,na,npb,nb,nef,neb, ~,Kf(1,:,:,:),Kb(1,:,:,:)] = ...
+    [npf,na,npb,nb,nef,neb, ~,Kf(2,:,:,:),Kb(2,:,:,:)] = ...
         mcarns2(result.data_norm,norder_est);
     
     data = [];
@@ -145,7 +155,7 @@ if flag_check
     figure;
     %plot_rc(data_temp,'mode','image-order');
     plot_rc_dynamic(data_temp.Kf);
-    set(gcf,'Name','Lattice Filter');
+    set(gcf,'Name','AR: Lattice Filter');
     
     data_temp = [];
     data_temp.Kf(1,:,:,:) = zeros(size(na));
@@ -153,7 +163,7 @@ if flag_check
     figure;
     %plot_rc(data_temp,'mode','image-order');
     plot_rc_dynamic(data_temp.Kf);
-    set(gcf,'Name','mcarns2');
+    set(gcf,'Name','AR: mcarns2');
 end
 
 %% pdc using asymptotics

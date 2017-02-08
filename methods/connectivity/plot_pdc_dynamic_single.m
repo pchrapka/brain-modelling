@@ -5,7 +5,7 @@ fs_default = 1;
 addRequired(p,'data',@isstruct);
 addRequired(p,'j',@isnumeric);
 addRequired(p,'i',@isnumeric);
-addParameter(p,'w_max',0.5,@(x) isnumeric(x) && x <= 0.5); % not sure about this
+addParameter(p,'w',[0 0.5],@(x) length(x) == 2 && isnumeric(2)); % not sure about this
 addParameter(p,'fs',fs_default,@isnumeric);
 addParameter(p,'ChannelLabels',{},@iscell);
 parse(p,data,j,i,varargin{:});
@@ -21,16 +21,33 @@ end
 
 fs = p.Results.fs;
 
-w_max = p.Results.w_max;
-w = 0:fs/(2*nfreqs):w_max-fs/(2*nfreqs);
-nPlotPoints = length(w);
-w_min = w(1);
+if p.Results.w(1) < 0 || p.Results.w(2) > 0.5
+    disp(p.Results.w);
+    error('w range too wide should be between [0 0.5]');
+end
+    
+w = 0:nfreqs-1;
+w = w/(2*nfreqs);
+
+w_idx = (w >= p.Results.w(1)) & (w <= p.Results.w(2));
+f = w(w_idx)*fs;
+freq_idx = 1:nfreqs;
+freq_idx = freq_idx(w_idx);
+nPlotPoints = length(freq_idx);
 
 hylabel = 0;
 hxlabel = 0;
-ytick = linspace(1, nPlotPoints, 6);
 
-data_plot = abs(squeeze(data.pdc(:,i,j,1:nPlotPoints))');
+nticks = 6;
+ytick = linspace(1, nPlotPoints, nticks);
+yticklabel = cell(nticks,1);
+for i=1:nticks
+    yticklabel{i} = '';
+end
+yticklabel{1} = sprintf('%0.2f',p.Results.w(1)*fs);
+yticklabel{nticks} = sprintf('%0.2f',p.Results.w(2)*fs);
+
+data_plot = abs(squeeze(data.pdc(:,i,j,freq_idx))');
 
 clim = [0 1];
 imagesc(data_plot,clim);
@@ -41,7 +58,7 @@ hxlabel(j) = labelitx(j,p.Results.ChannelLabels);
 
 set(gca,...
     'YTick', ytick, ...
-    'YTickLabel',[' 0';'  ';'  ';'  ';'  ';'.5'],...
+    'YTickLabel', yticklabel,...
     'FontSize',10);
 
 end

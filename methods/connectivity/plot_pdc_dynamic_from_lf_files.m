@@ -68,10 +68,10 @@ for i=1:length(files)
     
     switch p.Results.mode
         case 'tiled'
-            plot_pdc_dynamic(result);
+            plot_pdc_dynamic(result,p.Results.params{:});
             save_tag = '-pdc-dynamic';
         case 'summary'
-            plot_pdc_dynamic_summary(result);
+            plot_pdc_dynamic_summary(result,p.Results.params{:});
             save_tag = '-pdc-dynamic-summary';
         case 'single'
             plot_pdc_dynamic_single(result,p.Results.params{:});
@@ -79,6 +79,7 @@ for i=1:length(files)
                 p.Results.params{1},p.Results.params{2});
         case 'single-largest'
             p2 = inputParser();
+            p2.KeepUnmatched = true;
             addParameter(p2,'nplots',5,@isnumeric);
             parse(p2,p.Results.params{:});
             
@@ -92,7 +93,8 @@ for i=1:length(files)
                 idxj_cur = idxj(idx_sorted(j));
                 idxi_cur = idxi(idx_sorted(j));
                 
-                plot_pdc_dynamic_single(result, idxj_cur, idxi_cur);
+                params2 = struct2namevalue(p2.Unmatched);
+                plot_pdc_dynamic_single(result, idxj_cur, idxi_cur, params2{:});
                 save_tag = sprintf('-pdc-dynamic-single-j%d-i%d',...
                     idxj_cur, idxi_cur);
                 
