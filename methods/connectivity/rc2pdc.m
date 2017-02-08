@@ -51,7 +51,7 @@ else
     result.SS = [];
 end
 
-if p.Results.coh
+if p.Results.coherence
     result.coh = coh_alg(result.SS);
 else
     result.coh = [];
