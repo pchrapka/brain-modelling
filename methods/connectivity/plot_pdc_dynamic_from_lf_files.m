@@ -82,18 +82,16 @@ for i=1:length(files)
             p2.KeepUnmatched = true;
             addParameter(p2,'nplots',5,@isnumeric);
             parse(p2,p.Results.params{:});
+            params2 = struct2namevalue(p2.Unmatched);
             
             % summarize data
-            [mag,idxj,idxi] = pdc_get_summary(result);
-            % sort in descending
-            [~,idx_sorted] = sortrows(mag,-1);
+            out = pdc_get_summary(result, params2{:});
             
             % plot single and save each
             for j=1:p2.Results.nplots
-                idxj_cur = idxj(idx_sorted(j));
-                idxi_cur = idxi(idx_sorted(j));
+                idxj_cur = out.idxj(out.idx_sorted(j));
+                idxi_cur = out.idxi(out.idx_sorted(j));
                 
-                params2 = struct2namevalue(p2.Unmatched);
                 plot_pdc_dynamic_single(result, idxj_cur, idxi_cur, params2{:});
                 save_tag = sprintf('-pdc-dynamic-single-j%d-i%d',...
                     idxj_cur, idxi_cur);
