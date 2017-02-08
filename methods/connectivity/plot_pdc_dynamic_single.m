@@ -1,14 +1,14 @@
-function plot_pdc_dynamic_single(data,j,i,varargin)
+function plot_pdc_dynamic_single(data,chj,chi,varargin)
 
 p = inputParser();
 fs_default = 1;
 addRequired(p,'data',@isstruct);
-addRequired(p,'j',@isnumeric);
-addRequired(p,'i',@isnumeric);
+addRequired(p,'chj',@isnumeric);
+addRequired(p,'chi',@isnumeric);
 addParameter(p,'w',[0 0.5],@(x) length(x) == 2 && isnumeric(2)); % not sure about this
 addParameter(p,'fs',fs_default,@isnumeric);
 addParameter(p,'ChannelLabels',{},@iscell);
-parse(p,data,j,i,varargin{:});
+parse(p,data,chj,chi,varargin{:});
 
 dims = size(data.pdc);
 ndims = length(dims);
@@ -47,14 +47,14 @@ end
 yticklabel{1} = sprintf('%0.2f',p.Results.w(1)*fs);
 yticklabel{nticks} = sprintf('%0.2f',p.Results.w(2)*fs);
 
-data_plot = abs(squeeze(data.pdc(:,i,j,freq_idx))');
+data_plot = abs(squeeze(data.pdc(:,chi,chj,freq_idx))');
 
 clim = [0 1];
 imagesc(data_plot,clim);
 colorbar();
 
 hylabel(i) = labelity(i,p.Results.ChannelLabels);
-hxlabel(j) = labelitx(j,p.Results.ChannelLabels);
+hxlabel(chj) = labelitx(chj,p.Results.ChannelLabels);
 
 set(gca,...
     'YTick', ytick, ...

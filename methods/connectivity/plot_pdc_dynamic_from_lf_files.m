@@ -66,6 +66,11 @@ for i=1:length(files)
     set(h,'NumberTitle','off','MenuBar','none', 'Name', files{i} );
     fprintf('plotting pdc for %s\n',name);
     
+    p2 = inputParser();
+    p2.KeepUnmatched = true;
+    addParameter(p2,'w',[0 0.5],@isnumeric);
+    parse(p2,p.Results.params{:});
+    
     switch p.Results.mode
         case 'tiled'
             plot_pdc_dynamic(result,p.Results.params{:});
@@ -78,17 +83,19 @@ for i=1:length(files)
             save_tag = sprintf('-pdc-dynamic-single-j%d-i%d',...
                 p.Results.params{1},p.Results.params{2});
         case 'single-largest'
-            p2 = inputParser();
-            p2.KeepUnmatched = true;
-            addParameter(p2,'nplots',5,@isnumeric);
-            parse(p2,p.Results.params{:});
-            params2 = struct2namevalue(p2.Unmatched);
+            ptemp = inputParser();
+            ptemp.KeepUnmatched = true;
+            addParameter(ptemp,'nplots',5,@isnumeric);
+            parse(ptemp,p.Results.params{:});
+            params2 = struct2namevalue(ptemp.Unmatched);
+            
+            freq_tag = sprintf('-%0.2f-%0.2f',p2.Results.w(1),p2.Results.w(2));
             
             % summarize data
             out = pdc_get_summary(result, params2{:});
             
             % plot single and save each
-            for j=1:p2.Results.nplots
+            for j=1:ptemp.Results.nplots
                 idxj_cur = out.idxj(out.idx_sorted(j));
                 idxi_cur = out.idxi(out.idx_sorted(j));
                 
@@ -97,7 +104,7 @@ for i=1:length(files)
                     idxj_cur, idxi_cur);
                 
                 % save
-                save_fig2('path',outdir,'tag', [name save_tag]);
+                save_fig2('path',outdir,'tag', [name save_tag freq_tag]);
             end
             % don't use common save
             flag_save = false;
@@ -106,8 +113,9 @@ for i=1:length(files)
     end
     
     if flag_save
+        freq_tag = sprintf('-%0.2f-%0.2f',p2.Results.w(1),p2.Results.w(2));
         % save
-        save_fig2('path',outdir,'tag', [name save_tag]);
+        save_fig2('path',outdir,'tag', [name save_tag freq_tag]);
     end
     
 end

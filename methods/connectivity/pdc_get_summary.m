@@ -57,12 +57,12 @@ else
     file = [];
     fresh = true;
     outfile_pdc = [];
-    save_output = fales;
+    save_output = false;
 end
 
 if fresh || ~exist(outfile_pdc,'file')
     % compute summary
-    fprintf('computing pdc summary for %s\n',name);
+    fprintf('computing pdc summary\n');
     
     % load data
     if ~isempty(file)
