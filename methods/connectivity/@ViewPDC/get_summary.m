@@ -70,7 +70,7 @@ if fresh || ~exist(outfile_pdc,'file')
             % data
             if j ~= i
                 
-                data_temp = abs(squeeze(data.pdc(:,i,j,freq_idx))');
+                data_temp = abs(squeeze(obj.pdc(:,i,j,freq_idx))');
                 
                 ichannel_idx(j,i) = i;
                 jchannel_idx(j,i) = j;

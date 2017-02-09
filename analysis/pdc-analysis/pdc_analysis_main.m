@@ -89,17 +89,11 @@ eegdata = loadfile(eegphaselocked_file);
 fsample = eegdata.fsample;
 clear eegdata;
 
-view_100 = ViewPDC(pdc_files{1},...
+view_pdc = ViewPDC(pdc_files{1},...
     'fs',fsample,...
     'labels',patch_labels,...
     'outdir','data',...
     'w',[0 100]/fsample);
-
-view_beta = ViewPDC(pdc_files{1},...
-    'fs',fsample,...
-    'labels',patch_labels,...
-    'outdir','data',...
-    'w',[15 25]/fsample);
 
 save_params = {...
     'save', true,...
@@ -116,38 +110,38 @@ flag.plot_pdc_single_gt20 = true;
 
 %% pdc summary 0-100 Hz
 if flag.plot_pdc_summary_100
-    view_beta.unload();
-    view_100.plot_summary();
-    view_100.save_plot(save_params{:})
+    view_switch(view_pdc,'100');
+    view_pdc.plot_summary();
+    view_pdc.save_plot(save_params{:})
 end
 
 %% pdc single-largest 0-100Hz
 % plot indivdiual dynamic pdc plots of largest channel pairs
 if flag.plot_pdc_single_100_largest
-    view_beta.unload();
+    view_switch(view_pdc,'100');
     nplots = 5;
-    view_100.plot_single_largest('nplots',nplots);
-    view_100.save_plot(save_params{:})
+    view_pdc.plot_single_largest('nplots',nplots);
+    view_pdc.save_plot(save_params{:})
 end
 
 %% pdc summary 15-25 Hz sorted magnitude
 if flag.plot_pdc_summary_beta_mag
-    out = view_beta.get_summary();
-    view_100.unload();
+    view_switch(view_pdc,'beta');
+    out = view_pdc.get_summary();
     semilogy(out.mag(out.idx_sorted));
 end
 
 %% pdc summary print 15-25 Hz
 if flag.print_pdc_summary_beta
-    view_100.unload();
-    view_beta.print_summary('nprint',20);
+    view_switch(view_pdc,'beta');
+    view_pdc.print_summary('nprint',20);
 end
 
 %% pdc single 15-25 Hz with mag > 20
 if flag.plot_pdc_single_gt20
     threshold = 20;
-    view_100.unload();
-    out = view_beta.get_summary();
+    view_switch(view_pdc,'beta');
+    out = view_pdc.get_summary();
     chi_sorted = out.idxi(out.idx_sorted);
     chj_sorted = out.idxj(out.idx_sorted);
     mag_sorted = out.mag(out.idx_sorted);
@@ -155,6 +149,6 @@ if flag.plot_pdc_single_gt20
     chi = chi_sorted(mag_thresh_idx);
     chj = chi_sorted(mag_thresh_idx);
     
-    view_beta.plot_single_multiple(chj,chi,save_params{:});
+    view_pdc.plot_single_multiple(chj,chi,save_params{:});
 end
 

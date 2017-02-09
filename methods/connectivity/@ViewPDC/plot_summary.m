@@ -18,7 +18,7 @@ parse(p,varargin{:});
 
 obj.load();
 
-[~,nchannels,~,~]=size(obj.pdc);
+[~,nchannels,~,~] = size(obj.pdc);
 
 data_summary = obj.get_summary('save',p.Results.save,'outdir',p.Results.outdir);
 

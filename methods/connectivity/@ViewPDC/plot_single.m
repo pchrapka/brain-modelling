@@ -8,7 +8,7 @@ addRequired(p,'chi',@isnumeric);
 parse(p,chj,chi);
 
 obj.load();
-[~,~,~,nfreqs]=size(obj.pdc);
+[~,~,~,nfreqs] = size(obj.pdc);
     
 w = 0:nfreqs-1;
 w = w/(2*nfreqs);
@@ -28,7 +28,7 @@ end
 yticklabel{1} = sprintf('%0.2f',obj.w(1)*obj.fs);
 yticklabel{nticks} = sprintf('%0.2f',obj.w(2)*obj.fs);
 
-data_plot = abs(squeeze(data.pdc(:,chi,chj,freq_idx))');
+data_plot = abs(squeeze(obj.pdc(:,chi,chj,freq_idx))');
 
 clim = [0 1];
 imagesc(data_plot,clim);

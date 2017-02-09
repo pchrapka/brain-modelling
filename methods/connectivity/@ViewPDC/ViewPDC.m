@@ -2,10 +2,13 @@ classdef ViewPDC < handle
     %ViewPDC Summary of this class goes here
     %   Detailed explanation goes here
     
+    properties 
+        w;
+    end
+    
     properties (SetAccess = protected)
         pdc;
         file;
-        w;
         fs;
         labels;
         
@@ -21,7 +24,7 @@ classdef ViewPDC < handle
             
             p = inputParser();
             addRequired(p,'file',@ischar);
-            addParameter(p,'w',[0 0.5],@(x) length(x) == 2 && isnumeric(2)); % not sure about this
+            addParameter(p,'w',[0 0.5],@(x) length(x) == 2 && isnumeric(2));
             addParameter(p,'fs',1,@isnumeric);
             addParameter(p,'labels',{},@iscell);
             addParameter(p,'outdir','data',@ischar);
@@ -44,6 +47,20 @@ classdef ViewPDC < handle
             if isequal(p.Results.outdir,'data')
                 obj.outdir = obj.filepath;
             end
+        end
+        
+        function set.w(obj,value)
+            p = inputParser();
+            addRequired(p,'w',@(x) length(x) == 2 && isnumeric(2));
+            parse(p,value);
+            
+            if p.Results.w(1) < 0 || p.Results.w(2) > 0.5
+                disp(p.Results.w);
+                error('w range too wide, should be between [0 0.5]');
+            end
+            
+            obj.w = value;
+            
         end
         
         function unload(obj)
