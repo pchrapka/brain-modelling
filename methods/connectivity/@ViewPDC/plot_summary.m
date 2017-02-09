@@ -52,6 +52,6 @@ else
         'YtickLabel',obj.labels);
 end
 
-obj.save_tag = '-pdc-dynamic-summary';
+obj.save_tag = '-summary';
 
 end

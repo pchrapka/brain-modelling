@@ -85,6 +85,6 @@ for j=1:nchannels
     end
 end
 
-obj.save_tag = '-pdc-dynamic-tiled';
+obj.save_tag = '-tiled';
 
 end

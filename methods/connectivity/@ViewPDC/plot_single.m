@@ -42,6 +42,6 @@ set(gca,...
     'YTickLabel', yticklabel,...
     'FontSize',10);
 
-obj.save_tag = sprintf('-pdc-dynamic-single-j%d-i%d',chj,chi);
+obj.save_tag = sprintf('-single-j%d-i%d',chj,chi);
 
 end

@@ -19,6 +19,7 @@ for j=1:p.Results.nplots
     idxi_cur = out.idxi(out.idx_sorted(j));
     
     obj.plot_single(idxj_cur, idxi_cur);
+    obj.save_tag = sprintf('-single-largest%d',j);
     
     % save
     obj.save_plot('save',p.Results.save,'outdir',p.Results.outdir);
