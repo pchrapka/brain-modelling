@@ -1,5 +1,12 @@
 %% pdc_analysis_main
 
+flag = [];
+flag.plot_rc = false;
+flag.plot_pdc_summary_100 = false;
+flag.plot_pdc_single_100_largest = false;
+flag.plot_pdc_summary_beta_mag = false;
+flag.print_pdc_summary_beta = false;
+
 stimulus = 'std';
 subject = 3; 
 deviant_percent = 10;
@@ -67,13 +74,12 @@ lf_files = lattice_filter_sources(filters, sources_file,...
 %% [maybe] remove 300 ms at beg and end
 
 %% plot rc
-save_figs = true;
-plot_mode = 'summary';
-
-% plot_rc_dynamic_from_lf_files(lf_files,...
-%     'mode', plot_mode,...
-%     'outdir', 'data',...
-%     'save', save_figs);
+if flag.plot_rc
+    plot_rc_dynamic_from_lf_files(lf_files,...
+        'mode', 'summary',...
+        'outdir', 'data',...
+        'save', true);
+end
 
 %% compute pdc
 pdc_params = {...
@@ -82,7 +88,7 @@ pdc_params = {...
     };
 pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
 
-%% plot pdc
+%% plot pdc params
 
 % get fsample
 eegphaselocked_file = fullfile(outdir,'fthelpers.ft_phaselocked.mat');
@@ -90,33 +96,63 @@ eegdata = loadfile(eegphaselocked_file);
 fsample = eegdata.fsample;
 clear eegdata;
 
-params_plot_pdc = {...
+view_100 = ViewPDC(pdc_files{1},...
     'fs',fsample,...
-    'w',[0 100]/fsample,...
+    'labels',patch_labels,...
+    'w',[0 100]/fsample);
+
+view_beta = ViewPDC(pdc_files{1},...
+    'fs',fsample,...
+    'labels',patch_labels,...
+    'w',[15 25]/fsample);
+
+save_params = {...
+    'outdir', 'data',...
+    'save', true,...
     };
 
-plot_pdc_dynamic_from_lf_files(pdc_files,...
-    'mode', plot_mode,...
-    'outdir', 'data',...
-    'params',params_plot_pdc,...
-    'save', save_figs);
+%% pdc summary 0-100 Hz
+if flag.plot_pdc_summary_100
+    view_beta.unload();
+    view_100.plot_summary();
+    view_100.save_plot(save_params{:})
+end
 
-%% plot indivdiual dynamic pdc plots of largest channel pairs
-nplots = 5;
-plot_pdc_dynamic_from_lf_files(pdc_files,...
-    'mode', 'single-largest',...
-    'params', [params_plot_pdc, 'nplots', nplots, 'ChannelLabels', {patch_labels}],...
-    'outdir', 'data',...
-    'save', save_figs);
+%% pdc single-largest 0-100Hz
+% plot indivdiual dynamic pdc plots of largest channel pairs
+if flag.plot_pdc_single_100_largest
+    view_beta.unload();
+    nplots = 5;
+    view_100.plot_single_largest('nplots',nplots);
+    view_100.save_plot(save_params{:})
+end
 
-%%
-params_summary_beta = {'fs',fsample,'w',[15 25]/fsample};
+%% pdc summary 15-25 Hz sorted magnitude
+if flag.plot_pdc_summary_beta_mag
+    out = pdc_get_summary(pdc_files{1},params_summary_beta{:});
+    semilogy(out.mag(out.idx_sorted));
+end
 
-out = pdc_get_summary(pdc_files{1},params_summary_beta{:});
-semilogy(out.mag(out.idx_sorted));
+%% pdc summary print 15-25 Hz
+if flag.print_pdc_summary_beta
+    pdc_get_summary_print(pdc_files{1},...
+        params_summary_beta{:},...
+        'nprint',20,...
+        'labels',patch_labels);
+end
 
-%%
-pdc_get_summary_print(pdc_files{1},...
-    params_summary_beta{:},...
-    'nprint',20,...
-    'labels',patch_labels);
+%% pdc single 15-25 Hz with mag > 20
+if flag.plot_pdc_single_gt20
+    threshold = 20;
+    out = pdc_get_summary(pdc_files{1},params_summary_beta{:});
+    chi_sorted = out.idxi(out.idx_sorted);
+    chj_sorted = out.idxj(out.idx_sorted);
+    mag_sorted = out.mag(out.idx_sorted);
+    mag_thresh_idx = mag_sorted > threshold;
+    chi = chi_sorted(mag_thresh_idx);
+    chj = chi_sorted(mag_thresh_idx);
+    
+    view_100.unload();
+    view_beta.plot_single_multiple(chj,chi,save_params{:});
+end
+

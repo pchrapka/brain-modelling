@@ -5,15 +5,18 @@ function [out,varargout] = pdc_get_summary(data,varargin)
 %
 %   Input
 %   -----
+%   data (string/struct)
+%       pdc output struct or data file
 %   
 %   Parameters
 %   ----------
-%   data (string/struct)
-%       pdc output struct or data file
 %   w (vector, default = [0 0.5])
 %       normalized frequency range
 %   fs (number,default= 1)
 %       sampling frequency
+%   file (string)
+%       pdc output data file, used for saving the summary when data is
+%       already a struct
 %
 %   Output
 %   ------
@@ -31,6 +34,7 @@ function [out,varargout] = pdc_get_summary(data,varargin)
 
 p = inputParser();
 addRequired(p,'data',@(x) ischar(x) || isstruct(x));
+addParameter(p,'file','',@ischar);
 addParameter(p,'w',[0 0.5],@(x) length(x) == 2 && isnumeric(2));
 addParameter(p,'fs',1,@isnumeric);
 parse(p,data,varargin{:});
@@ -39,8 +43,14 @@ if nargout > 1
     varargout{1} = [];
 end
 
-if ischar(data)
+if ischar(data);
     file = data;
+    data = [];
+else
+    file = p.Results.file;
+end
+
+if ~isempty(file)
     [data_path,name,~] = fileparts(file);
     outfile_pdc = fullfile(data_path,...
         sprintf('%s-pdc-summary-%0.2f-%0.2f.mat',...
@@ -58,7 +68,6 @@ if ischar(data)
     
     save_output = true;
 else
-    file = [];
     fresh = true;
     outfile_pdc = [];
     save_output = false;
