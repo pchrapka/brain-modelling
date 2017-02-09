@@ -51,6 +51,7 @@ if fresh || ~exist(outfile_pdc,'file')
     
     fprintf('summarizing data\n');
     
+    dims = size(obj.pdc);
     [~,nchannels,~,nfreqs] = size(obj.pdc);
    
     

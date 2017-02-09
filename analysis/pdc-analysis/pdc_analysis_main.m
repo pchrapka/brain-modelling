@@ -89,6 +89,7 @@ eegdata = loadfile(eegphaselocked_file);
 fsample = eegdata.fsample;
 clear eegdata;
 
+%%
 view_pdc = ViewPDC(pdc_files{1},...
     'fs',fsample,...
     'labels',patch_labels,...
@@ -141,7 +142,7 @@ end
 if flag.plot_pdc_single_gt20
     threshold = 20;
     view_switch(view_pdc,'beta');
-    out = view_pdc.get_summary();
+    out = view_pdc.get_summary('save',true);
     chi_sorted = out.idxi(out.idx_sorted);
     chj_sorted = out.idxj(out.idx_sorted);
     mag_sorted = out.mag(out.idx_sorted);
