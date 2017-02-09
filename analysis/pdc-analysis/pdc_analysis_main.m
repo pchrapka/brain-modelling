@@ -148,7 +148,7 @@ if flag.plot_pdc_single_gt20
     mag_sorted = out.mag(out.idx_sorted);
     mag_thresh_idx = mag_sorted > threshold;
     chi = chi_sorted(mag_thresh_idx);
-    chj = chi_sorted(mag_thresh_idx);
+    chj = chj_sorted(mag_thresh_idx);
     
     view_pdc.plot_single_multiple(chj,chi,save_params{:});
 end
