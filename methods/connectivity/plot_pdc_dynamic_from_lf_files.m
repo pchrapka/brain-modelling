@@ -86,6 +86,7 @@ for i=1:length(files)
             ptemp = inputParser();
             ptemp.KeepUnmatched = true;
             addParameter(ptemp,'nplots',5,@isnumeric);
+            addParameter(ptemp,'ChannelLabels',{},@iscell);
             parse(ptemp,p.Results.params{:});
             params2 = struct2namevalue(ptemp.Unmatched);
             
@@ -99,7 +100,8 @@ for i=1:length(files)
                 idxj_cur = out.idxj(out.idx_sorted(j));
                 idxi_cur = out.idxi(out.idx_sorted(j));
                 
-                plot_pdc_dynamic_single(result, idxj_cur, idxi_cur, params2{:});
+                plot_pdc_dynamic_single(result, idxj_cur, idxi_cur,...
+                    'ChannelLabels',ptemp.Results.ChannelLabels, params2{:});
                 save_tag = sprintf('-pdc-dynamic-single-j%d-i%d',...
                     idxj_cur, idxi_cur);
                 
