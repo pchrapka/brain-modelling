@@ -133,18 +133,21 @@ end
 %% pdc summary 15-25 Hz sorted magnitude
 if flag.plot_pdc_summary_beta_mag
     out = view_beta.get_summary();
+    view_100.unload();
     semilogy(out.mag(out.idx_sorted));
 end
 
 %% pdc summary print 15-25 Hz
 if flag.print_pdc_summary_beta
+    view_100.unload();
     view_beta.print_summary('nprint',20);
 end
 
 %% pdc single 15-25 Hz with mag > 20
 if flag.plot_pdc_single_gt20
     threshold = 20;
-    out = obj.get_summary();
+    view_100.unload();
+    out = view_beta.get_summary();
     chi_sorted = out.idxi(out.idx_sorted);
     chj_sorted = out.idxj(out.idx_sorted);
     mag_sorted = out.mag(out.idx_sorted);
@@ -152,7 +155,6 @@ if flag.plot_pdc_single_gt20
     chi = chi_sorted(mag_thresh_idx);
     chj = chi_sorted(mag_thresh_idx);
     
-    view_100.unload();
     view_beta.plot_single_multiple(chj,chi,save_params{:});
 end
 

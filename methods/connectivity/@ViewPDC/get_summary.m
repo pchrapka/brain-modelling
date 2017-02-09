@@ -47,13 +47,7 @@ if fresh || ~exist(outfile_pdc,'file')
     fprintf('computing pdc summary\n');
     
     % load data
-    if ~isempty(file)
-        print_msg_filename(file,'loading');
-        data = loadfile(file);
-        if nargout > 1
-            varargout{1} = data;
-        end
-    end
+    obj.load();
     
     fprintf('summarizing data\n');
     
