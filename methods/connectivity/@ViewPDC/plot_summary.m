@@ -23,7 +23,7 @@ obj.load();
 data_summary = obj.get_summary('save',p.Results.save,'outdir',p.Results.outdir);
 
 title('PDC - Channel Pair Summary');
-imagesc(data_summary.data_metric_matrix);
+imagesc(data_summary.mag_matrix);
 colorbar();
 xlabel('Channels');
 ylabel('Channels');
