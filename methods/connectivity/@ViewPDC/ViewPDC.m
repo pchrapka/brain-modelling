@@ -37,7 +37,7 @@ classdef ViewPDC < handle
             obj.fs = p.Results.fs;
             obj.labels = p.Results.labels;
             
-            obj.freq_tag = sprintf('-%0.2f-%0.2f',obj.w(1),obj.w(2));
+            obj.freq_tag = sprintf('-%0.4f-%0.4f',obj.w(1),obj.w(2));
             obj.save_tag = [];
         end
         
