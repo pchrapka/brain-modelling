@@ -144,7 +144,7 @@ end
 %% pdc single 15-25 Hz with mag > 20
 if flag.plot_pdc_single_gt20
     threshold = 20;
-    out = pdc_get_summary(pdc_files{1},params_summary_beta{:});
+    out = obj.get_summary();
     chi_sorted = out.idxi(out.idx_sorted);
     chj_sorted = out.idxj(out.idx_sorted);
     mag_sorted = out.mag(out.idx_sorted);
