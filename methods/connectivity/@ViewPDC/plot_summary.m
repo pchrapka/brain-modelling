@@ -1,34 +1,29 @@
-function plot_summary(obj)
+function plot_summary(obj,varargin)
+%   Parameters
+%   ----------
+%   outdir (string)
+%       output directory for summary data
+%       by default uses output directory set in ViewPDC.outdir, can be
+%       overriden here with:
+%       1. 'data' - same directory where data is located
+%       2. any regular path
+%   save (logical, default = false)
+%       flag to save summary to data file
 
 obj.save_tag = [];
+p = inputParser();
+addParameter(p,'save',false,@islogical);
+addParameter(p,'outdir','',@ischar);
+parse(p,varargin{:});
+
 obj.load();
 
-[~,nchannels,~,nfreqs]=size(obj.pdc);
-    
-w = 0:nfreqs-1;
-w = w/(2*nfreqs);
+[~,nchannels,~,~]=size(obj.pdc);
 
-w_idx = (w >= obj.w(1)) & (w <= obj.w(2));
-f = w(w_idx)*obj.fs;
-freq_idx = 1:nfreqs;
-freq_idx = freq_idx(w_idx);
-
-data_plot = zeros(nchannels, nchannels);
-for j=1:nchannels
-    for i=1:nchannels
-        % data
-        if j ~= i
-            
-            data_temp = abs(squeeze(obj.pdc(:,i,j,freq_idx))');
-            
-            data_plot(j,i) = sum(data_temp(:));
-        end
-        
-    end
-end
+data_summary = obj.get_summary('save',p.Results.save,'outdir',p.Results.outdir);
 
 title('PDC - Channel Pair Summary');
-imagesc(data_plot);
+imagesc(data_summary.data_metric_matrix);
 colorbar();
 xlabel('Channels');
 ylabel('Channels');

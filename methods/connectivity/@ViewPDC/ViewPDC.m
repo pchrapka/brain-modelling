@@ -13,6 +13,7 @@ classdef ViewPDC < handle
         freq_tag; % freq tag for saving
         filepath;
         filename;
+        outdir;
     end
     
     methods
@@ -23,6 +24,7 @@ classdef ViewPDC < handle
             addParameter(p,'w',[0 0.5],@(x) length(x) == 2 && isnumeric(2)); % not sure about this
             addParameter(p,'fs',1,@isnumeric);
             addParameter(p,'labels',{},@iscell);
+            addParameter(p,'outdir','data',@ischar);
             parse(p,file,varargin{:});
             
             if p.Results.w(1) < 0 || p.Results.w(2) > 0.5
@@ -39,6 +41,9 @@ classdef ViewPDC < handle
             
             obj.freq_tag = sprintf('-%0.4f-%0.4f',obj.w(1),obj.w(2));
             obj.save_tag = [];
+            if isequal(p.Results.outdir,'data')
+                obj.outdir = obj.filepath;
+            end
         end
         
         function unload(obj)
@@ -61,32 +66,28 @@ classdef ViewPDC < handle
         end
         
         function save_plot(obj,varargin)
+            %   Parameters
+            %   ----------
+            %   outdir (string, default = pwd)
+            %       output directory
+            %       by default uses output directory set in ViewPDC.outdir,
+            %       can be overriden here with:
+            %       1. 'data' - same directory where data is located
+            %       2. any regular path
+            %   save (logical, default = false)
+            %       flag to save figure
+            
             p = inputParser();
             addParameter(p,'save',false,@islogical);
             addParameter(p,'outdir','',@ischar);
             parse(p,varargin{:});
             
-            if isempty(p.Results.outdir)
-                outdir = pwd;
-                warning('no output directory specified\nusing default %s',outdir);
-            elseif isequal(p.Results.outdir,'data');
-                outdir = obj.filepath;
-            else
-                outdir = p.Results.outdir;
-                if ~exist(outdir,'dir')
-                    mkdir(outdir);
-                end
-            end
-            
-            if isempty(obj.save_tag)
-                error('save tag not set in plot function');
-            end
-            
             if p.Results.save
+                outdir = obj.get_outdir(p.Results.outdir);
+                outfile = obj.get_savefile();
+                
                 % save
-                save_fig2(...
-                    'path',outdir,...
-                    'tag', [obj.filename obj.save_tag obj.freq_tag]);
+                save_fig2('path',outdir,'tag', outfile);
                 
                 % clear save tag
                 obj.save_tag = [];
@@ -97,12 +98,54 @@ classdef ViewPDC < handle
         plot_single(obj,chj,chi);
         plot_single_largest(obj,varargin);
         plot_single_multiple(obj,chj,chi,varargin)
-        plot_summary(obj);
+        plot_summary(obj,varargin);
         plot_tiled(obj);
+        
+        % summary function
+        out = get_summary(obj,varargin)
+        print_summary(obj,varargin)
         
     end
     
-    methods (Access = protected)
+    methods (Access = protected)        
+        function fresh = check_pdc_freshness(obj,newfile)
+            fresh = false;
+            if exist(newfile,'file')
+                data_time = get_timestamp(obj.file);
+                new_time = get_timestamp(newfile);
+                if data_time > new_time
+                    fresh = true;
+                end
+            end
+        end
+        
+        function outfile = get_savefile(obj)
+            if isempty(obj.save_tag)
+                error('save tag not set in plot function');
+            end
+            
+            outfile = [obj.filename obj.save_tag obj.freq_tag];
+        end
+        
+        function outdir = get_outdir(obj,value)
+            
+            if isempty(value)
+                if isempty(obj.outdir)
+                    outdir = pwd;
+                    warning('no output directory specified\nusing default %s',outdir);
+                else
+                    outdir = obj.outdir;
+                end
+            elseif isequal(value,'data');
+                outdir = obj.filepath;
+            else
+                outdir = value;
+                if ~exist(outdir,'dir')
+                    mkdir(outdir);
+                end
+            end
+            
+        end
         function hxlabel = labelitx(obj,j) % Labels x-axis plottings
             if isempty(obj.labels)
                 hxlabel = xlabel(['j = ' int2str(j)]);

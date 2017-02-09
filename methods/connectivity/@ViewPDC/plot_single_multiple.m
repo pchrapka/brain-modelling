@@ -1,5 +1,15 @@
-function plot_single_multiple(obj,chj,chi,varargin)
-    
+function plot_single_multiple(obj,chj,chi,varargin)   
+%   Parameters
+%   ----------
+%   outdir (string)
+%       output directory
+%       by default uses output directory set in ViewPDC.outdir, can be
+%       overriden here with:
+%       1. 'data' - same directory where data is located
+%       2. any regular path
+%   save (logical, default = false)
+%       flag to save figure
+
 obj.save_tag = [];
 p = inputParser();
 addRequired(p,'chj',@isnumeric);
