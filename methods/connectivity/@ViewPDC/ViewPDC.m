@@ -41,11 +41,6 @@ classdef ViewPDC < handle
             obj.save_tag = [];
         end
         
-        function data = get.pdc(obj)
-            obj.load();
-            data = obj.pdc;
-        end
-        
         function unload(obj)
             obj.pdc = [];
         end

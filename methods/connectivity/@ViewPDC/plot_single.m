@@ -7,7 +7,7 @@ addRequired(p,'chj',@isnumeric);
 addRequired(p,'chi',@isnumeric);
 parse(p,chj,chi);
 
-% dynamic pdc
+obj.load();
 [~,~,~,nfreqs]=size(obj.pdc);
     
 w = 0:nfreqs-1;

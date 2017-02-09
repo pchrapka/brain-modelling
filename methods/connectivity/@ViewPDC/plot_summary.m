@@ -1,6 +1,8 @@
 function plot_summary(obj)
 
 obj.save_tag = [];
+obj.load();
+
 [~,nchannels,~,nfreqs]=size(obj.pdc);
     
 w = 0:nfreqs-1;

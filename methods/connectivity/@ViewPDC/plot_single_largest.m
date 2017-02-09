@@ -9,6 +9,7 @@ parse(p,varargin{:});
 
 % summarize data
 % load data in pdc_get_summary to save summary file
+obj.load();
 out = pdc_get_summary(obj.pdc,...
     'file',obj.file,'w',obj.w,'fs',obj.fs);
 
