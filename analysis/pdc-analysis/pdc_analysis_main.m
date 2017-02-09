@@ -35,6 +35,8 @@ eeg_induced(sources_file, eeg_file, lf_file, 'outdir',outdir);
 %% set lattice options
 lf = loadfile(lf_file);
 patch_labels = lf.filter_label(lf.inside);
+patch_labels = cellfun(@(x) strrep(x,'_',' '),...
+    patch_labels,'UniformOutput',false);
 npatch_labels = length(patch_labels);
 clear lf;
 

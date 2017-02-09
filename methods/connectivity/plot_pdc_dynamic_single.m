@@ -69,7 +69,7 @@ if isempty(chLabels)
    set(hxlabel,'FontSize',12, ... %'FontWeight','bold', ...
       'FontName','Arial') % 'FontName','Arial'
 else
-   hxlabel=xlabel([chLabels{j}]);
+   hxlabel = xlabel(chLabels{j});
    set(hxlabel,'FontSize',12) %'FontWeight','bold')
 end
 end

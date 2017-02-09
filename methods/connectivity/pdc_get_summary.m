@@ -1,4 +1,4 @@
-function out = pdc_get_summary(data,varargin)
+function [out,varargout] = pdc_get_summary(data,varargin)
 %PDC_GET_SUMMARY summarizes magnitude of PDC data for each channel pair
 %   PDC_GET_SUMMARY(data) summarizes magnitude of PDC data for each channel
 %   pair
@@ -35,6 +35,10 @@ addParameter(p,'w',[0 0.5],@(x) length(x) == 2 && isnumeric(2));
 addParameter(p,'fs',1,@isnumeric);
 parse(p,data,varargin{:});
 
+if nargout > 1
+    varargout{1} = [];
+end
+
 if ischar(data)
     file = data;
     [data_path,name,~] = fileparts(file);
@@ -68,6 +72,9 @@ if fresh || ~exist(outfile_pdc,'file')
     if ~isempty(file)
         print_msg_filename(file,'loading');
         data = loadfile(file);
+        if nargout > 1
+            varargout{1} = data;
+        end
     end
     
     fprintf('summarizing data\n');

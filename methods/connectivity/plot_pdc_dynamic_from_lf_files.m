@@ -57,9 +57,6 @@ for i=1:length(files)
         outdir = data_path;
     end
     
-    print_msg_filename(files{i},'loading');
-    result = loadfile(files{i});
-    
     % plot
     h = figure;
     colormap('jet');
@@ -72,13 +69,19 @@ for i=1:length(files)
     parse(p2,p.Results.params{:});
     
     switch p.Results.mode
-        case 'tiled'
+        case 'tiled'        
+            print_msg_filename(files{i},'loading');
+            result = loadfile(files{i});
             plot_pdc_dynamic(result,p.Results.params{:});
             save_tag = '-pdc-dynamic';
         case 'summary'
+            print_msg_filename(files{i},'loading');
+            result = loadfile(files{i});
             plot_pdc_dynamic_summary(result,p.Results.params{:});
             save_tag = '-pdc-dynamic-summary';
         case 'single'
+            print_msg_filename(files{i},'loading');
+            result = loadfile(files{i});
             plot_pdc_dynamic_single(result,p.Results.params{:});
             save_tag = sprintf('-pdc-dynamic-single-j%d-i%d',...
                 p.Results.params{1},p.Results.params{2});
@@ -93,7 +96,15 @@ for i=1:length(files)
             freq_tag = sprintf('-%0.2f-%0.2f',p2.Results.w(1),p2.Results.w(2));
             
             % summarize data
-            out = pdc_get_summary(result, params2{:});
+            % load data in pdc_get_summary to save summary file
+            [out,result] = pdc_get_summary(files{i}, params2{:});
+            % re-use loaded pdc data
+            
+            if isempty(result)
+                % pdc data has not been loaded
+                print_msg_filename(files{i},'loading');
+                result = loadfile(files{i});
+            end
             
             % plot single and save each
             for j=1:ptemp.Results.nplots
