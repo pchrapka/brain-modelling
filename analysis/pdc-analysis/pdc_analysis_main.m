@@ -1,12 +1,5 @@
 %% pdc_analysis_main
 
-flag = [];
-flag.plot_rc = false;
-flag.plot_pdc_summary_100 = false;
-flag.plot_pdc_single_100_largest = false;
-flag.plot_pdc_summary_beta_mag = false;
-flag.print_pdc_summary_beta = false;
-
 stimulus = 'std';
 subject = 3; 
 deviant_percent = 10;
@@ -110,6 +103,15 @@ save_params = {...
     'outdir', 'data',...
     'save', true,...
     };
+
+% plot flags
+flag = [];
+flag.plot_rc = false;
+flag.plot_pdc_summary_100 = false;
+flag.plot_pdc_single_100_largest = false;
+flag.plot_pdc_summary_beta_mag = false;
+flag.print_pdc_summary_beta = false;
+flag.plot_pdc_single_gt20 = true;
 
 %% pdc summary 0-100 Hz
 if flag.plot_pdc_summary_100
