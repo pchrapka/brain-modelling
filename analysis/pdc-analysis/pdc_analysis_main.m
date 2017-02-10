@@ -88,9 +88,8 @@ pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
 eegphaselocked_file = fullfile(outdir,'fthelpers.ft_phaselocked.mat');
 eegdata = loadfile(eegphaselocked_file);
 fsample = eegdata.fsample;
-time = eegdata.time
+time = eegdata.time{1};
 time = downsample(time,downsample_by);
-error('get time');
 clear eegdata;
 
 %%
