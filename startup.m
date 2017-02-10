@@ -12,6 +12,7 @@ addpath(fullfile(pwd,'external'));
 addpath(fullfile(pwd,'external','subaxis'));
 addpath(fullfile(pwd,'external','kronm'));
 addpath(fullfile(pwd,'external','tsa'));
+addpath(fullfile(pwd,'external','bct'));
 addpath(fullfile(pwd,'external','lumberjack'));
 addpath(fullfile(pwd,'external','export_fig'));
 addpath(fullfile(pwd,'external','heatmaps'));

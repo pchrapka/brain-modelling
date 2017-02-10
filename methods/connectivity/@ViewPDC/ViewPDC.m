@@ -11,6 +11,7 @@ classdef ViewPDC < handle
         file;
         fs;
         labels;
+        time;
         
         save_tag; % save tag for each plot type
         freq_tag; % freq tag for saving
@@ -27,6 +28,7 @@ classdef ViewPDC < handle
             addParameter(p,'w',[0 0.5],@(x) length(x) == 2 && isnumeric(2));
             addParameter(p,'fs',1,@isnumeric);
             addParameter(p,'labels',{},@iscell);
+            addParameter(p,'time',[],@isnumeric);
             addParameter(p,'outdir','data',@ischar);
             parse(p,file,varargin{:});
             
@@ -41,6 +43,7 @@ classdef ViewPDC < handle
             obj.w = p.Results.w;
             obj.fs = p.Results.fs;
             obj.labels = p.Results.labels;
+            obj.time = p.Results.time;
             
             obj.freq_tag = sprintf('-%0.4f-%0.4f',obj.w(1),obj.w(2));
             obj.save_tag = [];
@@ -117,6 +120,9 @@ classdef ViewPDC < handle
         plot_single_multiple(obj,chj,chi,varargin)
         plot_summary(obj,varargin);
         plot_tiled(obj);
+        
+        plot_adjacency(obj,varargin);
+        plot_directed(obj,varargin)
         
         % summary function
         out = get_summary(obj,varargin)

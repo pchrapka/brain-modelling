@@ -75,9 +75,10 @@ if flag.plot_rc
 end
 
 %% compute pdc
+downsample_by = 4;
 pdc_params = {...
     'metric','euc',...
-    'downsample',4,...
+    'downsample',downsample_by,...
     };
 pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
 
@@ -87,12 +88,16 @@ pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
 eegphaselocked_file = fullfile(outdir,'fthelpers.ft_phaselocked.mat');
 eegdata = loadfile(eegphaselocked_file);
 fsample = eegdata.fsample;
+time = eegdata.time
+time = downsample(time,downsample_by);
+error('get time');
 clear eegdata;
 
 %%
 view_pdc = ViewPDC(pdc_files{1},...
     'fs',fsample,...
     'labels',patch_labels,...
+    'time',time,...
     'outdir','data',...
     'w',[0 100]/fsample);
 
@@ -107,7 +112,8 @@ flag.plot_pdc_summary_100 = false;
 flag.plot_pdc_single_100_largest = false;
 flag.plot_pdc_summary_beta_mag = false;
 flag.print_pdc_summary_beta = false;
-flag.plot_pdc_single_gt20 = true;
+flag.plot_pdc_single_gt20 = false;
+flag.plot_pdc_directed_beta = true;
 
 %% pdc summary 0-100 Hz
 if flag.plot_pdc_summary_100
@@ -151,5 +157,11 @@ if flag.plot_pdc_single_gt20
     chj = chj_sorted(mag_thresh_idx);
     
     view_pdc.plot_single_multiple(chj,chi,save_params{:});
+end
+
+%% pdc directed movie 15-25Hz
+if flag.plot_pdc_directed_beta
+    view_switch(view_pdc,'beta');
+    view_pdc.plot_directed('makemovie',true);
 end
 
