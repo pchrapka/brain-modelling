@@ -6,8 +6,8 @@ p = inputParser();
 addRequired(p,'chseed',@isnumeric);
 addParameter(p,'direction','outgoing',@(x) any(validatestring(x,{'outgoing','incoming'})));
 % addParameter(p,'threshold',0.2,@(x) x >= 0 && x <= 1);
-addParameter(p,'save',false,@islogical);
-addParameter(p,'outdir','',@ischar);
+% addParameter(p,'save',false,@islogical);
+% addParameter(p,'outdir','',@ischar);
 parse(p,chseed,varargin{:});
 
 obj.load();
