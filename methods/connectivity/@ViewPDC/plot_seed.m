@@ -83,6 +83,8 @@ set(gca,...
     'YTickLabel', yticklabel,...
     'FontSize',10);
 
+obj.add_time_ticks('x');
+
 switch p.Results.direction
     case 'outgoing'
         str_xlabel = 'from';

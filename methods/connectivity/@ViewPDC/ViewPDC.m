@@ -170,6 +170,40 @@ classdef ViewPDC < handle
             end
             
         end
+        
+        function add_time_ticks(obj,axis)
+            if isempty(obj.time)
+                fprintf('time is empty\n');
+                return;
+            end
+            
+            % fnid zero index
+            temp = obj.time >= 0;
+            zero_idx = find(temp,1,'first');
+            if isempty(zero_idx)
+                zero_idx = 1;
+            end
+            ticks = zero_idx;
+            
+            nticks = 5;
+            npointspertick = floor(length(obj.time)/nticks);
+            extra_idx = -nticks:1:nticks;
+            extra_idx = extra_idx*npointspertick + zero_idx;
+            extra_idx = extra_idx(extra_idx > 0 & extra_idx < length(obj.time));
+            
+            ticks = [ticks extra_idx];
+            ticks = sort(unique(ticks));
+            ticklabels = obj.time(ticks);
+            
+            switch axis
+                case 'x'
+                    set(gca,'XTick', ticks, 'XTickLabel', ticklabels);
+                case 'y'
+                    set(gca,'YTick', ticks, 'YTickLabel', ticklabels);
+            end
+                    
+        end
+        
         function hxlabel = labelitx(obj,j) % Labels x-axis plottings
             if isempty(obj.labels)
                 hxlabel = xlabel(['j = ' int2str(j)]);

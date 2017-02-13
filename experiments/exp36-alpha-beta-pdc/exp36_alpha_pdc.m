@@ -16,7 +16,7 @@ nsamples_filter = nsamples/ntrials_gen;
 fsample = 100;
 % fsample = 4*10;
 freq_range = [8 10];
-time = (0:nsamples_filter-1)/fsample;
+time = ((0:nsamples_filter-1) - floor(nsamples_filter/4))/fsample;
 
 nchannels_signal = 4;
 
