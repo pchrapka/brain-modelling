@@ -112,7 +112,8 @@ flag.plot_pdc_single_100_largest = false;
 flag.plot_pdc_summary_beta_mag = false;
 flag.print_pdc_summary_beta = false;
 flag.plot_pdc_single_gt20 = false;
-flag.plot_pdc_directed_beta = true;
+flag.plot_pdc_directed_beta = false;
+flag.plot_pdc_seed_beta = true;
 
 %% pdc summary 0-100 Hz
 if flag.plot_pdc_summary_100
@@ -162,5 +163,12 @@ end
 if flag.plot_pdc_directed_beta
     view_switch(view_pdc,'beta');
     view_pdc.plot_directed('makemovie',true,'threshold',0.2);
+end
+
+%% pdc seed 15-25Hz
+if flag.plot_pdc_seed_beta
+    view_switch(view_pdc,'beta');
+    ch = 1;
+    view_pdc.plot_seed(ch,'direction','outgoing');
 end
 

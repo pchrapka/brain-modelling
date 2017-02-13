@@ -137,8 +137,9 @@ if flag_plots
     view_pdc.save_plot(save_params{:});
 end
 
-view_pdc.plot_adjacency();
-view_pdc.plot_directed('makemovie',true);
+%view_pdc.plot_adjacency();
+%view_pdc.plot_directed('makemovie',true);
+view_pdc.plot_seed(2,'direction','outgoing');
 
 %% pdc summary
 view_pdc.print_summary('nprint',20);
