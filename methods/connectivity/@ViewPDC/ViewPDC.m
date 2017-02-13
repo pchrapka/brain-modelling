@@ -123,6 +123,7 @@ classdef ViewPDC < handle
         
         plot_adjacency(obj,varargin);
         plot_directed(obj,varargin)
+        plot_seed(obj,chseed,varargin)
         
         % summary function
         out = get_summary(obj,varargin)
