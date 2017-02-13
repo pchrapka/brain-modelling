@@ -5,7 +5,7 @@ obj.save_tag = [];
 p = inputParser();
 addRequired(p,'chseed',@isnumeric);
 addParameter(p,'direction','outgoing',@(x) any(validatestring(x,{'outgoing','incoming'})));
-% addParameter(p,'threshold',0.2,@(x) x >= 0 && x <= 1);
+addParameter(p,'threshold',0.05,@(x) x >= 0 && x <= 1);
 % addParameter(p,'save',false,@islogical);
 % addParameter(p,'outdir','',@ischar);
 parse(p,chseed,varargin{:});
@@ -27,15 +27,21 @@ data_plot = zeros(nchannels,nsamples);
 yticklabel = cell(nchannels,1);
 count = 1;
 for i=1:nchannels
+    if i == p.Results.chseed
+        % skip the diagonals, not informative
+        continue;
+    end
+    
     switch p.Results.direction
         case 'outgoing'
             data_temp = squeeze(obj.pdc(:,i,p.Results.chseed,freq_idx));
-            str_xlabel = 'from';
         case 'incoming'
             data_temp = squeeze(obj.pdc(:,p.Results.chseed,i,freq_idx));
-            str_xlabel = 'to';
     end
-    data_all = sum(data_temp(:));
+    
+    % threshold data
+    data_all = data_temp(data_temp > p.Results.threshold);
+    data_all = sum(data_all(:));
     
     % only add to plot if the whole sum is not 0
     if data_all > 0

@@ -169,6 +169,6 @@ end
 if flag.plot_pdc_seed_beta
     view_switch(view_pdc,'beta');
     ch = 1;
-    view_pdc.plot_seed(ch,'direction','outgoing');
+    view_pdc.plot_seed(ch,'direction','outgoing','threshold',0.05);
 end
 
