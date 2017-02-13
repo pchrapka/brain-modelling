@@ -168,11 +168,22 @@ end
 %% pdc seed 15-25Hz
 if flag.plot_pdc_seed_beta
     view_switch(view_pdc,'beta');
-    ch = 1;
-    view_pdc.plot_seed(ch,'direction','outgoing','threshold',0.05);
-    try
-        view_pdc.save_plot(save_params{:});
-    catch me
+    % outgoing
+    for i=1:nchannels
+        view_pdc.plot_seed(i,'direction','outgoing','threshold',0.05);
+        try
+            view_pdc.save_plot(save_params{:});
+        catch me
+        end
+    end
+    
+    % incoming
+    for i=1:nchannels
+        view_pdc.plot_seed(i,'direction','incoming','threshold',0.05);
+        try
+            view_pdc.save_plot(save_params{:});
+        catch me
+        end
     end
 end
 
