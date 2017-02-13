@@ -56,7 +56,7 @@ yticklabel = yticklabel(1:count-1,:);
 clim = [0 1];
 imagesc(data_plot,clim);
 cmap = colormap(hot);
-cmap = flip(cmap,1);
+cmap = flipdim(cmap,1);
 colormap(cmap);
 colorbar();
 
