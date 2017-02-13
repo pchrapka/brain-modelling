@@ -201,7 +201,27 @@ classdef ViewPDC < handle
                 case 'y'
                     set(gca,'YTick', ticks, 'YTickLabel', ticklabels);
             end
-                    
+        end
+        
+        function add_vert_line(obj,time)
+            if isempty(obj.time)
+                fprintf('time is empty\n');
+                return;
+            end
+            
+            if time < obj.time(1) || time > obj.time(end)
+                error('time is out of range');
+            end
+            
+            [~,idx] = min(abs(time - obj.time));
+            x(1) = idx;
+            x(2) = idx;
+            yl = ylim;
+            y(1) = yl(1);
+            y(2) = yl(2);
+            
+            hold on;
+            plot(x,y,'--k','LineWidth',2);
         end
         
         function hxlabel = labelitx(obj,j) % Labels x-axis plottings

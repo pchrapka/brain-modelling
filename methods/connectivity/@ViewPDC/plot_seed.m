@@ -83,7 +83,10 @@ set(gca,...
     'YTickLabel', yticklabel,...
     'FontSize',10);
 
-obj.add_time_ticks('x');
+if ~isempty(obj.time)
+    obj.add_time_ticks('x');
+    obj.add_vert_line(0);
+end
 
 switch p.Results.direction
     case 'outgoing'
