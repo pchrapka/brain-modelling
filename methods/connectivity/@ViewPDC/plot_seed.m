@@ -23,6 +23,12 @@ f = w(w_idx)*obj.fs;
 freq_idx = 1:nfreqs;
 freq_idx = freq_idx(w_idx);
 
+if ~isempty(obj.labels)
+    label_seed = obj.labels{p.Results.chseed};
+else
+    label_seed = sprintf('%d',p.Results.chseed);
+end
+
 data_plot = zeros(nchannels,nsamples);
 yticklabel = cell(nchannels,1);
 count = 1;
@@ -56,6 +62,11 @@ for i=1:nchannels
     end
 end
 
+if count == 1
+    fprintf('%s: no connections for %s\n',mfilename,label_seed);
+    return;
+end
+
 data_plot = data_plot(1:count-1,:);
 yticklabel = yticklabel(1:count-1,:);
 
@@ -71,12 +82,6 @@ set(gca,...
     'YTick', ytick, ...
     'YTickLabel', yticklabel,...
     'FontSize',10);
-
-if ~isempty(obj.labels)
-    label_seed = obj.labels{p.Results.chseed};
-else
-    label_seed = sprintf('%d',p.Results.chseed);
-end
 
 switch p.Results.direction
     case 'outgoing'
