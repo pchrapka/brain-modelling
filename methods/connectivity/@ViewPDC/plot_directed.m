@@ -68,7 +68,7 @@ q = [];
 % set up colormap
 value_max = length(freq_idx);
 cmap = colormap(hot);
-cmap = flip(cmap,1);
+cmap = flipdim(cmap,1);
 colormap(cmap);
 ncolors = size(cmap,1);
 
@@ -122,7 +122,7 @@ for s=1:nsamples
     if isempty(obj.time)
         title(sprintf('sample: %d',s));
     else
-        title(sprintf('time: %dms',obj.time(s)*1000));
+        title(sprintf('time: %0.0fms',obj.time(s)*1000));
     end
     
     if p.Results.makemovie
