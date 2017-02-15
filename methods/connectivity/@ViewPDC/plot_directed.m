@@ -115,7 +115,7 @@ if sum(coord(:,3)) == 0
     type = '2d';
 else
     type = '3d';
-    view([180 30]);
+    view([0 30]);
 end
 
 % set up colormap
