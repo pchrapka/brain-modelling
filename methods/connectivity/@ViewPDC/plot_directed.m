@@ -69,9 +69,9 @@ switch p.Results.layout
         [~,idx_front] = min(coord(:,3));
         [~,idx_back] = max(coord(:,3));
         brain_length = coord(idx_front,3) - coord(idx_back,3);
-        offset = 0.2*brain_length;
+        %offset = 0.2*brain_length;
         
-%         coord_temp = coord - repmat([
+        %coord_temp = coord - repmat([
         
         idx_right = coord(:,1) > 0;
         idx_left = ~idx_right;
@@ -84,6 +84,13 @@ switch p.Results.layout
         coord_temp(idx_left,:) = coord(idx_left,:)*Rz_ccw';
         
         % separate the coordinates
+        offset = sqrt(2)*brain_length/2;
+        nright = sum(idx_right);
+        nleft = sum(idx_left);
+        coord_temp(idx_right,1) = coord_temp(idx_right,1) + repmat(offset,nright,1);
+        coord_temp(idx_left,1) = coord_temp(idx_left,1) + repmat(-offset,nleft,1);
+        
+        coord = coord_temp;
 end
 
 % set up avi file
