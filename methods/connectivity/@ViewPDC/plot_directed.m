@@ -75,7 +75,7 @@ switch p.Results.layout
         
         idx_right = coord(:,1) > 0;
         idx_left = ~idx_right;
-        angle = 2*pi/3;
+        angle = pi/2;%2*pi/3;
         Rz_ccw = rotZ(angle); % counter clockwise for left
         Rz_cw = rotZ(-angle); % clockwise for right
         
@@ -143,8 +143,15 @@ for j=1:nchannels
     offset = 0;
     % NOTE if offset != 0 then you'll need an if statement to check if z ==
     % 0
-    text(coord(j,1)+offset,coord(j,2)+offset,coord(j,3)+offset,labels{j});
+    if coord(j,1) > 0
+        alignment = 'right';
+    else
+        alignment = 'left';
+    end
+    text(coord(j,1)+offset,coord(j,2)+offset,coord(j,3)+offset,labels{j},...
+        'HorizontalAlignment',alignment);
 end
+scatter3(coord(:,1),coord(:,2),coord(:,3),10,'filled'); 
 
 q = [];
 for s=1:nsamples
