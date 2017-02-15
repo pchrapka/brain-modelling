@@ -12,6 +12,7 @@ classdef ViewPDC < handle
         fs;
         labels;
         time;
+        coords;
         
         save_tag; % save tag for each plot type
         freq_tag; % freq tag for saving
@@ -28,6 +29,7 @@ classdef ViewPDC < handle
             addParameter(p,'w',[0 0.5],@(x) length(x) == 2 && isnumeric(2));
             addParameter(p,'fs',1,@isnumeric);
             addParameter(p,'labels',{},@iscell);
+            addParameter(p,'coords',[],@isnumeric);
             addParameter(p,'time',[],@isnumeric);
             addParameter(p,'outdir','data',@ischar);
             parse(p,file,varargin{:});
@@ -42,8 +44,23 @@ classdef ViewPDC < handle
             [obj.filepath,obj.filename,~] =  fileparts(obj.file);
             obj.w = p.Results.w;
             obj.fs = p.Results.fs;
-            obj.labels = p.Results.labels;
             obj.time = p.Results.time;
+            
+            % check labels and coords
+            if ~isempty(p.Results.coords)
+                dims_coords = size(p.Results.coords);
+                if length(dims_coords) < 2 || length(dims_coords) > 3
+                    disp(dims_coords);
+                    error('invalid dimensions for coords, either 2d or 3d');
+                end
+                nlabels = length(p.Results.labels);
+                if nlabels ~= dims_coords(1)
+                    error('not enough coords (%d) for labels (%d)',dims_coords(1),nlabels);
+                end
+            end
+            
+            obj.labels = p.Results.labels;
+            obj.coords = p.Results.coords;
             
             obj.freq_tag = sprintf('-%0.4f-%0.4f',obj.w(1),obj.w(2));
             obj.save_tag = [];

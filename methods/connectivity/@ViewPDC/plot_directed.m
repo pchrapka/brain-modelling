@@ -25,6 +25,7 @@ addParameter(p,'threshold',0,@isnumeric);
 addParameter(p,'pausetime',0.01,@isnumeric);
 parse(p,varargin{:});
 
+obj.save_tag = [];
 obj.load();
 
 [nsamples,nchannels,~,nfreqs] = size(obj.pdc);
@@ -37,19 +38,27 @@ f = w(w_idx)*obj.fs;
 freq_idx = 1:nfreqs;
 freq_idx = freq_idx(w_idx);
 
+% set up labels
 if isempty(obj.labels)
     labels = cell(nchannels,1);
+    for i=1:nchannels
+        labels{i} = sprintf('%d',i);
+    end
 else
     labels = obj.labels;
 end
 
-coord = zeros(nchannels,2);
-for i=1:nchannels
-    coord(i,:) = [cos(2*pi*(i - 1)./nchannels), sin(2*pi*(i - 1)./nchannels)];
-    if isempty(labels{i})
-        labels{i} = sprintf('%d',i);
+% set up coords
+if isempty(obj.coords)
+    coord = zeros(nchannels,2);
+    for i=1:nchannels
+        coord(i,:) = [cos(2*pi*(i - 1)./nchannels), sin(2*pi*(i - 1)./nchannels)];
     end
+else
+    coord = obj.coords;
 end
+
+ndims_coord = length(size(coord));
 
 % set up avi file
 if p.Results.makemovie
@@ -61,9 +70,12 @@ if p.Results.makemovie
     open(vidobj);
 end
 
-figure('Position',[100 100, 1000, 600]);
+% set up full screen figure
+figure('Position', get(0,'screensize'));
+
+% format
+hold on;
 axis off;
-q = [];
 
 % set up colormap
 value_max = length(freq_idx);
@@ -71,17 +83,27 @@ cmap = colormap(hot);
 cmap = flipdim(cmap,1);
 colormap(cmap);
 ncolors = size(cmap,1);
-
-% format
-hold on;
-ylim([-1.1 1.1]);
-xlim([-1.1 1.1]);
-for j=1:nchannels
-    offset = 1/20;
-    text(coord(j,1)+offset,coord(j,2)+offset,labels{j});
-end
 colorbar('Location','EastOutside');
 
+% set x,y,z limits
+multiple = 1.1;
+lim_func = {'xlim','ylim','zlim'};
+for i=1:ndims_coord
+    dimmin = min(coord(i,:));
+    dimmax = max(coord(i,:));
+    
+    fh = str2func(lim_func{i});
+    fh(multiple*[dimmin dimmax]);
+end
+    
+% set up point labels
+for j=1:nchannels
+    %offset = 1/20;
+    offset = 0;
+    text(coord(j,1)+offset,coord(j,2)+offset,labels{j});
+end
+
+q = [];
 for s=1:nsamples
     % clear q's
     if ~isempty(q)
