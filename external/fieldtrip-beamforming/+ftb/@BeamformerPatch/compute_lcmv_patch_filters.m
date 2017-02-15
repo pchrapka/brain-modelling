@@ -60,6 +60,7 @@ source = [];
 source.filters = cell(size(leadfield.leadfield));
 source.patch_labels = cell(size(leadfield.leadfield));
 source.inside = false(size(leadfield.inside));
+source.patch_centroid = zeros(length(leadfield.inside),3);
 
 % NOTE when supplying ft_sourceanalysis with filters, i can only specify
 % one per grid point, not per trial, so this function can only operate on a
@@ -112,6 +113,7 @@ for i=1:length(patches)
             % compute patch filter weights
             filter = pinv(Yk)*Uk'*pinv(data.cov);
         end
+        
     end
     
     switch p.Results.mode
@@ -123,6 +125,11 @@ for i=1:length(patches)
             
             % save patch label for each point
             [source.patch_labels{patches(i).inside}] = deal(patches(i).name);
+            
+            % save centroid
+            nverts = sum(pathces(i).inside);
+            source.patch_centroid(patches(i).inside,:) = ...
+                repmat(patches(i).centroid,nverts,1);
             
         case 'single'
             idx = find(patches(i).inside == 1, 1, 'first');
@@ -136,6 +143,9 @@ for i=1:length(patches)
                 
                 % save point location
                 source.inside(idx) = true;
+                
+                % save centroid
+                source.patch_centroid(idx,:) = patches(i).centroid;
             end
     end
     

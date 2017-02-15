@@ -24,6 +24,8 @@ function patches = get_basis(patches, leadfield, varargin)
 %       basis for the patch
 %   patches.inside
 %       logical index of points inside the patch
+%   patches.centroid
+%       centroid of patch points
 
 p = inputParser;
 addRequired(p,'patches',@isstruct);
@@ -103,6 +105,10 @@ for i=1:length(patches)
     end
     % save Uk
     patches(i).U = Uk;
+    
+    % compute centroid
+    locs = leadfield.pos(patches(i).inside,:);
+    patches(i).centroid =  mean(locs,1);
     
 end
 
