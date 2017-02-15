@@ -71,7 +71,8 @@ if p.Results.makemovie
 end
 
 % set up full screen figure
-figure('Position', get(0,'screensize'));
+%figure('Position', get(0,'screensize'));
+figure('Position', [100 100 1000 600]);
 
 % format
 hold on;

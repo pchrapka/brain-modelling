@@ -26,8 +26,8 @@ flag.plot_pdc_single_100_largest = false;
 flag.plot_pdc_summary_beta_mag = false;
 flag.print_pdc_summary_beta = false;
 flag.plot_pdc_single_gt20 = false;
-flag.plot_pdc_directed_beta = false;
-flag.plot_pdc_seed_beta = true;
+flag.plot_pdc_directed_beta = true;
+flag.plot_pdc_seed_beta = false;
 
 %% pdc summary 0-100 Hz
 if flag.plot_pdc_summary_100
