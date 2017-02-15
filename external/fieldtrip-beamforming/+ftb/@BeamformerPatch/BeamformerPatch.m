@@ -215,7 +215,7 @@ classdef BeamformerPatch < ftb.Beamformer
                 % save filters
                 leadfield.filter = data_filters.filters;
                 leadfield.filter_label = data_filters.patch_labels;
-                leadfield.patch_centroid = data_files.patch_centroid;
+                leadfield.patch_centroid = data_filters.patch_centroid;
                 leadfield.inside = data_filters.inside;
                 save(obj.lf.leadfield, 'leadfield');
             else
