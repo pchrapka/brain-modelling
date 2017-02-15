@@ -94,7 +94,7 @@ time = downsample(time,downsample_by);
 clear eegdata;
 
 %% save test file
-create_test_file = false;
+create_pdc_test = false;
 if create_pdc_test
     create_pdc_test_file = false;
     create_pdc_test_meta_file = false;
@@ -112,7 +112,7 @@ if create_pdc_test
         pdcdata = loadfile(pdc_files{1});
         
         testdata = [];
-        testdata.pdc = pdcdata.pdc(1:ntestsampels,:,:,:);
+        testdata.pdc = pdcdata.pdc(1:ntestsamples,:,:,:);
         
         save_parfor(pdc_test_file, testdata);
         clear pdcdata;
