@@ -23,6 +23,7 @@ addParameter(p,'outdir','',@ischar);
 addParameter(p,'makemovie',false,@islogical);
 addParameter(p,'threshold',0,@isnumeric);
 addParameter(p,'pausetime',0.01,@isnumeric);
+addParameter(p,'layout','default',@(x) any(validatestring(x,{'default','openhemis'})));
 parse(p,varargin{:});
 
 obj.save_tag = [];
@@ -56,6 +57,24 @@ if isempty(obj.coords)
     end
 else
     coord = obj.coords;
+end
+
+% open up coordinate layout
+switch p.Results.layout
+    case 'default'
+    case 'openhemis'
+        % open hemispheres
+        
+        % shift front to (0,0,offset)
+        [~,idx_front] = min(coord(:,3));
+        [~,idx_back] = max(coord(:,3));
+        brain_length = coord(idx_front,3) - coord(idx_back,3);
+        offset = 0.2*brain_length;
+        
+%         coord_temp = coord - repmat([
+        
+        idx_right = coord(:,1) > 0;
+        idx_left = ~idx_right;
 end
 
 % set up avi file
