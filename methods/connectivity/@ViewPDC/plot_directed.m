@@ -50,15 +50,13 @@ end
 
 % set up coords
 if isempty(obj.coords)
-    coord = zeros(nchannels,2);
+    coord = zeros(nchannels,3);
     for i=1:nchannels
-        coord(i,:) = [cos(2*pi*(i - 1)./nchannels), sin(2*pi*(i - 1)./nchannels)];
+        coord(i,:) = [cos(2*pi*(i - 1)./nchannels), sin(2*pi*(i - 1)./nchannels) 0];
     end
 else
     coord = obj.coords;
 end
-
-ndims_coord = length(size(coord));
 
 % set up avi file
 if p.Results.makemovie
@@ -101,7 +99,9 @@ end
 for j=1:nchannels
     %offset = 1/20;
     offset = 0;
-    text(coord(j,1)+offset,coord(j,2)+offset,labels{j});
+    % NOTE if offset != 0 then you'll need an if statement to check if z ==
+    % 0
+    text(coord(j,1)+offset,coord(j,2)+offset,coord(j,3)+offset,labels{j});
 end
 
 q = [];
@@ -133,8 +133,13 @@ for s=1:nsamples
                 
                 dx = coord(i,1) - coord(j,1);
                 dy = coord(i,2) - coord(j,2);
+                dz = coord(i,3) - coord(j,3);
+                
                 scaling = 0;
-                q(qcount) = quiver(coord(j,1),coord(j,2),dx,dy,scaling,...
+                
+                q(qcount) = quiver3(...
+                    coord(j,1),coord(j,2),coord(j,3),...
+                    dx,dy,dz,scaling,...
                     'Color',cmap(color_idx,:));
                 qcount = qcount + 1;
             end

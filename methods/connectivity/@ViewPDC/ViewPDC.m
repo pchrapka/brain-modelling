@@ -61,6 +61,10 @@ classdef ViewPDC < handle
             
             obj.labels = p.Results.labels;
             obj.coords = p.Results.coords;
+            if size(obj.coords,2) == 2
+                % make coords 3d
+                obj.coords(:,3) = zeros(size(obj.coords,1),1);
+            end
             
             obj.freq_tag = sprintf('-%0.4f-%0.4f',obj.w(1),obj.w(2));
             obj.save_tag = [];
