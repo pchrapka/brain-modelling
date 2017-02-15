@@ -175,6 +175,7 @@ if flag.plot_pdc_seed_beta
             view_pdc.save_plot(save_params{:});
         catch me
         end
+        close(gcf);
     end
     
     % incoming
@@ -184,6 +185,7 @@ if flag.plot_pdc_seed_beta
             view_pdc.save_plot(save_params{:});
         catch me
         end
+        close(gcf);
     end
 end
 
