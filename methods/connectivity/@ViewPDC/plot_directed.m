@@ -75,6 +75,15 @@ switch p.Results.layout
         
         idx_right = coord(:,1) > 0;
         idx_left = ~idx_right;
+        angle = pi/4;
+        Rz_ccw = rotZ(angle); % counter clockwise for left
+        Rz_cw = rotZ(-angle); % clockwise for right
+        
+        % rotate the coordinates
+        coord_temp(idx_right,:) = coord(idx_right,:)*Rz_cw';
+        coord_temp(idx_left,:) = coord(idx_left,:)*Rz_ccw';
+        
+        % separate the coordinates
 end
 
 % set up avi file
@@ -187,4 +196,9 @@ if p.Results.makemovie
     close(vidobj);
 end
 
+end
+
+function Rz = rotZ(angle)
+% rotation around the z axis, + angle is counterclockwise
+Rz = [cos(angle) -sin(angle) 0; sin(angle) cos(angle) 0; 0 0 1];
 end
