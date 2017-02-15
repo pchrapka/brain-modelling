@@ -75,7 +75,7 @@ switch p.Results.layout
         
         idx_right = coord(:,1) > 0;
         idx_left = ~idx_right;
-        angle = pi/4;
+        angle = 2*pi/3;
         Rz_ccw = rotZ(angle); % counter clockwise for left
         Rz_cw = rotZ(-angle); % clockwise for right
         
@@ -115,7 +115,7 @@ if sum(coord(:,3)) == 0
     type = '2d';
 else
     type = '3d';
-    view([0 30]);
+    view([180 30]);
 end
 
 % set up colormap
