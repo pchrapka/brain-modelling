@@ -111,6 +111,13 @@ figure('Position', [100 100 1000 600]);
 hold on;
 axis off;
 
+if sum(coord(:,3)) == 0
+    type = '2d';
+else
+    type = '3d';
+    view([0 30]);
+end
+
 % set up colormap
 value_max = length(freq_idx);
 cmap = colormap(hot);
