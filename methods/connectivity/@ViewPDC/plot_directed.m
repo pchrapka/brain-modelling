@@ -87,9 +87,9 @@ colorbar('Location','EastOutside');
 % set x,y,z limits
 multiple = 1.1;
 lim_func = {'xlim','ylim','zlim'};
-for i=1:ndims_coord
-    dimmin = min(coord(i,:));
-    dimmax = max(coord(i,:));
+for i=1:3
+    dimmin = min(coord(:,i));
+    dimmax = max(coord(:,i));
     
     fh = str2func(lim_func{i});
     fh(multiple*[dimmin dimmax]);
