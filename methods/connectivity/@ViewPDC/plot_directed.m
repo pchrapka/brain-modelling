@@ -68,10 +68,20 @@ end
 switch p.Results.layout
     case 'default'
         coord = obj.coords;
+        
+        % assume the coords are anatomical, corrected after switch if
+        % nothing is given
+        axislim_multiple = 1.1;
+        fig_size = get(0,'screensize');
+        
     case 'circle'
         % ignore obj.coords
         coord = [];
+        % screen size is calculated after switch
+        
     case 'openhemis'
+        axislim_multiple = 1.1;
+        fig_size = get(0,'screensize');
         % open hemispheres
         if isempty(obj.coords)
             error('no anatomical coordinates specified');
@@ -109,6 +119,11 @@ if isempty(coord)
     for i=1:nchannels
         coord(i,:) = [cos(2*pi*(i - 1)./nchannels), sin(2*pi*(i - 1)./nchannels) 0];
     end
+    
+    axislim_multiple = 1.4;
+    screen_size = get(0,'screensize');
+    square_size = min(screen_size(3:4));
+    fig_size = [1 1 square_size square_size];
 end
 
 % set up avi file
@@ -121,12 +136,13 @@ if p.Results.makemovie
     open(vidobj);
 end
 
-% set up full screen figure
 if debug
-    figure('Position', [100 100 1000 600]);
-else
-    figure('Position', get(0,'screensize'));
+    % override fig size
+    fig_size = [1 1 1000 600];
 end
+
+% set up figure
+figure('Position', fig_size);
 
 % format
 hold on;
@@ -159,14 +175,13 @@ ncolors = size(cmap,1);
 colorbar('Location','EastOutside');
 
 % set x,y,z limits
-multiple = 1.1;
 lim_func = {'xlim','ylim','zlim'};
 for i=1:ncoord_dim
     dimmin = min(coord(:,i));
     dimmax = max(coord(:,i));
     
     fh = str2func(lim_func{i});
-    fh(multiple*[dimmin dimmax]);
+    fh(axislim_multiple*[dimmin dimmax]);
 end
 
 % add labels
