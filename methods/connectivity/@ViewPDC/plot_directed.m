@@ -143,9 +143,11 @@ end
 
 if sum(coord(:,3)) == 0
     type = '2d';
+    ncoord_dim = 2;
 else
     type = '3d';
     view([0 45]);
+    ncoord_dim = 3;
 end
 
 % set up colormap
@@ -159,7 +161,7 @@ colorbar('Location','EastOutside');
 % set x,y,z limits
 multiple = 1.1;
 lim_func = {'xlim','ylim','zlim'};
-for i=1:3
+for i=1:ncoord_dim
     dimmin = min(coord(:,i));
     dimmax = max(coord(:,i));
     
