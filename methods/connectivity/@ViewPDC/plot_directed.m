@@ -117,8 +117,11 @@ if p.Results.makemovie
 end
 
 % set up full screen figure
-%figure('Position', get(0,'screensize'));
-figure('Position', [100 100 1000 600]);
+if debug
+    figure('Position', [100 100 1000 600]);
+else
+    figure('Position', get(0,'screensize'));
+end
 
 % format
 hold on;
@@ -173,7 +176,7 @@ for j=1:nchannels
     text(coord(j,1)+offset,coord(j,2)+offset,coord(j,3)+offset,labels{j},...
         'HorizontalAlignment',alignment);
 end
-scatter3(coord(:,1),coord(:,2),coord(:,3),10,'filled'); 
+scatter3(coord(:,1),coord(:,2),coord(:,3),50,'filled','ob'); 
 
 conns = struct('q',[],'ndur',num2cell(zeros(nchannels,nchannels)));
 for s=1:nsamples
