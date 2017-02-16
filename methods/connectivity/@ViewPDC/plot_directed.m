@@ -249,28 +249,52 @@ for s=1:nsamples
                 maxwidth = 5;
                 linewidth = maxwidth*linewidth_pct;
                 
-                if isempty(conns(j,i).q)  
-                    % new quiver
-                    dx = coord(i,1) - coord(j,1);
-                    dy = coord(i,2) - coord(j,2);
-                    dz = coord(i,3) - coord(j,3);
-                    
-                    conns(j,i).q = quiver3(...
-                        coord(j,1),coord(j,2),coord(j,3),...
-                        dx,dy,dz,scaling,...
-                        'Color',cmap(color_idx,:),...
-                        'LineWidth',linewidth);
+                if isempty(conns(j,i).q) 
+                    switch p.Results.layout
+                        case 'circle'
+                            hyp = hyperbola(coord(j,1:2),coord(i,1:2),'a',0.5);
+                            conns(j,i).q(1) = plot(hyp(:,1),hyp(:,2),...
+                                'Color',cmap(color_idx,:),...
+                                'LineWidth',linewidth);
+                            
+                            % add arrowhead
+                            arrow.x(1) = hyp(end-5,1);
+                            arrow.x(2) = hyp(end,1);
+                            arrow.y(1) = hyp(end-5,2);
+                            arrow.y(2) = hyp(end,2);
+                            conns(j,i).q(2) = annotation('arrow',...
+                                arrow.x,arrow.y,...
+                                'Color',cmap(color_idx,:),...
+                                'LineWidth',linewidth
+                                
+                        otherwise
+                            % new quiver
+                            dx = coord(i,1) - coord(j,1);
+                            dy = coord(i,2) - coord(j,2);
+                            dz = coord(i,3) - coord(j,3);
+                            
+                            conns(j,i).q = quiver3(...
+                                coord(j,1),coord(j,2),coord(j,3),...
+                                dx,dy,dz,scaling,...
+                                'Color',cmap(color_idx,:),...
+                                'LineWidth',linewidth);
                 else
                     % update quiver
                     % color and line width
-                    set(conns(j,i).q,...
-                        'Color',cmap(color_idx,:),...
-                        'LineWidth',linewidth);
+                    nqs = length(conns(j,i).q)
+                    for k=1:nqs
+                        set(conns(j,i).q(k),...
+                            'Color',cmap(color_idx,:),...
+                            'LineWidth',linewidth);
+                    end
                 end
             else
                 % delete quiver
                 if ~isempty(conns(j,i).q)
-                    delete(conns(j,i).q);
+                    nqs = length(conns(j,i).q)
+                    for k=1:nqs
+                        delete(conns(j,i).q(k));
+                    end
                     conns(j,i).q = [];
                     conns(j,i).ndur = 0;
                 end
@@ -305,6 +329,51 @@ end
 function Rz = rotZ(angle)
 % rotation around the z axis, + angle is counterclockwise
 Rz = [cos(angle) -sin(angle) 0; sin(angle) cos(angle) 0; 0 0 1];
+end
+
+function hyp = hyperbola(pt1,pt2,varargin)
+% hyperbola travels from pt1 to pt2
+p = inputParser();
+addRequired(p,'pt1',@(x) length(x) == 2);
+addRequired(p,'pt2',@(x) length(x) == 2);
+addParameter(p,'a',0.5,@isnumeric);
+%addParameter(p,'origin',[0 0],@(x) length(x) == 2);
+% assuming hyperparabola is at origin
+parse(p,pt1,pt2,varargin{:});
+
+% reshape points
+pt1 = reshape(pt1,1,2);
+pt2 = reshape(pt2,1,2);
+origin = [0 0];
+pts = [pt1; pt2; origin];
+
+% plot(pts(:,1),pts(:,2),'ro','LineWidth',2);
+
+% rotate so that mid angle is along the x axis
+angle1 = atan2(pt1(2),pt1(1));
+angle2 = atan2(pt2(2),pt2(1));
+anglemid = (angle2-angle1)/2 + angle1;
+Rz = @(angle) [cos(angle) -sin(angle); sin(angle) cos(angle)];
+pts_mod = pts*Rz(-anglemid)';
+
+% hold on;
+% plot(pts_mod(:,1),pts_mod(:,2),'bo','LineWidth',2);
+
+% a is free to specify
+a = p.Results.a;
+% fit b to points
+b = sqrt(a^2*pts_mod(1,2)^2/(pts_mod(1,1)^2- a^2));
+
+% compute hyperbola
+y = linspace(0,pts_mod(1,2))';
+x = sqrt(a^2*(1+y.^2/b^2));
+hyp_mod = [flipdim([x y],1); x -y];
+%plot(hyp_mod(:,1),hyp_mod(:,2),'-b');
+
+% rotate back to original points
+hyp = hyp_mod*Rz(anglemid)';
+% plot(hyp(:,1),hyp(:,2),'-r');
+
 end
 
 function add_labels(labels,coord,layout,type)
