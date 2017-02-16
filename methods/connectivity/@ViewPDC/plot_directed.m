@@ -71,7 +71,6 @@ switch p.Results.layout
     case 'circle'
         % ignore obj.coords
         coord = [];
-        % set up circular
     case 'openhemis'
         % open hemispheres
         if isempty(obj.coords)
@@ -105,6 +104,7 @@ switch p.Results.layout
 end
 
 if isempty(coord)
+    % set up circular
     coord = zeros(nchannels,3);
     for i=1:nchannels
         coord(i,:) = [cos(2*pi*(i - 1)./nchannels), sin(2*pi*(i - 1)./nchannels) 0];
