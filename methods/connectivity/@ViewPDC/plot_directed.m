@@ -168,22 +168,17 @@ for i=1:ncoord_dim
     fh = str2func(lim_func{i});
     fh(multiple*[dimmin dimmax]);
 end
-    
-% set up point labels
-for j=1:nchannels
-    %offset = 1/20;
-    offset = 0;
-    % NOTE if offset != 0 then you'll need an if statement to check if z ==
-    % 0
-    if coord(j,1) > 0
-        alignment = 'left';
-    else
-        alignment = 'right';
-    end
-    text(coord(j,1)+offset,coord(j,2)+offset,coord(j,3)+offset,labels{j},...
-        'HorizontalAlignment',alignment);
+
+% add labels
+add_labels(labels,coord,p.Results.layout,type);
+
+% add decorator for coordinates
+switch p.Results.layout
+    case {'openhemis','default'}
+        scatter3(coord(:,1),coord(:,2),coord(:,3),50,'filled','ob');
+    case 'circle'
+        % do nothing
 end
-scatter3(coord(:,1),coord(:,2),coord(:,3),50,'filled','ob'); 
 
 conns = struct('q',[],'ndur',num2cell(zeros(nchannels,nchannels)));
 for s=1:nsamples
@@ -278,4 +273,32 @@ end
 function Rz = rotZ(angle)
 % rotation around the z axis, + angle is counterclockwise
 Rz = [cos(angle) -sin(angle) 0; sin(angle) cos(angle) 0; 0 0 1];
+end
+
+function add_labels(labels,coord,layout,type)
+
+nlabels = length(labels);
+
+% set up point labels
+for j=1:nlabels
+    %offset = 1/20;
+    offset = 0;
+    % NOTE if offset != 0 then you'll need an if statement to check if z ==
+    % 0
+    if coord(j,1) > 0
+        alignment = 'left';
+    else
+        alignment = 'right';
+    end
+    h = text(coord(j,1)+offset,coord(j,2)+offset,coord(j,3)+offset,labels{j},...
+        'HorizontalAlignment',alignment);
+    
+    switch layout
+        case 'circle'
+            angle = atan2(coord(j,2),coord(j,1));
+            angledeg = angle*(180/pi);
+            set(h,'Rotation',angledeg);    
+    end
+end
+
 end
