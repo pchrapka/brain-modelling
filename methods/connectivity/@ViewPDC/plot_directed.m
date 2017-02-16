@@ -162,22 +162,18 @@ for j=1:nchannels
 end
 scatter3(coord(:,1),coord(:,2),coord(:,3),10,'filled'); 
 
-q = [];
+conns = struct('q',[],'ndur',zeros(nchannels,nchannels));
 for s=1:nsamples
-    % clear q's
-    if ~isempty(q)
-        delete(q);
-    end
-    
+    % get pdc
     adj_mat1 = squeeze(obj.pdc(s,:,:,freq_idx)); 
+    % threshold
     adj_mat1(adj_mat1 < p.Results.threshold) = 0;
+    % collapse frequency dimension
     adj_mat = sum(adj_mat1,3);
     %disp(adj_mat);
     
     % plot
     % from j to i
-    qcount = 1;
-    q = [];
     for j=1:nchannels
         for i=1:nchannels
             if i == j
@@ -186,20 +182,48 @@ for s=1:nsamples
             end
             
             if adj_mat(j,i) > 0
+                % increment duration of connection
+                conns(j,i).ndur = conns(j,i).ndur + 1;
+                
+                % determine connection strength
+                % -> represented by color
                 pct = adj_mat(j,i)/value_max;
                 color_idx = ceil(ncolors*pct);
                 
-                dx = coord(i,1) - coord(j,1);
-                dy = coord(i,2) - coord(j,2);
-                dz = coord(i,3) - coord(j,3);
-                
                 scaling = 0;
                 
-                q(qcount) = quiver3(...
-                    coord(j,1),coord(j,2),coord(j,3),...
-                    dx,dy,dz,scaling,...
-                    'Color',cmap(color_idx,:));
-                qcount = qcount + 1;
+                % determine connection duration 
+                % -> represented as line width
+                maxdur = 10; % max durection in units of samples
+                dur_pct = max([1/maxdur conns(j,i).ndur/maxdur]);
+                linewidth_pct = min([1 dur_pct]); % limit between [0 1]
+                maxwidth = 5;
+                linewidth = maxwidth*linewidth_pct;
+                
+                if isempty(conns(j,i).q)  
+                    % new quiver
+                    dx = coord(i,1) - coord(j,1);
+                    dy = coord(i,2) - coord(j,2);
+                    dz = coord(i,3) - coord(j,3);
+                    
+                    conns(j,i).q = quiver3(...
+                        coord(j,1),coord(j,2),coord(j,3),...
+                        dx,dy,dz,scaling,...
+                        'Color',cmap(color_idx,:),...
+                        'LineWidth',linewidth);
+                else
+                    % alter color and line width
+                    set(conns(j,i).q,...
+                        'Color',cmap(color_idx,:),...
+                        'LineWidth',linewidth);
+                end
+            else
+                % delete quiver
+                if ~isempty(conns(j,i).q)
+                    delete(conns(j,i).q);
+                    conns(j,i).q = [];
+                    conns(j,i).ndur = 0;
+                end
             end
         end
     end
