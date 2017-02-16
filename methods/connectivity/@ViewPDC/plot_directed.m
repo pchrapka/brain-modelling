@@ -174,9 +174,9 @@ for j=1:nchannels
     % NOTE if offset != 0 then you'll need an if statement to check if z ==
     % 0
     if coord(j,1) > 0
-        alignment = 'right';
-    else
         alignment = 'left';
+    else
+        alignment = 'right';
     end
     text(coord(j,1)+offset,coord(j,2)+offset,coord(j,3)+offset,labels{j},...
         'HorizontalAlignment',alignment);
