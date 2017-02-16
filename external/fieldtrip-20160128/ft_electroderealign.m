@@ -441,7 +441,7 @@ elseif strcmp(cfg.method, 'fiducial')
   
   % compute the combined transform
   norm         = [];
-  norm.m       = elec2common / templ2common;
+  norm.m       = templ2common \ elec2common;
   % apply the transformation to the fiducials as sanity check
   norm.chanpos(1,:) = ft_warp_apply(norm.m, elec_nas, 'homogeneous');
   norm.chanpos(2,:) = ft_warp_apply(norm.m, elec_lpa, 'homogeneous');

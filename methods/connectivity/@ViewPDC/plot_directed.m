@@ -113,7 +113,7 @@ end
 
 % set up avi file
 if p.Results.makemovie
-    obj.save_tag = '-adjacency';
+    obj.save_tag = sprintf('-adjacency-%s-thresh%0.2f',p.Results.layout,p.Results.threshold);
     outdir = obj.get_outdir(p.Results.outdir);
     outfile = fullfile(outdir,[obj.get_savefile() '.avi']);
     
