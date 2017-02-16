@@ -109,6 +109,7 @@ figure('Position', [100 100 1000 600]);
 
 % format
 hold on;
+axis equal;
 axis off;
 
 if sum(coord(:,3)) == 0
