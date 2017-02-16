@@ -82,7 +82,7 @@ switch p.Results.layout
             coord = zeros(nchannels,3);
             
             % sort coordinates according to angle around origin
-            angles = atan2(obj.coords(:,2),bj.coords(:,1));
+            angles = atan2(obj.coords(:,2),obj.coords(:,1));
             [~,idx] = sort(angles);
             
             % set up equally spaced coordinates for plot
