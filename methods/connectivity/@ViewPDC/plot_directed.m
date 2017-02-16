@@ -286,8 +286,10 @@ for j=1:nlabels
     % NOTE if offset != 0 then you'll need an if statement to check if z ==
     % 0
     if coord(j,1) > 0
+        % right side
         alignment = 'left';
     else
+        % left side
         alignment = 'right';
     end
     h = text(coord(j,1)+offset,coord(j,2)+offset,coord(j,3)+offset,labels{j},...
@@ -297,7 +299,11 @@ for j=1:nlabels
         case 'circle'
             angle = atan2(coord(j,2),coord(j,1));
             angledeg = angle*(180/pi);
-            set(h,'Rotation',angledeg);    
+            if isequal(alignment,'right')
+                angledeg = angledeg + 180;
+            end
+            set(h,'Rotation',angledeg);
+            
     end
 end
 
