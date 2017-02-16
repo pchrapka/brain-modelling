@@ -77,7 +77,24 @@ switch p.Results.layout
     case 'circle'
         % ignore obj.coords
         coord = [];
-        % screen size is calculated after switch
+    
+        if ~isempty(obj.coords)
+            coord = zeros(nchannels,3);
+            
+            % sort coordinates according to angle around origin
+            angles = atan2(obj.coords(:,2),bj.coords(:,1));
+            [~,idx] = sort(angles);
+            
+            % set up equally spaced coordinates for plot
+            for i=1:nchannels
+                coord(i,:) = [cos(2*pi*(idx(i) - 1)./nchannels), sin(2*pi*(idx(i) - 1)./nchannels) 0];
+            end
+        end
+        
+        axislim_multiple = 1.4;
+        screen_size = get(0,'screensize');
+        square_size = min(screen_size(3:4));
+        fig_size = [1 1 square_size square_size];
         
     case 'openhemis'
         axislim_multiple = 1.1;
