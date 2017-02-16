@@ -224,7 +224,8 @@ for s=1:nsamples
                         'Color',cmap(color_idx,:),...
                         'LineWidth',linewidth);
                 else
-                    % alter color and line width
+                    % update quiver
+                    % color and line width
                     set(conns(j,i).q,...
                         'Color',cmap(color_idx,:),...
                         'LineWidth',linewidth);
