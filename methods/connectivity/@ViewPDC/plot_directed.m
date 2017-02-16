@@ -29,6 +29,8 @@ parse(p,varargin{:});
 obj.save_tag = [];
 obj.load();
 
+debug = false;
+
 [nsamples,nchannels,~,nfreqs] = size(obj.pdc);
 
 w = 0:nfreqs-1;
@@ -64,18 +66,11 @@ switch p.Results.layout
     case 'default'
     case 'openhemis'
         % open hemispheres
-        
-        % shift front to (0,0,offset)
-        [~,idx_front] = min(coord(:,3));
-        [~,idx_back] = max(coord(:,3));
-        brain_length = coord(idx_front,3) - coord(idx_back,3);
-        %offset = 0.2*brain_length;
-        
-        %coord_temp = coord - repmat([
+
         
         idx_right = coord(:,1) > 0;
         idx_left = ~idx_right;
-        angle = pi/2;%2*pi/3;
+        angle = pi/3;
         Rz_ccw = rotZ(angle); % counter clockwise for left
         Rz_cw = rotZ(-angle); % clockwise for right
         
@@ -84,11 +79,16 @@ switch p.Results.layout
         coord_temp(idx_left,:) = coord(idx_left,:)*Rz_ccw';
         
         % separate the coordinates
-        offset = sqrt(2)*brain_length/2;
+        [~,idx_front] = min(coord(:,3));
+        %[~,idx_back] = max(coord(:,3));
+        front_length = abs(coord(idx_front,3));
+        
+        offset = 3*front_length;
         nright = sum(idx_right);
         nleft = sum(idx_left);
         coord_temp(idx_right,1) = coord_temp(idx_right,1) + repmat(offset,nright,1);
         coord_temp(idx_left,1) = coord_temp(idx_left,1) + repmat(-offset,nleft,1);
+        %coord_temp(idx_left,:) = zeros(nleft,3);
         
         coord = coord_temp;
 end
@@ -112,11 +112,19 @@ hold on;
 axis equal;
 axis off;
 
+if debug
+    axis on;
+    xlabel('x');
+    ylabel('y');
+    zlabel('z');
+    scatter3(0,0,0,100,'filled','or');
+end
+
 if sum(coord(:,3)) == 0
     type = '2d';
 else
     type = '3d';
-    view([0 30]);
+    view([0 45]);
 end
 
 % set up colormap
