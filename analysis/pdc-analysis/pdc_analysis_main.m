@@ -67,14 +67,6 @@ lf_files = lattice_filter_sources(filters, sources_file,...
 
 %% [maybe] remove 300 ms at beg and end
 
-%% plot rc
-if flag.plot_rc
-    plot_rc_dynamic_from_lf_files(lf_files,...
-        'mode', 'summary',...
-        'outdir', 'data',...
-        'save', true);
-end
-
 %% compute pdc
 downsample_by = 4;
 pdc_params = {...
@@ -153,8 +145,16 @@ flag.plot_pdc_single_100_largest = false;
 flag.plot_pdc_summary_beta_mag = false;
 flag.print_pdc_summary_beta = false;
 flag.plot_pdc_single_gt20 = false;
-flag.plot_pdc_directed_beta = false;
-flag.plot_pdc_seed_beta = true;
+flag.plot_pdc_directed_beta = true;
+flag.plot_pdc_seed_beta = false;
+
+%% plot rc
+if flag.plot_rc
+    plot_rc_dynamic_from_lf_files(lf_files,...
+        'mode', 'summary',...
+        'outdir', 'data',...
+        'save', true);
+end
 
 %% pdc summary 0-100 Hz
 if flag.plot_pdc_summary_100
