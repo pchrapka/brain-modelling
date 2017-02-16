@@ -86,8 +86,13 @@ switch p.Results.layout
             [~,idx] = sort(angles);
             
             % set up equally spaced coordinates for plot
+            %figure;
+            %xlim([-1 1]);
+            %ylim([-1 1]);
             for i=1:nchannels
-                coord(i,:) = [cos(2*pi*(idx(i) - 1)./nchannels), sin(2*pi*(idx(i) - 1)./nchannels) 0];
+                coord(idx(i),:) = [cos(2*pi*(i - 1)./nchannels), sin(2*pi*(i - 1)./nchannels) 0];
+                %text(coord(idx(i),1),coord(idx(i),2),coord(idx(i),3),...
+                %    sprintf('%d %s',idx(i),labels{i}));
             end
         end
         
@@ -252,21 +257,14 @@ for s=1:nsamples
                 if isempty(conns(j,i).q) 
                     switch p.Results.layout
                         case 'circle'
-                            hyp = hyperbola(coord(j,1:2),coord(i,1:2),'a',0.5);
+                            hyp = hyperbola_directed(...
+                                coord(j,1:2),coord(i,1:2),...
+                                'a',0.5,...
+                                'arrowlength',10);
                             conns(j,i).q(1) = plot(hyp(:,1),hyp(:,2),...
                                 'Color',cmap(color_idx,:),...
                                 'LineWidth',linewidth);
-                            
-                            % add arrowhead
-                            arrow.x(1) = hyp(end-5,1);
-                            arrow.x(2) = hyp(end,1);
-                            arrow.y(1) = hyp(end-5,2);
-                            arrow.y(2) = hyp(end,2);
-                            conns(j,i).q(2) = annotation('arrow',...
-                                arrow.x,arrow.y,...
-                                'Color',cmap(color_idx,:),...
-                                'LineWidth',linewidth
-                                
+                           
                         otherwise
                             % new quiver
                             dx = coord(i,1) - coord(j,1);
@@ -278,10 +276,11 @@ for s=1:nsamples
                                 dx,dy,dz,scaling,...
                                 'Color',cmap(color_idx,:),...
                                 'LineWidth',linewidth);
+                    end
                 else
                     % update quiver
                     % color and line width
-                    nqs = length(conns(j,i).q)
+                    nqs = length(conns(j,i).q);
                     for k=1:nqs
                         set(conns(j,i).q(k),...
                             'Color',cmap(color_idx,:),...
@@ -291,7 +290,7 @@ for s=1:nsamples
             else
                 % delete quiver
                 if ~isempty(conns(j,i).q)
-                    nqs = length(conns(j,i).q)
+                    nqs = length(conns(j,i).q);
                     for k=1:nqs
                         delete(conns(j,i).q(k));
                     end
@@ -331,12 +330,13 @@ function Rz = rotZ(angle)
 Rz = [cos(angle) -sin(angle) 0; sin(angle) cos(angle) 0; 0 0 1];
 end
 
-function hyp = hyperbola(pt1,pt2,varargin)
+function hyp = hyperbola_directed(pt1,pt2,varargin)
 % hyperbola travels from pt1 to pt2
 p = inputParser();
 addRequired(p,'pt1',@(x) length(x) == 2);
 addRequired(p,'pt2',@(x) length(x) == 2);
 addParameter(p,'a',0.5,@isnumeric);
+addParameter(p,'arrowlength',5,@isnumeric);
 %addParameter(p,'origin',[0 0],@(x) length(x) == 2);
 % assuming hyperparabola is at origin
 parse(p,pt1,pt2,varargin{:});
@@ -373,6 +373,28 @@ hyp_mod = [flipdim([x y],1); x -y];
 % rotate back to original points
 hyp = hyp_mod*Rz(anglemid)';
 % plot(hyp(:,1),hyp(:,2),'-r');
+
+% add arrow
+arrow_pt1 = hyp(end-p.Results.arrowlength+1,:);
+arrow_pt2 = hyp(end,:);
+arrow_pts = [arrow_pt1; arrow_pt2];
+arrow_length = sqrt(sum(diff(arrow_pts,1).^2));
+arrow_width = arrow_length*0.25;
+
+arrow_perp = [-arrow_pt1(2) arrow_pt1(1)];
+u = arrow_perp/norm(arrow_perp);
+
+% coeffs = polyfit(arrow_pts(:,1), arrow_pts(:,2), 1);
+% m = -1/coeffs(1); % orthogonal slope
+%b = arrow_pt1(1,2) - arrow_pt1(1,1)*m; % b = y - mx
+%u = arrow_pt1*m;
+%u = u/norm(u);
+arrow_pts_new = zeros(3,2);
+arrow_pts_new(1,:) = arrow_pt1 + arrow_width/2*u;
+arrow_pts_new(2,:) = arrow_pt1 - arrow_width/2*u;
+arrow_pts_new(3,:) = arrow_pt2;
+
+hyp = [hyp; arrow_pts_new];
 
 end
 

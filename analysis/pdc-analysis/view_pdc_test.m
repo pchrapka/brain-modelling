@@ -77,12 +77,12 @@ end
 %% pdc directed movie 15-25Hz
 if flag.plot_pdc_directed_beta_hemis
     view_switch(view_pdc,'beta');
-    view_pdc.plot_directed('makemovie',true,'threshold',0.2,'layout','openhemis');
+    view_pdc.plot_directed('makemovie',true,'threshold',0.2,'layout','openhemis','maxdur',40);
 end
 
 if flag.plot_pdc_directed_beta_circle
     view_switch(view_pdc,'beta');
-    view_pdc.plot_directed('makemovie',true,'threshold',0.2,'layout','circle');
+    view_pdc.plot_directed('makemovie',true,'threshold',0.2,'layout','circle','maxdur',40);
 end
 
 %% pdc seed 15-25Hz
