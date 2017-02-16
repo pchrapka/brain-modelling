@@ -28,7 +28,7 @@ addParameter(p,'makemovie',false,@islogical);
 addParameter(p,'threshold',0,@isnumeric);
 addParameter(p,'pausetime',0.01,@isnumeric);
 addParameter(p,'maxdur',0,@isnumeric);
-addParameter(p,'layout','default',@(x) any(validatestring(x,{'default','openhemis'})));
+addParameter(p,'layout','default',@(x) any(validatestring(x,{'default','openhemis','circle'})));
 parse(p,varargin{:});
 
 obj.save_tag = [];
@@ -64,22 +64,20 @@ else
     labels = obj.labels;
 end
 
-% set up coords
-if isempty(obj.coords)
-    coord = zeros(nchannels,3);
-    for i=1:nchannels
-        coord(i,:) = [cos(2*pi*(i - 1)./nchannels), sin(2*pi*(i - 1)./nchannels) 0];
-    end
-else
-    coord = obj.coords;
-end
-
-% open up coordinate layout
+% set up coordinate layout
 switch p.Results.layout
     case 'default'
+        coord = obj.coords;
+    case 'circle'
+        % ignore obj.coords
+        coord = [];
+        % set up circular
     case 'openhemis'
         % open hemispheres
-
+        if isempty(obj.coords)
+            error('no anatomical coordinates specified');
+        end
+        coord = obj.coords;
         
         idx_right = coord(:,1) > 0;
         idx_left = ~idx_right;
@@ -104,6 +102,13 @@ switch p.Results.layout
         %coord_temp(idx_left,:) = zeros(nleft,3);
         
         coord = coord_temp;
+end
+
+if isempty(coord)
+    coord = zeros(nchannels,3);
+    for i=1:nchannels
+        coord(i,:) = [cos(2*pi*(i - 1)./nchannels), sin(2*pi*(i - 1)./nchannels) 0];
+    end
 end
 
 % set up avi file

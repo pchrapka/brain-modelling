@@ -201,9 +201,9 @@ if flag.plot_pdc_single_gt20
 end
 
 %% pdc directed movie 15-25Hz
-if flag.plot_pdc_directed_beta
+if flag.plot_pdc_directed_beta_
     view_switch(view_pdc,'beta');
-    view_pdc.plot_directed('makemovie',true,'threshold',0.2);
+    view_pdc.plot_directed('makemovie',true,'threshold',0.2,'layout','openhemis');
 end
 
 %% pdc seed 15-25Hz
