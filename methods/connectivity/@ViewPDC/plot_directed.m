@@ -7,6 +7,10 @@ function plot_directed(obj,varargin)
 %       threshold for PDC, connections below this threshold are not plotted
 %   pausetime (numeric, default = 0.01)
 %       time to pause for each frame, relevant if makemovie = false
+%   maxdur (numeric, default = 0.05*nsamples)
+%       connection duration is represented by the line width, thus maxdur
+%       represents the number of samples for which a connection has to be
+%       active to reach the max line width
 %   outdir (string)
 %       output directory for summary data
 %       by default uses output directory set in ViewPDC.outdir, can be
@@ -23,6 +27,7 @@ addParameter(p,'outdir','',@ischar);
 addParameter(p,'makemovie',false,@islogical);
 addParameter(p,'threshold',0,@isnumeric);
 addParameter(p,'pausetime',0.01,@isnumeric);
+addParameter(p,'maxdur',0,@isnumeric);
 addParameter(p,'layout','default',@(x) any(validatestring(x,{'default','openhemis'})));
 parse(p,varargin{:});
 
@@ -32,6 +37,14 @@ obj.load();
 debug = false;
 
 [nsamples,nchannels,~,nfreqs] = size(obj.pdc);
+
+% max durection in units of samples
+if p.Results.maxdur == 0
+    maxdur = max([1 ceil(0.05*nsamples)]);
+    % it should also be at least 1
+else
+    maxdur = p.Results.maxdur;
+end
 
 w = 0:nfreqs-1;
 w = w/(2*nfreqs);
@@ -162,7 +175,7 @@ for j=1:nchannels
 end
 scatter3(coord(:,1),coord(:,2),coord(:,3),10,'filled'); 
 
-conns = struct('q',[],'ndur',zeros(nchannels,nchannels));
+conns = struct('q',[],'ndur',num2cell(zeros(nchannels,nchannels)));
 for s=1:nsamples
     % get pdc
     adj_mat1 = squeeze(obj.pdc(s,:,:,freq_idx)); 
@@ -194,7 +207,6 @@ for s=1:nsamples
                 
                 % determine connection duration 
                 % -> represented as line width
-                maxdur = 10; % max durection in units of samples
                 dur_pct = max([1/maxdur conns(j,i).ndur/maxdur]);
                 linewidth_pct = min([1 dur_pct]); % limit between [0 1]
                 maxwidth = 5;
