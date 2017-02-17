@@ -65,6 +65,7 @@ else
 end
 
 % set up coordinate layout
+coord_order = [];
 switch p.Results.layout
     case 'default'
         coord = obj.info.coord;
@@ -120,6 +121,7 @@ switch p.Results.layout
                 angle = -2*pi*(i - 1)./nchannels + pi/2;
                 coord(idx(i),:) = [cos(angle), sin(angle), 0];
             end
+            coord_order = idx;
             
         end
         
@@ -233,8 +235,16 @@ for i=1:ncoord_dim
     fh(axislim_multiple*[dimmin dimmax]);
 end
 
+% add circle
+width = 0;
+if ~isempty(obj.info.region)
+    width = 0.05;
+    add_regions(info,p.Results.layout,coord_order,width);
+end
+
 % add labels
-add_labels(labels,coord,p.Results.layout,type);
+offset = width;
+add_labels(labels,coord,p.Results.layout,type,offset);
 
 % add decorator for coordinates
 switch p.Results.layout
@@ -432,14 +442,12 @@ hyp = [hyp; arrow_pts_new];
 
 end
 
-function add_labels(labels,coord,layout,type)
+function add_labels(labels,coord,layout,type,offset)
 
 nlabels = length(labels);
 
 % set up point labels
 for j=1:nlabels
-    %offset = 1/20;
-    offset = 0;
     % NOTE if offset != 0 then you'll need an if statement to check if z ==
     % 0
     if coord(j,1) > 0
@@ -449,7 +457,11 @@ for j=1:nlabels
         % left side
         alignment = 'right';
     end
-    h = text(coord(j,1)+offset,coord(j,2)+offset,coord(j,3)+offset,labels{j},...
+
+    r = norm(coord(j,:));
+    multiple = (r+offset)/r;
+    coord_new = multiple*coord(j,:);
+    h = text(coord_new(1),coord_new(2),coord_new(3),labels{j},...
         'HorizontalAlignment',alignment);
     
     switch layout
@@ -463,5 +475,63 @@ for j=1:nlabels
             
     end
 end
+
+end
+
+function add_regions(info,layout,coord_order,width)
+
+% save current colormap
+cmap_cur = colormap(gcf);
+
+switch layout
+    case 'circle'
+        max_regions = max(info.region_order);
+        nlabels = length(info.label);
+        
+        % set up colors
+        cmap = colormap(jet);
+        ncolors = size(cmap,1);
+        % convert region to pecentage
+        region_pct = info.region_order/max_regions;
+        % get color index in cmap
+        color_idx = ceil(ncolors*region_pct);
+        % get colors for each region
+        colors = cmap(color_idx,:);
+            
+        rad_inc = 2*pi/(2*nlabels);
+        for j=1:nlabels
+            % get the sorted idx
+            idx = coord_order(j);
+            % get the next sorted idx
+            if j==nlabels
+                idx2 = coord_order(1);
+            else
+                idx2 = coord_order(j+1);
+            end
+            % get start and ending angles
+            angle_start = atan2(info.coord(idx,2),info.coord(idx,1));
+            angle_end = atan2(info.coord(idx2,2),info.coord(idx2,1));
+            
+            % select points along arc
+            npoints = ceil((angle_end - angle_start)/rad_inc);
+            angle = linspace(angle_start,angle_end,npoints);
+            rinside = 1;    
+            routside = rinside+width;
+            x1 = rinside*cos(angle);
+            y1 = rinside*sin(angle);
+            angle_flip = flipdim(angle,1);
+            x2 = routside*cos(angle_flip);
+            y2 = routside*sin(angle_flip);
+            
+            x = [x1;x2];
+            y = [y1;y2];
+            
+            % plot patch
+            h = patch(x,y,colors(idx));
+        end
+end
+
+% restore color map
+colormap(cmap_cur);
 
 end
