@@ -92,22 +92,32 @@ switch p.Results.layout
                 % add region order sort info
                 group_data = [group_data obj.info.region_order(:)];
                 ncol = size(group_data,2);
-                sort_method = [sort_method ncol];
+                sort_method = [ncol sort_method];
             end
             
             if ~isempty(obj.info.hemisphere_order)
                 % add hemisphere order sort info
-                group_data = [group_data obj.info.hemisphere_order];
+                group_data = [group_data obj.info.hemisphere_order(:)];
                 ncol = size(group_data,2);
-                sort_method = [sort_method ncol];
+                sort_method = [ncol sort_method];
             end
             
             [~,idx] = sortrows(group_data,sort_method);
             
+            if ~isempty(obj.info.hemisphere)
+                % flip left side so that front is at the top
+                idx_left = cellfun(@(x) ~isempty(x),...
+                    strfind(obj.info.hemisphere(idx),'Left'),'UniformOutput',true);
+                idx_left_sorted = idx(idx_left);
+                idx_left_sorted = flipdim(idx_left_sorted,1);
+                idx(idx_left) = idx_left_sorted;
+            end
+                
+            
             % set up equally space coordinates for plot 
             % based on ordered idx
             for i=1:nchannels
-                angle = 2*pi*(i - 1)./nchannels;
+                angle = -2*pi*(i - 1)./nchannels + pi/2;
                 coord(idx(i),:) = [cos(angle), sin(angle), 0];
             end
             
