@@ -389,10 +389,11 @@ u = arrow_perp/norm(arrow_perp);
 %b = arrow_pt1(1,2) - arrow_pt1(1,1)*m; % b = y - mx
 %u = arrow_pt1*m;
 %u = u/norm(u);
-arrow_pts_new = zeros(3,2);
+arrow_pts_new = zeros(4,2);
 arrow_pts_new(1,:) = arrow_pt1 + arrow_width/2*u;
-arrow_pts_new(2,:) = arrow_pt1 - arrow_width/2*u;
-arrow_pts_new(3,:) = arrow_pt2;
+arrow_pts_new(2,:) = arrow_pt2;
+arrow_pts_new(3,:) = arrow_pt1 - arrow_width/2*u;
+arrow_pts_new(4,:) = arrow_pt2;
 
 hyp = [hyp; arrow_pts_new];
 
