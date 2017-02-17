@@ -10,9 +10,8 @@ classdef ViewPDC < handle
         pdc;
         file;
         fs;
-        labels;
+        info;
         time;
-        coords;
         
         save_tag; % save tag for each plot type
         freq_tag; % freq tag for saving
@@ -28,8 +27,7 @@ classdef ViewPDC < handle
             addRequired(p,'file',@ischar);
             addParameter(p,'w',[0 0.5],@(x) length(x) == 2 && isnumeric(2));
             addParameter(p,'fs',1,@isnumeric);
-            addParameter(p,'labels',{},@iscell);
-            addParameter(p,'coords',[],@isnumeric);
+            addParameter(p,'info',[],@(x) isa(x,'ChannelInfo'));
             addParameter(p,'time',[],@isnumeric);
             addParameter(p,'outdir','data',@ischar);
             parse(p,file,varargin{:});
@@ -45,26 +43,7 @@ classdef ViewPDC < handle
             obj.w = p.Results.w;
             obj.fs = p.Results.fs;
             obj.time = p.Results.time;
-            
-            % check labels and coords
-            if ~isempty(p.Results.coords)
-                dims_coords = size(p.Results.coords);
-                if length(dims_coords) < 2 || length(dims_coords) > 3
-                    disp(dims_coords);
-                    error('invalid dimensions for coords, either 2d or 3d');
-                end
-                nlabels = length(p.Results.labels);
-                if nlabels ~= dims_coords(1)
-                    error('not enough coords (%d) for labels (%d)',dims_coords(1),nlabels);
-                end
-            end
-            
-            obj.labels = p.Results.labels;
-            obj.coords = p.Results.coords;
-            if size(obj.coords,2) == 2
-                % make coords 3d
-                obj.coords(:,3) = zeros(size(obj.coords,1),1);
-            end
+            obj.info = p.Results.info;
             
             obj.freq_tag = sprintf('-%0.4f-%0.4f',obj.w(1),obj.w(2));
             obj.save_tag = [];
@@ -246,24 +225,24 @@ classdef ViewPDC < handle
         end
         
         function hxlabel = labelitx(obj,j) % Labels x-axis plottings
-            if isempty(obj.labels)
+            if isempty(obj.info)
                 hxlabel = xlabel(['j = ' int2str(j)]);
                 set(hxlabel,'FontSize',12, ... %'FontWeight','bold', ...
                     'FontName','Arial') % 'FontName','Arial'
             else
-                hxlabel = xlabel(obj.labels{j});
+                hxlabel = xlabel(obj.info.label{j});
                 set(hxlabel,'FontSize',12) %'FontWeight','bold')
             end
         end
         
         function [hylabel] = labelity(obj,i) % Labels y-axis plottings
-            if isempty(obj.labels)
+            if isempty(obj.info)
                 hylabel = ylabel(['i = ' int2str(i)],...
                     'Rotation',90);
                 set(hylabel,'FontSize',12, ... %'FontWeight','bold', ...
                     'FontName','Arial')  % 'FontName','Arial', 'Times'
             else
-                hylabel = ylabel(obj.labels{i});
+                hylabel = ylabel(obj.info.label{i});
                 set(hylabel,'FontSize',12); %'FontWeight','bold','Color',[0 0 0])
             end
             

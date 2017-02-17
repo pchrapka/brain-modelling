@@ -28,10 +28,10 @@ f = w(w_idx)*obj.fs;
 freq_idx = 1:nfreqs;
 freq_idx = freq_idx(w_idx);
 
-if isempty(obj.labels)
+if isempty(obj.info)
     labels = cell(nchannels,1);
 else
-    labels = obj.labels;
+    labels = obj.info.label;
 end
 
 coord = zeros(nchannels,2);

@@ -55,19 +55,19 @@ freq_idx = 1:nfreqs;
 freq_idx = freq_idx(w_idx);
 
 % set up labels
-if isempty(obj.labels)
+if isempty(obj.info)
     labels = cell(nchannels,1);
     for i=1:nchannels
         labels{i} = sprintf('%d',i);
     end
 else
-    labels = obj.labels;
+    labels = obj.info.label;
 end
 
 % set up coordinate layout
 switch p.Results.layout
     case 'default'
-        coord = obj.coords;
+        coord = obj.info.coord;
         
         % assume the coords are anatomical, corrected after switch if
         % nothing is given
@@ -75,25 +75,42 @@ switch p.Results.layout
         fig_size = get(0,'screensize');
         
     case 'circle'
-        % ignore obj.coords
+        % ignore obj.info.coord
         coord = [];
     
-        if ~isempty(obj.coords)
+        if ~isempty(obj.info.coord)
             coord = zeros(nchannels,3);
             
+            % sort by angle,region,hemisphere
             % sort coordinates according to angle around origin
-            angles = atan2(obj.coords(:,2),obj.coords(:,1));
-            [~,idx] = sort(angles);
+            angles = atan2(obj.info.coord(:,2),obj.info.coord(:,1));
             
-            % set up equally spaced coordinates for plot
-            %figure;
-            %xlim([-1 1]);
-            %ylim([-1 1]);
-            for i=1:nchannels
-                coord(idx(i),:) = [cos(2*pi*(i - 1)./nchannels), sin(2*pi*(i - 1)./nchannels) 0];
-                %text(coord(idx(i),1),coord(idx(i),2),coord(idx(i),3),...
-                %    sprintf('%d %s',idx(i),labels{i}));
+            sort_method = 1;
+            group_data = angles(:);
+            
+            if ~isempty(obj.info.region_order)
+                % add region order sort info
+                group_data = [group_data obj.info.region_order(:)];
+                ncol = size(group_data,2);
+                sort_method = [sort_method ncol];
             end
+            
+            if ~isempty(obj.info.hemisphere_order)
+                % add hemisphere order sort info
+                group_data = [group_data obj.info.hemisphere_order];
+                ncol = size(group_data,2);
+                sort_method = [sort_method ncol];
+            end
+            
+            [~,idx] = sortrows(group_data,sort_method);
+            
+            % set up equally space coordinates for plot 
+            % based on ordered idx
+            for i=1:nchannels
+                angle = 2*pi*(i - 1)./nchannels;
+                coord(idx(i),:) = [cos(angle), sin(angle), 0];
+            end
+            
         end
         
         axislim_multiple = 1.4;
@@ -105,10 +122,10 @@ switch p.Results.layout
         axislim_multiple = 1.1;
         fig_size = get(0,'screensize');
         % open hemispheres
-        if isempty(obj.coords)
+        if isempty(obj.info.coord)
             error('no anatomical coordinates specified');
         end
-        coord = obj.coords;
+        coord = obj.info.coord;
         
         idx_right = coord(:,1) > 0;
         idx_left = ~idx_right;

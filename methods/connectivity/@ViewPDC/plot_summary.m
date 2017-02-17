@@ -30,7 +30,7 @@ xlabel('Channels');
 ylabel('Channels');
 
 ticks = 1:nchannels;
-if isempty(obj.labels)
+if isempty(obj.info)
     tick_labels = cell(nchannels,1);
     for i=1:nchannels
         tick_labels{i} = num2str(i);
@@ -43,9 +43,9 @@ if isempty(obj.labels)
 else
     set(gca,...
         'Xtick',ticks,...
-        'XtickLabel',obj.labels,...
+        'XtickLabel',obj.info.label,...
         'Ytick',ticks,...
-        'YtickLabel',obj.labels);
+        'YtickLabel',obj.info.label);
 end
 
 obj.save_tag = '-summary';

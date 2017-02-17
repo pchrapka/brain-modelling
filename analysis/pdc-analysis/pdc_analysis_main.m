@@ -3,6 +3,7 @@
 stimulus = 'std';
 subject = 3; 
 deviant_percent = 10;
+atlas_name = 'aal';
 patches_type = 'aal';
 % patches_type = 'aal-coarse-13';
 
@@ -114,6 +115,7 @@ if create_pdc_test
     if create_pdc_test_meta_file
         testdata = [];
         testdata.fsample = fsample;
+        testdata.atlas_name = atlas_name;
         testdata.patch_labels = patch_labels;
         testdata.patch_centroids = patch_centroids;
         testdata.time = time;
@@ -125,10 +127,14 @@ if create_pdc_test
 end
 
 %%
+
+patch_info = ChannelInfo(patch_labels,...
+    'coord', patch_centroids);
+patch_info.populate(atlas_name);
+
 view_pdc = ViewPDC(pdc_files{1},...
     'fs',fsample,...
-    'labels',patch_labels,...
-    'coords',patch_centroids,...
+    'info',patch_info,...
     'time',time,...
     'outdir','data',...
     'w',[0 100]/fsample);

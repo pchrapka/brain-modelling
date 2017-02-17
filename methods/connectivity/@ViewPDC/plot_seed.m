@@ -23,8 +23,8 @@ f = w(w_idx)*obj.fs;
 freq_idx = 1:nfreqs;
 freq_idx = freq_idx(w_idx);
 
-if ~isempty(obj.labels)
-    label_seed = obj.labels{p.Results.chseed};
+if ~isempty(obj.info)
+    label_seed = obj.info.label{p.Results.chseed};
 else
     label_seed = sprintf('%d',p.Results.chseed);
 end
