@@ -378,9 +378,9 @@ pts_mod = pts*Rz(-anglemid)';
 % plot(pts_mod(:,1),pts_mod(:,2),'bo','LineWidth',2);
 
 % a is free to specify
-if abs(anglediff) >= pi/2
+if abs(anglediff) >= pi/2 && abs(anglediff) <= 3*pi/2
     % let longer arcs pass closer to center
-    a = 0.1;
+    a = 0.2;
 else
     a = p.Results.a;
 end
