@@ -125,7 +125,7 @@ switch p.Results.layout
             
         end
         
-        axislim_multiple = 1.4;
+        axislim_multiple = 1.6;
         screen_size = get(0,'screensize');
         square_size = min(screen_size(3:4));
         fig_size = [1 1 square_size square_size];
@@ -239,11 +239,11 @@ end
 width = 0;
 if ~isempty(obj.info.region)
     width = 0.05;
-    add_regions(info,p.Results.layout,coord_order,width);
+    add_regions(obj.info,coord,p.Results.layout,coord_order,width);
 end
 
 % add labels
-offset = width;
+offset = width + 0.02;
 add_labels(labels,coord,p.Results.layout,type,offset);
 
 % add decorator for coordinates
@@ -340,9 +340,11 @@ for s=1:nsamples
     
     % add actual time or sample
     if isempty(obj.time)
-        title(sprintf('sample: %d',s));
+        h = title(sprintf('sample: %d',s));
+        set(h,'FontSize',12,'FontName','Arial');
     else
-        title(sprintf('time: %0.0fms',obj.time(s)*1000));
+        h = title(sprintf('time: %0.0fms',obj.time(s)*1000));
+        set(h,'FontSize',12,'FontName','Arial');
     end
     
     if p.Results.makemovie
@@ -464,6 +466,8 @@ for j=1:nlabels
     h = text(coord_new(1),coord_new(2),coord_new(3),labels{j},...
         'HorizontalAlignment',alignment);
     
+    set(h,'FontSize',12,'FontName','Arial');
+    
     switch layout
         case 'circle'
             angle = atan2(coord(j,2),coord(j,1));
@@ -478,7 +482,7 @@ end
 
 end
 
-function add_regions(info,layout,coord_order,width)
+function add_regions(info,coord,layout,coord_order,width)
 
 % save current colormap
 cmap_cur = colormap(gcf);
@@ -487,6 +491,9 @@ switch layout
     case 'circle'
         max_regions = max(info.region_order);
         nlabels = length(info.label);
+        
+        hregion = zeros(max_regions,1);
+        region_str = cell(max_regions,1);
         
         % set up colors
         cmap = colormap(jet);
@@ -499,36 +506,63 @@ switch layout
         colors = cmap(color_idx,:);
             
         rad_inc = 2*pi/(2*nlabels);
+        % get the sorted idx
+        idx = coord_order(1);
         for j=1:nlabels
-            % get the sorted idx
-            idx = coord_order(j);
+            % find the region boundary
             % get the next sorted idx
             if j==nlabels
                 idx2 = coord_order(1);
             else
                 idx2 = coord_order(j+1);
             end
+            if j~=nlabels
+                if info.region_order(idx2) == info.region_order(idx)
+                    continue;
+                end
+            end
+            
             % get start and ending angles
-            angle_start = atan2(info.coord(idx,2),info.coord(idx,1));
-            angle_end = atan2(info.coord(idx2,2),info.coord(idx2,1));
+            angle_start = atan2(coord(idx,2),coord(idx,1));
+            angle_end = atan2(coord(idx2,2),coord(idx2,1));
+            if angle_end > angle_start
+                angle_end = -2*pi + angle_end;
+            end
             
             % select points along arc
-            npoints = ceil((angle_end - angle_start)/rad_inc);
-            angle = linspace(angle_start,angle_end,npoints);
+            angle_diff = angle_end - angle_start;
+            npoints = ceil(abs(angle_diff/rad_inc));
+            angle = linspace(angle_start+rad_inc/2,angle_end+rad_inc/2,npoints);
             rinside = 1;    
             routside = rinside+width;
             x1 = rinside*cos(angle);
             y1 = rinside*sin(angle);
-            angle_flip = flipdim(angle,1);
+            angle_flip = flipdim(angle,2);
             x2 = routside*cos(angle_flip);
             y2 = routside*sin(angle_flip);
             
-            x = [x1;x2];
-            y = [y1;y2];
+            x = [x1 x2];%x1(1)];
+            y = [y1 y2];%y1(1)];
             
             % plot patch
-            h = patch(x,y,colors(idx));
+            h = patch(x,y,colors(idx,:));
+            if hregion(info.region_order(idx)) == 0
+                hregion(info.region_order(idx)) = h;
+                region_str{info.region_order(idx)} = info.region{idx};
+            end
+            
+            idx = idx2;
         end
+        
+        idx_empty = isempty(hregion);
+        hregion(idx_empty) = [];
+        region_str(idx_empty) = [];
+        l = legend(hregion,region_str,...
+            'Location','SouthOutside',...
+            'Orientation','Horizontal');
+        legend('boxoff');
+        
+        set(l,'FontSize',12,'FontName','Arial');
 end
 
 % restore color map
