@@ -352,7 +352,8 @@ pts = [pt1; pt2; origin];
 % rotate so that mid angle is along the x axis
 angle1 = atan2(pt1(2),pt1(1));
 angle2 = atan2(pt2(2),pt2(1));
-anglemid = (angle2-angle1)/2 + angle1;
+anglediff = angle2-angle1;
+anglemid = anglediff/2 + angle1;
 Rz = @(angle) [cos(angle) -sin(angle); sin(angle) cos(angle)];
 pts_mod = pts*Rz(-anglemid)';
 
@@ -360,7 +361,12 @@ pts_mod = pts*Rz(-anglemid)';
 % plot(pts_mod(:,1),pts_mod(:,2),'bo','LineWidth',2);
 
 % a is free to specify
-a = p.Results.a;
+if abs(anglediff) >= pi/2
+    % let longer arcs pass closer to center
+    a = 0.1;
+else
+    a = p.Results.a;
+end
 % fit b to points
 b = sqrt(a^2*pts_mod(1,2)^2/(pts_mod(1,1)^2- a^2));
 
