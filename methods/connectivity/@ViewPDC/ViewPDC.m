@@ -14,10 +14,13 @@ classdef ViewPDC < handle
         time;
         
         save_tag; % save tag for each plot type
-        freq_tag; % freq tag for saving
         filepath;
         filename;
         outdir;
+    end
+    
+    properties (Dependent)
+        freq_tag; % freq tag for saving
     end
     
     methods
@@ -45,7 +48,6 @@ classdef ViewPDC < handle
             obj.time = p.Results.time;
             obj.info = p.Results.info;
             
-            obj.freq_tag = sprintf('-%0.4f-%0.4f',obj.w(1),obj.w(2));
             obj.save_tag = [];
             if isequal(p.Results.outdir,'data')
                 obj.outdir = obj.filepath;
@@ -63,7 +65,10 @@ classdef ViewPDC < handle
             end
             
             obj.w = value;
-            
+        end
+        
+        function value = get.freq_tag(obj)
+            value = sprintf('-%0.4f-%0.4f',obj.w(1),obj.w(2)); 
         end
         
         function unload(obj)
