@@ -61,6 +61,16 @@ if sum(~idx_empty) == 0
     return;
 end
 
+% sort by hemisphere, region, angle
+idx_sort = obj.sort_channels();
+idx_sort = idx_sort(:);
+
+% sort the data
+data_plot = data_plot(idx_sort,:);
+yticklabel = yticklabel(idx_sort,:);
+idx_empty = idx_empty(idx_sort,:);
+
+% remove empty entries
 data_plot(idx_empty,:) = [];
 yticklabel(idx_empty,:) = [];
 
@@ -71,11 +81,28 @@ cmap = flipdim(cmap,1);
 colormap(cmap);
 colorbar();
 
+% add left axis with channel labels
 ytick = 1:length(yticklabel);
 set(gca,...
     'YTick', ytick, ...
     'YTickLabel', yticklabel,...
     'FontSize',10);
+
+if ~isempty(obj.info.region)
+    % add left axis #2 with region labels
+    ax1 = gca;
+    ax2 = axes('Position',get(ax1,'Position'),...
+        'YAxisLocation','left');
+    % sort regions
+    regions = obj.info.region(idx_sort);
+    % remove empty entris
+    regions(idx_empty) = [];
+    ytick2 = ytick + 0.5;
+    set(ax2,...
+        'YTick', ytick2, ...
+        'YTickLabel', regions,...
+        'FontSize',10);
+end
 
 if ~isempty(obj.time)
     obj.add_time_ticks('x');
