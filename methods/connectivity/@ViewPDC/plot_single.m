@@ -1,14 +1,15 @@
 function plot_single(obj,chj,chi)
 
-obj.save_tag = [];
-
 p = inputParser();
 addRequired(p,'chj',@isnumeric);
 addRequired(p,'chi',@isnumeric);
 parse(p,chj,chi);
 
+obj.save_tag = [];
 obj.load();
-[~,~,~,nfreqs] = size(obj.pdc);
+obj.check_info();
+
+nfreqs = size(obj.pdc,4);
     
 w = 0:nfreqs-1;
 w = w/(2*nfreqs);

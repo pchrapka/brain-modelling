@@ -10,13 +10,14 @@ function plot_adjacency(obj,varargin)
 %   save (logical, default = false)
 %       flag to save summary to data file
 
-obj.save_tag = [];
 p = inputParser();
 addParameter(p,'save',false,@islogical);
 addParameter(p,'outdir','',@ischar);
 parse(p,varargin{:});
 
+obj.save_tag = [];
 obj.load();
+obj.check_info();
 
 [nsamples,nchannels,~,nfreqs] = size(obj.pdc);
 
@@ -28,18 +29,11 @@ f = w(w_idx)*obj.fs;
 freq_idx = 1:nfreqs;
 freq_idx = freq_idx(w_idx);
 
-if isempty(obj.info)
-    labels = cell(nchannels,1);
-else
-    labels = obj.info.label;
-end
+labels = obj.info.label;
 
 coord = zeros(nchannels,2);
 for i=1:nchannels
     coord(i,:) = [cos(2*pi*(i - 1)./nchannels), sin(2*pi*(i - 1)./nchannels)];
-    if isempty(labels{i})
-        labels{i} = sprintf('%d',i);
-    end
 end
 
 figure;

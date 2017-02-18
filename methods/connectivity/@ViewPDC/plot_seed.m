@@ -1,7 +1,5 @@
 function plot_seed(obj,chseed,varargin)
 
-obj.save_tag = [];
-
 p = inputParser();
 addRequired(p,'chseed',@isnumeric);
 addParameter(p,'direction','outgoing',@(x) any(validatestring(x,{'outgoing','incoming'})));
@@ -10,7 +8,10 @@ addParameter(p,'threshold',0.05,@(x) x >= 0 && x <= 1);
 % addParameter(p,'outdir','',@ischar);
 parse(p,chseed,varargin{:});
 
+obj.save_tag = [];
 obj.load();
+obj.check_info();
+
 [nsamples,nchannels,~,nfreqs] = size(obj.pdc);
     
 w = 0:nfreqs-1;
@@ -23,11 +24,7 @@ f = w(w_idx)*obj.fs;
 freq_idx = 1:nfreqs;
 freq_idx = freq_idx(w_idx);
 
-if ~isempty(obj.info)
-    label_seed = obj.info.label{p.Results.chseed};
-else
-    label_seed = sprintf('%d',p.Results.chseed);
-end
+label_seed = obj.info.label{p.Results.chseed};
 
 data_plot = zeros(nchannels,nsamples);
 yticklabel = cell(nchannels,1);
@@ -52,23 +49,20 @@ for i=1:nchannels
     % only add to plot if the whole sum is not 0
     if data_all > 0
         % sum over frequencies
-        data_plot(count,:) = sum(data_temp,2);
-        if ~isempty(obj.labels)
-            yticklabel{count} = obj.labels{i};
-        else
-            yticklabel{count} = sprintf('%d',i);
-        end
-        count = count + 1;
+        data_plot(i,:) = sum(data_temp,2);
+        yticklabel{i} = obj.info.label{i};
     end
 end
 
-if count == 1
+idx_empty = cellfun(@isempty,yticklabel,'UniformOutput',true);
+
+if sum(~idx_empty) == 0
     fprintf('%s: no connections for %s\n',mfilename,label_seed);
     return;
 end
 
-data_plot = data_plot(1:count-1,:);
-yticklabel = yticklabel(1:count-1,:);
+data_plot(idx_empty,:) = [];
+yticklabel(idx_empty,:) = [];
 
 clim = [0 1];
 imagesc(data_plot,clim);

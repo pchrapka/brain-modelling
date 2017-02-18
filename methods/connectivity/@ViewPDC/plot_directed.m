@@ -33,6 +33,7 @@ parse(p,varargin{:});
 
 obj.save_tag = [];
 obj.load();
+obj.check_info();
 
 debug = false;
 
@@ -54,15 +55,8 @@ f = w(w_idx)*obj.fs;
 freq_idx = 1:nfreqs;
 freq_idx = freq_idx(w_idx);
 
-% set up labels
-if isempty(obj.info)
-    labels = cell(nchannels,1);
-    for i=1:nchannels
-        labels{i} = sprintf('%d',i);
-    end
-else
-    labels = obj.info.label;
-end
+% copy labels
+labels = obj.info.label;
 
 % set up coordinate layout
 coord_order = [];
@@ -82,38 +76,8 @@ switch p.Results.layout
         if ~isempty(obj.info.coord)
             coord = zeros(nchannels,3);
             
-            % sort by angle,region,hemisphere
-            % sort coordinates according to angle around origin
-            angles = atan2(obj.info.coord(:,2),obj.info.coord(:,1));
-            
-            sort_method = 1;
-            group_data = angles(:);
-            
-            if ~isempty(obj.info.region_order)
-                % add region order sort info
-                group_data = [group_data obj.info.region_order(:)];
-                ncol = size(group_data,2);
-                sort_method = [ncol sort_method];
-            end
-            
-            if ~isempty(obj.info.hemisphere_order)
-                % add hemisphere order sort info
-                group_data = [group_data obj.info.hemisphere_order(:)];
-                ncol = size(group_data,2);
-                sort_method = [ncol sort_method];
-            end
-            
-            [~,idx] = sortrows(group_data,sort_method);
-            
-            if ~isempty(obj.info.hemisphere)
-                % flip left side so that front is at the top
-                idx_left = cellfun(@(x) ~isempty(x),...
-                    strfind(obj.info.hemisphere(idx),'Left'),'UniformOutput',true);
-                idx_left_sorted = idx(idx_left);
-                idx_left_sorted = flipdim(idx_left_sorted,1);
-                idx(idx_left) = idx_left_sorted;
-            end
-                
+            % sort by hemisphere, region, angle
+            idx = obj.sort_channels();
             
             % set up equally space coordinates for plot 
             % based on ordered idx

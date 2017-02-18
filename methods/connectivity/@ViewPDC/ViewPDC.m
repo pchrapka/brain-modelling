@@ -131,8 +131,9 @@ classdef ViewPDC < handle
         
     end
     
-    methods (Access = protected)        
+    methods (Access = protected)
         function fresh = check_pdc_freshness(obj,newfile)
+            % checks PDC data file timestamp vs the newfile timestamp
             fresh = false;
             if exist(newfile,'file')
                 data_time = get_timestamp(obj.file);
@@ -144,6 +145,7 @@ classdef ViewPDC < handle
         end
         
         function outfile = get_savefile(obj)
+            % returns the output file name
             if isempty(obj.save_tag)
                 error('save tag not set in plot function');
             end
@@ -152,6 +154,7 @@ classdef ViewPDC < handle
         end
         
         function outdir = get_outdir(obj,value)
+            % returns the output directory
             
             if isempty(value)
                 if isempty(obj.outdir)
@@ -171,7 +174,69 @@ classdef ViewPDC < handle
             
         end
         
+        function check_info(obj)
+            % checks channel info
+            
+            if isempty(obj.info)
+                % add generic channel labels if none exist
+                nchannels = size(obj.pdc,2);
+                labels = cell(nchannels,1);
+                for i=1:nchannels
+                    labels{i} = sprintf('%d',i);
+                end
+                obj.info = ChannelInfo(labels);
+            end
+        end
+        
+        function idx = sort_channels(obj)
+            % sort by hemisphere, region, angle
+            
+            sort_method = [];
+            group_data = [];
+            
+            if ~isempty(obj.info.coord)
+                % sort coordinates according to angle around origin
+                angles = atan2(obj.info.coord(:,2),obj.info.coord(:,1));
+                
+                sort_method = 1;
+                group_data = angles(:);
+            end
+            
+            if ~isempty(obj.info.region_order)
+                % add region order sort info
+                group_data = [group_data obj.info.region_order(:)];
+                ncol = size(group_data,2);
+                sort_method = [ncol sort_method];
+            end
+            
+            if ~isempty(obj.info.hemisphere_order)
+                % add hemisphere order sort info
+                group_data = [group_data obj.info.hemisphere_order(:)];
+                ncol = size(group_data,2);
+                sort_method = [ncol sort_method];
+            end
+            
+            if isempty(group_data)
+                % nothing to sort
+                idx = 1:length(obj.info.label);
+            else
+                [~,idx] = sortrows(group_data,sort_method);
+            end
+            
+            if ~isempty(obj.info.hemisphere)
+                % NOTE assumes hemisphere label is Left or Right
+                % flip left side so that front is at the top
+                idx_left = cellfun(@(x) ~isempty(x),...
+                    strfind(obj.info.hemisphere(idx),'Left'),'UniformOutput',true);
+                idx_left_sorted = idx(idx_left);
+                idx_left_sorted = flipdim(idx_left_sorted,1);
+                idx(idx_left) = idx_left_sorted;
+            end
+        end
+        
         function add_time_ticks(obj,axis)
+            % add time ticks to the selected x or y axis
+            
             if isempty(obj.time)
                 fprintf('time is empty\n');
                 return;
@@ -224,28 +289,18 @@ classdef ViewPDC < handle
             plot(x,y,'--k','LineWidth',2);
         end
         
-        function hxlabel = labelitx(obj,j) % Labels x-axis plottings
-            if isempty(obj.info)
-                hxlabel = xlabel(['j = ' int2str(j)]);
-                set(hxlabel,'FontSize',12, ... %'FontWeight','bold', ...
-                    'FontName','Arial') % 'FontName','Arial'
-            else
-                hxlabel = xlabel(obj.info.label{j});
-                set(hxlabel,'FontSize',12) %'FontWeight','bold')
-            end
+        function hxlabel = labelitx(obj,j) 
+            % Labels x-axis plottings
+            
+            hxlabel = xlabel(obj.info.label{j});
+            set(hxlabel,'FontSize',12);
         end
         
-        function [hylabel] = labelity(obj,i) % Labels y-axis plottings
-            if isempty(obj.info)
-                hylabel = ylabel(['i = ' int2str(i)],...
-                    'Rotation',90);
-                set(hylabel,'FontSize',12, ... %'FontWeight','bold', ...
-                    'FontName','Arial')  % 'FontName','Arial', 'Times'
-            else
-                hylabel = ylabel(obj.info.label{i});
-                set(hylabel,'FontSize',12); %'FontWeight','bold','Color',[0 0 0])
-            end
+        function hylabel = labelity(obj,i) 
+            % Labels y-axis plottings
             
+            hylabel = ylabel(obj.info.label{i});
+            set(hylabel,'FontSize',12);
         end
     end
 end
