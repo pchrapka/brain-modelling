@@ -223,7 +223,7 @@ if flag.plot_pdc_seed_beta
     view_switch(view_pdc,'beta');
     % outgoing
     for i=1:nchannels
-        view_pdc.plot_seed(i,'direction','outgoing','threshold',0.2);
+        view_pdc.plot_seed(i,'direction','outgoing','threshold',0.2,'vertlines',[0 0.5]);
         try
             view_pdc.save_plot(save_params{:},'engine','matlab');
         catch me
@@ -233,7 +233,7 @@ if flag.plot_pdc_seed_beta
     
     % incoming
     for i=1:nchannels
-        view_pdc.plot_seed(i,'direction','incoming','threshold',0.2);
+        view_pdc.plot_seed(i,'direction','incoming','threshold',0.2,'vertlines',[0 0.5]);
         try
             view_pdc.save_plot(save_params{:},'engine','matlab');
         catch me

@@ -106,7 +106,7 @@ if flag.plot_pdc_seed_beta_multiple
     nchannels = length(view_pdc.info.label);
     % outgoing
     for i=1:nchannels
-        view_pdc.plot_seed(i,'direction','outgoing','threshold',0.05);
+        view_pdc.plot_seed(i,'direction','outgoing','threshold',0.05,'vertlines',[0 0.5]);
         try
             view_pdc.save_plot(save_params{:},'engine','matlab');
         catch me

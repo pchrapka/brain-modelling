@@ -3,6 +3,7 @@ function plot_seed(obj,chseed,varargin)
 p = inputParser();
 addRequired(p,'chseed',@isnumeric);
 addParameter(p,'direction','outgoing',@(x) any(validatestring(x,{'outgoing','incoming'})));
+addParameter(p,'vertlines',[],@isvector);
 addParameter(p,'threshold',0.05,@(x) x >= 0 && x <= 1);
 % addParameter(p,'save',false,@islogical);
 % addParameter(p,'outdir','',@ischar);
@@ -117,6 +118,35 @@ set(gca,...
     'YTickLabel', yticklabel,...
     'FontSize',12);
 
+% add time info
+if ~isempty(obj.time)
+    obj.add_time_ticks('x');
+    
+    if ~isempty(p.Results.vertlines)
+        % add vertical lines
+        vertlines = p.Results.vertlines;
+        for i=1:length(vertlines)
+            obj.add_vert_line(vertlines(i));
+        end
+    end
+end
+
+switch p.Results.direction
+    case 'outgoing'
+        str_xlabel = 'from';
+        xlabel_string = sprintf('%s %s',str_xlabel,label_seed);
+        ylabel('to');
+        xlabel(xlabel_string);
+        obj.save_tag = sprintf('-seed-out-j%d',p.Results.chseed);
+    case 'incoming'
+        str_xlabel = 'to';
+        xlabel_string = sprintf('%s %d',str_xlabel,label_seed);
+        ylabel('from');
+        xlabel(xlabel_string);
+        obj.save_tag = sprintf('-seed-in-i%d',p.Results.chseed);
+end
+
+% add region info
 if ~isempty(obj.info.region)
     set(ax2,'FontSize',12);
     set(ax2,'YLim',get(ax1,'YLim'),'YDir',get(ax1,'YDir'));
@@ -188,28 +218,6 @@ if ~isempty(obj.info.region)
             'HorizontalAlignment','Right','FontSize',12);
         region1 = region2;
     end
-end
-
-axes(ax1);
-
-if ~isempty(obj.time)
-    obj.add_time_ticks('x');
-    obj.add_vert_line(0);
-end
-
-switch p.Results.direction
-    case 'outgoing'
-        str_xlabel = 'from';
-        xlabel_string = sprintf('%s %s',str_xlabel,label_seed);
-        ylabel('to');
-        xlabel(xlabel_string);
-        obj.save_tag = sprintf('-seed-out-j%d',p.Results.chseed);
-    case 'incoming'
-        str_xlabel = 'to';
-        xlabel_string = sprintf('%s %d',str_xlabel,label_seed);
-        ylabel('from');
-        xlabel(xlabel_string);
-        obj.save_tag = sprintf('-seed-in-i%d',p.Results.chseed);
 end
 
 end
