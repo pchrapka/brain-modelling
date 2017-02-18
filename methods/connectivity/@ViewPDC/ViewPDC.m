@@ -253,18 +253,23 @@ classdef ViewPDC < handle
             ticks = zero_idx;
             
             nticks = 5;
+            % compute increment
             range = max(obj.time) - min(obj.time);
             order = floor(log10(range));
             increment = 10^order/nticks;
+            % get number of points per increment
             npointspertick = ceil(increment/(obj.time(2) - obj.time(1)));
-            %npointspertick = floor(range/increment);            
-            %npointspertick = floor(length(obj.time)/nticks);
+            % create the ticks
             extra_idx = -nticks:1:nticks;
             extra_idx = extra_idx*npointspertick + zero_idx;
+            % remove ticks outside of range
             extra_idx = extra_idx(extra_idx > 0 & extra_idx < length(obj.time));
-            
+            % add zero tick
             ticks = [ticks extra_idx];
+            % get unique and sort
             ticks = sort(unique(ticks));
+            
+            % create ticklabels
             ticklabels = cell(length(ticks),1);
             for i=1:length(ticks)
                 % get time for each tick and convert to seconds
