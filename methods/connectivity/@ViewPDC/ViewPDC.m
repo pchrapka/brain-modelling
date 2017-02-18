@@ -100,6 +100,8 @@ classdef ViewPDC < handle
             p = inputParser();
             addParameter(p,'save',false,@islogical);
             addParameter(p,'outdir','',@ischar);
+            addParameter(p,'engine','export_fig',...
+                @(x) any(validatestring(x,{'export_fig','matlab'})));
             parse(p,varargin{:});
             
             if p.Results.save
@@ -107,7 +109,7 @@ classdef ViewPDC < handle
                 outfile = obj.get_savefile();
                 
                 % save
-                save_fig2('path',outdir,'tag', outfile);
+                save_fig2('path',outdir,'tag', outfile,'engine',p.Results.engine);
                 
                 % clear save tag
                 obj.save_tag = [];

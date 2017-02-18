@@ -18,8 +18,9 @@ function save_fig2(varargin)
 p = inputParser;
 addParameter(p,'path',pwd(),@ischar);
 addParameter(p,'tag','',@ischar);
-addParameter(p,'formats',{'png','eps'},@iscell);
+addParameter(p,'formats',{},@iscell);
 addParameter(p,'save_flag',true,@islogical);
+addParameter(p,'engine','export_fig',@(x) any(validatestring(x,{'export_fig','matlab'})));
 parse(p,varargin{:});
 
 if ~p.Results.save_flag
@@ -43,16 +44,38 @@ file_name_full = fullfile(imgdir,file_name_date);
 
 % change background color
 set(gcf, 'Color', 'w');
+formats = p.Results.formats;
 
-if exist('export_fig', 'file')
-    % export fig in each format
-    formats = cell(length(p.Results.formats),1);
-    for i=1:length(p.Results.formats)
-        formats{i} = sprintf('-%s',p.Results.formats{i});
-    end
-    export_fig(file_name_full, formats{:}, '-depsc', '-update');
-else
-    error('cannot find export_fig');
+switch p.Results.engine
+    case 'export_fig'
+        if isempty(formats)
+            formats = {'png','eps'};
+        end
+        if exist('export_fig', 'file')
+            % export fig in each format
+            params_formats = cell(length(formats),1);
+            for i=1:length(formats)
+                params_formats{i} = sprintf('-%s',formats{i});
+            end
+            export_fig(file_name_full, params_formats{:}, '-depsc');
+        else
+            error('cannot find export_fig');
+        end
+    case 'matlab'
+        if isempty(formats)
+            formats = {'png','epsc'};
+        end
+        set(gcf,'PaperPositionMode','auto');
+        for i=1:length(formats)
+            if ~isempty(strfind(formats{i},'eps'))
+                print(gcf, ['-d' formats{i}], [file_name_full '.eps']);
+                %saveas(gcf, [file_name_full '.eps'], formats{i});
+            else
+                print(gcf, ['-d' formats{i}], [file_name_full '.' formats{i}]);
+                %saveas(gcf, [file_name_full '.' formats{i}], formats{i});
+            end
+        end
 end
+        
 
 end

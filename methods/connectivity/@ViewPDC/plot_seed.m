@@ -74,12 +74,26 @@ idx_empty = idx_empty(idx_sort,:);
 data_plot(idx_empty,:) = [];
 yticklabel(idx_empty,:) = [];
 
-figure;
+% set up figure
+screen_size = get(0,'screensize');
+labels_height = 200;
+row_height = (screen_size(4)-labels_height)/length(yticklabel);
+max_row_height = 100;
+if row_height > max_row_height
+    % limit row height
+    fig_size = screen_size;
+    fig_size(4) = ceil(max_row_height*length(yticklabel)) + labels_height;
+    set(gcf,'Position',fig_size);
+else
+    % use full screen
+    figure('Position', screen_size);
+end
+
 if ~isempty(obj.info.region)
     ax2 = gca;
     set(ax2,'Visible','off');
     ax1_pos = get(ax2,'Position');
-    ax1_offset = 0.2;
+    ax1_offset = 0.1;
     ax1_pos(1) = ax1_pos(1) + ax1_offset;
     ax1_pos(3) = ax1_pos(3) - ax1_offset;
     ax1 = axes('Position',ax1_pos);
@@ -87,6 +101,7 @@ else
     ax1 = gca;
 end
 axes(ax1);
+set(ax1,'FontSize',12);
 
 clim = [0 1];
 imagesc(data_plot,clim);
@@ -100,9 +115,10 @@ ytick = 1:length(yticklabel);
 set(gca,...
     'YTick', ytick, ...
     'YTickLabel', yticklabel,...
-    'FontSize',10);
+    'FontSize',12);
 
 if ~isempty(obj.info.region)
+    set(ax2,'FontSize',12);
     set(ax2,'YLim',get(ax1,'YLim'),'YDir',get(ax1,'YDir'));
     axes(ax2);
     xlim([0 1]);
@@ -133,7 +149,12 @@ if ~isempty(obj.info.region)
     nregions = length(regions);
     region1 = 1;
     offset = 0.5;
-    ytick_inc = ytick(2)-ytick(1);
+    if length(ytick) > 1
+        ytick_inc = ytick(2)-ytick(1);
+    else
+        yylim = ylim;
+        ytick_inc = yylim(2) - yylim(1);
+    end
     for i=1:nregions
         if i == nregions
             region2 = 1;
@@ -152,7 +173,7 @@ if ~isempty(obj.info.region)
         % add line
         x = region_offset*ones(2,1);
         y = [ytick(region1); ytick(region2)] - ytick_inc/2;
-        if y(2) < y(1)
+        if y(2) <= y(1)
             % fix rollover
             y(2) = max(ytick) + ytick_inc/2;
         end
@@ -164,10 +185,12 @@ if ~isempty(obj.info.region)
         % add text at midpoint of line
         ymid = (y(2)+y(1))/2;
         text(region_offset - width, ymid, regions{region1},...
-            'HorizontalAlignment','Right');
+            'HorizontalAlignment','Right','FontSize',12);
         region1 = region2;
     end
 end
+
+axes(ax1);
 
 if ~isempty(obj.time)
     obj.add_time_ticks('x');
