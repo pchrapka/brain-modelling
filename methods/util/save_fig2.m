@@ -46,9 +46,11 @@ set(gcf, 'Color', 'w');
 
 if exist('export_fig', 'file')
     % export fig in each format
+    formats = cell(length(p.Results.formats),1);
     for i=1:length(p.Results.formats)
-        export_fig(file_name_full, sprintf('-%s',p.Results.formats{i}));
+        formats{i} = sprintf('-%s',p.Results.formats{i});
     end
+    export_fig(file_name_full, formats{:}, '-depsc', '-update');
 else
     error('cannot find export_fig');
 end

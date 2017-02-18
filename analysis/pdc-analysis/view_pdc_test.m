@@ -30,8 +30,9 @@ flag.plot_pdc_summary_beta_mag = false;
 flag.print_pdc_summary_beta = false;
 flag.plot_pdc_single_gt20 = false;
 flag.plot_pdc_directed_beta_hemis = false;
-flag.plot_pdc_directed_beta_circle = true;
-flag.plot_pdc_seed_beta = false;
+flag.plot_pdc_directed_beta_circle = false;
+flag.plot_pdc_seed_beta_single = false;
+flag.plot_pdc_seed_beta_multiple = true;
 
 %% pdc summary 0-100 Hz
 if flag.plot_pdc_summary_100
@@ -89,25 +90,27 @@ if flag.plot_pdc_directed_beta_circle
 end
 
 %% pdc seed 15-25Hz
-if flag.plot_pdc_seed_beta
+if flag.plot_pdc_seed_beta_single
     view_switch(view_pdc,'beta');
+        
+    % incoming
+    view_pdc.plot_seed(idx,'direction','incoming','threshold',0.05);
+    try
+        view_pdc.save_plot(save_params{:});
+    catch me
+    end
+end
+
+if flag.plot_pdc_seed_beta_multiple
+    view_switch(view_pdc,'beta');
+    nchannels = length(view_pdc.info.label);
     % outgoing
     for i=1:nchannels
         view_pdc.plot_seed(i,'direction','outgoing','threshold',0.05);
-        try
+        %try
             view_pdc.save_plot(save_params{:});
-        catch me
-        end
-        close(gcf);
-    end
-    
-    % incoming
-    for i=1:nchannels
-        view_pdc.plot_seed(i,'direction','incoming','threshold',0.05);
-        try
-            view_pdc.save_plot(save_params{:});
-        catch me
-        end
+        %catch me
+        %end
         close(gcf);
     end
 end
