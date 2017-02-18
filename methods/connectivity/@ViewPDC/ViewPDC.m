@@ -323,6 +323,26 @@ classdef ViewPDC < handle
             hylabel = ylabel(obj.info.label{i});
             set(hylabel,'FontSize',12);
         end
+        
+        function colors = get_region_cmap(obj,cmap_name)
+            colors = [];
+            if ~isempty(obj.info.region_order)
+                % get colormap without changing the current one
+                cmap_cur = colormap();
+                cmap = colormap(cmap_name);
+                colormap(cmap_cur);
+                
+                % set up colors
+                max_regions = max(obj.info.region_order);
+                ncolors = size(cmap,1);
+                % convert region to pecentage
+                region_pct = obj.info.region_order/max_regions;
+                % get color index in cmap
+                color_idx = ceil(ncolors*region_pct);
+                % get colors for each region
+                colors = cmap(color_idx,:);
+            end
+        end
     end
 end
 

@@ -448,9 +448,6 @@ end
 
 function add_regions(info,coord,layout,coord_order,width)
 
-% save current colormap
-cmap_cur = colormap(gcf);
-
 switch layout
     case 'circle'
         max_regions = max(info.region_order);
@@ -460,14 +457,7 @@ switch layout
         region_str = cell(max_regions,1);
         
         % set up colors
-        cmap = colormap(jet);
-        ncolors = size(cmap,1);
-        % convert region to pecentage
-        region_pct = info.region_order/max_regions;
-        % get color index in cmap
-        color_idx = ceil(ncolors*region_pct);
-        % get colors for each region
-        colors = cmap(color_idx,:);
+        colors = obj.get_region_cmap('jet');
             
         rad_inc = 2*pi/(2*nlabels);
         % get the sorted idx
@@ -510,6 +500,7 @@ switch layout
             
             % plot patch
             h = patch(x,y,colors(idx,:));
+            % save handles to the legend
             if hregion(info.region_order(idx)) == 0
                 hregion(info.region_order(idx)) = h;
                 region_str{info.region_order(idx)} = info.region{idx};
@@ -528,8 +519,5 @@ switch layout
         
         set(l,'FontSize',12,'FontName','Arial');
 end
-
-% restore color map
-colormap(cmap_cur);
 
 end

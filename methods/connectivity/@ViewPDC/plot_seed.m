@@ -160,17 +160,7 @@ if ~isempty(obj.info.region)
     xlim([0 1]);
     
     % set up colors
-    max_regions = max(obj.info.region_order);
-    cmap_cur = colormap();
-    cmap = colormap(jet);
-    colormap(cmap_cur);
-    ncolors = size(cmap,1);
-    % convert region to pecentage
-    region_pct = obj.info.region_order/max_regions;
-    % get color index in cmap
-    color_idx = ceil(ncolors*region_pct);
-    % get colors for each region
-    colors = cmap(color_idx,:);
+    colors = obj.get_region_cmap('jet');
     
     % sort and remove empty
     colors = colors(idx_sort,:);
