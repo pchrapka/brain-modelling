@@ -244,7 +244,7 @@ classdef ViewPDC < handle
                 return;
             end
             
-            % fnid zero index
+            % find zero index
             temp = obj.time >= 0;
             zero_idx = find(temp,1,'first');
             if isempty(zero_idx)
@@ -253,14 +253,23 @@ classdef ViewPDC < handle
             ticks = zero_idx;
             
             nticks = 5;
-            npointspertick = floor(length(obj.time)/nticks);
+            range = max(obj.time) - min(obj.time);
+            order = floor(log10(range));
+            increment = 10^order/nticks;
+            npointspertick = ceil(increment/(obj.time(2) - obj.time(1)));
+            %npointspertick = floor(range/increment);            
+            %npointspertick = floor(length(obj.time)/nticks);
             extra_idx = -nticks:1:nticks;
             extra_idx = extra_idx*npointspertick + zero_idx;
             extra_idx = extra_idx(extra_idx > 0 & extra_idx < length(obj.time));
             
             ticks = [ticks extra_idx];
             ticks = sort(unique(ticks));
-            ticklabels = obj.time(ticks);
+            ticklabels = cell(length(ticks),1);
+            for i=1:length(ticks)
+                % get time for each tick and convert to seconds
+                ticklabels{i} = sprintf('%0.0fms',obj.time(ticks(i))*1000);
+            end
             
             switch axis
                 case 'x'

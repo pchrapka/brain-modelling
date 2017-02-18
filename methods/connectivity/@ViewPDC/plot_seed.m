@@ -134,13 +134,19 @@ end
 switch p.Results.direction
     case 'outgoing'
         str_xlabel = 'from';
-        xlabel_string = sprintf('%s %s',str_xlabel,label_seed);
+        xlabel_string{1} = sprintf('%s %s',str_xlabel,label_seed);
+        if ~isempty(obj.info.region)
+            xlabel_string{2} = obj.info.region{p.Results.chseed};
+        end 
         ylabel('to');
         xlabel(xlabel_string);
         obj.save_tag = sprintf('-seed-out-j%d',p.Results.chseed);
     case 'incoming'
         str_xlabel = 'to';
-        xlabel_string = sprintf('%s %d',str_xlabel,label_seed);
+        xlabel_string{1} = sprintf('%s %s',str_xlabel,label_seed);
+        if ~isempty(obj.info.region)
+            xlabel_string{2} = obj.info.region{p.Results.chseed};
+        end
         ylabel('from');
         xlabel(xlabel_string);
         obj.save_tag = sprintf('-seed-in-i%d',p.Results.chseed);
