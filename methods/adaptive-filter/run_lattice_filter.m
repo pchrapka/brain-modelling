@@ -110,7 +110,7 @@ estimate_kb = cell(nfilters,1);
 % copy fields for parfor, don't want to pass another copy of datain if it's
 % a struct
 options = copyfields(p.Results,[],{...
-    'warmup_noise','warmup_data','force','verbosity'});
+    'warmup_noise','warmup_data','force','verbosity','tracefields'});
 
 nchannels = filters{1}.nchannels;
 outfiles = cell(nfilters,1);
@@ -159,7 +159,7 @@ parfor k=1:nfilters
     if options.force || fresh || ~exist(outfile,'file')
         fprintf('running: %s\n', slug_filter)
         
-        trace = LatticeTrace(filter,'fields',p.Results.tracefields);
+        trace = LatticeTrace(filter,'fields',options.tracefields);
         
         ntime = size(datain,2);
         
@@ -219,70 +219,29 @@ parfor k=1:nfilters
         end
         warning('on','all');
         
+        % copy the filter name
         trace.name = trace.filter.name;
-        
-        estimate_kf{k} = trace.trace.Kf;
-        estimate_kb{k} = trace.trace.Kb;
         
         % save data
         data = [];
-        data.estimate.Kf = estimate_kf{k};
-        data.estimate.Kb = estimate_kb{k};
+        for i=1:length(options.tracefields)
+            field = options.tracefields{i};
+            data.estimate.(field) = trace.trace.(field);
+        end
         save_parfor(outfile,data);
         
         % check mse from 0
-        data_true_kf = zeros(size(estimate_kf{k}));
-        data_mse = mse_iteration(estimate_kf{k},data_true_kf);
+        data_true_kf = zeros(size(trace.trace.Kf));
+        data_mse = mse_iteration(trace.trace.Kf,data_true_kf);
         if any(data_mse > 10)
             large_error_name{k} = slug_filter;
             large_error(k) = true;
-        end
-        
-    else
-        % only load if we're doing something with it
-        % tedious with large files
-        if p.Results.plot_pdc
-            fprintf('loading: %s\n', slug_filter);
-            % load data
-            data = loadfile(outfile);
-            estimate_kf{k} = data.estimate.Kf;
-            estimate_kb{k} = data.estimate.Kb;
         end
     end
 end
     
 if p.Results.plot_pdc
-%     % plot true pdc
-%     result = rc2pdc(squeeze(data_true.Kf(end,:,:,:)),squeeze(data_true.Kb(end,:,:,:)));
-%     window_title = 'Truth';
-%     plot_pdc(result,window_title);
-%     
-%     % save
-%     drawnow;
-%     save_fig_exp(script_name,...
-%         'tag',sprintf('pdc-%s-%s',p.Results.data_name,'truth'));
-%     close(gcf);
-    
-    for k=1:nfilters
-        
-        % copy params
-        filter = filters{k};
-        
-        % set up filter slug
-        slug_filter = filter.name;
-        slug_filter = strrep(slug_filter,' ','-');
-        
-        % plot filter pdc
-        result = rc2pdc(squeeze(estimate_kf{k}(end,:,:,:)),squeeze(estimate_kb{k}(end,:,:,:)));
-        window_title = filter.name;
-        plot_pdc(result,window_title);
-            
-        % save
-        drawnow;
-        save_fig_exp(script_name,...
-            'tag',sprintf('pdc-%s',slug_filter));
-        close(gcf);
-    end
+    error('use ViewPDC');
 end
 
 %% Print extra info
@@ -295,17 +254,4 @@ if any(large_error > 0)
     end
 end
 
-end
-
-function plot_pdc(pdc_result,name)
-flg_print = [1 0 0 0 0 0 0];
-fs = 1;
-w_max = fs/2;
-ch_labels = [];
-flg_color = 0;
-flg_sigcolor = 1;
-
-h=figure;
-set(h,'NumberTitle','off','MenuBar','none', 'Name', name )
-xplot(pdc_result,flg_print,fs,w_max,ch_labels,flg_color,flg_sigcolor);
 end
