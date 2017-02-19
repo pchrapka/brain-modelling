@@ -71,3 +71,4 @@ lf_files = lattice_filter_sources(filters, sources_file,...
 
 %% plot estimation error vs model order
 
+plot_order_vs_esterror(lf_files);
