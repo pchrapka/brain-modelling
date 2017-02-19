@@ -56,6 +56,7 @@ addParameter(p,'warmup_data',false,@islogical);
 addParameter(p,'force',false,@islogical);
 addParameter(p,'verbosity',0,@isnumeric);
 addParameter(p,'plot_pdc',true,@islogical);
+addParameter(p,'tracefields',{'Kf','Kb'},@iscell);
 p.parse(script_name,datain,varargin{:});
 
 % copy filters
@@ -158,7 +159,7 @@ for k=1:nfilters
     if options.force || fresh || ~exist(outfile,'file')
         fprintf('running: %s\n', slug_filter)
         
-        trace = LatticeTrace(filter,'fields',{'Kf','Kb'});
+        trace = LatticeTrace(filter,'fields',p.Results.tracefields);
         
         ntime = size(datain,2);
         

@@ -23,6 +23,7 @@ classdef MCMTLOCCD_TWL2
         lambda;
         
         berrord;
+        ferror;
         Rbf;
         Rfb;
         Rf;
@@ -86,6 +87,7 @@ classdef MCMTLOCCD_TWL2
             obj.Kb = zeroMat3;
             
             obj.berrord = zeros(obj.nchannels,obj.ntrials,obj.order+1);
+            obj.ferror = zeros(obj.nchannels,obj.ntrials,obj.order+1);
         end
         
         function obj = update(obj, y, varargin)
@@ -154,6 +156,8 @@ classdef MCMTLOCCD_TWL2
             
             % save backward error
             obj.berrord = berror;
+            % save forward error
+            obj.ferror = ferror;
             
         end
     end
