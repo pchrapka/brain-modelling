@@ -46,9 +46,12 @@ switch comp_name
         if cores == 0
             cores = feature('numCores');
         end
-        fprintf('%s: using default config with %d cores\n', mfilename,cores);
+        fprintf('%s: using default config with %d cores\n',mfilename,cores);
 end
 
+
+% set up parallel pool
+fprintf('%s: setting up %d cores\n',mfilename,cores);
 if exist('parpool','file')    
     if isempty(gcp)
         % set up a new one
@@ -63,6 +66,8 @@ if exist('parpool','file')
         
         % set up a new one
         parpool('local', cores);
+    else
+        fprintf('%s: already open\n',mfilename);
     end
 else
     if matlabpool('size') == 0
@@ -72,6 +77,8 @@ else
         % force a new one
         matlabpool('close');
         matlabpool('open', cores);
+    else
+        fprintf('%s: already open\n',mfilename);
     end
 end
 
