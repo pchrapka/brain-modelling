@@ -115,8 +115,8 @@ options = copyfields(p.Results,[],{...
 nchannels = filters{1}.nchannels;
 outfiles = cell(nfilters,1);
 
-% parfor k=1:nfilters
-for k=1:nfilters
+parfor k=1:nfilters
+% for k=1:nfilters
     
     % copy sim parameters
     filter = filters{k};

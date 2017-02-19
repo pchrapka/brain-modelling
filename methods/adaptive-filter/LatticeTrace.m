@@ -72,19 +72,14 @@ classdef LatticeTrace < handle
             nfields = length(obj.fields);
             for i=1:nfields
                 field = obj.fields{i};
-                switch field
-                    case 'Kf'
-                        obj.trace.Kf(iter,:,:,:) = obj.filter.Kf;
-                    case 'Kb'
-                        obj.trace.Kb(iter,:,:,:) = obj.filter.Kb;
-                    case 'A'
-                        obj.trace.A(iter,:,:,:) = obj.filter.A;
-                    case 'ferror'
-                        obj.trace.ferror(iter,:,:) = obj.filter.ferror;
-                    case 'x'
-                        obj.trace.x(iter,:,:,:) = obj.filter.x;
+                dims = size(obj.filter.(field));
+                switch length(dims)
+                    case 2
+                        obj.trace.(field)(iter,:,:) = obj.filter.(field);
+                    case 3
+                        obj.trace.(field)(iter,:,:,:) = obj.filter.(field);
                     otherwise
-                        error('unknown field name %s',field);
+                        error('unknown field (%s) length %d',field,length(dims));
                 end
             end
         end

@@ -34,13 +34,13 @@ sources_file = pipeline.steps{end}.sourceanalysis;
 eeg_induced(sources_file, eeg_file, lf_file, 'outdir',outdir);
 
 %% set lattice options
-lf = loadfile(lf_file);
-patch_labels = lf.filter_label(lf.inside);
-patch_labels = cellfun(@(x) strrep(x,'_',' '),...
-    patch_labels,'UniformOutput',false);
-npatch_labels = length(patch_labels);
-patch_centroids = lf.patch_centroid(lf.inside,:);
-clear lf;
+% lf = loadfile(lf_file);
+% patch_labels = lf.filter_label(lf.inside);
+% patch_labels = cellfun(@(x) strrep(x,'_',' '),...
+%     patch_labels,'UniformOutput',false);
+% npatch_labels = length(patch_labels);
+% patch_centroids = lf.patch_centroid(lf.inside,:);
+% clear lf;
 
 nchannels = npatch_labels;
 ntrials = 20;
