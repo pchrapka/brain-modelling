@@ -10,7 +10,7 @@ function pipeline = build_pipeline_beamformer(params_subject)
 pipedir = get_data_andrew_pipeline();
 
 % %% set up parallel pool
-% setup_parfor();
+% parfor_setup();
 
 %% get subject specific parameters
 

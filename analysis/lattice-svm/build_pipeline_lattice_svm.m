@@ -248,7 +248,7 @@ switch p.Results.mode
                 pipeline.options.max_queued = 1;
         end
     case 'session'
-        setup_parfor();
+        parfor_setup();
         pipeline.options.mode = 'session';
         pipeline.options.max_queued = 1;
     otherwise

@@ -40,7 +40,7 @@ mse_mean = zeros(nchannels,norder);
 nmse_mean = zeros(nchannels,norder);
 files = {};
 
-setup_parfor();
+parfor_setup();
 for i=1:nchannels
     for j=1:norder
         % allocate mem

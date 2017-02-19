@@ -77,7 +77,7 @@ if ~exist(outdir,'dir')
 end
 
 % set up parfor
-setup_parfor();
+parfor_setup();
 
 %% set up data
 

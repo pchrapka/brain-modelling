@@ -1,6 +1,6 @@
-function setup_parfor(varargin)
-%SETUP_PARFOR sets up parallel pool for a given computer configuration
-%   SETUP_PARFOR sets up parallel pool for a given computer configuration.
+function parfor_setup(varargin)
+%PARFOR_SETUP sets up parallel pool for a given computer configuration
+%   PARFOR_SETUP sets up parallel pool for a given computer configuration.
 %   it only sets up a new parallel pool if there isn't one set up. you can
 %   force it by using the flag.
 %

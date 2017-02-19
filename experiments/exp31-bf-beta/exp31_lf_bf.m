@@ -80,7 +80,7 @@ k = k+1;
 % k = k+1;
 
 %% load data
-setup_parfor();
+parfor_setup();
 
 outfile = fullfile('output',[name '.mat']);
 

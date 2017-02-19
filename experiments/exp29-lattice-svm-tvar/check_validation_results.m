@@ -7,7 +7,7 @@ pipeline = build_pipeline_lattice_svm('params_sd_tvar_p8_ch13','mode','batch');
 pipeline.run();
 pipeline.options.mode = 'session';
 pipeline.options.max_queued = 1;
-setup_parfor();
+parfor_setup();
 pipeline.run();
 % pipeline = build_pipeline_lattice_svm('params_sd_tvar_p8_ch13','mode','session');
 % pipeline.run();

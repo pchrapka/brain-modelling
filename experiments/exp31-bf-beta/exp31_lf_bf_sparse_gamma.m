@@ -39,7 +39,7 @@ for k=1:length(gammas)
 end
 
 %% load data
-setup_parfor();
+parfor_setup();
 
 outfile = fullfile('output',[name '.mat']);
 

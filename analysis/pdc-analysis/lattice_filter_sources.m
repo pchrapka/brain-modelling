@@ -99,7 +99,7 @@ if ~exist(sources_mini_file,'file')
 end
 
 %% run lattice filters
-setup_parfor();
+parfor_setup();
 
 script_name = [fullfile(outdir,slug_samples) '.m'];
 
