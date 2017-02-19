@@ -58,6 +58,9 @@ end
 
 %% lattice filter
 
+% set up parfor, use only 4 cores with this data
+parfor_setup('cores',4,'force',true);
+
 verbosity = 2;
 lf_files = lattice_filter_sources(filters, sources_file,...
     'tracefields',{'Kf','Kb','ferror','berrord'},...
