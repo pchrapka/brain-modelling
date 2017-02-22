@@ -19,7 +19,7 @@ outdir = fullfile(analysis_dir,'output',data_name2);
 %% preprocess data for beamforming
 eeg_preprocessing_andrew(subject,deviant_percent,stimulus,...
     'patches',patches_type,...
-    'outdir',outdir);
+    'outdir',outdir
 
 %% beamform sources
 pipeline = build_pipeline_beamformer(paramsbf_sd_andrew(...
@@ -50,7 +50,7 @@ gamma = 1;
 % tuning over model order
 order_est = 1:14;
 
-filters = cell(length(order_est),1);
+filters = {};
 k = 1;
 
 order_max = max(order_est);
@@ -58,9 +58,6 @@ filters{k} = MCMTLOCCD_TWL2(nchannels,order_max,ntrials,'lambda',lambda,'gamma',
 k = k+1;
 
 %% lattice filter
-
-% set up parfor, use only 4 cores with this data
-parfor_setup('cores',4,'force',true);
 
 verbosity = 2;
 lf_files = lattice_filter_sources(filters, sources_file,...
