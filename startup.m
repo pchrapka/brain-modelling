@@ -17,6 +17,7 @@ addpath(fullfile(pwd,'external','lumberjack'));
 addpath(fullfile(pwd,'external','export_fig'));
 addpath(fullfile(pwd,'external','heatmaps'));
 addpath(fullfile(pwd,'external','psom-1.2.1'));
+addpath(fullfile(pwd,'external','ProgressBar'));
 addpath(fullfile(pwd,'external','libsvm-321','matlab'));
 addpath(fullfile(pwd,'external','LSPC'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','FEAST'));

@@ -305,7 +305,10 @@ classdef LatticeTrace < handle
                 obj.errors(1:nsamples) = obj.errors(1);
                 
                 % compute reflection coef estimates
+                progbar = ProgressBar(nsamples);
                 for i=1:nsamples
+                    % update progress
+                    progbar.progress();
                     
                     if p.Results.verbosity > 1
                         fprintf('sample %d\n',i);
@@ -337,6 +340,7 @@ classdef LatticeTrace < handle
                     end
                     
                 end
+                progbar.stop();
                 
             else
                 
@@ -375,6 +379,7 @@ classdef LatticeTrace < handle
     end
     
     methods (Access = protected)
+        
         function out = plot_field(obj,field,iter,order,params)
             switch field
                 case 'Kf'
