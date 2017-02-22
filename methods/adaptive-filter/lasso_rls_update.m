@@ -3,20 +3,20 @@ function x = lasso_rls_update(x,R,r,gamma)
 nregressors = length(x);
 x = x(:);
 
-for p=1:nregressors
-    idx = true(nregressors,1);
-    idx(p) = false;
-    
-    % eq 18
-    if nregressors == 1
-        rp = r(p);
-    else
-        rp = r(p) - R(p,idx)*x(idx);
-    end
-    
+if nregressors == 1
+    rp = r;
     % eq 19
     %fprintf('rp: %g\ngamma: %g\n',rp,gamma);
-    x(p) = sign(rp)/R(p,p)*max((abs(rp) - gamma),0);
+    x = sign(rp)/R*max((abs(rp) - gamma),0);
+else
+    
+    Rdiag = diag(R);
+    Rzerodiag = R - diag(Rdiag);
+    for p=1:nregressors
+        rp = r(p) - Rzerodiag(p,:)*x;
+        % pth element in Rzerodiag is a zero, so x doesn't need to be zero
+        x(p) = sign(rp)./Rdiag(p).*max((abs(rp) - gamma), 0);
+    end
 end
 
 end
