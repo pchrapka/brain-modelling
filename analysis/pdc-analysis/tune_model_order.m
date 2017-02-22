@@ -48,13 +48,14 @@ lambda = 0.99;
 gamma = 1;
 
 % tuning over model order
-order_est = 1:12;
+order_est = 1:14;
 
 filters = cell(length(order_est),1);
+k = 1;
 
-for k=1:length(order_est)
-    filters{k} = MCMTLOCCD_TWL2(nchannels,order_est(k),ntrials,'lambda',lambda,'gamma',gamma);
-end
+order_max = max(order_est);
+filters{k} = MCMTLOCCD_TWL2(nchannels,order_max,ntrials,'lambda',lambda,'gamma',gamma);
+k = k+1;
 
 %% lattice filter
 
@@ -71,4 +72,4 @@ lf_files = lattice_filter_sources(filters, sources_file,...
 
 %% plot estimation error vs model order
 
-plot_order_vs_esterror(lf_files);
+plot_order_vs_esterror(lf_files{1},'orders',order_est);

@@ -1,4 +1,4 @@
-function plot_order_vs_esterror(files,varargin)
+function plot_order_vs_esterror(file,varargin)
 %PLOT_ORDER_VS_ESTERROR plots filter order vs estimation error
 %   PLOT_ORDER_VS_ESTERROR(files,...) plots filter order vs estimation
 %   error
@@ -9,39 +9,47 @@ function plot_order_vs_esterror(files,varargin)
 %       file names of data after lattice filtering
 
 p = inputParser();
-addRequired(p,'files',@iscell);
+addRequired(p,'file',@ischar);
+addParameter(p,'orders',@isvector);
 % addParameter(p,'params',{},@iscell);
-parse(p,files,varargin{:});
+parse(p,file,varargin{:});
 
-ndata = length(files);
+norders = length(p.Results.orders);
 
-ferrors = zeros(ndata,1);
-berrors = zeros(ndata,1);
-orders = zeros(ndata,1);
+ferrors = zeros(norders,1);
+berrors = zeros(norders,1);
+orders = zeros(norders,1);
 
-for i=1:ndata
+% load lattice filtered results
+print_msg_filename(file,'loading');
+data = loadfile(file);
+
+% get final estimation error
+dims = size(data.estimate.ferror);
+norderp1 = dims(end);
+
+if norders+1 > norderp1
+    error('not enough orders in data (%d), requested (%d)',norderp1-1,norders);
+end
+
+for i=1:norders
     
-    % load lattice filtered results
-    print_msg_filename(files{i},'loading');
-    data = loadfile(files{i});
-    
-    % get final estimation error
-    dims = size(data.estimate.ferror);
-    norderp1 = dims(end);
+    order = p.Results.order(i);
+    idx = order+1;
     
     switch length(dims)
         case 3
-            ferror = data.estimate.ferror(:,:,norderp1);
-            berror = data.estimate.berrord(:,:,norderp1);
+            ferror = data.estimate.ferror(:,:,idx);
+            berror = data.estimate.berrord(:,:,idx);
         case 2
-            ferror = data.estimate.ferror(:,norderp1);
-            berror = data.estimate.berrord(:,norderp1);
+            ferror = data.estimate.ferror(:,idx);
+            berror = data.estimate.berrord(:,idx);
         otherwise
             error('uh oh\n');
     end
     
     % compute the magnitude over all channels and trials
-    orders(i) = norderp1 - 1;
+    orders(i) = order;
     ferrors(i) = norm(ferror(:));
     berrors(i) = norm(berror(:));
     
@@ -52,7 +60,7 @@ subplot(2,1,1);
 plot(orders,ferrors);
 xlabel('Model order');
 ylabel('Forward Estimation Error');
-[~,name,~] = fileparts(files{1});
+[~,name,~] = fileparts(file);
 title(strrep(name,'_',' '));
 
 subplot(2,1,2);
