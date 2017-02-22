@@ -52,31 +52,42 @@ end
 
 % set up parallel pool
 fprintf('%s: setting up %d cores\n',mfilename,cores);
-if exist('parpool','file')    
-    if isempty(gcp)
+if exist('parpool','file')
+    pool = gcp('nocreate');
+    if isempty(pool)
         % set up a new one
         parpool('local', cores);
     elseif p.Results.force
-        % force a new one
-        
-        % close the current pool
-        if ~isempty(gcp)
-            delete(gcp);
+        poolsize = pool.NumWorkers;
+        if poolsize ~= cores
+            % force a new one
+            
+            % close the current pool
+            if ~isempty(pool)
+                delete(pool);
+            end
+            
+            % set up a new one
+            parpool('local', cores);
+        else
+            fprintf('%s: already open\n',mfilename);
         end
-        
-        % set up a new one
-        parpool('local', cores);
     else
         fprintf('%s: already open\n',mfilename);
     end
 else
-    if matlabpool('size') == 0
+    poolsize = matlabpool('size');
+    if poolsize == 0
         % set up a new one
         matlabpool('open', cores);
     elseif p.Results.force
-        % force a new one
-        matlabpool('close');
-        matlabpool('open', cores);
+        if poolsize ~= cores
+            % force a new one
+            matlabpool('close');
+            matlabpool('open', cores);
+        else
+            fprintf('%s: already open\n',mfilename);
+        end
     else
         fprintf('%s: already open\n',mfilename);
     end

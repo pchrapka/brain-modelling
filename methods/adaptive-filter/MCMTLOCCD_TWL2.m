@@ -131,7 +131,7 @@ classdef MCMTLOCCD_TWL2
                 Rbf_new = obj.lambda*squeeze(obj.Rbf(m-1,:,:)) + obj.berrord(:,:,m-1)*ferror(:,:,m-1)';
                 Rfb_new = obj.lambda*squeeze(obj.Rfb(m-1,:,:)) + ferror(:,:,m-1)*obj.berrord(:,:,m-1)';
                 
-                for ch=1:obj.nchannels
+                parfor ch=1:obj.nchannels
                     kf = squeeze(obj.Kf(m-1,:,ch))';
                     kb = squeeze(obj.Kb(m-1,:,ch))';
                     

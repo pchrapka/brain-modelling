@@ -29,6 +29,9 @@ k = k+1;
 
 %% lattice filter
 
+% set up parfor
+parfor_setup('cores',12,'force',true);
+
 verbosity = 2;
 lf_files = lattice_filter_sources(filters, sources_file,...
     'tracefields',{'Kf','Kb','ferror','berrord'},...
