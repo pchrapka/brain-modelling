@@ -34,16 +34,16 @@ end
 
 for i=1:norders
     
-    order = p.Results.order(i);
+    order = p.Results.orders(i);
     idx = order+1;
     
     switch length(dims)
+        case 4
+            ferror = data.estimate.ferror(:,:,:,idx);
+            berror = data.estimate.berrord(:,:,:,idx);
         case 3
             ferror = data.estimate.ferror(:,:,idx);
             berror = data.estimate.berrord(:,:,idx);
-        case 2
-            ferror = data.estimate.ferror(:,idx);
-            berror = data.estimate.berrord(:,idx);
         otherwise
             error('uh oh\n');
     end

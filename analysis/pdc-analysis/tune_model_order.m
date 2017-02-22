@@ -1,6 +1,6 @@
 %% tune_model_order
 
-pipeline = eeg_preprocessing_std_s3_10();
+[pipeline,outdir] = eeg_preprocessing_std_s3_10();
 lf_file = pipeline.steps{end}.lf.leadfield;
 sources_file = pipeline.steps{end}.sourceanalysis;
 

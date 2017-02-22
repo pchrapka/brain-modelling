@@ -1,4 +1,4 @@
-function pipeline = eeg_preprocessing_std_s3_10()
+function [pipeline,outdir] = eeg_preprocessing_std_s3_10()
 
 stimulus = 'std';
 subject = 3; 
