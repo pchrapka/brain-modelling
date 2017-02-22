@@ -131,17 +131,22 @@ classdef MCMTLOCCD_TWL2
                 Rbf_new = obj.lambda*squeeze(obj.Rbf(m-1,:,:)) + obj.berrord(:,:,m-1)*ferror(:,:,m-1)';
                 Rfb_new = obj.lambda*squeeze(obj.Rfb(m-1,:,:)) + ferror(:,:,m-1)*obj.berrord(:,:,m-1)';
                 
+                Kfprev = squeeze(obj.Kf(m-1,:,:));
+                Kbprev = squeeze(obj.Kb(m-1,:,:));
+                gammatemp = obj.gamma;
                 parfor ch=1:obj.nchannels
-                    kf = squeeze(obj.Kf(m-1,:,ch))';
-                    kb = squeeze(obj.Kb(m-1,:,ch))';
+                    kf = Kfprev(:,ch)';
+                    kb = Kbprev(:,ch)';
                     
-                    kf_new = lasso_rls_update(kf, Rf_new, Rfb_new(:,ch), obj.gamma);
-                    kb_new = lasso_rls_update(kb, Rb_new, Rbf_new(:,ch), obj.gamma);
+                    kf_new = lasso_rls_update(kf, Rf_new, Rfb_new(:,ch), gammatemp);
+                    kb_new = lasso_rls_update(kb, Rb_new, Rbf_new(:,ch), gammatemp);
                     
                     % save vars
-                    obj.Kf(m-1,:,ch) = kf_new;
-                    obj.Kb(m-1,:,ch) = kb_new;
+                    Kfprev(:,ch) = kf_new;
+                    Kbprev(:,ch) = kb_new;
                 end
+                obj.Kf(m-1,:,:) = Kfprev;
+                obj.Kb(m-1,:,:) = Kbprev;
                 
                 % update prediction errors
                 ferror(:,:,m) = ferror(:,:,m-1) - squeeze(obj.Kb(m-1,:,:))'*obj.berrord(:,:,m-1);
