@@ -134,7 +134,7 @@ classdef MCMTLOCCD_TWL2
                 Kfprev = squeeze(obj.Kf(m-1,:,:));
                 Kbprev = squeeze(obj.Kb(m-1,:,:));
                 gammatemp = obj.gamma;
-                parfor ch=1:obj.nchannels
+                for ch=1:obj.nchannels
                     kf = Kfprev(:,ch)';
                     kb = Kbprev(:,ch)';
                     
