@@ -36,7 +36,7 @@ criteria = p.Results.criteria;
 
 % get dimensions
 [norders,nsamples] = size(obj.criteria.(criteria).f);
-order_list = obj.criteria.(criteria).order_list;
+order_list = obj.criteria.(criteria).orders;
 order_max = max(order_list);
 
 if order_max > norders

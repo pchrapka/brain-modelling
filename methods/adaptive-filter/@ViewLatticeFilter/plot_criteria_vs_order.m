@@ -34,7 +34,7 @@ obj.load('criteria',file_idx);
 criteria = p.Results.criteria;
 
 % get data
-order_list = obj.criteria.(criteria).order_list;
+order_list = obj.criteria.(criteria).orders;
 
 if length(file_idx) == 1
     [~,name,~] = fileparts(obj.datafiles{file_idx});
@@ -45,6 +45,7 @@ else
 end
 
 figure('Position',[1 1 1000 600],'Name',name);
+hold off;
 
 subplot(2,1,1);
 plot(order_list,obj.criteria.(criteria).f,'-o');

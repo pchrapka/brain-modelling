@@ -1,6 +1,6 @@
-function [cf,cb] = compute_criteria(criteria,order)
+function [cf,cb] = compute_criteria(obj,criteria,order)
 
-dims = size(ferrorin);
+dims = size(obj.data.estimate.ferror);
 nsamples = dims(1);
 switch length(dims)
     case 4
@@ -27,7 +27,7 @@ switch criteria
         for j=1:nsamples
             
             % extract sample data
-            [ferror,berror] = obj.get_error(obj,order_idx,j);
+            [ferror,berror] = obj.get_error(order_idx,j);
             
             %Taylor, James W. "Exponentially weighted information criteria for
             %selecting among forecasting models." International Journal of
@@ -63,7 +63,7 @@ switch criteria
         for j=1:nsamples
             
             % extract sample data
-            [ferror,berror] = obj.get_error(obj,order_idx,j);
+            [ferror,berror] = obj.get_error(order_idx,j);
             
             % compute the magnitude over all channels and trials
             cf(j) = norm(ferror(:));
@@ -72,13 +72,24 @@ switch criteria
         
     case {'aic','sc'}
         
-        % extract sample data
-        [ferror,berror] = obj.get_error(obj,order_idx,[]);
         
         n = nsamples*ntrials;
         
-        Vf = ferror'*ferror/n;
-        Vb = berror'*berror/n;
+        if ntrials > 1
+            Vf = zeros(nchannels,nchannels);
+            Vb = zeros(nchannels,nchannels);
+            
+            for j=1:nsamples
+                % extract sample data
+                [ferror,berror] = obj.get_error(order_idx,j);
+                Vf = Vf + ferror*ferror'/n;
+                Vb = Vb + berror*berror'/n;
+            end
+        else
+            [ferror,berror] = obj.get_error(order_idx,[]);
+            Vf = ferror*ferror'/n;
+            Vb = berror*berror'/n;
+        end
         
         if ~isequal(size(Vf), [nchannels nchannels])
             error('something went wrong');
@@ -100,7 +111,7 @@ switch criteria
     case 'norm'
         
         % extract sample data
-        [ferror,berror] = obj.get_error(obj,order_idx,[]);
+        [ferror,berror] = obj.get_error(order_idx,[]);
         
         % compute the magnitude over all channels and trials
         cf = norm(ferror(:));

@@ -98,12 +98,18 @@ lf_files = run_lattice_filter(...
 
 %% set up view lattice
 view_lf = ViewLatticeFilter(lf_files{1});
+crit_time = {'ewaic','ewsc','normtime'};
+crit_single = {'aic','sc','norm'};
+view_lf.compute([crit_time crit_single]);
 
 %% plot order vs estimation error
-view_lf.plot_esterror_vs_order('orders',1:norder_est);
-view_lf.plot_esterror_vs_order_vs_time('orders',1:norder_est);
-view_lf.plot_criteria_vs_order_vs_time('criteria','aic','orders',1:norder_est);
-view_lf.plot_criteria_vs_order_vs_time('criteria','sc','orders',1:norder_est);
+view_lf.plot_criteria_vs_order_vs_time('criteria','ewaic','orders',1:norder_est);
+view_lf.plot_criteria_vs_order_vs_time('criteria','ewsc','orders',1:norder_est);
+view_lf.plot_criteria_vs_order_vs_time('criteria','normtime','orders',1:norder_est);
+
+view_lf.plot_criteria_vs_order('criteria','aic','orders',1:norder_est);
+view_lf.plot_criteria_vs_order('criteria','sc','orders',1:norder_est);
+view_lf.plot_criteria_vs_order('criteria','norm','orders',1:norder_est);
 
 %%
 if flag_plots

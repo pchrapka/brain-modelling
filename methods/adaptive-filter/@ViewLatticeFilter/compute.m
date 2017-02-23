@@ -1,14 +1,16 @@
-function compute(obj,varargin)
+function compute(obj,criteria)
 
 p = inputParser();
-addParameter(p,'criteria',{'ewaic','ewsc'},@iscell);
-parse(p,varargin{:});
+addRequired(p,'criteria',@iscell);
+parse(p,criteria);
 
 % init criteria files
 obj.init_criteria();
 
 % loop over data files
 for file_idx=1:length(obj.datafiles)
+    [~,filename,~] = fileparts(obj.datafiles{file_idx});
+    fprintf('computing criteria for %s\n',filename);
     % unload criteria data
     obj.unload('criteria');
     
@@ -28,7 +30,10 @@ for file_idx=1:length(obj.datafiles)
         criteria = p.Results.criteria{k};
         
         % check if it exists already
-        if ~isfield(obj.criteria,criteria)
+        if isfield(obj.criteria,criteria)
+            fprintf('already computed %s\n',criteria);
+        else
+            fprintf('computing %s\n',criteria);
             
             % load data
             obj.load('data',file_idx);
@@ -40,6 +45,7 @@ for file_idx=1:length(obj.datafiles)
             
             % set default orders
             order_list = 1:norderp1-1;
+            norders = length(order_list);
             
             % allocate mem
             cb = zeros(norders,nsamples);

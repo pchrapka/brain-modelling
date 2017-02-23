@@ -16,10 +16,13 @@ classdef ViewLatticeFilter < handle
         function obj = ViewLatticeFilter(files,varargin)
             
             p = inputParser();
-            addRequired(p,'files',@iscell);
+            addRequired(p,'files',@(x) iscell(x) || ischar(x));
             %addParameter(p,'outdir','data',@ischar);
             parse(p,files,varargin{:});
             
+            if ischar(files)
+                files = {files};
+            end
             
             obj.data = [];
             obj.dataidx = 0;
@@ -48,16 +51,26 @@ classdef ViewLatticeFilter < handle
         function load(obj,field,idx)
             switch field
                 case 'data'
-                    if isempty(obj.data) || obj.dataidx ~= idx
-                        print_msg_filename(obj.datafiles{idx},'loading');
-                        obj.data = loadfile(obj.datafiles{idx});
-                        obj.dataidx = idx;
+                    if exist(obj.datafiles{idx},'file')
+                        if isempty(obj.data) || obj.dataidx ~= idx
+                            print_msg_filename(obj.datafiles{idx},'loading');
+                            obj.data = loadfile(obj.datafiles{idx});
+                            obj.dataidx = idx;
+                        end
+                    else
+                        obj.data = [];
+                        obj.dataidx = 0;
                     end
                 case 'criteria'
-                    if isempty(obj.criteria) || obj.criteriaidx ~= idx
-                        print_msg_filename(obj.criteriafiles{idx},'loading');
-                        obj.criteria = loadfile(obj.criteriafiles{idx});
-                        obj.criteriaidx = idx;
+                    if exist(obj.criteriafiles{idx},'file')
+                        if isempty(obj.criteria) || obj.criteriaidx ~= idx
+                            print_msg_filename(obj.criteriafiles{idx},'loading');
+                            obj.criteria = loadfile(obj.criteriafiles{idx});
+                            obj.criteriaidx = idx;
+                        end
+                    else
+                        obj.data = [];
+                        obj.dataidx = 0;
                     end
             end
             
@@ -75,7 +88,7 @@ classdef ViewLatticeFilter < handle
         end
         
         % measure functions
-        compute(obj,varargin);
+        compute(obj,criteria);
         
         % plot functions
         plot_criteria_vs_order(obj,varargin);
@@ -83,7 +96,7 @@ classdef ViewLatticeFilter < handle
     end
     
     methods (Access = protected)
-        [cfout,cbout] = compute_criteria(obj,ferror,berror);
+        [cf,cb] = compute_criteria(obj,criteria,order)
         
         function fresh = check_data_freshness(obj,idx)
             % checks data file timestamp vs the newfile timestamp
