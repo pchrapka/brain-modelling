@@ -31,6 +31,8 @@ function outfiles = run_lattice_filter(script_name,datain,varargin)
 %   warmup_data (logical, default = false)
 %       flag for warming up the filter with data, this helps with filter
 %       initialization
+%   tracefields (cell array, default = {'Kf','Kb'})
+%       fields to save from LatticeTrace object
 %   force (logical, default = false)
 %       force recomputation
 %   verbosity (integer, default = 0)
@@ -224,6 +226,7 @@ for k=1:nfilters
         
         % save data
         data = [];
+        data.filter = trace.filter;
         for i=1:length(options.tracefields)
             field = options.tracefields{i};
             data.estimate.(field) = trace.trace.(field);

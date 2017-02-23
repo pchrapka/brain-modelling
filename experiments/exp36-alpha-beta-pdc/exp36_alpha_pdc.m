@@ -26,7 +26,7 @@ ncouplings = ceil(sparsity*(nchannels_signal^2*norder - nchannels_signal*norder)
 
 %% set up alpha process
 
-fresh = true;
+fresh = false;
 alpha_file = fullfile(pwd,'output','alpha.mat');
 
 if fresh || ~exist(alpha_file,'file')
@@ -92,8 +92,18 @@ lf_files = run_lattice_filter(...
     'filters', filters,...
     'warmup_noise', true,...
     'warmup_data', true,...
+    'tracefields',{'Kf','Kb','ferror','berrord'},...
     'force',fresh,...
     'plot_pdc', false);
+
+%% set up view lattice
+view_lf = ViewLatticeFilter(lf_files{1});
+
+%% plot order vs estimation error
+view_lf.plot_esterror_vs_order('orders',1:norder_est);
+view_lf.plot_esterror_vs_order_vs_time('orders',1:norder_est);
+view_lf.plot_criteria_vs_order_vs_time('criteria','aic','orders',1:norder_est);
+view_lf.plot_criteria_vs_order_vs_time('criteria','sc','orders',1:norder_est);
 
 %%
 if flag_plots
