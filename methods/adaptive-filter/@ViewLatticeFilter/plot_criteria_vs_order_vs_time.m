@@ -45,6 +45,7 @@ end
 % allocate mem
 cb = zeros(nsamples,norders);
 cf = zeros(nsamples,norders);
+lambda = obj.data.filter.lambda;
 
 legend_str = cell(norders,1);
 for i=1:norders
@@ -74,8 +75,8 @@ for i=1:norders
         %selecting among forecasting models." International Journal of
         %Forecasting 24.3 (2008): 513-524.
        
-        Vf = obj.data.filter.lambda*Vfprev + ferror*ferror';
-        Vb = obj.data.filter.lambda*Vbprev + berror*berror';
+        Vf = lambda*Vfprev + ferror*ferror';
+        Vb = lambda*Vbprev + berror*berror';
         
         switch p.Results.criteria
             case 'aic'
