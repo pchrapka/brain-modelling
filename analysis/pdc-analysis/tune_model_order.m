@@ -1,6 +1,8 @@
 %% tune_model_order
 
-% [pipeline,outdir] = eeg_preprocessing_std_s3_10();
+flag_plots = false;
+
+[pipeline,outdir] = eeg_preprocessing_std_s3_10();
 lf_file = pipeline.steps{end}.lf.leadfield;
 sources_file = pipeline.steps{end}.sourceanalysis;
 
@@ -41,16 +43,18 @@ lf_files = lattice_filter_sources(filters, sources_file,...
     'outdir', outdir);
 
 %% set up view lattice
-view_lf = ViewLatticeFilter(lf_files{1});
-crit_time = {'ewaic','ewsc','normtime'};
-crit_single = {'aic','sc','norm'};
-view_lf.compute([crit_time crit_single]);
-
-%% plot order vs estimation error
-view_lf.plot_criteria_vs_order_vs_time('criteria','ewaic','orders',order_est);
-view_lf.plot_criteria_vs_order_vs_time('criteria','ewsc','orders',order_est);
-view_lf.plot_criteria_vs_order_vs_time('criteria','normtime','orders',order_est);
-
-view_lf.plot_criteria_vs_order('criteria','aic','orders',order_est);
-view_lf.plot_criteria_vs_order('criteria','sc','orders',order_est);
-view_lf.plot_criteria_vs_order('criteria','norm','orders',order_est);
+if flag_plots
+    view_lf = ViewLatticeFilter(lf_files{1});
+    crit_time = {'ewaic','ewsc','normtime'};
+    crit_single = {'aic','sc','norm'};
+    view_lf.compute([crit_time crit_single]);
+    
+    % plot order vs estimation error
+    view_lf.plot_criteria_vs_order_vs_time('criteria','ewaic','orders',order_est);
+    view_lf.plot_criteria_vs_order_vs_time('criteria','ewsc','orders',order_est);
+    view_lf.plot_criteria_vs_order_vs_time('criteria','normtime','orders',order_est);
+    
+    view_lf.plot_criteria_vs_order('criteria','aic','orders',order_est);
+    view_lf.plot_criteria_vs_order('criteria','sc','orders',order_est);
+    view_lf.plot_criteria_vs_order('criteria','norm','orders',order_est); 
+end
