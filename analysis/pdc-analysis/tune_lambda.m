@@ -1,6 +1,6 @@
 %% tune_lambda
 
-flag_plots = true;
+flag_plots = false;
 
 [pipeline,outdir] = eeg_preprocessing_std_s3_10();
 lf_file = pipeline.steps{end}.lf.leadfield;
@@ -20,13 +20,13 @@ order_max = 6;
 gamma = 1;
 
 % tuning over lambdas
-lambdas = [0.97 0.98 0.99];
-data_labels = {'lambda 0.97','lambda 0.98','lambda 0.99'};
+lambdas = [0.95 0.96 0.97 0.98 0.99];
 
 %% set up filters
 filters = {};
 for k=1:length(lambdas)
     lambda = lambdas(k);
+    data_labels{k} = sprintf('lambda %0.4f',lambda);
     filters{k} = MCMTLOCCD_TWL2(nchannels,order_max,ntrials,'lambda',lambda,'gamma',gamma);
 end
 
@@ -54,7 +54,7 @@ end
 
 %% plot criteria for best order across gamma
 if flag_plots
-    order_best = 'adjust this';
+    order_best = [2 3];
     
     view_lf = ViewLatticeFilter(lf_files,'labels',data_labels);
     view_lf.compute({'ewaic'});

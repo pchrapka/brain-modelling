@@ -100,7 +100,7 @@ for i=1:nrows
             for file_idx=1:nfiles
                 h(file_idx) = plot(data_crit.order_lists{file_idx},...
                     data{file_idx}(:,nsamples),...
-                    markers{file_idx},'MarkerSize',10);
+                    ['-' markers{file_idx}],'MarkerSize',10);
             end
             
             xlim_cur = xlim;

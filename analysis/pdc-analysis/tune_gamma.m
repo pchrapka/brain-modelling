@@ -1,6 +1,6 @@
 %% tune_gamma
 
-flag_plots = true;
+flag_plots = false;
 
 [pipeline,outdir] = eeg_preprocessing_std_s3_10();
 lf_file = pipeline.steps{end}.lf.leadfield;
@@ -20,13 +20,14 @@ lambda = 0.99;
 order_max = 6;
 
 % tuning over gammas
-gammas = [0.001 0.1 1 10];
-data_labels = {'gamma 0.001','gamma 0.1','gamma 1','gamma 10'};
+gammas = [1e-4 1e-3 1e-2 0.1 1 10];
 
 %% set up filters
 filters = {};
+data_labels = {];
 for k=1:length(gammas)
     gamma = gammas(k);
+    data_labels{k} = sprintf('gamma %e',gamma);
     filters{k} = MCMTLOCCD_TWL2(nchannels,order_max,ntrials,'lambda',lambda,'gamma',gamma);
 end
 
