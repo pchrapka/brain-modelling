@@ -66,6 +66,7 @@ for i=1:nrows
             % plot IC vs samples
             h = zeros(ndata,1);
             count = 1;
+            ymax = zeros(nfiles,1);
             for file_idx=1:nfiles
                 norders = size(data{file_idx},1);
                 for k=1:norders
@@ -74,11 +75,19 @@ for i=1:nrows
                         'Color',colors(count,:));
                     count = count + 1;
                 end
+                
+                idx = ceil(nsamples*0.05);
+                ymax(file_idx) = max(data{file_idx}(:,idx));
             end
             
+            % labels
             xlabel('Sample');
-            xlim([1 nsamples]);
             legend(h,data_crit.legend_str);
+            
+            % adjust axes
+            xlim([1 nsamples]);
+            ylim_cur = ylim;
+            ylim([ylim_cur(1) max(ymax)*1.1]);
         end
         
         if j==2
