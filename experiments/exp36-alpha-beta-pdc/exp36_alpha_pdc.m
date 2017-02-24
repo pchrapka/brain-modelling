@@ -74,15 +74,17 @@ disp(sum(result.A,3));
 
 %% lattice filter
 
-filters = [];
-k=1;
 
 norder_est = 10;
 lambda = 0.99;
-% gamma = 1;
-gamma = 0.1;
-filters{k} = MCMTLOCCD_TWL2(nchannels,norder_est,ntrials,'lambda',lambda,'gamma',gamma);
-k = k+1;
+gammas = [0.1 1];
+data_labels = {'gamma 0.1','gamma 1'};
+
+filters = {};
+for k=1:length(gammas)
+    gamma = gammas(k);
+    filters{k} = MCMTLOCCD_TWL2(nchannels,norder_est,ntrials,'lambda',lambda,'gamma',gamma);
+end
 
 script_name = [mfilename('fullpath') '.m'];
 lf_files = run_lattice_filter(...
@@ -110,6 +112,12 @@ view_lf.plot_criteria_vs_order_vs_time('criteria','normtime','orders',1:norder_e
 view_lf.plot_criteria_vs_order('criteria','aic','orders',1:norder_est);
 view_lf.plot_criteria_vs_order('criteria','sc','orders',1:norder_est);
 view_lf.plot_criteria_vs_order('criteria','norm','orders',1:norder_est);
+
+%% set up view lattice for both files
+view_lf = ViewLatticeFilter(lf_files,'labels',data_labels);
+view_lf.compute({'ewaic','aic'});
+view_lf.plot_criteria_vs_order_vs_time('criteria','ewaic','orders',1:2,'file_list',1:length(lf_files));
+view_lf.plot_criteria_vs_order('criteria','aic','orders',1:2,'file_list',1:length(lf_files));
 
 %%
 if flag_plots

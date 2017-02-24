@@ -57,7 +57,14 @@ for file_idx=1:length(obj.datafiles)
                 
                 order = order_list(i);
                 
-                [cf(i,:),cb(i,:)] = obj.compute_criteria(criteria,order);
+                [cftemp,cbtemp] = obj.compute_criteria(criteria,order);
+                if length(cftemp) > 1
+                    cf(i,:) = cftemp;
+                    cb(i,:) = cbtemp;
+                else
+                    cf(i,1) = cftemp;
+                    cb(i,1) = cbtemp;
+                end
                 
                 order_str{i} = sprintf('%d',order);
             end

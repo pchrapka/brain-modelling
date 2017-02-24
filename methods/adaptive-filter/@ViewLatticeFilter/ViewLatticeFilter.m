@@ -9,6 +9,7 @@ classdef ViewLatticeFilter < handle
         data;
         dataidx;
         datafiles;
+        datafile_labels;
     end
     
     methods
@@ -17,6 +18,7 @@ classdef ViewLatticeFilter < handle
             
             p = inputParser();
             addRequired(p,'files',@(x) iscell(x) || ischar(x));
+            addParameter(p,'labels',{},@(x) iscell(x) || ischar(x));
             %addParameter(p,'outdir','data',@ischar);
             parse(p,files,varargin{:});
             
@@ -24,9 +26,25 @@ classdef ViewLatticeFilter < handle
                 files = {files};
             end
             
+            if ischar(p.Results.labels)
+                labels = {p.Results.labels};
+            else
+                labels = p.Results.labels;
+            end
+            
             obj.data = [];
             obj.dataidx = 0;
             obj.datafiles = files;
+            if isempty(labels)
+                % create generic labels
+                for i=1:length(files)
+                    labels{i} = sprintf('file %d',i);
+                end
+            end
+            if length(labels) ~= length(files)
+                error('files and labels do not match');
+            end
+            obj.datafile_labels = labels;
             
             obj.criteria = [];
             obj.criteriaidx = 0;
@@ -89,6 +107,7 @@ classdef ViewLatticeFilter < handle
         
         % measure functions
         compute(obj,criteria);
+        out = get_criteria(obj,varargin);
         
         % plot functions
         plot_criteria_vs_order(obj,varargin);

@@ -9,61 +9,37 @@ function plot_criteria_vs_order_vs_time(obj,varargin)
 %       criteria to plot
 %   orders (vector)
 %       list of orders to use in plot
-%   file_idx (vector, default = 1)
+%   file_list (vector, default = 1)
 %       indices of files whose data should be plotted
 
 p = inputParser();
 addParameter(p,'criteria','ewaic',...
     @(x) any(validatestring(x,{'ewaic','ewsc','normtime'})));
 addParameter(p,'orders',[],@isvector);
-addParameter(p,'file_idx',[],@isvector);
+addParameter(p,'file_list',[],@isvector);
 parse(p,varargin{:});
 
-% check file_idx
-if length(obj.datafiles) > 1 && isempty(p.Results.file_idx)
-    error('please specify file idx');
-elseif length(obj.datafiles) == 1
-    file_idx = 1;
-else
-    file_idx = p.Results.file_idx;
-end
+params = struct2namevalue(p.Results);
+data_crit = obj.get_criteria(params{:});
 
-if length(file_idx) > 1
-    error('modify function to reflect multiple files');
-end
+ndata = length(data_crit.legend_str);
+nfiles = length(data_crit.f);
+nsamples = size(data_crit.f{1},2);
 
-% load data
-obj.load('criteria',file_idx);
-criteria = p.Results.criteria;
-
-% get dimensions
-[norders_data,nsamples] = size(obj.criteria.(criteria).f);
-order_list = obj.criteria.(criteria).orders;
-
-% check orders
-if isempty(p.Results.orders)
-    order_user = order_list;
-else
-    order_user = p.Results.orders;
-end
-order_user_max = max(order_user);
-norders_user = length(order_user);
-
-if order_user_max > norders_data
-    error('not enough orders in data (%d), requested (%d)',norders_data,order_user_max);
-end
-
-if length(file_idx) == 1
-    [~,name,~] = fileparts(obj.datafiles{file_idx});
-    name = strrep(name,'-',' ');
-    name = strrep(name,'_','-');
-else
-    name = 'TODO fix me';
+% create figure name
+[~,name,~] = fileparts(obj.datafiles{1});
+name = strrep(name,'-',' ');
+name = strrep(name,'_','-');
+if nfiles > 1
+    out = sprintf('%s-', obj.datafile_labels{:});
+    name = [name '-' out(1:end-1)];
 end
 
 screen_size = get(0,'ScreenSize');
 figure('Position',screen_size,'Name',name);
-colors = get_colors(norders_user,'jet');
+colors = get_colors(ndata,'jet');
+markers = {'o','x','+','*','s','d','v','^','<','>','p','h'};
+linetypes = {'-',':','-.','--'};
 
 nrows = 2;
 ncols = 2;
@@ -77,43 +53,51 @@ for i=1:nrows
         title_str = {};
         switch i
             case 1
-                data = obj.criteria.(criteria).f;
+                data = data_crit.f;
                 title_str{1} = sprintf('Forward IC - %s',upper(p.Results.criteria));
                 ylabel_str = 'IC';
             case 2
-                data = obj.criteria.(criteria).b;
+                data = data_crit.b;
                 title_str{1} = sprintf('Backward IC - %s',upper(p.Results.criteria));
                 ylabel_str = 'IC';
         end
         
         if j==1
             % plot IC vs samples
-            h = zeros(norders_data,1);
-            legend_str = cell(norders_data,1);
-            for k=1:norders_user
-                order_idx = orders_user(k);
-                h(k) = plot(1:nsamples,data(order_idx,:),'-o','Color',colors(k,:),'MarkerSize',2);
-                legend_str{k} = sprintf('order %d',order_idx);
+            h = zeros(ndata,1);
+            count = 1;
+            for file_idx=1:nfiles
+                norders = size(data{file_idx},1);
+                for k=1:norders
+                    h(count) = plot(1:nsamples,data{file_idx}(k,:),...
+                        linetypes{file_idx},...
+                        'Color',colors(count,:));
+                    count = count + 1;
+                end
             end
             
             xlabel('Sample');
+            xlim([1 nsamples]);
+            legend(h,data_crit.legend_str);
         end
         
         if j==2
             % plot last IC vs order
-            plot(orders_user,data(orders_user,nsamples),'-o');
+            h = zeros(nfiles,1);
+            for file_idx=1:nfiles
+                h(file_idx) = plot(data_crit.order_lists{file_idx},data{file_idx}(:,nsamples),...
+                    ['-' markers{file_idx}]);
+            end
             
             xlabel('Order');
             title_str{2} = sprintf('sample %d',nsamples);
+            if nfiles > 1
+                legend(h,obj.datafile_labels);
+            end
         end
         
         % add labels
         ylabel(ylabel_str);
-        
-        % add legend
-        if i==1 && j==1
-            legend(h,legend_str);
-        end
         
         if ~isempty(title_str)
             title(title_str);

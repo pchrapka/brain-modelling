@@ -21,6 +21,7 @@ gamma = 1;
 
 % tuning over lambdas
 lambdas = [0.97 0.98 0.99];
+data_labels = {'lambda 0.97','lambda 0.98','lambda 0.99'};
 
 %% set up filters
 filters = {};
@@ -55,7 +56,7 @@ end
 if flag_plots
     order_best = 'adjust this';
     
-    view_lf = ViewLatticeFilter(lf_files);
+    view_lf = ViewLatticeFilter(lf_files,'labels',data_labels);
     view_lf.compute({'ewaic'});
     view_lf.plot_criteria_vs_order_vs_time(...
         'criteria','ewaic',...
