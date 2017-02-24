@@ -69,7 +69,7 @@ classdef MCMTLOCCD_TWL2
             obj.nregressors = obj.nchannels;
             obj.gamma = p.Results.gamma;
             obj.lambda = p.Results.lambda;
-            obj.name = sprintf('MCMTLOCCD_TWL2 T%d C%d P%d lambda=%0.4f gamma=%.4e',...
+            obj.name = sprintf('MCMTLOCCD_TWL2 T%d C%d P%d lambda=%0.4f gamma=%.3e',...
                 obj.ntrials, obj.nchannels, obj.order, obj.lambda, obj.gamma);
             
             delta = 0.01;
