@@ -67,6 +67,7 @@ for i=1:nrows
             h = zeros(ndata,1);
             count = 1;
             ymax = zeros(nfiles,1);
+            ymin = zeros(nfiles,1);
             for file_idx=1:nfiles
                 norders = size(data{file_idx},1);
                 for k=1:norders
@@ -78,6 +79,7 @@ for i=1:nrows
                 
                 idx = ceil(nsamples*0.05);
                 ymax(file_idx) = max(data{file_idx}(:,idx));
+                ymin(file_idx) = min(data{file_idx}(:,idx));
             end
             
             % labels
@@ -86,8 +88,7 @@ for i=1:nrows
             
             % adjust axes
             xlim([1 nsamples]);
-            ylim_cur = ylim;
-            ylim([ylim_cur(1) max(ymax)*1.1]);
+            ylim([min(ymin) max(ymax)]*1.1);
         end
         
         if j==2
