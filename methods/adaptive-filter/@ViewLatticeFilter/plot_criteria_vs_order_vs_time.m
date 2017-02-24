@@ -79,7 +79,7 @@ for i=1:nrows
                 
                 idx = ceil(nsamples*0.05);
                 ymax(file_idx) = max(data{file_idx}(:,idx));
-                ymin(file_idx) = min(data{file_idx}(:,idx));
+                ymin(file_idx) = min(data{file_idx});
             end
             
             % labels
