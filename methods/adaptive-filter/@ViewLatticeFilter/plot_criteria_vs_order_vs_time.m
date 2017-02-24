@@ -19,11 +19,13 @@ addParameter(p,'orders',[],@isvector);
 addParameter(p,'file_idx',[],@isvector);
 parse(p,varargin{:});
 
-% TODO how to specify file_idx
+% check file_idx
 if length(obj.datafiles) > 1 && isempty(p.Results.file_idx)
     error('please specify file idx');
-else
+elseif length(obj.datafiles) == 1
     file_idx = 1;
+else
+    file_idx = p.Results.file_idx;
 end
 
 if length(file_idx) > 1
@@ -35,12 +37,20 @@ obj.load('criteria',file_idx);
 criteria = p.Results.criteria;
 
 % get dimensions
-[norders,nsamples] = size(obj.criteria.(criteria).f);
+[norders_data,nsamples] = size(obj.criteria.(criteria).f);
 order_list = obj.criteria.(criteria).orders;
-order_max = max(order_list);
 
-if order_max > norders
-    error('not enough orders in data (%d), requested (%d)',norders,order_max);
+% check orders
+if isempty(p.Results.orders)
+    order_user = order_list;
+else
+    order_user = p.Results.orders;
+end
+order_user_max = max(order_user);
+norders_user = length(order_user);
+
+if order_user_max > norders_data
+    error('not enough orders in data (%d), requested (%d)',norders_data,order_user_max);
 end
 
 if length(file_idx) == 1
@@ -53,7 +63,7 @@ end
 
 screen_size = get(0,'ScreenSize');
 figure('Position',screen_size,'Name',name);
-colors = get_colors(norders,'jet');
+colors = get_colors(norders_user,'jet');
 
 nrows = 2;
 ncols = 2;
@@ -78,11 +88,12 @@ for i=1:nrows
         
         if j==1
             % plot IC vs samples
-            h = zeros(norders,1);
-            legend_str = cell(norders,1);
-            for k=1:norders
-                h(k) = plot(1:nsamples,data(k,:),'-o','Color',colors(k,:),'MarkerSize',2);
-                legend_str{k} = sprintf('order %d',order_list(k));
+            h = zeros(norders_data,1);
+            legend_str = cell(norders_data,1);
+            for k=1:norders_user
+                order_idx = orders_user(k);
+                h(k) = plot(1:nsamples,data(order_idx,:),'-o','Color',colors(k,:),'MarkerSize',2);
+                legend_str{k} = sprintf('order %d',order_idx);
             end
             
             xlabel('Sample');
@@ -90,7 +101,7 @@ for i=1:nrows
         
         if j==2
             % plot last IC vs order
-            plot(order_list,data(:,nsamples),'-o');
+            plot(orders_user,data(orders_user,nsamples),'-o');
             
             xlabel('Order');
             title_str{2} = sprintf('sample %d',nsamples);
