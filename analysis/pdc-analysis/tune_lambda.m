@@ -1,6 +1,6 @@
 %% tune_lambda
 
-flag_plots = false;
+flag_plots = true;
 
 [pipeline,outdir] = eeg_preprocessing_std_s3_10();
 lf_file = pipeline.steps{end}.lf.leadfield;
@@ -61,5 +61,5 @@ if flag_plots
     view_lf.plot_criteria_vs_order_vs_time(...
         'criteria','ewaic',...
         'orders',order_best,...
-        'file_idx',1:length(lf_files));
+        'file_list',1:length(lf_files));
 end

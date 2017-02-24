@@ -45,8 +45,10 @@ hold on;
 h = zeros(nfiles,1);
 for file_idx=1:nfiles
     h(file_idx) = plot(data_crit.order_lists{file_idx},data_crit.f{file_idx},...
-        ['-' markers{file_idx}]);
+        markers{file_idx},'MarkerSize',10);
 end
+xlim_cur = xlim;
+xlim([xlim_cur(1)-0.5 xlim_cur(2)+0.5]);
 if nfiles > 1
     legend(h,obj.datafile_labels);
 end
@@ -59,8 +61,10 @@ hold on;
 h = zeros(nfiles,1);
 for file_idx=1:nfiles
     h(file_idx) = plot(data_crit.order_lists{file_idx},data_crit.b{file_idx},...
-        ['-' markers{file_idx}]);
+        markers{file_idx},'MarkerSize',10);
 end
+xlim_cur = xlim;
+xlim([xlim_cur(1)-0.5 xlim_cur(2)+0.5]);
 xlabel('Model order');
 ylabel('IC');
 title(sprintf('Backward IC - %s',upper(p.Results.criteria)));

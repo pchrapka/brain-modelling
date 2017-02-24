@@ -78,8 +78,8 @@ for i=1:nrows
                 end
                 
                 idx = ceil(nsamples*0.05);
-                ymax(file_idx) = max(data{file_idx}(:,idx));
-                ymin(file_idx) = min(data{file_idx});
+                ymax(file_idx) = max(max(data{file_idx}(:,idx:end)));
+                ymin(file_idx) = min(data{file_idx}(:));
             end
             
             % labels
@@ -88,17 +88,23 @@ for i=1:nrows
             
             % adjust axes
             xlim([1 nsamples]);
-            ylim([min(ymin) max(ymax)]*1.1);
+            ylim_new = [min(ymin) max(ymax)];
+            offset = abs(diff(ylim_new))*0.1;
+            ylim_new = [ylim_new(1)-offset ylim_new(2)+offset];
+            ylim(ylim_new);
         end
         
         if j==2
             % plot last IC vs order
             h = zeros(nfiles,1);
             for file_idx=1:nfiles
-                h(file_idx) = plot(data_crit.order_lists{file_idx},data{file_idx}(:,nsamples),...
-                    ['-' markers{file_idx}]);
+                h(file_idx) = plot(data_crit.order_lists{file_idx},...
+                    data{file_idx}(:,nsamples),...
+                    markers{file_idx},'MarkerSize',10);
             end
             
+            xlim_cur = xlim;
+            xlim([xlim_cur(1)-0.5 xlim_cur(2)+0.5]);
             xlabel('Order');
             title_str{2} = sprintf('sample %d',nsamples);
             if nfiles > 1
