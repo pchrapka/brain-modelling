@@ -24,6 +24,7 @@ lambdas = [0.95 0.96 0.97 0.98 0.99];
 
 %% set up filters
 filters = {};
+data_labels = {};
 for k=1:length(lambdas)
     lambda = lambdas(k);
     data_labels{k} = sprintf('lambda %0.4f',lambda);

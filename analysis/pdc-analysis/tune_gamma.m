@@ -24,7 +24,7 @@ gammas = [1e-4 1e-3 1e-2 0.1 1 10];
 
 %% set up filters
 filters = {};
-data_labels = {];
+data_labels = {};
 for k=1:length(gammas)
     gamma = gammas(k);
     data_labels{k} = sprintf('gamma %e',gamma);
