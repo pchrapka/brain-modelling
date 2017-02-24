@@ -2,8 +2,8 @@ function out = get_criteria(obj,varargin)
 
 p = inputParser();
 addParameter(p,'criteria','',@ischar);
-addParameter(p,'orders',[],@isvector);
-addParameter(p,'file_list',[],@isvector);
+addParameter(p,'orders',[],@(x) isempty(x) || isvector(x));
+addParameter(p,'file_list',[],@(x) isempty(x) || isvector(x));
 parse(p,varargin{:});
 
 % copy vars
