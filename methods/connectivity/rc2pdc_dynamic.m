@@ -86,7 +86,10 @@ end
 clear result;
 
 %% convert each sample
+progbar = ProgressBar(nsamples);
 parfor i=1:nsamples
+    % update progress
+    progbar.progress();
     
     Kftemp = squeeze(Kf(i,:,:,:));
     Kbtemp = squeeze(Kb(i,:,:,:));
@@ -95,8 +98,6 @@ parfor i=1:nsamples
         'specden', options.specden,...
         'coherence', options.coherence,...
         'parfor', false);
-    
-    fprintf('sample %d/%d - %0.2fs\n',i,nsamples,pdc_sample.telapsed);
     
     if options.specden
         result_SS(i,:,:,:) = pdc_sample.SS;
@@ -109,6 +110,7 @@ parfor i=1:nsamples
     result_pdc(i,:,:,:) = pdc_sample.pdc;
     
 end
+progbar.stop();
 
 % save results
 result = [];
