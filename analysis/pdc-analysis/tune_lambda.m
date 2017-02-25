@@ -1,8 +1,8 @@
 %% tune_lambda
 
-flag_plots = false;
+flag_plots = true;
 
-[pipeline,outdir] = eeg_preprocessing_std_s3_10();
+% [pipeline,outdir] = eeg_preprocessing_std_s3_10();
 lf_file = pipeline.steps{end}.lf.leadfield;
 sources_file = pipeline.steps{end}.sourceanalysis;
 
@@ -20,7 +20,8 @@ order_max = 6;
 gamma = 1;
 
 % tuning over lambdas
-lambdas = [0.95 0.96 0.97 0.98 0.99];
+% lambdas = [0.95 0.96 0.97 0.98 0.99];
+lambdas = [0.9:0.02:0.98 0.99];
 
 %% set up filters
 filters = {};
@@ -45,10 +46,11 @@ lf_files = lattice_filter_sources(filters, sources_file,...
     'outdir', outdir);
 
 %% plot criteria for each gamma
+crit_all = {'aic','ewaic','normtime'};
 if flag_plots
     for k=1:length(lf_files)
         view_lf = ViewLatticeFilter(lf_files{k});
-        view_lf.compute({'ewaic'});
+        view_lf.compute(crit_all);
         view_lf.plot_criteria_vs_order_vs_time('criteria','ewaic','orders',1:order_max);
     end
 end
@@ -56,11 +58,13 @@ end
 %% plot criteria for best order across gamma
 if flag_plots
     order_best = [2 3];
+    crit = 'ewaic';
+%     crit = 'normtime';
     
     view_lf = ViewLatticeFilter(lf_files,'labels',data_labels);
-    view_lf.compute({'ewaic'});
+    view_lf.compute(crit_all);
     view_lf.plot_criteria_vs_order_vs_time(...
-        'criteria','ewaic',...
+        'criteria',crit,...
         'orders',order_best,...
         'file_list',1:length(lf_files));
 end
