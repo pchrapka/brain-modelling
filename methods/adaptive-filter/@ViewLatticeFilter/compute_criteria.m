@@ -20,7 +20,7 @@ switch criteria
         cf = zeros(nsamples,1);
         lambda = obj.data.filter.lambda;
 
-        delta = 0.01;
+        delta = 0.01/nchannels;
         Vfprev = delta*eye(nchannels,nchannels);
         Vbprev = delta*eye(nchannels,nchannels);
         
@@ -36,20 +36,20 @@ switch criteria
             Vf = lambda*Vfprev + ferror*ferror';
             Vb = lambda*Vbprev + berror*berror';
             
+            n = j*ntrials;
+            
             switch criteria
                 case 'ewaic'
                     % Akaike
-                    n = j*ntrials;
                     g = 2*order*nchannels^2/n;
                 case 'ewsc'
                     % Bayesian Schwartz
-                    n = j*ntrials;
                     g = log(n)*order*nchannels^2/n;
             end
             
             
-            cf(j) = log((1-lambda)/(1-lambda^j)) + logdet(Vf) + g;
-            cb(j) = log((1-lambda)/(1-lambda^j)) + logdet(Vb) + g;
+            cf(j) = log((1-lambda)/(1-lambda^n)) + logdet(Vf) + g;
+            cb(j) = log((1-lambda)/(1-lambda^n)) + logdet(Vb) + g;
             
             Vfprev = Vf;
             Vbprev = Vb;
