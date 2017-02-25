@@ -39,7 +39,6 @@ screen_size = get(0,'ScreenSize');
 figure('Position',screen_size,'Name',name);
 colors = get_colors(ndata,'jet');
 markers = {'o','x','+','*','s','d','v','^','<','>','p','h'};
-linetypes = {'-',':','-.','--'};
 
 nrows = 2;
 ncols = 2;
@@ -72,7 +71,7 @@ for i=1:nrows
                 norders = size(data{file_idx},1);
                 for k=1:norders
                     h(count) = plot(1:nsamples,data{file_idx}(k,:),...
-                        linetypes{file_idx},...
+                        obj.get_linetype(file_idx),...
                         'Color',colors(count,:));
                     count = count + 1;
                 end

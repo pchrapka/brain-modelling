@@ -129,6 +129,15 @@ classdef ViewLatticeFilter < handle
             end
         end
         
+        function out = get_linetype(obj,idx)
+            linetypes = {'-',':','-.','--'};
+            idx_new = mod(idx,length(linetypes));
+            if idx_new == 0
+                idx_new = length(linetypes);
+            end
+            out = linetypes{idx_new};
+        end
+        
         function [ferror,berror] = get_error(obj,order_idx,sample_idx)
             if nargin < 2
                 sample_idx = [];
