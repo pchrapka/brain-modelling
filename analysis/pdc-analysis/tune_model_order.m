@@ -2,7 +2,15 @@
 
 flag_plots = false;
 
-[pipeline,outdir] = eeg_preprocessing_std_s3_10();
+stimulus = 'std';
+subject = 3; 
+deviant_percent = 10;
+patches_type = 'aal';
+% patches_type = 'aal-coarse-13';
+
+[pipeline,outdir] = eeg_processall_andrew(...
+    stimulus,subject,deviant_percent,patches_type);
+
 lf_file = pipeline.steps{end}.lf.leadfield;
 sources_file = pipeline.steps{end}.sourceanalysis;
 
