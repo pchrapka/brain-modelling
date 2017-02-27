@@ -24,6 +24,11 @@ addRequired(p,'files',@(x) ischar(x) || iscell(x))
 addParameter(p,'params',{},@iscell);
 parse(p,files,varargin{:});
 
+p2 = inputParser();
+p2.KeepUnmatched = true;
+addParameter(p2,'metric','euc',@ischar);
+parse(p2,p.Results.params{:});
+
 if ischar(p.Results.files)
     files = {p.Results.files};
 end
@@ -34,7 +39,7 @@ for i=1:length(files)
     [data_path,name,~] = fileparts(files{i});
     
     % create pdc output file name
-    outfile_pdc = fullfile(data_path,sprintf('%s-pdc-dynamic.mat',name));
+    outfile_pdc = fullfile(data_path,sprintf('%s-pdc-dynamic-%s.mat',name,p2.Results.metric));
     
     % check pdc freshness
     fresh = false;
@@ -57,7 +62,7 @@ for i=1:length(files)
             p.Results.params{:});
         save_parfor(outfile_pdc,result);
     else
-        fprintf('already computed pdc from rc for %s\n',name);
+        fprintf('already computed pdc %s from rc for %s\n',p2.Results.metric,name);
     end
     
     pdc_files{i} = outfile_pdc;
