@@ -1,6 +1,5 @@
 %% pdc_analysis_main
 
-atlas_name = 'aal';
 
 stimulus = 'std';
 subject = 3; 
@@ -14,6 +13,8 @@ lf_file = pipeline.steps{end}.lf.leadfield;
 sources_file = pipeline.steps{end}.sourceanalysis;
 
 %% set lattice options
+atlas_name = patches_type;
+
 lf = loadfile(lf_file);
 patch_labels = lf.filter_label(lf.inside);
 patch_labels = cellfun(@(x) strrep(x,'_',' '),...
@@ -24,17 +25,14 @@ clear lf;
 
 nchannels = npatch_labels;
 ntrials = 20;
-order_est = 10;
+order_est = 3;
 lambda = 0.99;
-gamma = 1;
+gamma = 1e-4;
 
 filters = [];
 k=1;
 
-% filters{k} = MCMTLOCCD_TWL2(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gamma);
-% k = k+1;
-
-filters{k} = MCMTLOCCD_TWL2(nchannels,order_est,2*ntrials,'lambda',lambda,'gamma',gamma);
+filters{k} = MCMTLOCCD_TWL2(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gamma);
 k = k+1;
 
 %% lattice filter
@@ -138,7 +136,7 @@ flag.plot_pdc_summary_beta_mag = false;
 flag.print_pdc_summary_beta = false;
 flag.plot_pdc_single_gt20 = false;
 flag.plot_pdc_directed_beta_hemis = false;
-flag.plot_pdc_directed_beta_circle = false;
+flag.plot_pdc_directed_beta_circle = true;
 flag.plot_pdc_seed_beta = true;
 
 %% plot rc
