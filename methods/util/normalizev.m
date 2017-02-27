@@ -1,6 +1,7 @@
 function out = normalizev(signal)
-%NORMALIZEV normalize vector data by the std deviation
-%   NORMALIZEV(signal) normalize vector data by the std deviation
+%NORMALIZEV normalize vector data by the std deviation of each channel
+%   NORMALIZEV(signal) normalize vector data by the std deviation of each
+%   channel
 %   
 %   Input
 %   -----

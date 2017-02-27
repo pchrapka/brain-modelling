@@ -33,6 +33,8 @@ function outfiles = run_lattice_filter(script_name,datain,varargin)
 %       initialization
 %   tracefields (cell array, default = {'Kf','Kb'})
 %       fields to save from LatticeTrace object
+%   normalization (string, default = 'none')
+%       normalization type, options: allchannels, eachchannel, none
 %   force (logical, default = false)
 %       force recomputation
 %   verbosity (integer, default = 0)
@@ -59,6 +61,8 @@ addParameter(p,'force',false,@islogical);
 addParameter(p,'verbosity',0,@isnumeric);
 addParameter(p,'plot_pdc',true,@islogical);
 addParameter(p,'tracefields',{'Kf','Kb'},@iscell);
+options_norm = {'allchannels','eachchannel','none'};
+addParameter(p,'normalization','none',@(x) any(validatestring(x,options_norm)));
 p.parse(script_name,datain,varargin{:});
 
 % copy filters
@@ -99,6 +103,21 @@ if length(data_dims) == 2
     data_dims(3) = 1;
 end
 
+% data normalization
+ntrials = data_dims(3);
+switch p.Results.normalization
+    case 'allchannels'
+        for i=1:ntrials
+            datain(:,:,i) = normalize(datain(:,:,i));
+        end
+    case 'eachchannel'
+        for i=1:ntrials
+            datain(:,:,i) = normalizev(datain(:,:,i));
+        end
+    case 'none'
+        % do nothing
+end
+clear ntrials;
 
 %% loop over params
 

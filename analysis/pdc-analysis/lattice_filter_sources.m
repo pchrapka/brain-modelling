@@ -18,6 +18,10 @@ function lf_files = lattice_filter_sources(filter, source_analysis, varargin)
 %       maximum number of trials to pass to filter function
 %   samples (integer, default = all)
 %       sample indices to be used for filtering
+%   tracefields (cell array, default = {'Kf','Kb'})
+%       fields to save from LatticeTrace object
+%   normalization (string, default = 'none')
+%       normalization type, options: allchannels, eachchannel, none
 %   verbosity (integer, default = 0)
 %       verbosity level
 %
@@ -34,6 +38,8 @@ addParameter(p,'ntrials_max',40,@isnumeric);
 addParameter(p,'samples',[],@isnumeric);
 addParameter(p,'verbosity',0,@isnumeric);
 addParameter(p,'tracefields',{'Kf','Kb'},@iscell);
+options_norm = {'allchannels','eachchannel','none'};
+addParameter(p,'normalization','none',@(x) any(validatestring(x,options_norm)));
 parse(p,filter,source_analysis,varargin{:});
 
 if isempty(p.Results.outdir)
@@ -57,9 +63,11 @@ else
         min(p.Results.samples), max(p.Results.samples));
 end
 
+slug_norm = sprintf('norm%s',p.Results.normalization);
+
 sources_mini_file = fullfile(outdir,...
-        sprintf('%s-trials%d-%s.mat',...
-        name, p.Results.ntrials_max, slug_samples));
+        sprintf('%s-trials%d-%s-%s.mat',...
+        name, p.Results.ntrials_max, slug_samples, slug_norm));
 
 if ~exist(sources_mini_file,'file')
     
@@ -94,6 +102,21 @@ if ~exist(sources_mini_file,'file')
     
     % don't put in more data than required i.e. ntrials + ntrials_warmup
     sources = sources(:,sample_idx,1:p.Results.ntrials_max);
+    
+    % data normalization
+    ntrials = size(sources,3);
+    switch p.Results.normalization
+        case 'allchannels'
+            for i=1:ntrials
+                sources(:,:,i) = normalize(sources(:,:,i));
+            end
+        case 'eachchannel'
+            for i=1:ntrials
+                sources(:,:,i) = normalizev(sources(:,:,i));
+            end
+        case 'none'
+    end
+    
     save_tag(sources,'outfile',sources_mini_file);
     clear sources
 end
@@ -101,7 +124,9 @@ end
 %% run lattice filters
 parfor_setup();
 
-script_name = [fullfile(outdir,slug_samples) '.m'];
+datadir = sprintf('%s-%s',slug_samples,slug_norm);
+
+script_name = fullfile(outdir,[datadir '.m']);
 
 lf_files = run_lattice_filter(...
     script_name,...
