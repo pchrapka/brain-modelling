@@ -54,7 +54,7 @@ addParameter(p,'plot_pdc',true,@islogical);
 addParameter(p,'tracefields',{'Kf','Kb'},@iscell);
 options_norm = {'allchannels','eachchannel','none'};
 addParameter(p,'normalization','none',@(x) any(validatestring(x,options_norm)));
-p.parse(script_name,datain,varargin{:});
+p.parse(datain,varargin{:});
 
 % copy filters
 filters = p.Results.filters;
