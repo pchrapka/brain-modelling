@@ -7,6 +7,6 @@ for i=1:length(metrics)
     metric = metrics{i};
     for j=1:length(patch_types)
         patch_type = patch_types{j};
-        pdc_analysis_main(metric,patches_type);
+        pdc_analysis_main(metric,patch_type);
     end
 end
