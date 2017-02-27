@@ -97,46 +97,11 @@ classdef ChannelInfo < handle
         function populate(obj,atlas)
             
             p = inputParser();
-            addRequired(p,'atlas',@(x) any(validatestring(x,{'default','aal'})));
+            options_atlas = {'default','aal','aal-coarse-13'};
+            addRequired(p,'atlas',@(x) any(validatestring(x,options_atlas)));
             parse(p,atlas);
             
             switch p.Results.atlas
-                case 'aal'
-                    % populate region
-                    prop = 'region';
-                    if isempty(obj.(prop))
-                        results = obj.get_atlas_region();
-                        obj.(prop) = {results.name};
-                        
-                        prop2 = 'region_order';
-                        if isempty(obj.(prop2))
-                            obj.(prop2) = [results.order];
-                        else
-                            warning([mfilename ':AlreadySet'],...
-                                '%s already set\n',prop2);
-                        end
-                    else
-                        warning([mfilename ':AlreadySet'],...
-                            '%s already set\n',prop);
-                    end
-                    
-                    % populate hemis
-                    prop = 'hemisphere';
-                    if isempty(obj.(prop))
-                        results = obj.get_hemi();
-                        obj.(prop) = {results.name};
-                        
-                        prop2 = 'hemisphere_order';
-                        if isempty(obj.(prop2))
-                            obj.(prop2) = [results.order];
-                        else
-                            warning([mfilename ':AlreadySet'],...
-                                '%s already set\n',prop2);
-                        end
-                    else
-                        warning([mfilename ':AlreadySet'],...
-                            '%s already set\n',prop);
-                    end
                     
                 case 'default'
                     % set region order
@@ -157,14 +122,51 @@ classdef ChannelInfo < handle
                         obj.set_order('hemisphere');
                     end
                     
+                otherwise
+                    % populate region
+                    prop = 'region';
+                    if isempty(obj.(prop))
+                        results = obj.get_atlas_region(atlas);
+                        obj.(prop) = {results.name};
+                        
+                        prop2 = 'region_order';
+                        if isempty(obj.(prop2))
+                            obj.(prop2) = [results.order];
+                        else
+                            warning([mfilename ':AlreadySet'],...
+                                '%s already set\n',prop2);
+                        end
+                    else
+                        warning([mfilename ':AlreadySet'],...
+                            '%s already set\n',prop);
+                    end
+                    
+                    % populate hemis
+                    prop = 'hemisphere';
+                    if isempty(obj.(prop))
+                        results = obj.get_hemi(atlas);
+                        obj.(prop) = {results.name};
+                        
+                        prop2 = 'hemisphere_order';
+                        if isempty(obj.(prop2))
+                            obj.(prop2) = [results.order];
+                        else
+                            warning([mfilename ':AlreadySet'],...
+                                '%s already set\n',prop2);
+                        end
+                    else
+                        warning([mfilename ':AlreadySet'],...
+                            '%s already set\n',prop);
+                    end
+                    
             end
             
         end
     end
     
     methods (Access = protected)
-        regions = get_atlas_region(obj);
-        hemis = get_hemi(obj);
+        regions = get_atlas_region(obj,atlas);
+        hemis = get_hemi(obj,atlas);
         
         function set_order(obj,prop)
             % so group common regions together
@@ -197,6 +199,14 @@ classdef ChannelInfo < handle
                 result(i) = isempty(obj.(prop));
             end
         end
+    end
+    
+    methods (Static, Access = protected)
+        [name,order] = get_atlas_region_aal(label);
+        [name,order] = get_atlas_region_aal_coarse_13(label);
+        
+        [name,order] = get_hemi_aal(label);
+        [name,order] = get_hemi_aal_coarse_13(label)
     end
 
 end
