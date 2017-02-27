@@ -65,8 +65,8 @@ end
 %% plot criteria for best order across gamma
 if flag_plots
     order_best = [2 3];
-    crit = 'ewaic';
-    %crit = 'normtime';
+    %crit = 'ewaic';
+    crit = 'normtime';
     
     view_lf = ViewLatticeFilter(lf_files,'labels',data_labels);
     view_lf.compute(crit_all);
