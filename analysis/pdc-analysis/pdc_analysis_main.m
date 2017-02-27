@@ -1,10 +1,10 @@
-%% pdc_analysis_main
+function pdc_analysis_main(metric_pdc,patches_type)
 
 
 stimulus = 'std';
 subject = 3; 
 deviant_percent = 10;
-patches_type = 'aal';
+% patches_type = 'aal';
 % patches_type = 'aal-coarse-13';
 
 [pipeline,outdir] = eeg_processall_andrew(...
@@ -55,7 +55,7 @@ lf_files = lattice_filter_sources(filters, sources_file,...
 %% compute pdc
 downsample_by = 4;
 pdc_params = {...
-    'metric','euc',...
+    'metric',metric_pdc,...
     'downsample',downsample_by,...
     };
 pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
@@ -226,3 +226,4 @@ if flag.plot_pdc_seed_beta
     end
 end
 
+end
