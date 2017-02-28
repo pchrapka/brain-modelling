@@ -1,12 +1,33 @@
 %% pdc_analysis_variations
 
-patch_types = {'aal','aal-coarse-13'};
-metrics = {'euc','diag','info'};
+params = [];
+k=1;
 
-for j=1:length(patch_types)
-    patch_type = patch_types{j};
-    for i=1:length(metrics)
-        metric = metrics{i};
-        pdc_analysis_main(metric,patch_type);
-    end
+% params(k).patch_type = 'aal';
+% params(k).metric = 'euc';
+% k = k+1;
+
+params(k).patch_type = 'aal';
+params(k).metric = 'diag';
+k = k+1;
+
+params(k).patch_type = 'aal';
+params(k).metric = 'info';
+k = k+1;
+
+params(k).patch_type = 'aal-coarse-13';
+params(k).metric = 'euc';
+k = k+1;
+
+params(k).patch_type = 'aal-coarse-13';
+params(k).metric = 'diag';
+k = k+1;
+
+params(k).patch_type = 'aal-coarse-13';
+params(k).metric = 'info';
+k = k+1;
+
+for i=1:length(params)
+    
+    pdc_analysis_main(params(i).metric,params(i).patch_type);
 end

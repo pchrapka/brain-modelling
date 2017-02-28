@@ -195,11 +195,13 @@ end
 if flag.plot_pdc_directed_beta_hemis
     view_switch(view_pdc,'beta');
     view_pdc.plot_directed('makemovie',true,'threshold',0.2,'layout','openhemis');
+    close(gcf);
 end
 
 if flag.plot_pdc_directed_beta_circle
     view_switch(view_pdc,'beta');
     view_pdc.plot_directed('makemovie',true,'threshold',0.2,'layout','circle');
+    close(gcf);
 end
 
 %% pdc seed 15-25Hz

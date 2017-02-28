@@ -105,6 +105,8 @@ switch lower(metric)
         pinv_evar_d = pinv(evar_d);
         if isequal(lower(metric),'info')
             pinv_pf = pinv(pf);
+        else
+            pinv_pf = [];
         end
         
         parfor ff = 1:nFreqs,
