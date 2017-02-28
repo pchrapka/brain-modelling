@@ -459,7 +459,8 @@ switch layout
         % set up colors
         colors = obj.get_region_cmap('jet');
             
-        rad_inc = 2*pi/(2*nlabels);
+        pointsperlabel = 5;
+        rad_inc = 2*pi/nlabels;
         % get the sorted idx
         idx = coord_order(1);
         for j=1:nlabels
@@ -485,7 +486,7 @@ switch layout
             
             % select points along arc
             angle_diff = angle_end - angle_start;
-            npoints = ceil(abs(angle_diff/rad_inc));
+            npoints = ceil(abs(angle_diff/rad_inc))*pointsperlabel;
             angle = linspace(angle_start+rad_inc/2,angle_end+rad_inc/2,npoints);
             rinside = 1;    
             routside = rinside+width;
