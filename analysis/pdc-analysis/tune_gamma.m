@@ -5,8 +5,8 @@ flag_plots = true;
 stimulus = 'std';
 subject = 3; 
 deviant_percent = 10;
-patches_type = 'aal';
-% patches_type = 'aal-coarse-13';
+% patches_type = 'aal';
+patches_type = 'aal-coarse-13';
 
 [pipeline,outdir] = eeg_processall_andrew(...
     stimulus,subject,deviant_percent,patches_type);

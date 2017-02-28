@@ -1,4 +1,13 @@
-function pdc_analysis_main(metric_pdc,patches_type)
+function pdc_analysis_main(varargin)
+
+p = inputParser();
+addParameter(p,'metric','euc',@ischar);
+addParameter(p,'patch_type','aal',@ischar);
+addParameter(p,'ntrials',10,@isnumeric);
+addParameter(p,'order',6,@isnumeric);
+addParameter(p,'lambda',0.99,@isnumeric);
+addParameter(p,'gamma',1,@isnumeric);
+parse(p,varargin{:});
 
 
 stimulus = 'std';
@@ -8,12 +17,12 @@ deviant_percent = 10;
 % patches_type = 'aal-coarse-13';
 
 [pipeline,outdir] = eeg_processall_andrew(...
-    stimulus,subject,deviant_percent,patches_type);
+    stimulus,subject,deviant_percent,p.Results.patch_type);
 lf_file = pipeline.steps{end}.lf.leadfield;
 sources_file = pipeline.steps{end}.sourceanalysis;
 
 %% set lattice options
-atlas_name = patches_type;
+atlas_name = p.Results.patch_type;
 
 lf = loadfile(lf_file);
 patch_labels = lf.filter_label(lf.inside);
@@ -24,15 +33,12 @@ patch_centroids = lf.patch_centroid(lf.inside,:);
 clear lf;
 
 nchannels = npatch_labels;
-ntrials = 20;
-order_est = 3;
-lambda = 0.99;
-gamma = 1e-4;
 
 filters = [];
 k=1;
 
-filters{k} = MCMTLOCCD_TWL2(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gamma);
+filters{k} = MCMTLOCCD_TWL2(nchannels,p.Results.order,p.Results.ntrials,...
+    'lambda',p.Results.lambda,'gamma',p.Results.gamma);
 k = k+1;
 
 %% lattice filter
