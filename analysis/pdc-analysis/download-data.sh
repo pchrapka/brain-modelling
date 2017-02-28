@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # download pdc analysis
-DIR=analysis/pdc-analysis/output/
+DIR=projects/brain-modelling/analysis/pdc-analysis/output/
 #std-s03-10/samplesall/img/
-DEST=/home/phil/projects/brain-modelling/$DIR
-mkdir -p $DEST
+DEST=/home/phil/
+SRC=chrapkpk@blade16:Documents/
 
-rsync -rvz --progress --exclude='*.mat' chrapkpk@blade16:Documents/projects/brain-modelling/$DIR $DEST
+mkdir -p $DEST/$DIR
+rsync -rvz --progress --exclude='*.mat' $SRC/$DIR $DEST/$DIR
