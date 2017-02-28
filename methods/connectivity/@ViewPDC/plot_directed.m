@@ -203,7 +203,7 @@ end
 width = 0;
 if ~isempty(obj.info.region)
     width = 0.05;
-    add_regions(obj.info,coord,p.Results.layout,coord_order,width);
+    add_regions(obj,obj.info,coord,p.Results.layout,coord_order,width);
 end
 
 % add labels
@@ -446,7 +446,7 @@ end
 
 end
 
-function add_regions(info,coord,layout,coord_order,width)
+function add_regions(obj,info,coord,layout,coord_order,width)
 
 switch layout
     case 'circle'
