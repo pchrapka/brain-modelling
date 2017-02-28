@@ -344,13 +344,20 @@ addParameter(p,'arrowlength',5,@isnumeric);
 % assuming hyperparabola is at origin
 parse(p,pt1,pt2,varargin{:});
 
+debug = false;
+
 % reshape points
 pt1 = reshape(pt1,1,2);
 pt2 = reshape(pt2,1,2);
 origin = [0 0];
 pts = [pt1; pt2; origin];
 
-% plot(pts(:,1),pts(:,2),'ro','LineWidth',2);
+if debug
+    h = [];
+    k = 1;
+    h(k) = plot(pts(:,1),pts(:,2),'ro','LineWidth',2);
+    k = k+1;
+end
 
 % rotate so that mid angle is along the x axis
 angle1 = atan2(pt1(2),pt1(1));
@@ -360,8 +367,10 @@ anglemid = anglediff/2 + angle1;
 Rz = @(angle) [cos(angle) -sin(angle); sin(angle) cos(angle)];
 pts_mod = pts*Rz(-anglemid)';
 
-% hold on;
-% plot(pts_mod(:,1),pts_mod(:,2),'bo','LineWidth',2);
+if debug
+    h(k) = plot(pts_mod(:,1),pts_mod(:,2),'bo','LineWidth',2);
+    k=k+1;
+end
 
 % a is free to specify
 if abs(anglediff) >= pi/2 && abs(anglediff) <= 3*pi/2
@@ -370,18 +379,36 @@ if abs(anglediff) >= pi/2 && abs(anglediff) <= 3*pi/2
 else
     a = p.Results.a;
 end
+
+% make sure that b is real
+if pts_mod(1,1)^2 < a^2
+    a = sqrt(0.5)*pts_mod(1,1);
+end
 % fit b to points
 b = sqrt(a^2*pts_mod(1,2)^2/(pts_mod(1,1)^2- a^2));
 
 % compute hyperbola
-y = linspace(0,pts_mod(1,2))';
-x = sqrt(a^2*(1+y.^2/b^2));
+x = linspace(0,pts_mod(1,1))';
+y = sqrt((b^2)*(x.^2/a^2 - 1));
+idx = ~(angle(y) == 0);
+x(idx) = [];
+y(idx) = [];
 hyp_mod = [flipdim([x y],1); x -y];
-%plot(hyp_mod(:,1),hyp_mod(:,2),'-b');
+% y = linspace(0,pts_mod(1,2))';
+% x = sqrt(a^2*(1+y.^2/b^2));
+% hyp_mod = [flipdim([x y],1); x -y];
+
+if debug
+    h(k) = plot(hyp_mod(:,1),hyp_mod(:,2),'-b');
+    k=k+1;
+end
 
 % rotate back to original points
 hyp = hyp_mod*Rz(anglemid)';
-% plot(hyp(:,1),hyp(:,2),'-r');
+if debug
+    h(k) = plot(hyp(:,1),hyp(:,2),'-r');
+    k=k+1;
+end
 
 % add arrow
 arrow_pt1 = hyp(end-p.Results.arrowlength+1,:);
@@ -405,6 +432,10 @@ arrow_pts_new(3,:) = arrow_pt1 - arrow_width/2*u;
 arrow_pts_new(4,:) = arrow_pt2;
 
 hyp = [hyp; arrow_pts_new];
+
+if debug
+    delete(h)
+end
 
 end
 
