@@ -22,6 +22,8 @@ function lf_files = lattice_filter_sources(filter, source_analysis, varargin)
 %       fields to save from LatticeTrace object
 %   normalization (string, default = 'none')
 %       normalization type, options: allchannels, eachchannel, none
+%   envelope (logical, default = false)
+%       uses the envelope of each channel
 %   verbosity (integer, default = 0)
 %       verbosity level
 %
@@ -40,6 +42,7 @@ addParameter(p,'verbosity',0,@isnumeric);
 addParameter(p,'tracefields',{'Kf','Kb'},@iscell);
 options_norm = {'allchannels','eachchannel','none'};
 addParameter(p,'normalization','none',@(x) any(validatestring(x,options_norm)));
+addParameter(p,'envelope',false,@islogical);
 parse(p,filter,source_analysis,varargin{:});
 
 if isempty(p.Results.outdir)
@@ -64,10 +67,15 @@ else
 end
 
 slug_norm = sprintf('norm%s',p.Results.normalization);
+if p.Results.envelope
+    slug_env = 'envyes';
+else
+    slug_env = 'envno';
+end
 
 sources_mini_file = fullfile(outdir,...
-        sprintf('%s-trials%d-%s-%s.mat',...
-        name, p.Results.ntrials_max, slug_samples, slug_norm));
+        sprintf('%s-trials%d-%s-%s-%s.mat',...
+        name, p.Results.ntrials_max, slug_samples, slug_norm, slug_env));
 
 if ~exist(sources_mini_file,'file')
     
@@ -103,8 +111,19 @@ if ~exist(sources_mini_file,'file')
     % don't put in more data than required i.e. ntrials + ntrials_warmup
     sources = sources(:,sample_idx,1:p.Results.ntrials_max);
     
+    [nchannels,~,ntrials] = size(sources);
+    
+    % compute envelope
+    if p.Results.envelope
+        for i=1:ntrials
+            for j=1:nchannels
+                temp = abs(hilbert(sources(j,:,i)));
+                sources(j,:,i) = temp - mean(temp);
+            end
+        end
+    end
+    
     % data normalization
-    ntrials = size(sources,3);
     switch p.Results.normalization
         case 'allchannels'
             for i=1:ntrials
