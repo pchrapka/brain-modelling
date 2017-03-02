@@ -7,7 +7,8 @@ function pdc_files = rc2pdc_dynamic_from_lf_files(files,varargin)
 %   Input
 %   -----
 %   files (cell array/string)
-%       file names of data after lattice filtering
+%       file names of data created by run_lattice_filter, the required
+%       fields are Kf, Kb and Rf
 %
 %   Parameters
 %   ----------
@@ -59,6 +60,7 @@ for i=1:length(files)
         
         % convert rc to pdc
         result = rc2pdc_dynamic(data.estimate.Kf,data.estimate.Kb,...
+            data.estimate.Rf,...
             p.Results.params{:});
         save_parfor(outfile_pdc,result);
     else

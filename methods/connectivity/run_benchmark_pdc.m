@@ -225,7 +225,10 @@ end
     
 if p.Results.plot_pdc
     % plot true pdc
-    result = rc2pdc(squeeze(data_true.Kf(end,:,:,:)),squeeze(data_true.Kb(end,:,:,:)));
+    result = rc2pdc(...
+        squeeze(data_true.Kf(end,:,:,:)),...
+        squeeze(data_true.Kb(end,:,:,:)),...
+        eye(nchannels));
     window_title = 'Truth';
     plot_pdc(result,window_title);
     
@@ -245,7 +248,10 @@ if p.Results.plot_pdc
         slug_filter = strrep(slug_filter,' ','-');
         
         % plot filter pdc
-        result = rc2pdc(squeeze(estimate_kf{k}(end,:,:,:)),squeeze(estimate_kb{k}(end,:,:,:)));
+        result = rc2pdc(...
+            squeeze(estimate_kf{k}(end,:,:,:)),...
+            squeeze(estimate_kb{k}(end,:,:,:)),...
+            eye(nchannels));
         window_title = sim_param.filter.name;
         plot_pdc(result,window_title);
             
