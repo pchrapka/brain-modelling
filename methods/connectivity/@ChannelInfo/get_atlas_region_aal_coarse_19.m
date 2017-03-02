@@ -2,7 +2,7 @@ function [name,order] = get_atlas_region_aal_coarse_19(label)
 
 order = [];
 
-pattern = '(\w+)\s(Left|Right|Mid)\>';
+pattern = '([\w\s]+)\s(Left|Right|Mid)\>';
 result = regexp(label,pattern,'tokens');
 
 name = result{1}{1};
