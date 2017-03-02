@@ -16,14 +16,11 @@ function eeg_preprocessing_andrew(subject, deviant_percent, stimulus, varargin)
 %   ----------
 %   outdir (string, default = pwd)
 %       output directory
-%   patches (string, default = 'aal')
-%       patch model, can be aal or aal-coarse-13
 
 p = inputParser();
 addRequired(p,'subject',@isnumeric);
 addRequired(p,'deviant_percent',@(x) isequal(x,10) || isequal(x,20));
 addRequired(p,'stimulus',@(x) any(validatestring(x,{'std','odd'})));
-addParameter(p,'patches','aal',@(x) any(validatestring(x,{'aal','aal-coarse-13'})));
 addParameter(p,'outdir','',@ischar);
 parse(p,subject, deviant_percent, stimulus, varargin{:});
 

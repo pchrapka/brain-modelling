@@ -18,7 +18,6 @@ outdir = fullfile(analysis_dir,'output',data_name2);
 
 %% preprocess data for beamforming
 eeg_preprocessing_andrew(subject,deviant_percent,stimulus,...
-    'patches',patches_type,...
     'outdir',outdir);
 
 %% beamform sources
