@@ -29,8 +29,8 @@ k=1;
 % k = k+1;
 
 
-%% aal-coarse-13
-params(k).patch_type = 'aal-coarse-13';
+%% aal-coarse-19
+params(k).patch_type = 'aal-coarse-19';
 params(k).metric = 'euc';
 params(k).ntrials = 20;
 params(k).order = 3;
@@ -38,7 +38,7 @@ params(k).lambda = 0.99;
 params(k).gamma = 1e-1;
 k = k+1;
 
-params(k).patch_type = 'aal-coarse-13';
+params(k).patch_type = 'aal-coarse-19';
 params(k).metric = 'diag';
 params(k).ntrials = 20;
 params(k).order = 3;
@@ -46,7 +46,7 @@ params(k).lambda = 0.99;
 params(k).gamma = 1e-1;
 k = k+1;
 
-params(k).patch_type = 'aal-coarse-13';
+params(k).patch_type = 'aal-coarse-19';
 params(k).metric = 'info';
 params(k).ntrials = 20;
 params(k).order = 3;

@@ -2,7 +2,7 @@ function params = paramsbf_sd_andrew(subject_num,deviant_percent,stimulus,vararg
 % params for subject from Andrew's beta study
 
 p = inputParser();
-addParameter(p,'patches','aal',@(x) any(validatestring(x,{'aal','aal-coarse-13'})));
+addParameter(p,'patches','aal',@ischar);
 parse(p,varargin{:});
 
 [data_file,data_name,elec_file] = get_data_andrew(subject_num,deviant_percent);
@@ -21,6 +21,10 @@ switch p.Results.patches
         params_bf = BFPatchAAL_andrew(data_name);
     case 'aal-coarse-13'
         params_bf = BFPatchAAL13_andrew(data_name);
+    case 'aal-coarse-19'
+        params_bf = BFPatchAAL19_andrew(data_name);
+    otherwise
+        error('add new BeamformerPatch config for %s',p.Results.patches);
 end
 
 %% assign configs for analysis
