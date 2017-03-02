@@ -59,10 +59,12 @@ lf_files = lattice_filter_sources(filters, sources_file,...
 %% plot criteria for each gamma
 crit_all = {'aic','ewaic','normtime'};
 if flag_plots
+%       crit = 'ewaic';
+    crit = 'normtime';
     for k=1:length(lf_files)
         view_lf = ViewLatticeFilter(lf_files{k});
         view_lf.compute(crit_all);
-        view_lf.plot_criteria_vs_order_vs_time('criteria','ewaic','orders',1:order_max);
+        view_lf.plot_criteria_vs_order_vs_time('criteria',crit,'orders',1:order_max);
     end
 end
 
