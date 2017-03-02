@@ -381,7 +381,7 @@ else
 end
 
 % make sure that b is real
-if pts_mod(1,1)^2 < a^2
+if pts_mod(1,1)^2 < 2*a^2
     a = sqrt(0.5)*pts_mod(1,1);
 end
 % fit b to points
@@ -391,6 +391,9 @@ b = sqrt(a^2*pts_mod(1,2)^2/(pts_mod(1,1)^2- a^2));
 x = linspace(0,pts_mod(1,1))';
 y = sqrt((b^2)*(x.^2/a^2 - 1));
 idx = ~(angle(y) == 0);
+if sum(idx) == 100
+    error('all points are imaginary');
+end
 x(idx) = [];
 y(idx) = [];
 hyp_mod = [flipdim([x y],1); x -y];
