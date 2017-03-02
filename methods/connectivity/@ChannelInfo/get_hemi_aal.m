@@ -35,13 +35,13 @@ switch mode
         result = regexpi(label,pattern,'tokens');
         
         if isempty(result)
-            value = 'N';
+            value = 'none';
         else
             value = result{1}{1};
         end
         
-        switch value
-            case 'N'
+        switch lower(value)
+            case 'none'
                 name = 'None';
                 order = 2;
             case 'left'
