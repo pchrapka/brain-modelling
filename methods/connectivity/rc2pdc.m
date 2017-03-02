@@ -1,6 +1,6 @@
-function result = rc2pdc(Kf,Kb,varargin)
+function result = rc2pdc(Kf,Kb,Pf,varargin)
 %RC2PDC converts RC to PDC
-%   RC2PDC(Kf, Kb) converts RC to PDC
+%   RC2PDC(Kf, Kb, Pf) converts RC to PDC
 %
 %   Input
 %   -----
@@ -10,6 +10,8 @@ function result = rc2pdc(Kf,Kb,varargin)
 %   Kb
 %       backward reflection coefficients, [order channels channels] or
 %       [channels channels order]
+%   Pf  
+%       forward prediction error covariance [channels channels]
 %
 %   Parameters
 %   ----------
@@ -31,22 +33,20 @@ addParameter(p,'metric','euc',@ischar);
 parse(p,varargin{:})
 
 A2 = rcarrayformat(rc2ar(Kf,Kb),'format',3,'transpose',false);
-nchannels = size(A2,1);
-pf = eye(nchannels);
 
 if p.Results.parfor
     tstart = tic;
-    result = pdc_parfor(A2,pf,'metric',p.Results.metric);
+    result = pdc_parfor(A2,Pf,'metric',p.Results.metric);
     telapsed = toc(tstart);
 else
     tstart = tic;
-    result = pdc(A2,pf,'metric',p.Results.metric);
+    result = pdc(A2,Pf,'metric',p.Results.metric);
     telapsed = toc(tstart);
 end
 result.telapsed = telapsed;
 
 if p.Results.specden
-    result.SS = ss_alg(A2, pf, 128);
+    result.SS = ss_alg(A2, Pf, 128);
 else
     result.SS = [];
 end
