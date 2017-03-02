@@ -24,3 +24,5 @@ switch label
     otherwise
         fprintf('%s not assigned\n',label);
 end
+
+end

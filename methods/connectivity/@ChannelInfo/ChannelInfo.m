@@ -97,7 +97,7 @@ classdef ChannelInfo < handle
         function populate(obj,atlas)
             
             p = inputParser();
-            options_atlas = {'default','aal','aal-coarse-13'};
+            options_atlas = {'default','aal','aal-coarse-13','aal-coarse-19'};
             addRequired(p,'atlas',@(x) any(validatestring(x,options_atlas)));
             parse(p,atlas);
             
@@ -204,9 +204,9 @@ classdef ChannelInfo < handle
     methods (Static, Access = protected)
         [name,order] = get_atlas_region_aal(label);
         [name,order] = get_atlas_region_aal_coarse_13(label);
+        [name,order] = get_atlas_region_aal_coarse_19(label);
         
-        [name,order] = get_hemi_aal(label);
-        [name,order] = get_hemi_aal_coarse_13(label)
+        [name,order] = get_hemi_aal(label,mode);
     end
 
 end

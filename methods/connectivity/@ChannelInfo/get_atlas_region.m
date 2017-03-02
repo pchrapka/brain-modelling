@@ -10,6 +10,9 @@ for i=1:nlabels
         case 'aal-coarse-13'
             [regions(i).name, regions(i).order] =...
                 ChannelInfo.get_atlas_region_aal_coarse_13(obj.label{i});
+        case 'aal-coarse-19'
+            [regions(i).name, regions(i).order] =...
+                ChannelInfo.get_atlas_region_aal_coarse_19(obj.label{i});
         otherwise
             error('unknown atlas %s',atlas);
     end
