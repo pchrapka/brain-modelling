@@ -19,8 +19,9 @@ classdef BeamformerPatch < ftb.Beamformer
         patches = get_basis(patches, leadfield, varargin);
         
         % function definitions for patch configurations
-        patches = get_aal_coarse_13();
-        patches = get_aal();
+        patches = get_aal_coarse_13(varargin);
+        patches = get_aal_coarse_19(varargin);
+        patches = get_aal(varargin);
         
         function patches = get_patches(config_name)
             %GET_PATCHES returns list of patches based on a configuration
@@ -33,6 +34,7 @@ classdef BeamformerPatch < ftb.Beamformer
             %       options:
             %       'aal'
             %       'aal-coarse-13'
+            %       'aal-coarse-19'
             %
             %   Output
             %   ------
@@ -40,6 +42,8 @@ classdef BeamformerPatch < ftb.Beamformer
             %   ftb.BeamformerPatch.get_aal_coarse_13
             
             switch config_name
+                case 'aal-coarse-19'
+                    patches = ftb.BeamformerPatch.get_aal_coarse_19();
                 case 'aal-coarse-13'
                     patches = ftb.BeamformerPatch.get_aal_coarse_13();
                 case 'aal'
