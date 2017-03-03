@@ -207,14 +207,22 @@ if flag.plot_pdc_directed_beta_hemis
 end
 
 if flag.plot_pdc_directed_beta_circle
-    view_switch(view_pdc,'beta');
+    if p.Results.envelope
+        view_switch(view_pdc,'10');
+    else
+        view_switch(view_pdc,'beta');
+    end
     view_pdc.plot_directed('makemovie',true,'threshold',0.2,'layout','circle');
     close(gcf);
 end
 
 %% pdc seed 15-25Hz
 if flag.plot_pdc_seed_beta
-    view_switch(view_pdc,'beta');
+    if p.Results.envelope
+        view_switch(view_pdc,'10');
+    else
+        view_switch(view_pdc,'beta');
+    end
     % outgoing
     for i=1:nchannels
         view_pdc.plot_seed(i,'direction','outgoing','threshold',0.2,'vertlines',[0 0.5]);

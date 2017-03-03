@@ -87,6 +87,7 @@ addpath(fullfile(pwd,'methods','analysis'));
 addpath(fullfile(pwd,'methods','beamformer'));
 addpath(fullfile(pwd,'methods','classification'));
 addpath(fullfile(pwd,'methods','connectivity'));
+addpath(fullfile(pwd,'methods','ft_private'));
 addpath(fullfile(pwd,'methods','modelling'));
 addpath(fullfile(pwd,'methods','stats'));
 addpath(fullfile(pwd,'methods','util'));
