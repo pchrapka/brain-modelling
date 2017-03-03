@@ -17,6 +17,7 @@ sources = loadfile(source_file);
 %%
 atlas_file = fullfile(ft_get_dir(),'template','atlas','aal','ROI_MNI_V4.nii');
 atlas = ft_read_atlas(atlas_file);
+atlas = ft_convert_units(atlas,lf.unit);
 
 %%
 
@@ -25,6 +26,7 @@ loc1 = [ -45.0, -3.2, 16.2];
 loc2 = [ 45.0, -3.2, 16.2];
 locs = [loc1; loc2];
 locsmni = tal2mni(locs);
+locsmni = locsmni/10; % convert to cm
 
 nlocs = size(locsmni,1);
 
@@ -35,7 +37,7 @@ for i=1:nlocs
     cfg.atlas = atlas;
     cfg.roi = locsmni(i,:);
     cfg.round2nearestvoxel = 'yes';
-    cfg.sphere = 5; % don't know what units
+    cfg.sphere = 1; % don't know what units
     
     mask = ft_volumelookup(cfg,lf);
     
@@ -52,6 +54,7 @@ for i=1:nlocs
     
     [tmp ind] = sort(labels.count,1,'descend');
     sel = find(tmp);
+    found_areas = {};
     for j = 1:length(sel)
         found_areas{j,1} = [num2str(labels.count(ind(j))) ': ' labels.name{ind(j)}];
     end
