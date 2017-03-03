@@ -46,7 +46,7 @@ parfor_setup('cores',12,'force',true);
 verbosity = 0;
 % normtype = 'none';
 normtype = 'allchannels';
-envtype = false;
+envtype = true;
 lf_files = lattice_filter_sources(filters, sources_file,...
     'normalization',normtype,...
     'envelope',envtype,...
@@ -65,10 +65,10 @@ if flag_plots
     
     % plot order vs estimation error
     view_lf.plot_criteria_vs_order_vs_time('criteria','ewaic','orders',order_est);
-    %view_lf.plot_criteria_vs_order_vs_time('criteria','ewsc','orders',order_est);
-    %view_lf.plot_criteria_vs_order_vs_time('criteria','normtime','orders',order_est);
+%     view_lf.plot_criteria_vs_order_vs_time('criteria','ewsc','orders',order_est);
+%     view_lf.plot_criteria_vs_order_vs_time('criteria','normtime','orders',order_est);
     
-    %view_lf.plot_criteria_vs_order('criteria','aic','orders',order_est);
-    %view_lf.plot_criteria_vs_order('criteria','sc','orders',order_est);
-    %view_lf.plot_criteria_vs_order('criteria','norm','orders',order_est); 
+%     view_lf.plot_criteria_vs_order('criteria','aic','orders',order_est);
+%     view_lf.plot_criteria_vs_order('criteria','sc','orders',order_est);
+%     view_lf.plot_criteria_vs_order('criteria','norm','orders',order_est); 
 end

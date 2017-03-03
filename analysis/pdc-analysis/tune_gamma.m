@@ -48,7 +48,7 @@ parfor_setup('cores',12,'force',true);
 verbosity = 0;
 % normtype = 'none';
 normtype = 'allchannels';
-envtype = false;
+envtype = true;
 lf_files = lattice_filter_sources(filters, sources_file,...
     'normalization',normtype,...
     'envelope',envtype,...
@@ -72,7 +72,7 @@ end
 
 %% plot criteria for best order across gamma
 if flag_plots
-    order_best = [2 3];
+    order_best = [2 3 4];
 %     crit = 'ewaic';
     crit = 'normtime';
     
