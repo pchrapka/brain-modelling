@@ -110,7 +110,7 @@ for i=1:nrows
             xlim_cur = xlim;
             xlim([xlim_cur(1)-0.5 xlim_cur(2)+0.5]);
             xlabel('Order');
-            title_str{2} = sprintf('sample %d',nsamples);
+            title_str{2} = sprintf('avg of samples %d-%d',idx_start,idx_end);
             if nfiles > 1
                 legend(h,obj.datafile_labels);
             end
