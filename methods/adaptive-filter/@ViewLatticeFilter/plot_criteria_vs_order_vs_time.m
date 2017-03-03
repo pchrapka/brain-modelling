@@ -94,11 +94,16 @@ for i=1:nrows
         end
         
         if j==2
-            % plot last IC vs order
+            % plot converged avg IC vs order
+            idx_end = ceil(nsamples*0.95);
+            npoints = ceil(nsamples/10);
+            idx_start = idx_end - npoints + 1;
+            
             h = zeros(nfiles,1);
             for file_idx=1:nfiles
+                avg_data = mean(data{file_idx}(:,idx_start:idx_end),2);
                 h(file_idx) = plot(data_crit.order_lists{file_idx},...
-                    data{file_idx}(:,nsamples),...
+                    avg_data,...
                     ['-' markers{file_idx}],'MarkerSize',10);
             end
             
