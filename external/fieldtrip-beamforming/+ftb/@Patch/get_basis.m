@@ -35,7 +35,7 @@ function mask = get_basis(obj, atlas, leadfield, varargin)
 p = inputParser;
 addRequired(p,'atlas',@isstruct);
 addRequired(p,'leadfield',@isstruct);
-addParameter(p,'mask',[],@isnumeric);
+addParameter(p,'mask',[],@islogical);
 addParameter(p,'eta',0.85);
 parse(p,atlas,leadfield,varargin{:});
 

@@ -146,7 +146,7 @@ for i=1:length(patches)
         matches = ftb.util.regexpmatchlist(atlas.tissuelabel, patches(i).patterns{j});
         matches_all = [matches_all matches];
     end
-    obj.add_patch(ftb.Patch(patches(i).name,matches_all));
+    obj.add_patch(ftb.PatchLabel(patches(i).name,matches_all));
     
     if p.Results.verbosity > 0
         % print tissue labels for each patch

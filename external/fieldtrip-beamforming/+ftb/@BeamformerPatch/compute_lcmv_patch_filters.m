@@ -82,11 +82,11 @@ fprintf('computing filters...\n');
 for i=1:length(patch_model.patches)
     fprintf('computing filter for patch %d\n',i);
 
-    if isempty(patch_model.patches(i).U)
+    if isempty(patch_model.patches{i}.U)
         filter = zeros(1,size(data.cov,1));
     else
         % get the patch basis
-        Uk = patch_model.patches(i).U;
+        Uk = patch_model.patches{i}.U;
         
         Yk = Uk'*pinv(data.cov)*Uk;
         
@@ -118,33 +118,33 @@ for i=1:length(patch_model.patches)
     switch p.Results.mode
         case 'all'
             % set patch filter at each point in patch
-            [source.filters{patch_model.patches(i).inside}] = deal(filter);
+            [source.filters{patch_model.patches{i}.inside}] = deal(filter);
             % NOTE Redundant, but it keeps everything else in Fieldtrip working
             % as normal
             
             % save patch label for each point
-            [source.patch_labels{patch_model.patches(i).inside}] = deal(patch_model.patches(i).name);
+            [source.patch_labels{patch_model.patches{i}.inside}] = deal(patch_model.patches{i}.name);
             
             % save centroid
             nverts = sum(pathces(i).inside);
-            source.patch_centroid(patch_model.patches(i).inside,:) = ...
-                repmat(patch_model.patches(i).centroid,nverts,1);
+            source.patch_centroid(patch_model.patches{i}.inside,:) = ...
+                repmat(patch_model.patches{i}.centroid,nverts,1);
             
         case 'single'
-            idx = find(patch_model.patches(i).inside == 1, 1, 'first');
+            idx = find(patch_model.patches{i}.inside == 1, 1, 'first');
             
             if ~isempty(idx)
                 % set patch filter at one point in patch
                 source.filters{idx} = filter;
                 
                 % save patch label for each point
-                source.patch_labels{idx} = patch_model.patches(i).name;
+                source.patch_labels{idx} = patch_model.patches{i}.name;
                 
                 % save point location
                 source.inside(idx) = true;
                 
                 % save centroid
-                source.patch_centroid(idx,:) = patch_model.patches(i).centroid;
+                source.patch_centroid(idx,:) = patch_model.patches{i}.centroid;
             end
     end
     

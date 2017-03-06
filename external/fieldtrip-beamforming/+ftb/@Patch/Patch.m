@@ -35,10 +35,10 @@ classdef Patch < handle
         end
         
         obj = get_basis(obj,atlas,leadfield,varargin);
-    end
         
-    methods (Abstract)
-        mask = get_mask(obj,atlas,leadfield,varargin);
+        function mask = get_mask(obj,atlas,leadfield,varargin)
+            error('implement this function');
+        end
     end
     
 end

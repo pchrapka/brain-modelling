@@ -95,10 +95,10 @@ classdef BeamformerPatch < ftb.Beamformer
             if obj.check_file(obj.patches)
                 % load data
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
-                if ~isfield(obj.config,'patchmodel')
+                if ~isfield(obj.config,'PatchModel')
                     error('missing patchmodel field in config');
                 end
-                patch_model = PatchModel(obj.config.PatchModel{:});
+                patch_model = ftb.PatchModel(obj.config.PatchModel{:});
                 
                 % get the patch basis
                 patch_model.get_basis(leadfield);

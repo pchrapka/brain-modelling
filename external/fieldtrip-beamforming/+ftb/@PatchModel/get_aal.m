@@ -29,7 +29,7 @@ atlas = ft_read_atlas(atlas_file);
 nlabels = length(atlas.tissuelabel);
 
 for i=1:nlabels
-    obj.add_patch(ftb.Patch(atlas.tissuelabel{i},{atlas.tissuelabel{i}}));
+    obj.add_patch(ftb.PatchLabel(atlas.tissuelabel{i},{atlas.tissuelabel{i}}));
 end
 
 end
