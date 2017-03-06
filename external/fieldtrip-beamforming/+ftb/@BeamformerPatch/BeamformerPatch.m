@@ -28,12 +28,10 @@ classdef BeamformerPatch < ftb.Beamformer
             %
             %   Config
             %   ------
-            %   patch_model_name (string)
-            %       name of patch model see ftb.PatchModel
-            %       options: 
-            %           aal-coarse-19
-            %           aal-coarse-13
-            %           aal
+            %   PatchModel (cell array)
+            %       cell array of params for ftb.PatchModel, see
+            %       ftb.PatchModel 
+            %       ex. patch_model = {'aal-coarse-19'}
             
             % use Beamformer constructor
             obj@ftb.Beamformer(params,name);
@@ -97,14 +95,13 @@ classdef BeamformerPatch < ftb.Beamformer
             if obj.check_file(obj.patches)
                 % load data
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
-                patch_model = PatchModel(obj.config.patch_model_name);
-                
-                % check for get_basis params
-                if ~isfield(obj.config,'get_basis')
-                    obj.config.get_basis = {};
+                if ~isfield(obj.config,'patchmodel')
+                    error('missing patchmodel field in config');
                 end
+                patch_model = PatchModel(obj.config.PatchModel{:});
+                
                 % get the patch basis
-                patch_model.get_basis(leadfield, obj.config.get_basis{:})
+                patch_model.get_basis(leadfield);
                 
                 % save patches
                 save(obj.patches, 'patch_model');

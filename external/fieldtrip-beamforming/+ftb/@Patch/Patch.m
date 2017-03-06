@@ -4,10 +4,6 @@ classdef Patch < handle
         % name of patch
         name;
         
-        % anatomical labels that make up the patch, each patch contains a
-        % mutually exclusive set of labels
-        labels;
-        
         inside;
         centroid;
         
@@ -16,7 +12,7 @@ classdef Patch < handle
     end
     
     methods
-        function obj = Patch(name,labels)
+        function obj = Patch(name)
             % Patch constructor
             %   Patch(name, labels) construct Patch object
             %
@@ -24,16 +20,12 @@ classdef Patch < handle
             %   -----
             %   name (string)
             %       patch name
-            %   labels (cell array)
-            %       list of atlas labels belonging to the patch
             
             p = inputParser();
             addRequired(p,'name',@ischar);
-            addRequired(p,'labels',@iscell);
-            parse(p,name,labels);
+            parse(p,name);
             
             obj.name = p.Results.name;
-            obj.labels = p.Results.labels;
             
             obj.inside = [];
             obj.centroid = [];
@@ -43,6 +35,10 @@ classdef Patch < handle
         end
         
         obj = get_basis(obj,atlas,leadfield,varargin);
+    end
+        
+    methods (Abstract)
+        mask = get_mask(obj,atlas,leadfield,varargin);
     end
     
 end

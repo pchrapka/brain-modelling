@@ -31,14 +31,10 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
             if obj.check_file(obj.patches)
                 % load data
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
-                patch_model = PatchModel(obj.config.patch_model_name);
+                patch_model = PatchModel(obj.config.PatchModel{:});
                 
-                % check for get_basis params
-                if ~isfield(obj.config,'get_basis')
-                    obj.config.get_basis = {};
-                end
                 % get the patch basis
-                patch_model.get_basis(leadfield, obj.config.get_basis{:})
+                patch_model.get_basis(leadfield);
                 
                 % save patches
                 save(obj.patches, 'patch_model');

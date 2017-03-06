@@ -2,8 +2,8 @@ function BFPatchAAL()
 % BFPatchAAL
 
 cfg = [];
-cfg.patch_model_name = 'aal';
-% cfg.get_basis = {};
+cfg.PatchModel = {'aal'};
+
 cfg.compute_lcmv_patch_filters = {'mode','single','fixedori',true}; % for saving mem
 % cfg.compute_lcmv_patch_filters = {'mode','all','fixedori',true}; % for plotting
 cfg.ft_sourceanalysis.rawtrial = 'yes';
