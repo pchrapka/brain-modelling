@@ -2,7 +2,8 @@ function cfg = BFPatchAAL19_andrew(data_name)
 % BFPatchAAL
 
 cfg = [];
-cfg.cortical_patches_name = 'aal-coarse-19';
+cfg.patch_model_name = 'aal-coarse-19';
+% cfg.get_basis = {};
 cfg.cov_avg = 'yes';
 cfg.compute_lcmv_patch_filters = {'mode','single','fixedori',true}; % for saving mem
 % cfg.compute_lcmv_patch_filters = {'mode','all','fixedori',true}; % for plotting
@@ -18,7 +19,7 @@ switch data_name(1:3)
 end
 
 cfg.name = sprintf('%s-%s',...
-    cfg.cortical_patches_name,...
+    cfg.patch_model_name,...
     cfg.ft_sourceanalysis.method);
 
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
