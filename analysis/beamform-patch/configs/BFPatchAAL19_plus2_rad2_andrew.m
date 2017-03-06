@@ -1,10 +1,19 @@
-function cfg = BFPatchAAL19_andrew(data_name)
+function cfg = BFPatchAAL19_plus2_rad2_andrew(data_name)
 % BFPatchAAL
 
-cfg = [];
-cfg.PatchModel = {'aal-coarse-19'};
+% in Talaraich coordinates
+loc_l = [ -45.0, -3.2, 16.2];
+loc_r = [ 45.0, -3.2, 16.2];
+locs = [loc_l; loc_r];
+locsmni = tal2mni(locs);
+locsmni = locsmni/10; % convert to cm
 
-% cfg.get_basis = {};
+cfg = [];
+sphere_patch = {};
+sphere_patch{1} = {'Auditory Left',locsmni(1,:),'radius',2};
+sphere_patch{2} = {'Auditory Right',locsmni(2,:),'radius',2};
+cfg.PatchModel = {'aal-coarse-19','sphere_patch',sphere_patch};
+
 cfg.cov_avg = 'yes';
 cfg.compute_lcmv_patch_filters = {'mode','single','fixedori',true}; % for saving mem
 % cfg.compute_lcmv_patch_filters = {'mode','all','fixedori',true}; % for plotting
@@ -20,7 +29,7 @@ switch data_name(1:3)
 end
 
 cfg.name = sprintf('%s-%s',...
-    cfg.PatchModel{1},...
+    [cfg.PatchModel{1} '-plus2-rad2'],...
     cfg.ft_sourceanalysis.method);
 
 [srcdir,~,~] = fileparts(mfilename('fullpath'));

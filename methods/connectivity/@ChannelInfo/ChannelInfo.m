@@ -205,6 +205,7 @@ classdef ChannelInfo < handle
         [name,order] = get_atlas_region_aal(label);
         [name,order] = get_atlas_region_aal_coarse_13(label);
         [name,order] = get_atlas_region_aal_coarse_19(label);
+        [name,order] = get_atlas_region_aal_coarse_19_plus2(label);
         
         [name,order] = get_hemi_aal(label,mode);
     end
