@@ -14,46 +14,6 @@ classdef BeamformerPatch < ftb.Beamformer
             data, leadfield, atlasfile, patches, varargin);
     end
     
-    methods (Static)
-        
-        patches = get_basis(patches, leadfield, varargin);
-        
-        % function definitions for patch configurations
-        patches = get_aal_coarse_13(varargin);
-        patches = get_aal_coarse_19(varargin);
-        patches = get_aal(varargin);
-        
-        function patches = get_patches(config_name)
-            %GET_PATCHES returns list of patches based on a configuration
-            %   GET_PATCHES(config_name) returns a list of patches based on
-            %   a configuration
-            %
-            %   Input
-            %   -----
-            %   config_name (string)
-            %       options:
-            %       'aal'
-            %       'aal-coarse-13'
-            %       'aal-coarse-19'
-            %
-            %   Output
-            %   ------
-            %   see ftb.BeamformerPatch.get_aal,
-            %   ftb.BeamformerPatch.get_aal_coarse_13
-            
-            switch config_name
-                case 'aal-coarse-19'
-                    patches = ftb.BeamformerPatch.get_aal_coarse_19();
-                case 'aal-coarse-13'
-                    patches = ftb.BeamformerPatch.get_aal_coarse_13();
-                case 'aal'
-                    patches = ftb.BeamformerPatch.get_aal();
-                otherwise
-                    error('unknown cortical patch config: %s\n',config_name);
-            end     
-        end
-    end
-    
     methods (Access = protected)
         obj = process_beamformer_patch(obj);
         
@@ -68,9 +28,10 @@ classdef BeamformerPatch < ftb.Beamformer
             %
             %   Config
             %   ------
-            %   cortical_patches_name (string)
-            %       name of cortical patch configuration 
+            %   patch_model_name (string)
+            %       name of patch model see ftb.PatchModel
             %       options: 
+            %           aal-coarse-19
             %           aal-coarse-13
             %           aal
             
@@ -136,20 +97,17 @@ classdef BeamformerPatch < ftb.Beamformer
             if obj.check_file(obj.patches)
                 % load data
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
-                patches_list = ftb.BeamformerPatch.get_patches(...
-                    obj.config.cortical_patches_name);
+                patch_model = PatchModel(obj.config.patch_model_name);
                 
                 % check for get_basis params
                 if ~isfield(obj.config,'get_basis')
                     obj.config.get_basis = {};
                 end
                 % get the patch basis
-                patches_list = ftb.BeamformerPatch.get_basis(...
-                    patches_list, leadfield,...
-                    obj.config.get_basis{:});
+                patch_model.get_basis(leadfield, obj.config.get_basis{:})
                 
                 % save patches
-                save(obj.patches, 'patches_list');
+                save(obj.patches, 'patch_model');
             else
                 fprintf('%s: skipping patches, already exists\n',...
                     strrep(class(obj),'ftb.',''));
@@ -192,7 +150,7 @@ classdef BeamformerPatch < ftb.Beamformer
                 % load data
                 
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
-                patches_list = ftb.util.loadvar(obj.patches);
+                patch_model = ftb.util.loadvar(obj.patches);
                 if isequal(obj.config.cov_avg,'yes')
                     timelock = ftb.util.loadvar(obj.eeg.timelock);
                 else
@@ -214,7 +172,7 @@ classdef BeamformerPatch < ftb.Beamformer
                     
                 % compute filters
                 data_filters = ftb.BeamformerPatch.compute_lcmv_patch_filters(...
-                    timelock, leadfield, patches_list, obj.config.compute_lcmv_patch_filters{:});
+                    timelock, leadfield, patch_model, obj.config.compute_lcmv_patch_filters{:});
                 
                 % save filters
                 leadfield.filter = data_filters.filters;

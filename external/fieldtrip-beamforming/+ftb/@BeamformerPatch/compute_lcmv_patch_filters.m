@@ -1,8 +1,8 @@
 function source = compute_lcmv_patch_filters(...
-    data, leadfield, patches, varargin)
+    data, leadfield, patch_model, varargin)
 %COMPUTE_LCMV_PATCH_FILTERS computes filters for an LCMV beamformer that
 %operates on patches instead of point sources
-%   [source] = COMPUTE_LCMV_PATCH_FILTERS(data, leadfield, patches, ...)
+%   [source] = COMPUTE_LCMV_PATCH_FILTERS(data, leadfield, patch_model, ...)
 %   computes filters for an LCMV beamformer that operates on patches
 %   instead of point sources. This is useful for coarse beamforming.
 %
@@ -14,9 +14,8 @@ function source = compute_lcmv_patch_filters(...
 %       timelocked EEG data, output of ft_timelockanalysis
 %   leadfield (struct)
 %       leadfields, output of ft_prepare_leadfield
-%   patches (struct array)
-%       patch configuration, output of ftb.patches functions, for example
-%       ftb.patches.get_aal_coarse
+%   patch_model (ftb.PatchModel)
+%       patch model object, output of ftb.PatchModel
 %
 %   Parameters
 %   ----------
@@ -49,11 +48,11 @@ function source = compute_lcmv_patch_filters(...
 p = inputParser;
 addRequired(p,'data',@isstruct);
 addRequired(p,'leadfield',@isstruct);
-addRequired(p,'patches',@isstruct);
+addRequired(p,'patch_model',@(x) isa(x,'ftb.PatchModel'));
 addParameter(p,'fixedori',true,@islogical);
 addParameter(p,'mode','all',@(x) any(validatestring(x,{'all','single'})));
 % add options
-parse(p,data,leadfield,patches,varargin{:});
+parse(p,data,leadfield,patch_model,varargin{:});
 
 % allocate mem
 source = [];
@@ -80,14 +79,14 @@ end
 
 fprintf('computing filters...\n');
 % computer filter for each patch
-for i=1:length(patches)
+for i=1:length(patch_model.patches)
     fprintf('computing filter for patch %d\n',i);
 
-    if isempty(patches(i).U)
+    if isempty(patch_model.patches(i).U)
         filter = zeros(1,size(data.cov,1));
     else
         % get the patch basis
-        Uk = patches(i).U;
+        Uk = patch_model.patches(i).U;
         
         Yk = Uk'*pinv(data.cov)*Uk;
         
@@ -119,33 +118,33 @@ for i=1:length(patches)
     switch p.Results.mode
         case 'all'
             % set patch filter at each point in patch
-            [source.filters{patches(i).inside}] = deal(filter);
+            [source.filters{patch_model.patches(i).inside}] = deal(filter);
             % NOTE Redundant, but it keeps everything else in Fieldtrip working
             % as normal
             
             % save patch label for each point
-            [source.patch_labels{patches(i).inside}] = deal(patches(i).name);
+            [source.patch_labels{patch_model.patches(i).inside}] = deal(patch_model.patches(i).name);
             
             % save centroid
             nverts = sum(pathces(i).inside);
-            source.patch_centroid(patches(i).inside,:) = ...
-                repmat(patches(i).centroid,nverts,1);
+            source.patch_centroid(patch_model.patches(i).inside,:) = ...
+                repmat(patch_model.patches(i).centroid,nverts,1);
             
         case 'single'
-            idx = find(patches(i).inside == 1, 1, 'first');
+            idx = find(patch_model.patches(i).inside == 1, 1, 'first');
             
             if ~isempty(idx)
                 % set patch filter at one point in patch
                 source.filters{idx} = filter;
                 
                 % save patch label for each point
-                source.patch_labels{idx} = patches(i).name;
+                source.patch_labels{idx} = patch_model.patches(i).name;
                 
                 % save point location
                 source.inside(idx) = true;
                 
                 % save centroid
-                source.patch_centroid(idx,:) = patches(i).centroid;
+                source.patch_centroid(idx,:) = patch_model.patches(i).centroid;
             end
     end
     

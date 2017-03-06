@@ -31,20 +31,17 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
             if obj.check_file(obj.patches)
                 % load data
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
-                patches_list = ftb.BeamformerPatch.get_patches(...
-                    obj.config.cortical_patches_name);
+                patch_model = PatchModel(obj.config.patch_model_name);
                 
                 % check for get_basis params
                 if ~isfield(obj.config,'get_basis')
                     obj.config.get_basis = {};
                 end
                 % get the patch basis
-                patches_list = ftb.BeamformerPatch.get_basis(...
-                    patches_list, leadfield,...
-                    obj.config.get_basis{:});
+                patch_model.get_basis(leadfield, obj.config.get_basis{:})
                 
                 % save patches
-                save(obj.patches, 'patches_list');
+                save(obj.patches, 'patch_model');
             else
                 fprintf('%s: skipping patches, already exists\n',...
                     strrep(class(obj),'ftb.',''));
@@ -52,7 +49,7 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
             
             if obj.check_file(obj.sourceanalysis)
                 % load data
-                patches_list = ftb.util.loadvar(obj.patches);
+                patch_model = ftb.util.loadvar(obj.patches);
                 leadfield = ftb.util.loadvar(lfObj.leadfield);
                 timelock_all = ftb.util.loadvar(eegObj.timelock);
                 
@@ -117,7 +114,7 @@ classdef BeamformerPatchTrial < ftb.BeamformerPatch
                     % NOTE if mode == 'all' each source struct takes up a
                     % few MBs, if there are 1000 trials, that's a few GBs
                     data_filters = ftb.BeamformerPatch.compute_lcmv_patch_filters(...
-                        timelock, leadfield, patches_list,'mode','single');
+                        timelock, leadfield, patch_model,'mode','single');
                     
                     % save filters
                     leadfield.filter = data_filters.filters;

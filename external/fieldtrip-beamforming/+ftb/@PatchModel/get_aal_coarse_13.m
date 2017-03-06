@@ -1,5 +1,5 @@
-function patches = get_aal_coarse_13(varargin)
-%GET_AAL_COARSE_13 returns anatomical labels partitioned into patches
+function obj = get_aal_coarse_13(obj,varargin)
+%GET_AAL_COARSE_13 adds patches for the AAL coarse 13 configuration
 %   GET_AAL_COARSE_13(...) returns a coarse partition of the AAL
 %   atlas into 13 patches
 %
@@ -10,16 +10,15 @@ function patches = get_aal_coarse_13(varargin)
 %   
 %   Output
 %   ------
-%   patches (struct array)
-%       struct describing each patch
-%   patches.name (string)
+%   updates the following fields
+%   name (string)
 %       name of patch
-%   patches.patterns (cell array of strings)
+%   patterns (cell array of strings)
 %       regexp patterns for finding anatomical labels in the atlas
-%   patches.labels (cell array of string)
+%   labels (cell array of string)
 %       anatomical labels that make up the patch, each patch contains a
 %       mutually exclusive set of labels
-%   patches.atlasfile (string)
+%   atlasfile (string)
 %       path of associated atlas file
 
 p = inputParser;
@@ -27,9 +26,7 @@ addParameter(p,'verbosity',0);
 parse(p,varargin{:});
 
 % Set up an atlas
-atlas_file = fullfile(ft_get_dir(),'template','atlas','aal','ROI_MNI_V4.nii');
-
-atlas = ft_read_atlas(atlas_file);
+obj.atlas_file = fullfile(ft_get_dir(),'template','atlas','aal','ROI_MNI_V4.nii');
 
 patches = [];
 k = 1;
@@ -136,6 +133,9 @@ patches(k).patterns = {...
     };
 k = k+1;
 
+
+atlas = ft_read_atlas(atlas_file);
+
 for i=1:length(patches)
     % TODO it's easier to write regexp above, but if it's not changing much
     % it might be easier to hardcode
@@ -146,7 +146,7 @@ for i=1:length(patches)
         matches = ftb.util.regexpmatchlist(atlas.tissuelabel, patches(i).patterns{j});
         matches_all = [matches_all matches];
     end
-    patches(i).labels = matches_all;
+    obj.add_patch(ftb.Patch(patches(i).name,matches_all));
     
     if p.Results.verbosity > 0
         % print tissue labels for each patch
@@ -156,7 +156,5 @@ for i=1:length(patches)
         end
     end
 end
-% save atlas_file
-[patches.atlasfile] = deal(atlas_file);
 
 end
