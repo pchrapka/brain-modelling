@@ -145,7 +145,8 @@ for k=1:nsim_params
     else
         sources = data_var.signal;
     end
-    data_true = data_var.true;
+    %data_true = data_var.true;
+    data_true_kf = data_var.true.Kf;
     
     % set up slugs
     [~,data_file,~] = fileparts(var_gen.get_file());
@@ -173,7 +174,7 @@ for k=1:nsim_params
         if p.Results.force || fresh || ~exist(outfile,'file')
             fprintf('running: %s\n', slug_data_filt)
             
-            trace{j} = LatticeTrace(sim_param.filter,'fields',{'Kf'});
+            trace = LatticeTrace(sim_param.filter,'fields',{'Kf'});
             
             ntime = size(sources,2);
             
@@ -183,7 +184,7 @@ for k=1:nsim_params
                 
                 % run filter on noise
                 warning('off','all');
-                trace{j}.warmup(noise);
+                trace.warmup(noise);
                 warning('on','all');
             end
             
@@ -195,7 +196,7 @@ for k=1:nsim_params
                 
                 % run filter on sim data
                 warning('off','all');
-                trace{j}.warmup(sources(:,:,sim_idx_start:sim_idx_end));
+                trace.warmup(sources(:,:,sim_idx_start:sim_idx_end));
                 warning('on','all');
             end
             
@@ -205,15 +206,15 @@ for k=1:nsim_params
             
             % run the filter on data
             warning('off','all');
-            trace{j}.run(sources(:,:,sim_idx_start:sim_idx_end),...
+            trace.run(sources(:,:,sim_idx_start:sim_idx_end),...
                 'verbosity',p.Results.verbosity,...
                 'mode','none');
             warning('on','all');
             
-            trace{j}.name = trace{j}.filter.name;
+            trace.name = trace.filter.name;
             
-            estimate{j} = trace{j}.trace.Kf;
-            kf_true_sims{j} = data_true.Kf;
+            estimate{j} = trace.trace.Kf;
+            kf_true_sims{j} = data_true_kf;
             
             % save data
             data = [];
@@ -224,7 +225,7 @@ for k=1:nsim_params
             % load data
             data = loadfile(outfile);
             estimate{j} = data.estimate;
-            kf_true_sims{j} = data_true.Kf;
+            kf_true_sims{j} = data_true_kf;
         end
         
         data_mse = mse_iteration(estimate{j},kf_true_sims{j});
