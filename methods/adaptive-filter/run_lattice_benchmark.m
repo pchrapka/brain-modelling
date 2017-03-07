@@ -213,7 +213,7 @@ for k=1:nsim_params
             trace{j}.name = trace{j}.filter.name;
             
             estimate{j} = trace{j}.trace.Kf;
-            kf_true_sims{j} = data_true;
+            kf_true_sims{j} = data_true.Kf;
             
             % save data
             data = [];
@@ -224,7 +224,7 @@ for k=1:nsim_params
             % load data
             data = loadfile(outfile);
             estimate{j} = data.estimate;
-            kf_true_sims{j} = data_true;
+            kf_true_sims{j} = data_true.Kf;
         end
         
         data_mse = mse_iteration(estimate{j},kf_true_sims{j});
