@@ -98,7 +98,7 @@ classdef ChannelInfo < handle
             
             p = inputParser();
             options_atlas = {'default','aal','aal-coarse-13',...
-                'aal-coarse-19','aal-coarse-19-plus2'};
+                'aal-coarse-19','aal-coarse-19-plus2','aal-coarse-19-outer-plus2'};
             addRequired(p,'atlas',@(x) any(validatestring(x,options_atlas)));
             parse(p,atlas);
             
