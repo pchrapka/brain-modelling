@@ -79,7 +79,7 @@ end
 xlabel('Iteration');
 
 if ~isempty(p.Results.labels)
-    legend(h,p.Results.labels);
+    legend(h,p.Results.labels);%,'Location','BestOutside');
 end
 
 end

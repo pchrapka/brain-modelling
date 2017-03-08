@@ -96,6 +96,17 @@ if ~exist(outdir,'dir')
     mkdir(outdir);
 end
 
+% create script name for save_fig_exp
+[~,name,~] = fileparts(p.Results.outdir);
+if isempty(name)
+    % try again, without the separator at the end?
+    [~,name,~] = fileparts(p.Results.outdir(1:end-1));
+    if iempty(name)
+        name = 'benchmark1';
+    end
+end
+script_name = fullfile(outdir,[name '.m']);
+
 % set up parfor
 parfor_setup();
 
@@ -235,17 +246,6 @@ for k=1:nsim_params
         end
     end
     
-    % create script name for save_fig_exp
-    [~,name,~] = fileparts(p.Results.outdir);
-    if isempty(name)
-        % try again, without the separator at the end?
-        [~,name,~] = fileparts(p.Results.outdir(1:end-1));
-        if iempty(name)
-            name = 'benchmark1';
-        end
-    end
-    script_name = fullfile(outdir,[name '.m']);
-    
     % plot MSE for each sim
     if p.Results.plot_sim_mse
         for j=1:nsims
@@ -301,26 +301,23 @@ end
 
 %% Plot MSE
 
-tag = strrep(p.Results.outdir,' ','-');
-tag = strrep(tag,'_','-');
-
 if p.Results.plot_avg_mse
-    h = figure;
+    h = figure('Position',[1 1 1600 1000]);
     clf;
     plot_mse_vs_iteration(...
         data_args{:},...
         'mode','log',...
         'labels',labels);
     drawnow;
-    save_fig_exp(script_name,'tag',sprintf('mse-all-%s',tag));
+    save_fig_exp(script_name,'tag','mse-all');
     
     ylim([10^(-4) 10^(0)]);
     drawnow;
-    save_fig_exp(script_name,'tag',sprintf('mse-all-axis-%s',tag));
+    save_fig_exp(script_name,'tag','mse-all-axis');
 end
 
 if p.Results.plot_avg_nmse
-    h = figure;
+    h = figure('Position',[1 1 1600 1000]);
     clf;
     plot_mse_vs_iteration(...
         data_args{:},...
@@ -328,11 +325,11 @@ if p.Results.plot_avg_nmse
         'normalized',true,...
         'labels',labels);
     drawnow;
-    save_fig_exp(script_name,'tag',sprintf('nmse-all-%s',tag));
+    save_fig_exp(script_name,'tag','nmse-all');
     
     ylim([10^(-1) 10^(3)]);
     drawnow;
-    save_fig_exp(script_name,'tag',sprintf('nmse-all-axis-%s',tag));
+    save_fig_exp(script_name,'tag','nmse-all-axis');
 end
 
 %% Print extra info
