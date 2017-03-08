@@ -33,8 +33,8 @@ switch criteria
             %selecting among forecasting models." International Journal of
             %Forecasting 24.3 (2008): 513-524.
             
-            Vf = lambda*Vfprev + ferror*ferror';
-            Vb = lambda*Vbprev + berror*berror';
+            Vf = lambda*Vfprev + ferror*ferror'/ntrials;
+            Vb = lambda*Vbprev + berror*berror'/ntrials;
             
             n = j*ntrials;
             
