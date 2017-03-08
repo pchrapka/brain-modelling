@@ -37,7 +37,7 @@ filters = {};
 k = 1;
 
 order_max = max(order_est);
-filters{k} = MCMTLOCCD_TWL2(nchannels,order_max,ntrials,'lambda',lambda,'gamma',gamma);
+filters{k} = MCMTLOCCD_TWL4(nchannels,order_max,ntrials,'lambda',lambda,'gamma',gamma);
 k = k+1;
 
 %% lattice filter

@@ -39,7 +39,7 @@ data_labels = {};
 for k=1:length(gammas)
     gamma = gammas(k);
     data_labels{k} = sprintf('gamma %.3e',gamma);
-    filters{k} = MCMTLOCCD_TWL2(nchannels,order_max,ntrials,'lambda',lambda,'gamma',gamma);
+    filters{k} = MCMTLOCCD_TWL4(nchannels,order_max,ntrials,'lambda',lambda,'gamma',gamma);
 end
 
 %% lattice filter

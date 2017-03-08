@@ -39,7 +39,7 @@ nchannels = npatch_labels;
 filters = [];
 k=1;
 
-filters{k} = MCMTLOCCD_TWL2(nchannels,p.Results.order,p.Results.ntrials,...
+filters{k} = MCMTLOCCD_TWL4(nchannels,p.Results.order,p.Results.ntrials,...
     'lambda',p.Results.lambda,'gamma',p.Results.gamma);
 k = k+1;
 

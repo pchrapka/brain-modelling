@@ -4,6 +4,7 @@ params = [];
 k=1;
 
 %% aal
+% NOTE re tune parameters with ver 4 sparse filter
 % params(k).patch_type = 'aal';
 % params(k).metric = 'euc';
 % params(k).ntrials = 20;
@@ -36,6 +37,7 @@ k=1;
 
 
 %% aal-coarse-19
+% NOTE re tune parameters with ver 4 sparse filter
 % params(k).patch_type = 'aal-coarse-19';
 % params(k).metric = 'euc';
 % params(k).ntrials = 20;
@@ -67,6 +69,7 @@ k=1;
 % k = k+1;
 
 %% aal-coarse-19 envelope
+% NOTE re tune parameters with ver 4 sparse filter
 % params(k).patch_type = 'aal-coarse-19';
 % params(k).metric = 'euc';
 % params(k).ntrials = 20;
@@ -98,6 +101,7 @@ k=1;
 % k = k+1;
 
 %% aal-coarse-19-plus2 envelope
+% NOTE re tune parameters with ver 4 sparse filter
 % params(k).patch_type = 'aal-coarse-19-plus2';
 % params(k).metric = 'euc';
 % params(k).ntrials = 20;
@@ -131,6 +135,7 @@ k=1;
 % lots of deep activity still
 
 %% aal-coarse-19-outer-plus2 envelope
+% NOTE re tune parameters with ver 4 sparse filter
 params(k).patch_type = 'aal-coarse-19-outer-plus2';
 params(k).metric = 'euc';
 params(k).ntrials = 20;

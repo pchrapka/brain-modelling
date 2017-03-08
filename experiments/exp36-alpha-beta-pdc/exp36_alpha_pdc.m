@@ -83,7 +83,7 @@ data_labels = {'gamma 0.1','gamma 1'};
 filters = {};
 for k=1:length(gammas)
     gamma = gammas(k);
-    filters{k} = MCMTLOCCD_TWL2(nchannels,norder_est,ntrials,'lambda',lambda,'gamma',gamma);
+    filters{k} = MCMTLOCCD_TWL4(nchannels,norder_est,ntrials,'lambda',lambda,'gamma',gamma);
 end
 
 script_name = [mfilename('fullpath') '.m'];

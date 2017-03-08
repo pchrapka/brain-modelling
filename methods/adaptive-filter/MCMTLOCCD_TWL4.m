@@ -6,7 +6,9 @@ classdef MCMTLOCCD_TWL4
     %   IEEE Transactions on Signal Processing, vol. 58, no. 7, pp.
     %   3436–3447, Jul. 2010.
     %
-    %   Temporary for testing normalized covariance
+    %   Main difference between MCMTLOCCD_TWL4 and MCMTLOCCD_TWL2, is that
+    %   MCMTLOCCD_TWL4 normalizes the additional covariance by the number
+    %   of trials
 
     
     properties

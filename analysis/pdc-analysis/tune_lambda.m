@@ -40,7 +40,7 @@ data_labels = {};
 for k=1:length(lambdas)
     lambda = lambdas(k);
     data_labels{k} = sprintf('lambda %0.4f',lambda);
-    filters{k} = MCMTLOCCD_TWL2(nchannels,order_max,ntrials,'lambda',lambda,'gamma',gamma);
+    filters{k} = MCMTLOCCD_TWL4(nchannels,order_max,ntrials,'lambda',lambda,'gamma',gamma);
 end
 
 %% lattice filter

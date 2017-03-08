@@ -46,6 +46,9 @@ k = k+1;
 sim_params(k).filter = MCMTLOCCD_TWL2(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gamma);
 k = k+1;
 
+sim_params(k).filter = MCMTLOCCD_TWL4(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gamma);
+k = k+1;
+
 sim_params(k).filter = BurgVectorWindow(nchannels,order_est,'nwindow',30);
 k = k+1;
 

@@ -33,7 +33,7 @@ gamma = 0.1;
 
 filters = {};
 k = 1;
-filters{k} = MCMTLOCCD_TWL2(nchannels,norder,ntrials,'lambda',lambda,'gamma',gamma);
+filters{k} = MCMTLOCCD_TWL4(nchannels,norder,ntrials,'lambda',lambda,'gamma',gamma);
 k = k+1;
 
 script_name = [mfilename('fullpath') '.m'];
