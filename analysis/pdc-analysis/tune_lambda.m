@@ -28,7 +28,7 @@ clear lf;
 nchannels = npatch_labels;
 ntrials = 20;
 order_max = 6;
-gamma = 1;
+gamma = 1e-2;
 
 % tuning over lambdas
 % lambdas = [0.95 0.96 0.97 0.98 0.99];
@@ -51,7 +51,8 @@ parfor_setup('cores',12,'force',true);
 verbosity = 0;
 % normtype = 'none';
 normtype = 'allchannels';
-envtype = true;
+% envtype = true;
+envtype = false;
 lf_files = lattice_filter_sources(filters, sources_file,...
     'normalization',normtype,...
     'envelope',envtype,...

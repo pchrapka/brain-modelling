@@ -50,7 +50,8 @@ parfor_setup('cores',12,'force',true);
 verbosity = 0;
 % normtype = 'none';
 normtype = 'allchannels';
-envtype = true;
+% envtype = true;
+envtype = false;
 lf_files = lattice_filter_sources(filters, sources_file,...
     'normalization',normtype,...
     'envelope',envtype,...

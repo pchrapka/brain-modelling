@@ -544,7 +544,7 @@ switch layout
             idx = idx2;
         end
         
-        idx_empty = isempty(hregion);
+        idx_empty = hregion == 0;
         hregion(idx_empty) = [];
         region_str(idx_empty) = [];
         l = legend(hregion,region_str,...
