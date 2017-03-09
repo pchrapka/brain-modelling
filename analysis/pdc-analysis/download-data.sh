@@ -7,4 +7,4 @@ DEST=/home/phil/
 SRC=chrapkpk@blade16:Documents/
 
 mkdir -p $DEST/$DIR
-rsync -rvz --progress --exclude='*.mat' $SRC/$DIR $DEST/$DIR
+rsync -rvzt --progress --exclude='*.mat' $SRC/$DIR $DEST/$DIR
