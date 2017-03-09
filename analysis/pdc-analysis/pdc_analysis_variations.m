@@ -83,15 +83,15 @@ k=1;
 
 %% aal-coarse-19-outer-plus, 40 trials
 
-params(k).patch_type = 'aal-coarse-19-outer-plus2';
-params(k).metrics = {'euc','diag','info'};
-params(k).ntrials = 40;
-params(k).order = 3;
-params(k).lambda = 0.99;
-params(k).gamma = 1e-3;
-params(k).normalization = 'allchannels';
-params(k).envelope = false;
-k = k+1;
+% params(k).patch_type = 'aal-coarse-19-outer-plus2';
+% params(k).metrics = {'euc','diag','info'};
+% params(k).ntrials = 40;
+% params(k).order = 3;
+% params(k).lambda = 0.99;
+% params(k).gamma = 1e-3;
+% params(k).normalization = 'allchannels';
+% params(k).envelope = false;
+% k = k+1;
 
 %% aal-coarse-19-outer-plus2 envelope, 40 trials
 params(k).patch_type = 'aal-coarse-19-outer-plus2';
@@ -104,19 +104,29 @@ params(k).normalization = 'allchannels';
 params(k).envelope = true;
 k = k+1;
 
-%%
-flag_run = false;
-
-flag_tune = true;
+%% run analysis
+flag_run = true;
+flag_tune = false;
 
 %% tune order
-flag_tune_order = true;
-flag_tune_lambda = false;
-flag_tune_gamma = false;
+% flag_run = false;
+% flag_tune = true;
+% flag_tune_order = true;
+% flag_tune_lambda = false;
+% flag_tune_gamma = false;
 
-%% tune lambda and gamma
+%% tune lambda
+% flag_run = false;
+% flag_tune = true;
 % flag_tune_order = false;
 % flag_tune_lambda = true;
+% flag_tune_gamma = false;
+
+%% tune gamma
+% flag_run = false;
+% flag_tune = true;
+% flag_tune_order = false;
+% flag_tune_lambda = false;
 % flag_tune_gamma = true;
 
 %%

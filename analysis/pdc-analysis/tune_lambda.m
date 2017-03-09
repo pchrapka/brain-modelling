@@ -36,7 +36,7 @@ for k=1:length(p.Results.lambda)
     lambda_cur = p.Results.lambda(k);
     data_labels{k} = sprintf('lambda %0.4f',lambda_cur);
     filters{k} = MCMTLOCCD_TWL4(nchannels,p.Results.order,p.Results.ntrials,...
-        'lambda',p.Results.lambda,'gamma',p.Results.gamma);
+        'lambda',lambda_cur,'gamma',p.Results.gamma);
 end
 
 %% lattice filter
