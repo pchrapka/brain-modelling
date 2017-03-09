@@ -1,6 +1,8 @@
-function pdc_analysis_main(varargin)
+function pdc_analysis_main(pipeline,outdir,varargin)
 
 p = inputParser();
+addRequired(p,'pipeline',@(x) isa(x,'ftb.AnalysisBeamformer'));
+addRequired(p,'outdir',@ischar);
 addParameter(p,'metric','euc',@ischar);
 addParameter(p,'patch_type','aal',@ischar);
 addParameter(p,'ntrials',10,@isnumeric);
@@ -9,17 +11,8 @@ addParameter(p,'lambda',0.99,@isnumeric);
 addParameter(p,'gamma',1,@isnumeric);
 addParameter(p,'normalization','allchannels',@ischar); % also none
 addParameter(p,'envelope',false,@islogical); % also none
-parse(p,varargin{:});
+parse(p,pipeline,outdir,varargin{:});
 
-
-stimulus = 'std';
-subject = 3; 
-deviant_percent = 10;
-% patches_type = 'aal';
-% patches_type = 'aal-coarse-13';
-
-[pipeline,outdir] = eeg_processall_andrew(...
-    stimulus,subject,deviant_percent,p.Results.patch_type);
 lf_file = pipeline.steps{end}.lf.leadfield;
 sources_file = pipeline.steps{end}.sourceanalysis;
 

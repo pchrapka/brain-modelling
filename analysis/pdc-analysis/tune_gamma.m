@@ -1,18 +1,19 @@
-%% tune_gamma
+function tune_gamma(pipeline,outdir,varargin)
 
-flag_plots = true;
-
-stimulus = 'std';
-subject = 3; 
-deviant_percent = 10;
-% patches_type = 'aal';
-% patches_type = 'aal-coarse-13';
-% patches_type = 'aal-coarse-19';
-% patches_type = 'aal-coarse-19-plus2';
-patches_type = 'aal-coarse-19-outer-plus2';
-
-[pipeline,outdir] = eeg_processall_andrew(...
-    stimulus,subject,deviant_percent,patches_type);
+p = inputParser();
+addRequired(p,'pipeline',@(x) isa(x,'ftb.AnalysisBeamformer'));
+addRequired(p,'outdir',@ischar);
+addParameter(p,'patch_type','aal',@ischar);
+addParameter(p,'ntrials',10,@isnumeric);
+addParameter(p,'order',6,@(x) isnumeric(x) && length(x) == 1);
+addParameter(p,'lambda',0.99,@(x) isnumeric(x) && length(x) == 1);
+addParameter(p,'gamma',[1e-4 1e-3 1e-2 0.1 1 10],@(x) isnumeric(x) && isvector(x));
+addParameter(p,'normalization','allchannels',@ischar); % also none
+addParameter(p,'envelope',false,@islogical); % also none
+addParameter(p,'plots',true,@islogical);
+addParameter(p,'plot_crit','normtime',@ischar);
+addParameter(p,'plot_orders',[],@isnumeric);
+parse(p,pipeline,outdir,varargin{:});
 
 lf_file = pipeline.steps{end}.lf.leadfield;
 sources_file = pipeline.steps{end}.sourceanalysis;
@@ -37,9 +38,10 @@ gammas = [1e-4 1e-3 1e-2 0.1 1 10];
 filters = {};
 data_labels = {};
 for k=1:length(gammas)
-    gamma = gammas(k);
-    data_labels{k} = sprintf('gamma %.3e',gamma);
-    filters{k} = MCMTLOCCD_TWL4(nchannels,order_max,ntrials,'lambda',lambda,'gamma',gamma);
+    gamma_cur = p.Results.gamma(k);
+    data_labels{k} = sprintf('gamma %.3e',gamma_cur);
+    filters{k} = MCMTLOCCD_TWL4(nchannels,p.Results.order,p.Results.ntrials,...
+        'lambda',p.Results.lambda,'gamma',gamma_cur);
 end
 
 %% lattice filter
@@ -48,13 +50,9 @@ end
 parfor_setup('cores',12,'force',true);
 
 verbosity = 0;
-% normtype = 'none';
-normtype = 'allchannels';
-% envtype = true;
-envtype = false;
 lf_files = lattice_filter_sources(filters, sources_file,...
-    'normalization',normtype,...
-    'envelope',envtype,...
+    'normalization',p.Results.normalization,...
+    'envelope',p.Results.envelope,...
     'tracefields',{'Kf','Kb','ferror','berrord'},...
     'verbosity',verbosity,...
     ...'samples',[1:100],...
@@ -63,27 +61,43 @@ lf_files = lattice_filter_sources(filters, sources_file,...
 
 %% plot criteria for each gamma
 crit_all = {'aic','ewaic','normtime'};
-if flag_plots
-%       crit = 'ewaic';
-    crit = 'normtime';
+
+if p.Results.plots
     for k=1:length(lf_files)
         view_lf = ViewLatticeFilter(lf_files{k});
         view_lf.compute(crit_all);
-        view_lf.plot_criteria_vs_order_vs_time('criteria',crit,'orders',1:order_max);
+        
+        switch p.Results.plot_crit
+            case {'ewaic','ewsc','normtime'}
+                view_lf.plot_criteria_vs_order_vs_time(...
+                    'criteria',p.Results.plot_crit,...
+                    'orders',1:p.Results.order);
+            case {'aic','sc','norm'}
+                view_lf.plot_criteria_vs_order(...
+                    'criteria',p.Results.plot_crit,...
+                    'orders',1:p.Results.order);
+        end
     end
 end
 
 %% plot criteria for best order across gamma
-if flag_plots
-    order_best = [2 3 4];
-%     crit = 'ewaic';
-    crit = 'normtime';
-    
+if p.Results.plots
     view_lf = ViewLatticeFilter(lf_files,'labels',data_labels);
     view_lf.compute(crit_all);
-    view_lf.plot_criteria_vs_order_vs_time(...
-        'criteria',crit,...
-        'orders',order_best,...
-        'file_list',1:length(lf_files));
+    
+    switch p.Results.plot_crit
+        case {'ewaic','ewsc','normtime'}
+            view_lf.plot_criteria_vs_order_vs_time(...
+                'criteria',p.Results.plot_crit,...
+                'orders',p.Results.plot_orders,...
+                'file_list',1:length(lf_files));
+        case {'aic','sc','norm'}
+            view_lf.plot_criteria_vs_order(...
+                'criteria',p.Results.plot_crit,...
+                'orders',p.Results.plot_orders,...
+                'file_list',1:length(lf_files));
+    end
+end
+
 end
 

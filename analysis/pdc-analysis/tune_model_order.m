@@ -1,18 +1,19 @@
-%% tune_model_order
+function tune_model_order(pipeline,outdir,varargin)
 
-flag_plots = true;
-
-stimulus = 'std';
-subject = 3; 
-deviant_percent = 10;
-% patches_type = 'aal';
-% patches_type = 'aal-coarse-13';
-% patches_type = 'aal-coarse-19';
-% patches_type = 'aal-coarse-19-plus2';
-patches_type = 'aal-coarse-19-outer-plus2';
-
-[pipeline,outdir] = eeg_processall_andrew(...
-    stimulus,subject,deviant_percent,patches_type);
+p = inputParser();
+addRequired(p,'pipeline',@(x) isa(x,'ftb.AnalysisBeamformer'));
+addRequired(p,'outdir',@ischar);
+addParameter(p,'patch_type','aal',@ischar);
+addParameter(p,'ntrials',10,@isnumeric);
+addParameter(p,'order',1:6,@(x) isnumeric(x) && isvector(x));
+addParameter(p,'lambda',0.99,@(x) isnumeric(x) && length(x) == 1);
+addParameter(p,'gamma',1e-2,@(x) isnumeric(x) && length(x) == 1);
+addParameter(p,'normalization','allchannels',@ischar); % also none
+addParameter(p,'envelope',false,@islogical); % also none
+addParameter(p,'plots',true,@islogical);
+addParameter(p,'plot_crit','ewaic',@ischar);
+addParameter(p,'plot_orders',[],@isnumeric);
+parse(p,pipeline,outdir,varargin{:});
 
 lf_file = pipeline.steps{end}.lf.leadfield;
 sources_file = pipeline.steps{end}.sourceanalysis;
@@ -26,18 +27,14 @@ npatch_labels = length(patch_labels);
 clear lf;
 
 nchannels = npatch_labels;
-ntrials = 40;
-lambda = 0.99;
-gamma = 1e-2;
-
-% tuning over model order
-order_est = 1:14;
 
 filters = {};
 k = 1;
 
-order_max = max(order_est);
-filters{k} = MCMTLOCCD_TWL4(nchannels,order_max,ntrials,'lambda',lambda,'gamma',gamma);
+% tuning over model order
+order_max = max(p.Results.order);
+filters{k} = MCMTLOCCD_TWL4(nchannels,order_max,p.Results.ntrials,...
+    'lambda',p.Results.lambda,'gamma',p.Results.gamma);
 k = k+1;
 
 %% lattice filter
@@ -46,13 +43,9 @@ k = k+1;
 parfor_setup('cores',12,'force',true);
 
 verbosity = 0;
-% normtype = 'none';
-normtype = 'allchannels';
-% envtype = true;
-envtype = false;
 lf_files = lattice_filter_sources(filters, sources_file,...
-    'normalization',normtype,...
-    'envelope',envtype,...
+    'normalization',p.Results.normalization,...
+    'envelope',p.Results.envelope,...
     'tracefields',{'Kf','Kb','ferror','berrord'},...
     'verbosity',verbosity,...
     ...'samples',[1:100],...
@@ -60,18 +53,21 @@ lf_files = lattice_filter_sources(filters, sources_file,...
     'outdir', outdir);
 
 %% set up view lattice
-if flag_plots
+if p.Results.plots
     view_lf = ViewLatticeFilter(lf_files{1});
     crit_time = {'ewaic','ewsc','normtime'};
     crit_single = {'aic','sc','norm'};
     view_lf.compute([crit_time crit_single]);
     
     % plot order vs estimation error
-    view_lf.plot_criteria_vs_order_vs_time('criteria','ewaic','orders',order_est);
-%     view_lf.plot_criteria_vs_order_vs_time('criteria','ewsc','orders',order_est);
-%     view_lf.plot_criteria_vs_order_vs_time('criteria','normtime','orders',order_est);
-    
-%     view_lf.plot_criteria_vs_order('criteria','aic','orders',order_est);
-%     view_lf.plot_criteria_vs_order('criteria','sc','orders',order_est);
-%     view_lf.plot_criteria_vs_order('criteria','norm','orders',order_est); 
+    switch p.Results.plot_crit
+        case {'ewaic','ewsc','normtime'}
+            view_lf.plot_criteria_vs_order_vs_time(...
+                'criteria',p.Results.plot_crit,'orders',p.Results.plot_orders);
+        case {'aic','sc','norm'}
+            view_lf.plot_criteria_vs_order(...
+                'criteria',p.Results.plot_crit,'orders',p.Results.plot_orders);
+    end
+end
+
 end
