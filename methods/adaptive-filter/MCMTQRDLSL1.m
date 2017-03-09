@@ -52,6 +52,13 @@ classdef MCMTQRDLSL1
             %   lambda (scalar)
             %       exponential weighting factor between 0 and 1
             
+            p = inputParser;
+            addRequired(p,'channels', @(x) isnumeric(x) && isscalar(x));
+            addRequired(p,'order', @(x) isnumeric(x) && isscalar(x));
+            addRequired(p,'trials',@(x) isnumeric(x) && isscalar(x));
+            addRequired(p,'lambda',@(x) isnumeric(x) && isscalar(x));
+            parse(p,channels,order,trials,lambda);
+            
             if ~(trials > 1)
                 % tell user to use MQRDLSL1, it'll probably be faster and
                 % will keep the code simpler here

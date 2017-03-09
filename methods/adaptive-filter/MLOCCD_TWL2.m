@@ -53,11 +53,11 @@ classdef MLOCCD_TWL2
             %       regularization parameter
             
             p = inputParser;
-            addRequired(p,'channels');
-            addRequired(p,'order');
-            addParameter(p,'lambda',0.99);
-            addParameter(p,'gamma',1.2);
-            parse(p,channels,order,varargin{:});
+            addRequired(p,'channels', @(x) isnumeric(x) && isscalar(x));
+            addRequired(p,'order', @(x) isnumeric(x) && isscalar(x));
+            addParameter(p,'lambda',0.99, @(x) isnumeric(x) && isscalar(x));
+            addParameter(p,'gamma',1.2, @(x) isnumeric(x) && isscalar(x));
+            parse(p,channels,order,trials,varargin{:});
             
             obj.order = p.Results.order;
             obj.nchannels = p.Results.channels;
