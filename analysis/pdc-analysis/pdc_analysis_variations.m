@@ -94,9 +94,32 @@ k=1;
 % k = k+1;
 
 %% aal-coarse-19-outer-plus2 envelope, 40 trials
+% params(k).patch_type = 'aal-coarse-19-outer-plus2';
+% params(k).metrics = {'euc','diag','info'};
+% params(k).ntrials = 40;
+% params(k).order = 3;
+% params(k).lambda = 0.99;
+% params(k).gamma = 1e-3;
+% params(k).normalization = 'allchannels';
+% params(k).envelope = true;
+% k = k+1;
+
+%% aal-coarse-19-outer-plus, 60 trials
+
 params(k).patch_type = 'aal-coarse-19-outer-plus2';
 params(k).metrics = {'euc','diag','info'};
-params(k).ntrials = 40;
+params(k).ntrials = 60;
+params(k).order = 3;
+params(k).lambda = 0.99;
+params(k).gamma = 1e-3;
+params(k).normalization = 'allchannels';
+params(k).envelope = false;
+k = k+1;
+
+%% aal-coarse-19-outer-plus2 envelope, 60 trials
+params(k).patch_type = 'aal-coarse-19-outer-plus2';
+params(k).metrics = {'euc','diag','info'};
+params(k).ntrials = 60;
 params(k).order = 3;
 params(k).lambda = 0.99;
 params(k).gamma = 1e-3;
