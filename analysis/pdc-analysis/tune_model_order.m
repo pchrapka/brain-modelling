@@ -10,7 +10,7 @@ addParameter(p,'lambda',0.99,@(x) isnumeric(x) && length(x) == 1);
 addParameter(p,'gamma',1e-2,@(x) isnumeric(x) && length(x) == 1);
 addParameter(p,'normalization','allchannels',@ischar); % also none
 addParameter(p,'envelope',false,@islogical); % also none
-addParameter(p,'plots',true,@islogical);
+addParameter(p,'plot',true,@islogical);
 addParameter(p,'plot_crit','ewaic',@ischar);
 addParameter(p,'plot_orders',[],@isnumeric);
 parse(p,pipeline,outdir,varargin{:});
@@ -53,7 +53,7 @@ lf_files = lattice_filter_sources(filters, sources_file,...
     'outdir', outdir);
 
 %% set up view lattice
-if p.Results.plots
+if p.Results.plot
     view_lf = ViewLatticeFilter(lf_files{1});
     crit_time = {'ewaic','ewsc','normtime'};
     crit_single = {'aic','sc','norm'};

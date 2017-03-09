@@ -10,7 +10,7 @@ addParameter(p,'lambda',0.99,@(x) isnumeric(x) && length(x) == 1);
 addParameter(p,'gamma',[1e-4 1e-3 1e-2 0.1 1 10],@(x) isnumeric(x) && isvector(x));
 addParameter(p,'normalization','allchannels',@ischar); % also none
 addParameter(p,'envelope',false,@islogical); % also none
-addParameter(p,'plots',true,@islogical);
+addParameter(p,'plot',true,@islogical);
 addParameter(p,'plot_crit','normtime',@ischar);
 addParameter(p,'plot_orders',[],@isnumeric);
 parse(p,pipeline,outdir,varargin{:});
@@ -62,7 +62,7 @@ lf_files = lattice_filter_sources(filters, sources_file,...
 %% plot criteria for each gamma
 crit_all = {'aic','ewaic','normtime'};
 
-if p.Results.plots
+if p.Results.plot
     for k=1:length(lf_files)
         view_lf = ViewLatticeFilter(lf_files{k});
         view_lf.compute(crit_all);
@@ -81,7 +81,7 @@ if p.Results.plots
 end
 
 %% plot criteria for best order across gamma
-if p.Results.plots
+if p.Results.plot
     view_lf = ViewLatticeFilter(lf_files,'labels',data_labels);
     view_lf.compute(crit_all);
     

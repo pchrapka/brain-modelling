@@ -142,7 +142,7 @@ for i=1:length(params)
             params2.plot_crit = 'ewaic';
             params2.plot_orders = params2.order;
             
-            params_func = struct2namevalue(param2(i));
+            params_func = struct2namevalue(params2);
             tune_model_order(pipeline,outdir,params_func{:});
         end
         
@@ -158,7 +158,7 @@ for i=1:length(params)
             params2.plot_crit = 'normtime';
             params2.plot_orders = [1 2 3 4];
             
-            params_func = struct2namevalue(param2(i));
+            params_func = struct2namevalue(params2);
             tune_lambda(pipeline,outdir,params_func{:});
         end
         
@@ -174,7 +174,7 @@ for i=1:length(params)
             params2.plot_crit = 'normtime';
             params2.plot_orders = [1 2 3 4];
             
-            params_func = struct2namevalue(param2(i));
+            params_func = struct2namevalue(params2);
             tune_gamma(pipeline,outdir,params_func{:});
         end
         
