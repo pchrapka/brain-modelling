@@ -56,11 +56,11 @@ classdef MCMTLOCCD_TWL2
             %       regularization parameter
             
             p = inputParser;
-            addRequired(p,'channels');
-            addRequired(p,'order');
-            addRequired(p,'trials',@(x) x > 1);
-            addParameter(p,'lambda',0.99);
-            addParameter(p,'gamma',1.2);
+            addRequired(p,'channels', @(x) isnumeric(x) && isscalar(x));
+            addRequired(p,'order', @(x) isnumeric(x) && isscalar(x));
+            addRequired(p,'trials',@(x) x > 1 && isnumeric(x) && isscalar(x));
+            addParameter(p,'lambda',0.99, @(x) isnumeric(x) && isscalar(x));
+            addParameter(p,'gamma',1.2, @(x) isnumeric(x) && isscalar(x));
             parse(p,channels,order,trials,varargin{:});
             
             obj.order = p.Results.order;

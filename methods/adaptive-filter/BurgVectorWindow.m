@@ -45,8 +45,8 @@ classdef BurgVectorWindow
             %       number of trials
             
             p = inputParser();
-            addParameter(p,'nwindow',10,@isnumeric);
-            addParameter(p,'ntrials',1,@isnumeric);
+            addParameter(p,'nwindow',10,@(x) isnumeric(x) && isscalar(x));
+            addParameter(p,'ntrials',1,@(x) isnumeric(x) && isscalar(x));
             p.parse(varargin{:});
             
             obj.order = order;

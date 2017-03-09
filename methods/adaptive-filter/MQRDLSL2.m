@@ -48,6 +48,12 @@ classdef MQRDLSL2
             %   lambda (scalar)
             %       exponential weighting factor between 0 and 1
             
+            p = inputParser;
+            addRequired(p,'channels', @(x) isnumeric(x) && isscalar(x));
+            addRequired(p,'order', @(x) isnumeric(x) && isscalar(x));
+            addRequired(p,'lambda',@(x) isnumeric(x) && isscalar(x));
+            parse(p,channels,order,lambda);
+            
             obj.order = order;
             obj.nchannels = channels;
             obj.lambda = lambda;

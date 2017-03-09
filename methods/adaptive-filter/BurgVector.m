@@ -35,8 +35,10 @@ classdef BurgVector
             %       number of samples to use in batch update
             
             p = inputParser();
-            addParameter(p,'nsamples',[],@isnumeric);
-            p.parse(varargin{:});
+            addRequired(p,'channels', @(x) isnumeric(x) && isscalar(x));
+            addRequired(p,'order', @(x) isnumeric(x) && isscalar(x));
+            addParameter(p,'nsamples',[],@(x) isnumeric(x) && isscalar(x));
+            p.parse(channels,order,varargin{:});
             
             obj.order = order;
             obj.nchannels = channels;
