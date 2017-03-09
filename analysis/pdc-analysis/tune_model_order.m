@@ -26,9 +26,9 @@ npatch_labels = length(patch_labels);
 clear lf;
 
 nchannels = npatch_labels;
-ntrials = 20;
+ntrials = 40;
 lambda = 0.99;
-gamma = 1;
+gamma = 1e-2;
 
 % tuning over model order
 order_est = 1:14;

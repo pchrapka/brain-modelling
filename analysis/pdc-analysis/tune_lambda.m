@@ -26,7 +26,7 @@ npatch_labels = length(patch_labels);
 clear lf;
 
 nchannels = npatch_labels;
-ntrials = 20;
+ntrials = 40;
 order_max = 6;
 gamma = 1e-2;
 
