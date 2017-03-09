@@ -192,7 +192,7 @@ parfor k=1:nfilters
             warning('on','all');
         end
         
-        idx_start = ntrials + 1;
+        idx_start = 1;
         idx_end = idx_start + ntrials - 1;
         
         % warmup filter with simulated data
