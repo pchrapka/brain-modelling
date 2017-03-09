@@ -214,15 +214,27 @@ for i=1:length(params)
     end
     
     if flag_run
+        % copy params
         params2 = params(i);
+        % remove metrics field
         params2 = rmfield(params2,'metrics');
+        
+        % loop over metrics
         for j=1:length(params(i).metrics)
-            params2.metric = params(i).metrics{j};
-            params_func = struct2namevalue(params2);
-            pdc_analysis_main(...
-                pipeline,...
-                outdir,...
-                params_func{:});
+            
+            % select lf params
+            params_lf = copyfields(params2,[],...
+                {'ntrials','order','lambda','gamma','normalization','envelope'});
+            params_func = struct2namevalue(params_lf);
+            lf_files = lf_analysis_main(pipeline, outdir, params_func{:});
+            
+            % select pdc params
+            params_pdc = copyfields(params2,[],...
+                {'metric','patch_type'});
+            % change metric
+            params_pdc.metric = params(i).metrics{j};
+            params_func = struct2namevalue(params_pdc);
+            pdc_analysis_main(pipeline, lf_files, outdir, params_func{:});
         end
     end
 end

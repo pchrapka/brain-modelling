@@ -1,20 +1,14 @@
-function pdc_analysis_main(pipeline,outdir,varargin)
+function pdc_analysis_main(pipeline,lf_files,outdir,varargin)
 
 p = inputParser();
 addRequired(p,'pipeline',@(x) isa(x,'ftb.AnalysisBeamformer'));
+addRequired(p,'lf_files',@iscell);
 addRequired(p,'outdir',@ischar);
 addParameter(p,'metric','euc',@ischar);
 addParameter(p,'patch_type','aal',@ischar);
-addParameter(p,'ntrials',10,@isnumeric);
-addParameter(p,'order',6,@isnumeric);
-addParameter(p,'lambda',0.99,@isnumeric);
-addParameter(p,'gamma',1,@isnumeric);
-addParameter(p,'normalization','allchannels',@ischar); % also none
-addParameter(p,'envelope',false,@islogical); % also none
 parse(p,pipeline,outdir,varargin{:});
 
 lf_file = pipeline.steps{end}.lf.leadfield;
-sources_file = pipeline.steps{end}.sourceanalysis;
 
 %% set lattice options
 atlas_name = p.Results.patch_type;
@@ -29,28 +23,6 @@ clear lf;
 
 nchannels = npatch_labels;
 
-filters = [];
-k=1;
-
-filters{k} = MCMTLOCCD_TWL4(nchannels,p.Results.order,p.Results.ntrials,...
-    'lambda',p.Results.lambda,'gamma',p.Results.gamma);
-k = k+1;
-
-%% lattice filter
-
-% set up parfor
-parfor_setup('cores',12,'force',true);
-
-verbosity = 0;
-lf_files = lattice_filter_sources(filters, sources_file,...
-    'tracefields',{'Kf','Kb','Rf'},...
-    'normalization',p.Results.normalization,...
-    'envelope',p.Results.envelope,...
-    'verbosity',verbosity,...
-    ...'samples',[1:100],...
-    'ntrials_max',100,...
-    'outdir', outdir);
-
 %% [maybe] remove 300 ms at beg and end
 
 %% compute pdc
@@ -59,7 +31,7 @@ pdc_params = {...
     'metric',p.Results.metric,...
     'downsample',downsample_by,...
     };
-pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
+pdc_files = rc2pdc_dynamic_from_lf_files(p.Results.lf_files,'params',pdc_params);
 
 %% plot pdc params
 
@@ -142,7 +114,7 @@ flag.plot_pdc_seed_beta = true;
 
 %% plot rc
 if flag.plot_rc
-    plot_rc_dynamic_from_lf_files(lf_files,...
+    plot_rc_dynamic_from_lf_files(p.Results.lf_files,...
         'mode', 'summary',...
         'outdir', 'data',...
         'save', true);
