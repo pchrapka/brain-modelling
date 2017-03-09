@@ -131,8 +131,8 @@ options = copyfields(p.Results,[],{...
 nchannels = filters{1}.nchannels;
 outfiles = cell(nfilters,1);
 
-% parfor k=1:nfilters
-for k=1:nfilters
+parfor k=1:nfilters
+% for k=1:nfilters
     
     % copy sim parameters
     filter = filters{k};
@@ -142,11 +142,7 @@ for k=1:nfilters
         ntrials = 1;
     end
     
-    if p.Results.warmup_data
-        ntrials_req = 2*ntrials;
-    else
-        ntrials_req = ntrials;
-    end
+    ntrials_req = ntrials;
     
     % check data size and filter size
     if data_dims(1) ~= filter.nchannels
@@ -196,30 +192,23 @@ for k=1:nfilters
             warning('on','all');
         end
         
+        idx_start = ntrials + 1;
+        idx_end = idx_start + ntrials - 1;
+        
         % warmup filter with simulated data
         if options.warmup_data
             fprintf('warming up with data\n');
             
-            % use last
-            idx_start = ntrials + 1;
-            idx_end = idx_start + ntrials - 1;
-            
-            idx_start_wu = 1;
-            idx_end_wu = idx_start_wu + ntrials - 1;
-            
             % warm up filter on some data
             warning('off','all');
             try
-                trace.warmup(datain(:,:,idx_start_wu:idx_end_wu));
+                trace.warmup(datain(:,:,idx_start:idx_end));
             catch me
                 msgText = getReport(me);
                 warning('on','all');
                 warning(msgText);
             end
             warning('on','all');
-        else
-            idx_start = 1;
-            idx_end = idx_start + ntrials - 1;
         end
         
         % run the filter on data
