@@ -66,8 +66,8 @@ switch criteria
             [ferror,berror] = obj.get_error(order_idx,j);
             
             % compute the magnitude over all channels and trials
-            cf(j) = norm(ferror(:));
-            cb(j) = norm(berror(:));
+            cf(j) = norm(ferror(:))/ntrials;
+            cb(j) = norm(berror(:))/ntrials;
         end
         
     case {'aic','sc'}
