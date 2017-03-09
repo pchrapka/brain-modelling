@@ -6,7 +6,8 @@ addRequired(p,'lf_files',@iscell);
 addRequired(p,'outdir',@ischar);
 addParameter(p,'metric','euc',@ischar);
 addParameter(p,'patch_type','aal',@ischar);
-parse(p,pipeline,outdir,varargin{:});
+addParameter(p,'envelope',false,@islogical); % also none
+parse(p,pipeline,lf_files,outdir,varargin{:});
 
 lf_file = pipeline.steps{end}.lf.leadfield;
 

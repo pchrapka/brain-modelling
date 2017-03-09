@@ -230,7 +230,7 @@ for i=1:length(params)
             
             % select pdc params
             params_pdc = copyfields(params2,[],...
-                {'metric','patch_type'});
+                {'metric','patch_type','envelope'});
             % change metric
             params_pdc.metric = params(i).metrics{j};
             params_func = struct2namevalue(params_pdc);

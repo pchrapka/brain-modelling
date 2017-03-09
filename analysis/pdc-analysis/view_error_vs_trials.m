@@ -8,6 +8,7 @@ params.lambda = 0.99;
 params.gamma = 1e-3;
 params.normalization = 'allchannels';
 params.envelope = true;
+params.tracefields = {'Kf','Kb','Rf','ferror','berrord'};
 
 lf_files = cell(length(params.ntrials),1);
 data_labels = lf_files;
@@ -22,7 +23,7 @@ for i=1:length(params.ntrials)
     
     % select lf params
     params_lf = copyfields(params,[],...
-        {'ntrials','order','lambda','gamma','normalization','envelope'});
+        {'ntrials','order','lambda','gamma','normalization','envelope','tracefields'});
     params_lf.ntrials = params.ntrials(i);
     params_func = struct2namevalue(params_lf);
     
