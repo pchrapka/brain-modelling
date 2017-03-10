@@ -159,8 +159,11 @@ for i=1:length(params)
     subject = 3;
     deviant_percent = 10;
     
-    [pipeline,outdir] = eeg_processall_andrew(...
+    [pipeline,outdirbase] = eeg_processall_andrew(...
         stimulus,subject,deviant_percent,params(i).patch_type);
+    
+    % separate following output based on patch model
+    outdir = fullfile(outdir,params(i).patch_type);
     
     if flag_tune
         if flag_tune_order
