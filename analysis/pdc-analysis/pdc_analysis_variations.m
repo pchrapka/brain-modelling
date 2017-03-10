@@ -85,32 +85,9 @@ k=1;
 
 %% aal-coarse-19-outer-plus, 40 trials
 
-params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
-params(k).metrics = {'diag','info'};
-params(k).ntrials = 40;
-params(k).order = 3;
-params(k).lambda = 0.99;
-params(k).gamma = 1e-3;
-params(k).normalization = 'allchannels';
-params(k).envelope = false;
-k = k+1;
-
-%% aal-coarse-19-outer-nocer-plus2 envelope, 40 trials
-
-params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
-params(k).metrics = {'diag','info'};
-params(k).ntrials = 40;
-params(k).order = 3;
-params(k).lambda = 0.99;
-params(k).gamma = 1e-3;
-params(k).normalization = 'allchannels';
-params(k).envelope = true;
-k = k+1;
-
-%% aal-coarse-19-outer-plus, 60 trials
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'diag','info'};
-% params(k).ntrials = 60;
+% params(k).ntrials = 40;
 % params(k).order = 3;
 % params(k).lambda = 0.99;
 % params(k).gamma = 1e-3;
@@ -118,16 +95,41 @@ k = k+1;
 % params(k).envelope = false;
 % k = k+1;
 
-%% aal-coarse-19-outer-nocer-plus2 envelope, 60 trials
+%% aal-coarse-19-outer-nocer-plus2 envelope, 40 trials
+
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'diag','info'};
-% params(k).ntrials = 60;
+% params(k).ntrials = 40;
 % params(k).order = 3;
 % params(k).lambda = 0.99;
 % params(k).gamma = 1e-3;
 % params(k).normalization = 'allchannels';
 % params(k).envelope = true;
 % k = k+1;
+
+%% aal-coarse-19-outer-plus, 60 trials
+
+params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+params(k).metrics = {'diag','info'};
+params(k).ntrials = 60;
+params(k).order = 3;
+params(k).lambda = 0.99;
+params(k).gamma = 1e-3;
+params(k).normalization = 'allchannels';
+params(k).envelope = false;
+k = k+1;
+
+%% aal-coarse-19-outer-nocer-plus2 envelope, 60 trials
+
+params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+params(k).metrics = {'diag','info'};
+params(k).ntrials = 60;
+params(k).order = 3;
+params(k).lambda = 0.99;
+params(k).gamma = 1e-3;
+params(k).normalization = 'allchannels';
+params(k).envelope = true;
+k = k+1;
 
 %% run analysis
 flag_run = true;
@@ -165,7 +167,7 @@ for i=1:length(params)
         stimulus,subject,deviant_percent,params(i).patch_type);
     
     % separate following output based on patch model
-    outdir = fullfile(outdir,params(i).patch_type);
+    outdir = fullfile(outdirbase,params(i).patch_type);
     
     if flag_tune
         if flag_tune_order
@@ -239,7 +241,9 @@ for i=1:length(params)
             % change metric
             params_pdc.metric = params(i).metrics{j};
             params_func = struct2namevalue(params_pdc);
-            pdc_analysis_main(pipeline, lf_files, outdir, params_func{:});
+            
+            eeg_file = fullfile(outdirbase,'fthelpers.ft_phaselocked.mat');
+            pdc_analysis_main(pipeline, lf_files, eeg_file, params_func{:});
         end
     end
 end

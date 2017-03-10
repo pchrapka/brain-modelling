@@ -1,13 +1,13 @@
-function pdc_analysis_main(pipeline,lf_files,outdir,varargin)
+function pdc_analysis_main(pipeline,lf_files,eeg_file,varargin)
 
 p = inputParser();
 addRequired(p,'pipeline',@(x) isa(x,'ftb.AnalysisBeamformer'));
 addRequired(p,'lf_files',@iscell);
-addRequired(p,'outdir',@ischar);
+addRequired(p,'eegfile',@ischar);
 addParameter(p,'metric','euc',@ischar);
 addParameter(p,'patch_type','aal',@ischar);
 addParameter(p,'envelope',false,@islogical); % also none
-parse(p,pipeline,lf_files,outdir,varargin{:});
+parse(p,pipeline,lf_files,eeg_file,varargin{:});
 
 lf_file = pipeline.steps{end}.lf.leadfield;
 
@@ -37,8 +37,7 @@ pdc_files = rc2pdc_dynamic_from_lf_files(p.Results.lf_files,'params',pdc_params)
 %% plot pdc params
 
 % get fsample
-eegphaselocked_file = fullfile(outdir,'fthelpers.ft_phaselocked.mat');
-eegdata = loadfile(eegphaselocked_file);
+eegdata = loadfile(eeg_file);
 fsample = eegdata.fsample;
 time = eegdata.time{1};
 time = downsample(time,downsample_by);
