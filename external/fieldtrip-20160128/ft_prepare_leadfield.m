@@ -232,6 +232,9 @@ grid.leadfield(~grid.inside) = {[]};
 % add the label of the channels
 grid.label           = sens.label;
 grid.leadfielddimord = '{pos}_chan_ori';
+if ~isfield(grid,'sensphil')
+    grid.sensphil = sens;
+end
 
 % mollify the leadfields
 if ~strcmp(cfg.mollify, 'no')
