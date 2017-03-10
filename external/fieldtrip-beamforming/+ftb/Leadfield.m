@@ -137,12 +137,13 @@ classdef Leadfield < ftb.AnalysisStep
                 switch elements{i}
                     
                     case 'electrodes-projected'
+                        hold on;
                         % Load data
                         lf = ftb.util.loadvar(obj.leadfield);
                         
-                        if isfield(lf,'sensphil')
+                        if isfield(lf.cfg,'sensphil')
                             % Convert to mm
-                            sens = ft_convert_units(lf.sensphil, unit);
+                            sens = ft_convert_units(lf.cfg.sensphil, unit);
                             
                             % Plot electrodes
                             if plot_labels

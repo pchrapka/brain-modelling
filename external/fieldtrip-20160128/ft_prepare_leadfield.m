@@ -232,9 +232,6 @@ grid.leadfield(~grid.inside) = {[]};
 % add the label of the channels
 grid.label           = sens.label;
 grid.leadfielddimord = '{pos}_chan_ori';
-if ~isfield(grid,'sensphil')
-    grid.sensphil = sens;
-end
 
 % mollify the leadfields
 if ~strcmp(cfg.mollify, 'no')
@@ -264,3 +261,7 @@ ft_postamble trackconfig
 ft_postamble previous   data
 ft_postamble provenance grid
 ft_postamble history    grid
+
+if ~isfield(grid.cfg,'sensphil')
+    grid.cfg.sensphil = sens;
+end
