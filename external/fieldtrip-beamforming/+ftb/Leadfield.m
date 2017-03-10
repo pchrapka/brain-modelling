@@ -130,8 +130,29 @@ classdef Leadfield < ftb.AnalysisStep
             
             unit = 'mm';
             
+            % check if we should plot labels
+            plot_labels = any(cellfun(@(x) isequal(x,'electrodes-labels'),elements));
+            
             for i=1:length(elements)
                 switch elements{i}
+                    
+                    case 'electrodes-projected'
+                        % Load data
+                        lf = ftb.util.loadvar(obj.leadfield);
+                        
+                        if isfield(lf,'sensphil')
+                            % Convert to mm
+                            sens = ft_convert_units(lf.sensphil, unit);
+                            
+                            % Plot electrodes
+                            if plot_labels
+                                ft_plot_sens(sens,'style','ok','label','label');
+                            else
+                                ft_plot_sens(sens,'style','ok');
+                            end
+                        else
+                            warning('no field sensphil');
+                        end
                     
                     case 'leadfield'
                         hold on;
