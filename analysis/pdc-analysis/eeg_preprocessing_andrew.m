@@ -62,10 +62,12 @@ cfg_pp.detrend = 'no';
 cfg_pp.demean = 'no';       % filter should handle this
 % cfg_pp.baselinewindow = [-0.1 0];
 switch subject
+    case 3
+        cfg_pp.channel = {'EEG'};
     case 6
         cfg_pp.channel = {'EEG','-D32','-C10'};
     otherwise
-        cfg_pp.channel = {'EEG'};
+        error([mfilename ':badchannels'],'check bad channels');
 end
 cfg_pp.bpfilter = 'yes';
 cfg_pp.bpfreq = [1 60];
@@ -147,10 +149,12 @@ cfg_pp.continuous = 'yes';
 cfg_pp.detrend = 'no';
 cfg_pp.demean = 'no';       % filter should handle this
 switch subject
+    case 3
+        cfg_pp.channel = {'EEG'};
     case 6
         cfg_pp.channel = {'EEG','-D32','-C10'};
     otherwise
-        cfg_pp.channel = {'EEG'};
+        error([mfilename ':badchannels'],'check bad channels');
 end
 cfg_pp.bpfilter = 'yes';
 cfg_pp.bpfreq = [15 25];

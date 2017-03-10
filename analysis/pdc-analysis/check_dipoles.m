@@ -39,11 +39,9 @@ nlocs = size(locsmni,1);
 for i=1:nlocs
     % create mask
     cfg = [];
-    cfg.inputcoord = 'mni';
-    cfg.atlas = atlas;
     cfg.roi = locsmni(i,:);
     cfg.round2nearestvoxel = 'yes';
-    cfg.sphere = 1; % don't know what units
+    cfg.sphere = 2; % don't know what units
     
     mask = ft_volumelookup(cfg,lf);
     

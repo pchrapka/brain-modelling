@@ -2,7 +2,7 @@
 
 params = [];
 params.patch_type = 'aal-coarse-19-outer-plus2';
-params.ntrials = [20 40 60];
+params.ntrials = [2 5 10 20 40 60];
 params.order = 3;
 params.lambda = 0.99;
 params.gamma = 1e-3;
@@ -10,16 +10,16 @@ params.normalization = 'allchannels';
 params.envelope = true;
 params.tracefields = {'Kf','Kb','Rf','ferror','berrord'};
 
+stimulus = 'std';
+subject = 3;
+deviant_percent = 10;
+
+[pipeline,outdir] = eeg_processall_andrew(...
+    stimulus,subject,deviant_percent,params.patch_type);
+
 lf_files = cell(length(params.ntrials),1);
 data_labels = lf_files;
 for i=1:length(params.ntrials)
-    
-    stimulus = 'std';
-    subject = 3;
-    deviant_percent = 10;
-    
-    [pipeline,outdir] = eeg_processall_andrew(...
-        stimulus,subject,deviant_percent,params.patch_type);
     
     % select lf params
     params_lf = copyfields(params,[],...
