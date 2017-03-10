@@ -5,7 +5,26 @@ function cfg = BFPatchAAL19_outer_plus2_rad2_andrew(data_name)
 switch data_name(1:3)
     case 's03'
         loc_l = [-34.357361   -8.505583   +9.360396];
+%         '12: no_label_found'
+%         '5: Insula_L'
+%         '3: Putamen_L'
+%         '3: Thalamus_L'
+%         '2: Rolandic_Oper_L'
+%         '2: Caudate_L'
+%         '2: Heschl_L'
+%         '1: Precentral_L'
+%         '1: Pallidum_L'
+%         '1: Temporal_Sup_L'
+
         loc_r = [+34.357361   -8.505583   +9.360396];
+%         '9: no_label_found'
+%         '6: Insula_R'
+%         '5: Putamen_R'
+%         '4: Thalamus_R'
+%         '3: Rolandic_Oper_R'
+%         '3: Caudate_R'
+%         '1: Pallidum_R'
+%         '1: Heschl_R'
     otherwise
         warning([mfilename ':dipoles'],'using default P1 dipoles');
         loc_l = [ -45.0, -3.2, 16.2];
@@ -35,9 +54,10 @@ switch data_name(1:3)
         warning('update bad EEG channels for ft_sourceanalysis in %s',mfilename);
 end
 
-cfg.name = sprintf('%s-%s',...
+cfg.name = sprintf('%s-%s-%s',...
     [cfg.PatchModel{1} '-outer-plus2-rad2'],...
-    cfg.ft_sourceanalysis.method);
+    cfg.ft_sourceanalysis.method,...
+    data_name(1:3));
 
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 save(fullfile(srcdir, [strrep(mfilename,'_','-') '.mat']),'cfg');
