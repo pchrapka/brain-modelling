@@ -1,9 +1,16 @@
 function cfg = BFPatchAAL19_outer_plus2_rad2_andrew(data_name)
 % BFPatchAAL
 
-% in Talaraich coordinates
-loc_l = [ -45.0, -3.2, 16.2];
-loc_r = [ 45.0, -3.2, 16.2];
+% P1 dipoles in Talaraich coordinates
+switch data_name(1:3)
+    case 's03'
+        loc_l = [-34.357361   -8.505583   +9.360396];
+        loc_r = [+34.357361   -8.505583   +9.360396];
+    otherwise
+        warning([mfilename ':dipoles'],'using default P1 dipoles');
+        loc_l = [ -45.0, -3.2, 16.2];
+        loc_r = [ 45.0, -3.2, 16.2];
+end
 locs = [loc_l; loc_r];
 locsmni = tal2mni(locs);
 locsmni = locsmni/10; % convert to cm

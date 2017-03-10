@@ -22,8 +22,14 @@ atlas = ft_convert_units(atlas,lf.unit);
 %%
 
 % in Talaraich coordinates
-loc1 = [ -45.0, -3.2, 16.2];
-loc2 = [ 45.0, -3.2, 16.2];
+% average
+% loc1 = [ -45.0, -3.2, 16.2];
+% loc2 = [ 45.0, -3.2, 16.2];
+
+% participant 3
+loc1 = [-34.357361   -8.505583   +9.360396];
+loc2 = [+34.357361   -8.505583   +9.360396];
+
 locs = [loc1; loc2];
 locsmni = tal2mni(locs);
 locsmni = locsmni/10; % convert to cm
