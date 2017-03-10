@@ -4,13 +4,13 @@
 params = [];
 k=1;
 
-gammas = [1e-2 1e-1];
+gammas = [1e-3 1e-2 1e-1];
 
 for i=1:length(gammas)
     %% aal-coarse-19-outer-nocer-plus2
     params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
     params(k).metrics = {'diag','info'};
-    params(k).ntrials = 40;
+    params(k).ntrials = 20;
     params(k).order = 3;
     params(k).lambda = 0.99;
     params(k).gamma = gammas(i);
@@ -21,7 +21,7 @@ for i=1:length(gammas)
     %% aal-coarse-19-outer-nocer-plus2 envelope
     params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
     params(k).metrics = {'diag','info'};
-    params(k).ntrials = 40;
+    params(k).ntrials = 20;
     params(k).order = 3;
     params(k).lambda = 0.99;
     params(k).gamma = gammas(i);
