@@ -23,6 +23,8 @@ params.ft_electroderealign.casesensitive = 'no';
 % remove unnecessary channels from later processing
 params.ft_channelselection = {'all','-NZ','-LPA','-RPA','-CMS'};
 switch data_name(1:3)
+    case 's03'
+        % all good
     case 's06'
         params.ft_channelselection = [params.ft_channelselection {'-D32','-C10'}];
     otherwise
