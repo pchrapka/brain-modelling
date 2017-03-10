@@ -8,7 +8,7 @@ for i=1:nlabels
         case 'aal'
             [hemis(i).name, hemis(i).order] = ChannelInfo.get_hemi_aal(obj.label{i},'single');
         case {'aal-coarse-13','aal-coarse-19',...
-                'aal-coarse-19-plus2','aal-coarse-19-outer-plus2'}
+                'aal-coarse-19-plus2','aal-coarse-19-outer-plus2','aal-coarse-19-outer-nocer-plus2'}
             [hemis(i).name, hemis(i).order] = ChannelInfo.get_hemi_aal(obj.label{i},'full');
         otherwise
             error('unknown atlas %s',atlas);

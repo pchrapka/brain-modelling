@@ -27,6 +27,8 @@ switch p.Results.patches
         params_bf = BFPatchAAL19_plus2_rad2_andrew(data_name);
     case 'aal-coarse-19-outer-plus2'
         params_bf = BFPatchAAL19_outer_plus2_rad2_andrew(data_name);
+    case 'aal-coarse-19-outer-nocer-plus2'
+        params_bf = BFPatchAAL19_outer_nocer_plus2_rad2_andrew(data_name);
     otherwise
         error('add new BeamformerPatch config for %s',p.Results.patches);
 end
