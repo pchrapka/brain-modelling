@@ -73,6 +73,14 @@ DATASETS=(
     # "2017-03-10-MCMTLOCCD_TWL4-T40-C12-P3-lambda=0.9900-gamma=1.000e-01-pdc-dynamic-diag-seed-*-0.0000-0.0049"
     # "2017-03-10-MCMTLOCCD_TWL4-T40-C12-P3-lambda=0.9900-gamma=1.000e-01-pdc-dynamic-info-seed-*-0.0000-0.0049"
 
+    # C12 no envelope, 20 trials, gamma 1e-3
+    "2017-03-10-MCMTLOCCD_TWL4-T20-C12-P3-lambda=0.9900-gamma=1.000e-03-pdc-dynamic-diag-seed-*-0.0073-0.0122"
+    "2017-03-10-MCMTLOCCD_TWL4-T20-C12-P3-lambda=0.9900-gamma=1.000e-03-pdc-dynamic-info-seed-*-0.0073-0.0122"
+
+    # C12 envelope, 20 trials, gamma 1e-3
+    "2017-03-10-MCMTLOCCD_TWL4-T20-C12-P3-lambda=0.9900-gamma=1.000e-03-pdc-dynamic-diag-seed-*-0.0000-0.0049"
+    "2017-03-10-MCMTLOCCD_TWL4-T20-C12-P3-lambda=0.9900-gamma=1.000e-03-pdc-dynamic-info-seed-*-0.0000-0.0049"
+
     # C12 no envelope, 20 trials, gamma 1e-2
     "2017-03-10-MCMTLOCCD_TWL4-T20-C12-P3-lambda=0.9900-gamma=1.000e-02-pdc-dynamic-diag-seed-*-0.0073-0.0122"
     "2017-03-10-MCMTLOCCD_TWL4-T20-C12-P3-lambda=0.9900-gamma=1.000e-02-pdc-dynamic-info-seed-*-0.0073-0.0122"
