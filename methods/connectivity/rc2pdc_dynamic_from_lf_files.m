@@ -28,6 +28,7 @@ parse(p,files,varargin{:});
 p2 = inputParser();
 p2.KeepUnmatched = true;
 addParameter(p2,'metric','euc',@ischar);
+addParameter(p2,'downsample',0,@(x) x >= 0);
 parse(p2,p.Results.params{:});
 
 if ischar(p.Results.files)
@@ -40,17 +41,11 @@ for i=1:length(files)
     [data_path,name,~] = fileparts(files{i});
     
     % create pdc output file name
-    outfile_pdc = fullfile(data_path,sprintf('%s-pdc-dynamic-%s.mat',name,p2.Results.metric));
+    outfile_pdc = fullfile(data_path,sprintf('%s-pdc-dynamic-%s-ds%d.mat',...
+        name,p2.Results.metric,p2.Results.downsample));
     
     % check pdc freshness
-    fresh = false;
-    if exist(outfile_pdc,'file')
-        data_time = get_timestamp(files{i});
-        pdc_time = get_timestamp(outfile_pdc);
-        if data_time > pdc_time
-            fresh = true;
-        end
-    end
+    fresh = isfresh(outfile_pdc,files{i});
     
     % load pdc
     if fresh || ~exist(outfile_pdc,'file')

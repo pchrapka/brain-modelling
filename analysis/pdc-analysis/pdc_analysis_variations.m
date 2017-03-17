@@ -95,8 +95,20 @@ for i=1:length(params)
             params_pdc.metric = params(i).metrics{j};
             params_func = struct2namevalue(params_pdc);
             
+            % TODO add downsample as a parameter
             eeg_file = fullfile(outdirbase,'fthelpers.ft_phaselocked.mat');
             pdc_analysis_main(pipeline, lf_files, eeg_file, params_func{:});
+            
+            if p.Results.flag_bootstrap
+                pdc_params = {'downsample',4,'metric',params(i).metrics{j}};
+                % TODO increase resampling
+                pdc_sig_file = pdc_bootstrap(...
+                    lf_files,'nresamples',1,'alpha',0.05,'pdc_params',pdc_params{:});
+                
+                % TODO plot with significance threshold
+            end
         end
     end
+end
+
 end

@@ -29,7 +29,7 @@ addRequired(p,'Pf',@(x) length(size(x)) == 3);
 addParameter(p,'specden',false,@islogical);
 addParameter(p,'coherence',false,@islogical);
 addParameter(p,'metric','euc',@ischar);
-addParameter(p,'downsample','none',@(x) isnumeric(x)  || isequal(x,'none'));
+addParameter(p,'downsample',0,@(x) x >= 0);
 parse(p,Kf,Kb,Pf,varargin{:});
 
 if size(Kf) ~= size(Kb)
@@ -45,7 +45,7 @@ options = copyfields(p.Results,[],...
     {'specden','coherence','metric'});
 
 %% downsample
-if ~isequal(p.Results.downsample,'none')
+if p.Results.downsample > 0
     fprintf('downsampling by %d\n',p.Results.downsample);
     % create index
     idx_mini = false(p.Results.downsample,1);
