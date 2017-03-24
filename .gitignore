@@ -13,6 +13,7 @@ experiments/exp13-lsl-error-vs-size/img/**
 **/output
 **/auto
 **/.ipynb_checkpoints
+**/progressbar*.txt
 
 # no external git projects
 external/fieldtrip-beamforming/.git

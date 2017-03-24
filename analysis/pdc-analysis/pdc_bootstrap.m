@@ -10,7 +10,8 @@ parse(p,lf_file,varargin{:});
 [outdir,filter_name,~] = fileparts(lf_file);
 workingdirname = sprintf('%s-bootstrap',filter_name);
 workingdir = fullfile(outdir,workingdirname);
-error('run through with nresamples and check data file sizes');
+
+threshold_stability = 5;
 
 %% create RCs for null distribution 
 % null distribution - no coupling
@@ -51,8 +52,8 @@ lf_btstrp = cell(p.Results.nresamples,1);
 % TODO switch back to parfor
 % parfor i=1:nresamples
 for i=1:nresamples
-    
-    data_bootstrap_file = fullfile(workingdir, sprintf('bootstrap%d.mat',i));
+    resampledir = sprintf('resample%d',i);
+    data_bootstrap_file = fullfile(workingdir, resampledir, sprintf('resample%d.mat',i));
     
     % check lf freshness
     fresh = isfresh(data_bootstrap_file, lf_file);
@@ -61,7 +62,7 @@ for i=1:nresamples
         % use all trials to generate one bootstrapped data set
         data_bootstrap = zeros(nchannels,nsamples,ntrials);
         for j=1:ntrials
-            stable = false
+            stable = false;
             while ~stable
                 res = resf(:,:,j);
                 % resample residual
@@ -69,68 +70,67 @@ for i=1:nresamples
                 res = res(idx,:);
                 
                 % generate data
-                % normalized or regular data?
-                [data_bootstrap(:,:,j),~,~] = process.simulate(...
+                % NOTE it should already be normalized since we're using
+                % the power from the filtered process
+                [data_bootstrap(:,:,j),~,~] = process.simulate(nsamples,...
                     'type_noise','input','noise_input',res');
                 
-                % TODO check stability
-                % if stable, stable = true
-                plot(data_bootstrap(:,:,j));
-                error('check stability')
-                % TODO write your own stability checker, since i don't want
-                % to simulate, i want to check the already simulated signal
+                % check stability
+                %plot(data_bootstrap(:,:,j)');
+                data_max = max(max(abs(data_bootstrap(:,:,j))));
+                if data_max > threshold_stability
+                    fprintf('%s: resample %d, trial %d: not stable\n',mfilename,i,j);
+                else
+                    fprintf('%s: resample %d, trial %d: stable\n',mfilename,i,j);
+                    stable = true;
+                end
                 
             end
         end
-        % TODO save generated data??
-        % i don't think it's necessary to save the generated data once it's
+        % save generated data
+        % NOTE i don't think it's necessary to save the generated data once it's
         % filtered, but i would then need to check the freshness of the
         % filter file and i don't have access to that here
         % hopefully the generated file isn't too big...
         save_parfor(data_bootstrap_file, data_bootstrap);
         clear data_bootstrap;
     else
-        fprintf('bootstrap %d already exists\n',i);
+        fprintf('%s: resample %d already exists\n',mfilename,i);
     end
     
     % set up lattice filter
     filters = {};
     filters{1} = MCMTLOCCD_TWL4(nchannels, norder, ntrials, filter_opts{:});
-    tag = sprintf('perm%d',i);
     
+    fprintf('%s: filtering resample %d\n',mfilename,i);
     % lattice filter
-    lf_btstrp{i} = run_lattice_filter(...
+    lf_btstrp(i) = run_lattice_filter(...
         data_bootstrap_file,...
-        'basedir',workingdir,...
-        'outdir',tag,...
+        'basedir',fullfile(workingdir,'fake.m'),...
+        'outdir',resampledir,...
         'filters', filters,...
         'warmup_noise', true,...
         'warmup_data', true,...
         'force',false,...
-        'verbosity',false,...
+        'verbosity',0,...
         'tracefields',{'Kf','Kb','Rf'},...
         'plot_pdc', false);
     
 end
 
 %% compute pdc and significance level
-nfreqs = 128; % FIXME shouldn't be hard coded
-pdc_all = nan(p.Results.nresamples, nsamples, nchannels, nchannels, nfreqs);
+% compute pdc for all files
+% already takes care of freshness and existence
+pdc_file = rc2pdc_dynamic_from_lf_files(lf_btstrp,'params',p.Results.pdc_params);
 
-% TODO remove as params, instead have pdc_params
-% pdc_params = {...
-%     'metric',p.Results.metric,...
-%     'downsample',p.Results.downsample,...
-%     };
+result = loadfile(pdc_file{1});
+dims = size(result.pdc);
+pdc_all = nan([p.Results.nresamples, dims]);
 
 % TODO  how big is this?
 for i=1:p.Results.nresamples
-    % compute pdc
-    % already takes care of freshness and existence
-    pdc_file = rc2pdc_dynamic_from_lf_files(lf_btstrp{i},'params',p.Results.pdc_params);
-    
-    result = loadfile(pdc_file);
-    
+    % collect results
+    result = loadfile(pdc_file{i});
     pdc_all(i,:,:,:,:) = result.pdc;
 end
 
@@ -141,15 +141,14 @@ end
 % save_parfor(outfile, pdc_all);
 
 % compute significance level for alpha
-pct = 1-p.Results.alpha;
+pct = (1-p.Results.alpha)*100;
 pdc_sig = prctile(pdc_all,pct,1);
 
 % save pdc significance levels
 % TODO get tag between [pdc-dynamic-...].mat
 pattern = '.*(pdc-dynamic-.*).mat';
-result = regexp(pdc_file,pattern,'tokens');
+result = regexp(pdc_file{1},pattern,'tokens');
 pdc_tag = result{1}{1};
-error('check this tag');
 
 outfilename = sprintf('%s-sig-n%d-alpha%0.2f.mat',...
     pdc_tag, p.Results.nresamples, p.Results.alpha);

@@ -107,7 +107,7 @@ for i=1:length(params)
                 pdc_params = {'downsample',4,'metric',params(i).metrics{j}};
                 % TODO increase resampling
                 pdc_sig_file = pdc_bootstrap(...
-                    lf_files,'nresamples',1,'alpha',0.05,'pdc_params',pdc_params{:});
+                    lf_files,'nresamples',100,'alpha',0.05,'pdc_params',pdc_params);
                 
                 % TODO plot with significance threshold
             end

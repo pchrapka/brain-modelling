@@ -129,16 +129,16 @@ classdef VTVRC < VARProcess
             addParameter(inputs,'mu',zeros(obj.K,1),@isnumeric);
             addParameter(inputs,'sigma',0.1,@isnumeric);
             addParameter(inputs,'noise_input',[],...
-                @(x) size(x) == [obj.nchannels obj.nsamples]);
-            parse(inputs,varargin{:});
+                @(x) isequal(size(x),[obj.K obj.nsamples]));
+            parse(inputs,nsamples,varargin{:});
             
-            switch p.Results.type_noise
+            switch inputs.Results.type_noise
                 case 'generate'
                     % generate noise
                     Sigma = inputs.Results.sigma*eye(obj.K);
                     noise = mvnrnd(inputs.Results.mu, Sigma, nsamples)';
                 case 'input'
-                    noise = p.inputs.noise_input;
+                    noise = inputs.Results.noise_input;
             end
             
             % init mem
