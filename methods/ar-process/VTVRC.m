@@ -56,7 +56,7 @@ classdef VTVRC < VARProcess
             
             % check dims
             dims = size(Kf);
-            if ~isequal(dim,size(obj.Kf))
+            if ~isequal(dims,size(obj.Kf))
                 fprintf('Kf input dims: \n');
                 disp(dims)
                 fprintf('required dims: \n');
@@ -67,7 +67,7 @@ classdef VTVRC < VARProcess
             end
             
             dims = size(Kb);
-            if ~isequal(dim,size(obj.Kb))
+            if ~isequal(dims,size(obj.Kb))
                 fprintf('Kb input dims: \n');
                 disp(dims)
                 fprintf('required dims: \n');

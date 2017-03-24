@@ -86,19 +86,22 @@ for i=1:length(params)
             % select lf params
             params_lf = copyfields(params2,[],...
                 {'ntrials','order','lambda','gamma','normalization','envelope'});
+            params_lf.tracefields = {'Kf','Kb','Rf','ferror'};
+            % added Rf for info criteria
+            % added ferror for bootstrap
             params_func = struct2namevalue(params_lf);
             lf_files = lf_analysis_main(pipeline, outdir, params_func{:});
             
-            % select pdc params
-            params_pdc = copyfields(params2,[],...
-                {'metric','patch_type','envelope'});
-            % change metric
-            params_pdc.metric = params(i).metrics{j};
-            params_func = struct2namevalue(params_pdc);
-            
-            % TODO add downsample as a parameter
-            eeg_file = fullfile(outdirbase,'fthelpers.ft_phaselocked.mat');
-            pdc_analysis_main(pipeline, lf_files, eeg_file, params_func{:});
+%             % select pdc params
+%             params_pdc = copyfields(params2,[],...
+%                 {'metric','patch_type','envelope'});
+%             % change metric
+%             params_pdc.metric = params(i).metrics{j};
+%             params_func = struct2namevalue(params_pdc);
+%             
+%             % TODO add downsample as a parameter
+%             eeg_file = fullfile(outdirbase,'fthelpers.ft_phaselocked.mat');
+%             pdc_analysis_main(pipeline, lf_files, eeg_file, params_func{:});
             
             if p.Results.flag_bootstrap
                 pdc_params = {'downsample',4,'metric',params(i).metrics{j}};
