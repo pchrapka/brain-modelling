@@ -1,11 +1,17 @@
 classdef VTVRC < VARProcess
     
     properties
+        K; % process dimension
+        P; % model order
+        
+        Kf; % forward coefficients
+        Kb; % backward coefficients
+        
         nsamples;
     end
     
     properties(SetAccess = private)
-        init;
+        init = false;
     end
 
     methods
