@@ -7,6 +7,7 @@ addParameter(p,'flag_tune',false,@islogical);
 addParameter(p,'flag_tune_order',false,@islogical);
 addParameter(p,'flag_tune_lambda',false,@islogical);
 addParameter(p,'flag_tune_gamma',false,@islogical);
+addParameter(p,'flag_bootstrap',false,@islogical);
 parse(p,params,varargin{:});
 
 

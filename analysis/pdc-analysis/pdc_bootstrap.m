@@ -12,7 +12,9 @@ workingdirname = sprintf('%s-bootstrap',filter_name);
 workingdir = fullfile(outdir,workingdirname);
 error('run through with nresamples and check data file sizes');
 
-%% set off diagonal elements to zero
+%% create RCs for null distribution 
+% null distribution - no coupling
+% set off diagonal elements to zero
 
 datalf = loadfile(lf_file);
 ntrials = datalf.filter.ntrials;
@@ -35,7 +37,6 @@ for i=1:nchannels
 end
 
 % create TV RC class
-% TODO create VTVRC - vector time-varying rc process class
 process = VTVRC(nchannels,norder,nsamples);
 process.coefs_set(datalf_nocoupling.Kf,datalf_nocoupling.Kb);
 
@@ -47,7 +48,9 @@ resf = datalf.estimate.ferror(:,:,:,norder); % samples channels trials order
 nresamples = p.Results.nresamples;
 filter_opts = {'lambda',datalf.filter.lambda,'gamma',datalf.filter.gamma};
 lf_btstrp = cell(p.Results.nresamples,1);
-parfor i=1:nresamples
+% TODO switch back to parfor
+% parfor i=1:nresamples
+for i=1:nresamples
     
     data_bootstrap_file = fullfile(workingdir, sprintf('bootstrap%d.mat',i));
     
@@ -58,16 +61,32 @@ parfor i=1:nresamples
         % use all trials to generate one bootstrapped data set
         data_bootstrap = zeros(nchannels,nsamples,ntrials);
         for j=1:ntrials
-            res = resf(:,:,j);
-            % resample residual
-            idx = randperm(nsamples);
-            res = res(idx,:);
-            
-            % generate data
-            % normalized or regular data?
-            [data_bootstrap(:,:,j),~,~] = process.simulate('noise',res');
+            stable = false
+            while ~stable
+                res = resf(:,:,j);
+                % resample residual
+                idx = randperm(nsamples);
+                res = res(idx,:);
+                
+                % generate data
+                % normalized or regular data?
+                [data_bootstrap(:,:,j),~,~] = process.simulate(...
+                    'type_noise','input','noise_input',res');
+                
+                % TODO check stability
+                % if stable, stable = true
+                plot(data_bootstrap(:,:,j));
+                error('check stability')
+                % TODO write your own stability checker, since i don't want
+                % to simulate, i want to check the already simulated signal
+                
+            end
         end
         % TODO save generated data??
+        % i don't think it's necessary to save the generated data once it's
+        % filtered, but i would then need to check the freshness of the
+        % filter file and i don't have access to that here
+        % hopefully the generated file isn't too big...
         save_parfor(data_bootstrap_file, data_bootstrap);
         clear data_bootstrap;
     else
