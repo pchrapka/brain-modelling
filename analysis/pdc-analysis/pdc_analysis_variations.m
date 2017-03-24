@@ -92,22 +92,21 @@ for i=1:length(params)
             params_func = struct2namevalue(params_lf);
             lf_files = lf_analysis_main(pipeline, outdir, params_func{:});
             
-%             % select pdc params
-%             params_pdc = copyfields(params2,[],...
-%                 {'metric','patch_type','envelope'});
-%             % change metric
-%             params_pdc.metric = params(i).metrics{j};
-%             params_func = struct2namevalue(params_pdc);
-%             
-%             % TODO add downsample as a parameter
-%             eeg_file = fullfile(outdirbase,'fthelpers.ft_phaselocked.mat');
-%             pdc_analysis_main(pipeline, lf_files, eeg_file, params_func{:});
+            % select pdc params
+            params_pdc = copyfields(params2,[],...
+                {'metric','patch_type','envelope'});
+            % change metric
+            params_pdc.metric = params(i).metrics{j};
+            params_func = struct2namevalue(params_pdc);
+            
+            % TODO add downsample as a parameter
+            eeg_file = fullfile(outdirbase,'fthelpers.ft_phaselocked.mat');
+            pdc_analysis_main(pipeline, lf_files, eeg_file, params_func{:});
             
             if p.Results.flag_bootstrap
                 pdc_params = {'downsample',4,'metric',params(i).metrics{j}};
-                % TODO increase resampling
                 pdc_sig_file = pdc_bootstrap(...
-                    lf_files,'nresamples',100,'alpha',0.05,'pdc_params',pdc_params);
+                    lf_files{1},'nresamples',100,'alpha',0.05,'pdc_params',pdc_params);
                 
                 % TODO plot with significance threshold
             end
