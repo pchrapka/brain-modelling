@@ -160,6 +160,9 @@ if fresh || ~exist(outfile,'file')
     nsamples_data = dims(1);
     pdc_sig = nan(dims);
     for j=1:nsamples_data
+        fprintf('%s: computing percentile for sample %d/%d\n',...
+            mfilename,j,nsamples_data);
+        
         % collect results from all resamplings
         pdc_all = nan([p.Results.nresamples, dims(2:end)]);
         parfor i=1:p.Results.nresamples
