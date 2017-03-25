@@ -110,7 +110,8 @@ flag.print_pdc_summary_beta = false;
 flag.plot_pdc_single_gt20 = false;
 flag.plot_pdc_directed_beta_hemis = false;
 flag.plot_pdc_directed_beta_circle = false;
-flag.plot_pdc_seed_beta = true;
+% flag.plot_pdc_seed_beta = true;
+flag.plot_pdc_seed_beta = false;
 
 %% plot rc
 if flag.plot_rc
