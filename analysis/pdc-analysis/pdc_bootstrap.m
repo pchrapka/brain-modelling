@@ -159,7 +159,7 @@ if fresh || ~exist(file_pdc_sig,'file')
     % otherwise the data set gets too big
     nsamples_data = dims(1);
     pdc_sig = nan(dims);
-    for j=1:nsamples_data
+    parfor j=1:nsamples_data
         fprintf('%s: computing percentile for sample %d/%d\n',...
             mfilename,j,nsamples_data);
         
@@ -187,7 +187,7 @@ if fresh || ~exist(file_pdc_sig,'file')
         
         if ~isempty(idx_start)
             % collect results from all resamplings
-            parfor i=idx_start:idx_end
+            for i=idx_start:idx_end
                 % collect results
                 result = loadfile(pdc_file{i});
                 pdc_all(i,:,:,:) = result.pdc(j,:,:,:);
