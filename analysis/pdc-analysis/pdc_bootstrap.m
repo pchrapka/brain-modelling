@@ -76,6 +76,18 @@ for i=1:nresamples
                     'type_noise','input','noise_input',res');
                 
                 % check stability
+                check_data = true;
+                if check_data
+                    hold off;
+                    plot(data_bootstrap(:,:,j)');
+                    
+                    prompt = 'hit any key to continue, q to quit';
+                    resp = input(prompt,'s');
+                    if isequal(lower(resp),'q')
+                        break;
+                    end
+                end
+                
                 %plot(data_bootstrap(:,:,j)');
                 data_max = max(max(abs(data_bootstrap(:,:,j))));
                 if data_max > threshold_stability
