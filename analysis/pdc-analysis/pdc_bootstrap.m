@@ -11,7 +11,7 @@ parse(p,lf_file,varargin{:});
 workingdirname = sprintf('%s-bootstrap',filter_name);
 workingdir = fullfile(outdir,workingdirname);
 
-threshold_stability = 5;
+threshold_stability = 10;
 
 %% create RCs for null distribution 
 % null distribution - no coupling
@@ -45,7 +45,7 @@ process.coefs_set(datalf_nocoupling.Kf,datalf_nocoupling.Kb);
 resf = datalf.estimate.ferror(:,:,:,norder); % samples channels trials order
 % use the middle part to avoid edge effects
 nsamples_ends = ceil(0.05*nsamples);
-% resf((end-nsamples_ends+1):end,:,:) = [];
+resf((end-nsamples_ends+1):end,:,:) = [];
 resf(1:nsamples_ends*2,:,:) = [];
 nsamples_effective = size(resf,1);
 % resb = datalf.estimate.berrord(:,:,:,norder);
