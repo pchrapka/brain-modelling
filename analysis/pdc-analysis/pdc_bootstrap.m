@@ -43,6 +43,11 @@ process.coefs_set(datalf_nocoupling.Kf,datalf_nocoupling.Kb);
 
 %% bootstrap data and lattice filter
 resf = datalf.estimate.ferror(:,:,:,norder); % samples channels trials order
+% use the middle part to avoid edge effects
+nsamples_ends = ceil(0.05*nsamples);
+resf((end-nsamples_ends+1):end,:,:) = [];
+resf(1:nsamples_ends,:,:) = [];
+nsamples_effective = size(resf,1);
 % resb = datalf.estimate.berrord(:,:,:,norder);
 
 % copy vars
@@ -66,7 +71,7 @@ for i=1:nresamples
             while ~stable
                 res = resf(:,:,j);
                 % resample residual
-                idx = randperm(nsamples);
+                idx = randperm(nsamples_effective,nsamples);
                 res = res(idx,:);
                 
                 % generate data
@@ -139,7 +144,6 @@ result = loadfile(pdc_file{1});
 dims = size(result.pdc);
 pdc_all = nan([p.Results.nresamples, dims]);
 
-% TODO  how big is this?
 for i=1:p.Results.nresamples
     % collect results
     result = loadfile(pdc_file{i});
