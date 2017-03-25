@@ -131,45 +131,53 @@ parfor i=1:nresamples
     
 end
 
-%% compute pdc and significance level
+%% compute pdc
 % compute pdc for all files
 % already takes care of freshness and existence
 pdc_file = rc2pdc_dynamic_from_lf_files(lf_btstrp,'params',p.Results.pdc_params);
 
-result = loadfile(pdc_file{1});
-dims = size(result.pdc);
+%% compute significance levels
 
-% collect pdc results for each sample
-% otherwise the data set gets too big
-nsamples_data = dims(1);
-pdc_sig = nan(dims);
-for j=1:nsamples_data
-    % collect results from all resamplings
-    pdc_all = nan([p.Results.nresamples, dims(2:end)]);
-    parfor i=1:p.Results.nresamples
-        % collect results
-        result = loadfile(pdc_file{i});
-        pdc_all(i,:,:,:) = result.pdc(j,:,:,:);
-    end
-    outfile = fullfile(workingdir, 'bootstrap-by-samples', sprintf('sample%d.mat',j));
-    save_parfor(outfile, pdc_all)
-    
-    % compute significance level for alpha
-    pct = (1-p.Results.alpha)*100;  
-    pdc_sig(j,:,:,:) = prctile(pdc_all,pct,1);
-end
-
-
-% save pdc significance levels
 % get tag between [pdc-dynamic-...].mat
 pattern = '.*(pdc-dynamic-.*).mat';
 result = regexp(pdc_file{1},pattern,'tokens');
 pdc_tag = result{1}{1};
 
+% create pdc signifiance file name
 outfilename = sprintf('%s-sig-n%d-alpha%0.2f.mat',...
     pdc_tag, p.Results.nresamples, p.Results.alpha);
 outfile = fullfile(workingdir, outfilename);
-save_parfor(outfile,pdc_sig);
+
+fresh = isfresh(outfile, lf_file);
+if fresh || ~exist(outfile,'file')
+    
+    % get pdc size
+    result = loadfile(pdc_file{1});
+    dims = size(result.pdc);
+    
+    % collect pdc results for each sample
+    % otherwise the data set gets too big
+    nsamples_data = dims(1);
+    pdc_sig = nan(dims);
+    for j=1:nsamples_data
+        % collect results from all resamplings
+        pdc_all = nan([p.Results.nresamples, dims(2:end)]);
+        parfor i=1:p.Results.nresamples
+            % collect results
+            result = loadfile(pdc_file{i});
+            pdc_all(i,:,:,:) = result.pdc(j,:,:,:);
+        end
+        outfile = fullfile(workingdir, 'bootstrap-by-samples', sprintf('sample%d.mat',j));
+        save_parfor(outfile, pdc_all)
+        
+        % compute significance level for alpha
+        pct = (1-p.Results.alpha)*100;
+        pdc_sig(j,:,:,:) = prctile(pdc_all,pct,1);
+    end
+    
+    % save pdc significance levels
+    save_parfor(outfile,pdc_sig);
+end
 
 
 end
