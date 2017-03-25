@@ -160,11 +160,16 @@ if fresh || ~exist(file_pdc_sig,'file')
     nsamples_data = dims(1);
     pdc_sig = nan(dims);
     parfor j=1:nsamples_data
+        % clear vars
+        idx_start = [];
+        idx_end = [];
+        
         fprintf('%s: computing percentile for sample %d/%d\n',...
             mfilename,j,nsamples_data);
         
         outfile = fullfile(workingdir, 'bootstrap-by-samples', sprintf('sample%d.mat',j));
-        if exist(outfile,'file')
+        if exist(outfile,'file') && ~fresh
+            % if the lf_file is fresh we want to redo all the work
             pdc_all = loadfile(outfile);
             nresamples_saved = size(pdc_all,1);
             if nresamples_saved < p.Results.nresamples
@@ -177,6 +182,7 @@ if fresh || ~exist(file_pdc_sig,'file')
             else
                 % do nothing
                 idx_start = [];
+                idx_end = [];
             end
         else
             fprintf('%s: reorganizing resamples\n',mfilename);
