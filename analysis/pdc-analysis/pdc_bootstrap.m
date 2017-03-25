@@ -138,26 +138,30 @@ pdc_file = rc2pdc_dynamic_from_lf_files(lf_btstrp,'params',p.Results.pdc_params)
 
 result = loadfile(pdc_file{1});
 dims = size(result.pdc);
-pdc_all = nan([p.Results.nresamples, dims]);
 
-for i=1:p.Results.nresamples
-    % collect results
-    result = loadfile(pdc_file{i});
-    pdc_all(i,:,:,:,:) = result.pdc;
+% collect pdc results for each sample
+% otherwise the data set gets too big
+nsamples_data = dims(1);
+pdc_sig = nan(dims);
+for j=1:nsamples_data
+    % collect results from all resamplings
+    pdc_all = nan([p.Results.nresamples, dims(2:end)]);
+    parfor i=1:p.Results.nresamples
+        % collect results
+        result = loadfile(pdc_file{i});
+        pdc_all(i,:,:,:) = result.pdc(j,:,:,:);
+    end
+    outfile = fullfile(workingdir, 'bootstrap-by-samples', sprintf('sample%d.mat',j));
+    save_parfor(outfile, pdc_all)
+    
+    % compute significance level for alpha
+    pct = (1-p.Results.alpha)*100;  
+    pdc_sig(j,:,:,:) = prctile(pdc_all,pct,1);
 end
 
-% NOTE this might be needed if pdc_all is really big
-% % save into file for sample j
-% outfile = fullfile(workingdir, sprintf('pdc-bootstrap-%s.mat',p.Results.metric));
-% % TODO add output directory, use data dir
-% save_parfor(outfile, pdc_all);
-
-% compute significance level for alpha
-pct = (1-p.Results.alpha)*100;
-pdc_sig = prctile(pdc_all,pct,1);
 
 % save pdc significance levels
-% TODO get tag between [pdc-dynamic-...].mat
+% get tag between [pdc-dynamic-...].mat
 pattern = '.*(pdc-dynamic-.*).mat';
 result = regexp(pdc_file{1},pattern,'tokens');
 pdc_tag = result{1}{1};
