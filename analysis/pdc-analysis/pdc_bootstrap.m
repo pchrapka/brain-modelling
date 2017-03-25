@@ -45,8 +45,8 @@ process.coefs_set(datalf_nocoupling.Kf,datalf_nocoupling.Kb);
 resf = datalf.estimate.ferror(:,:,:,norder); % samples channels trials order
 % use the middle part to avoid edge effects
 nsamples_ends = ceil(0.05*nsamples);
-resf((end-nsamples_ends+1):end,:,:) = [];
-resf(1:nsamples_ends,:,:) = [];
+% resf((end-nsamples_ends+1):end,:,:) = [];
+resf(1:nsamples_ends*2,:,:) = [];
 nsamples_effective = size(resf,1);
 % resb = datalf.estimate.berrord(:,:,:,norder);
 
@@ -55,8 +55,8 @@ nresamples = p.Results.nresamples;
 filter_opts = {'lambda',datalf.filter.lambda,'gamma',datalf.filter.gamma};
 lf_btstrp = cell(p.Results.nresamples,1);
 % TODO switch back to parfor
-% parfor i=1:nresamples
-for i=1:nresamples
+parfor i=1:nresamples
+% for i=1:nresamples
     resampledir = sprintf('resample%d',i);
     data_bootstrap_file = fullfile(workingdir, resampledir, sprintf('resample%d.mat',i));
     
@@ -69,10 +69,9 @@ for i=1:nresamples
         for j=1:ntrials
             stable = false;
             while ~stable
-                res = resf(:,:,j);
                 % resample residual
-                idx = randperm(nsamples_effective,nsamples);
-                res = res(idx,:);
+                idx = randi(nsamples_effective,nsamples,1);
+                res = resf(idx,:,j);
                 
                 % generate data
                 % NOTE it should already be normalized since we're using
@@ -81,16 +80,13 @@ for i=1:nresamples
                     'type_noise','input','noise_input',res');
                 
                 % check stability
-                check_data = true;
+                check_data = false;
                 if check_data
                     hold off;
                     plot(data_bootstrap(:,:,j)');
                     
-                    prompt = 'hit any key to continue, q to quit';
+                    prompt = 'hit any key to continue';
                     resp = input(prompt,'s');
-                    if isequal(lower(resp),'q')
-                        break;
-                    end
                 end
                 
                 %plot(data_bootstrap(:,:,j)');
@@ -110,7 +106,7 @@ for i=1:nresamples
         % filter file and i don't have access to that here
         % hopefully the generated file isn't too big...
         save_parfor(data_bootstrap_file, data_bootstrap);
-        clear data_bootstrap;
+        %clear data_bootstrap;
     else
         fprintf('%s: resample %d already exists\n',mfilename,i);
     end
