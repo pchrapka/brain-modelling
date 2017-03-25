@@ -8,13 +8,23 @@ order_est = norder;
 lambda = 0.99;
 gamma = 1;
 
-nsamples = 3000;
-ntrials = 40;
+process_version = 3;
+
+switch process_version
+    case 2
+        nsamples = 3000;
+        ntrials = 40;
+        vrc_type_params = {'time',nsamples,'order',norder};
+    case 3
+        nsamples = 358;
+        ntrials = 5;
+        vrc_type_params = {};
+end
+    
 
 %% set up vrc
 vrc_type = 'vrc-cp-ch2-coupling2-rnd';
-vrc_type_params = {'time',nsamples,'order',norder}; % use default
-vrc_gen = VARGenerator(vrc_type, nchannels, 'version', 2);
+vrc_gen = VARGenerator(vrc_type, nchannels, 'version', process_version);
 if ~vrc_gen.hasprocess
     vrc_gen.configure(vrc_type_params{:});
 end
@@ -72,4 +82,4 @@ lf_files = run_lattice_filter(...
 % select pdc params
 pdc_params = {'downsample',4,'metric','diag'};
 
-pdc_bootstrap(lf_files{1},'nresamples',1,'alpha',0.05,'pdc_params',pdc_params);
+pdc_bootstrap(lf_files{1},'nresamples',2,'alpha',0.05,'pdc_params',pdc_params);

@@ -1,4 +1,4 @@
-function outfile = pdc_bootstrap(lf_file,varargin)
+function file_pdc_sig = pdc_bootstrap(lf_file,varargin)
 
 p = inputParser();
 addRequired(p,'lf_file',@ischar);
@@ -146,10 +146,10 @@ pdc_tag = result{1}{1};
 % create pdc signifiance file name
 outfilename = sprintf('%s-sig-n%d-alpha%0.2f.mat',...
     pdc_tag, p.Results.nresamples, p.Results.alpha);
-outfile = fullfile(workingdir, outfilename);
+file_pdc_sig = fullfile(workingdir, outfilename);
 
-fresh = isfresh(outfile, lf_file);
-if fresh || ~exist(outfile,'file')
+fresh = isfresh(file_pdc_sig, lf_file);
+if fresh || ~exist(file_pdc_sig,'file')
     
     % get pdc size
     result = loadfile(pdc_file{1});
@@ -163,15 +163,43 @@ if fresh || ~exist(outfile,'file')
         fprintf('%s: computing percentile for sample %d/%d\n',...
             mfilename,j,nsamples_data);
         
-        % collect results from all resamplings
-        pdc_all = nan([p.Results.nresamples, dims(2:end)]);
-        parfor i=1:p.Results.nresamples
-            % collect results
-            result = loadfile(pdc_file{i});
-            pdc_all(i,:,:,:) = result.pdc(j,:,:,:);
-        end
         outfile = fullfile(workingdir, 'bootstrap-by-samples', sprintf('sample%d.mat',j));
-        save_parfor(outfile, pdc_all)
+        if exist(outfile,'file')
+            pdc_all = loadfile(outfile);
+            nresamples_saved = size(pdc_all,1);
+            if nresamples_saved < p.Results.nresamples
+                % add samples that haven't been saved
+                fprintf('%s: adding more resamples %d -> %d\n',...
+                    mfilename,nresamples_saved,p.Results.nresamples);
+                
+                idx_start = nresamples_saved+1;
+                idx_end = p.Results.nresamples;
+            else
+                % do nothing
+                idx_start = [];
+            end
+        else
+            fprintf('%s: reorganizing resamples\n',mfilename);
+            idx_start = 1;
+            idx_end = p.Results.nresamples;
+            pdc_all = nan([p.Results.nresamples, dims(2:end)]);
+        end
+        
+        if ~isempty(idx_start)
+            % collect results from all resamplings
+            parfor i=idx_start:idx_end
+                % collect results
+                result = loadfile(pdc_file{i});
+                pdc_all(i,:,:,:) = result.pdc(j,:,:,:);
+            end
+            save_parfor(outfile, pdc_all)
+        end
+        
+        if size(pdc_all,1) < p.Results.nresamples
+            error('missing samples');
+        end
+        % select required samples
+        pdc_all = pdc_all(1:p.Results.nresamples,:,:,:);
         
         % compute significance level for alpha
         pct = (1-p.Results.alpha)*100;
@@ -179,7 +207,7 @@ if fresh || ~exist(outfile,'file')
     end
     
     % save pdc significance levels
-    save_parfor(outfile,pdc_sig);
+    save_parfor(file_pdc_sig,pdc_sig);
 end
 
 
