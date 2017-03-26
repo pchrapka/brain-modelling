@@ -199,7 +199,7 @@ if any(fresh) || ~exist(file_pdc_sig,'file')
         
         outfile = fullfile(workingdir, 'bootstrap-by-samples', pdc_tag,...
             sprintf('sample%d-n%d.mat',j,nresamples));
-        fresh = cellfun(@(x) isfresh(outfile, x), pdc_file_sampleT{j,:}, 'UniformOutput', true);
+        fresh = cellfun(@(x) isfresh(outfile, x), pdc_file_sampleT(j,:), 'UniformOutput', true);
         if any(fresh) || ~exist(outfile,'file')
         
             fprintf('%s: reorganizing resamples\n',mfilename);
