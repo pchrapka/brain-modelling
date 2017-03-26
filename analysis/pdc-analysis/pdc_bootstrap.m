@@ -136,6 +136,38 @@ end
 % already takes care of freshness and existence
 pdc_file = rc2pdc_dynamic_from_lf_files(lf_btstrp,'params',p.Results.pdc_params);
 
+% get pdc size
+result = loadfile(pdc_file{1});
+pdc_dims = size(result.pdc);
+nsamples_data = pdc_dims(1);
+
+% split up pdc by sample
+% loop over pdc files
+pdc_file_sample = cell(size(pdc_file,1),nsamples_data);
+parfor i=1:nresamples
+    fprintf('%s: splitting pdc %d/%d\n',mfilename,i,length(pdc_file));
+    result = [];
+    
+    % loop over samples in pdc
+    for j=1:nsamples_data
+        % set up output file
+        pdc_file_sample{i,j} = strrep(pdc_file{i},'.mat',sprintf('-sample%d.mat',j));
+        fresh = isfresh(pdc_file_sample{i,j},pdc_file{i});
+        if fresh || ~exist(pdc_file_sample{i,j},'file')
+            fprintf('%s: splitting pdc sample %d/%d\n',mfilename,j,nsamples_data);
+            if isempty(result)
+                % only load pdc once
+                result = loadfile(pdc_file{i});
+            end
+            
+            result_new = [];
+            result_new.pdc = result.pdc(j,:,:,:);
+            save_parfor(pdc_file_sample{i,j}, result_new);
+        end
+    end
+    
+end
+
 %% compute significance levels
 
 % get tag between [pdc-dynamic-...].mat
@@ -145,67 +177,39 @@ pdc_tag = result{1}{1};
 
 % create pdc signifiance file name
 outfilename = sprintf('%s-sig-n%d-alpha%0.2f.mat',...
-    pdc_tag, p.Results.nresamples, p.Results.alpha);
+    pdc_tag, nresamples, p.Results.alpha);
 file_pdc_sig = fullfile(workingdir, outfilename);
 
-fresh = isfresh(file_pdc_sig, lf_file);
-if fresh || ~exist(file_pdc_sig,'file')
-    
-    % get pdc size
-    result = loadfile(pdc_file{1});
-    dims = size(result.pdc);
+% fresh = isfresh(file_pdc_sig, lf_file);
+fresh = cellfun(@(x) isfresh(file_pdc_sig, x), pdc_file, 'UniformOutput', true);
+if any(fresh) || ~exist(file_pdc_sig,'file')
     
     % collect pdc results for each sample
     % otherwise the data set gets too big
-    nsamples_data = dims(1);
-    pdc_sig = nan(dims);
+    pdc_sig = nan(pdc_dims);
+    pdc_file_sampleT = pdc_file_sample';
     parfor j=1:nsamples_data
-        % clear vars
-        idx_start = [];
-        idx_end = [];
-        
         fprintf('%s: computing percentile for sample %d/%d\n',...
             mfilename,j,nsamples_data);
         
-        outfile = fullfile(workingdir, 'bootstrap-by-samples', sprintf('sample%d.mat',j));
-        if exist(outfile,'file') && ~fresh
-            % if the lf_file is fresh we want to redo all the work
-            pdc_all = loadfile(outfile);
-            nresamples_saved = size(pdc_all,1);
-            if nresamples_saved < p.Results.nresamples
-                % add samples that haven't been saved
-                fprintf('%s: adding more resamples %d -> %d\n',...
-                    mfilename,nresamples_saved,p.Results.nresamples);
-                
-                idx_start = nresamples_saved+1;
-                idx_end = p.Results.nresamples;
-            else
-                % do nothing
-                idx_start = [];
-                idx_end = [];
-            end
-        else
-            fprintf('%s: reorganizing resamples\n',mfilename);
-            idx_start = 1;
-            idx_end = p.Results.nresamples;
-            pdc_all = nan([p.Results.nresamples, dims(2:end)]);
-        end
+        outfile = fullfile(workingdir, 'bootstrap-by-samples',...
+            sprintf('sample%d-n%d.mat',j,nresamples));
+        fresh = cellfun(@(x) isfresh(outfile, x), pdc_file_sampleT{j,:}, 'UniformOutput', true);
+        if any(fresh) || ~exist(outfile,'file')
         
-        if ~isempty(idx_start)
+            fprintf('%s: reorganizing resamples\n',mfilename);
+            pdc_all = nan([nresamples, pdc_dims(2:end)]);
+        
             % collect results from all resamplings
-            for i=idx_start:idx_end
+            for i=1:nresamples
                 % collect results
-                result = loadfile(pdc_file{i});
-                pdc_all(i,:,:,:) = result.pdc(j,:,:,:);
+                result = loadfile(pdc_file_sampleT{j,i});
+                pdc_all(i,:,:,:) = result.pdc(:,:,:);
             end
             save_parfor(outfile, pdc_all)
+        else
+            pdc_all = loadfile(outfile);
         end
-        
-        if size(pdc_all,1) < p.Results.nresamples
-            error('missing samples');
-        end
-        % select required samples
-        pdc_all = pdc_all(1:p.Results.nresamples,:,:,:);
         
         % compute significance level for alpha
         pct = (1-p.Results.alpha)*100;
