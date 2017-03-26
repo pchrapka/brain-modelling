@@ -163,9 +163,10 @@ parfor i=1:nresamples
         fresh = isfresh(pdc_file_sample{i,j},pdc_file{i});
         if fresh || ~exist(pdc_file_sample{i,j},'file')
             % split up pdc by sample
-            fprintf('%s: splitting pdc sample %d/%d\n',mfilename,j,nsamples_data);
+            fprintf('%s: resample %d, splitting pdc sample %d/%d\n',mfilename,i,j,nsamples_data);
             if isempty(result)
                 % only load pdc once
+                fprintf('loading %s\n',pdc_file{i});
                 result = loadfile(pdc_file{i});
             end
             
@@ -206,6 +207,7 @@ if any(fresh) || ~exist(file_pdc_sig,'file')
         
             % collect results from all resamplings
             for i=1:nresamples
+                fprintf('%s: sample %d, collecting pdc resample %d/%d\n',mfilename,j,i,nresamples);
                 % collect results
                 result = loadfile(pdc_file_sampleT{j,i});
                 pdc_all(i,:,:,:) = result.pdc(:,:,:);
