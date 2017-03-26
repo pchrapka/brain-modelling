@@ -32,7 +32,7 @@ addParameter(p,'layout','default',@(x) any(validatestring(x,{'default','openhemi
 parse(p,varargin{:});
 
 obj.save_tag = [];
-obj.load();
+obj.load('pdc');
 obj.check_info();
 
 debug = false;

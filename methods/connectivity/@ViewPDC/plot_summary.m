@@ -17,7 +17,7 @@ addParameter(p,'outdir','',@ischar);
 parse(p,varargin{:});
 
 obj.save_tag = [];
-obj.load();
+obj.load('pdc');
 obj.check_info();
 
 [~,nchannels,~,~] = size(obj.pdc);

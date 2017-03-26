@@ -83,6 +83,7 @@ for i=1:length(params)
         % loop over metrics
         for j=1:length(params(i).metrics)
             
+            %% compute RC with lattice filter
             % select lf params
             params_lf = copyfields(params2,[],...
                 {'ntrials','order','lambda','gamma','normalization','envelope'});
@@ -92,24 +93,70 @@ for i=1:length(params)
             params_func = struct2namevalue(params_lf);
             lf_files = lf_analysis_main(pipeline, outdir, params_func{:});
             
-            % select pdc params
-            params_pdc = copyfields(params2,[],...
-                {'metric','patch_type','envelope'});
-            % change metric
-            params_pdc.metric = params(i).metrics{j};
-            params_func = struct2namevalue(params_pdc);
+            %% compute pdc
+            downsample_by = 4;
+            pdc_params = {...
+                'metric',params(i).metrics{j},...
+                'downsample',downsample_by,...
+                };
+            pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
             
-            % TODO add downsample as a parameter
+            %% view set up
+            % select pdc view params
+            params_pdc_view = copyfields(params2,[],...
+                {'patch_type','envelope'});
+            params_func = struct2namevalue(params_pdc_view);
+            
             eeg_file = fullfile(outdirbase,'fthelpers.ft_phaselocked.mat');
-            pdc_analysis_main(pipeline, lf_files, eeg_file, params_func{:});
+            leadfield_file = pipeline.steps{end}.lf.leadfield;
+            % create the ViewPDC obj
+            view_obj = pdc_analysis_create_view(...
+                pdc_files{1},eeg_file,leadfield_file,params_func{:});
             
+            % add params for viewing
+            params_plot_seed{1} = {'threshold',0.2};
+            
+            %% bootstrap
             if p.Results.flag_bootstrap
-                pdc_params = {'downsample',4,'metric',params(i).metrics{j}};
                 pdc_sig_file = pdc_bootstrap(...
                     lf_files{1},'nresamples',100,'alpha',0.05,'pdc_params',pdc_params);
                 
-                % TODO plot with significance threshold
+                % add significance threshold data
+                view_obj.pdc_sig_file = pdc_sig_file;
+                
+                params_plot_seed{2} = {'threshold_mode','significance'};
+                params_plot_seed{3} = {'threshold_mode','significance_alpha'};
             end
+            
+            %% views
+            if params(i).envelope
+                view_switch(view_obj,'10')
+                % following views at 0-10 Hz
+            else
+                view_switch(view_obj,'beta')
+                % following views at 15-25 Hz
+            end
+            nchannels = length(view_obj.info.label);
+            
+            %% plot seed
+            directions = {'outgoing','incoming'};
+            for direc=1:length(directions)
+                for ch=1:nchannels
+                    for idx_param=1:length(params_plot_seed)
+                        params_plot_seed_cur = params_plot_seed{idx_params};
+                        
+                        view_obj.plot_seed(ch,...
+                            'direction',directions{direc},...
+                            params_plot_seed_cur{:},...
+                            'vertlines',[0 0.5]);
+                        
+                        view_obj.save_plot('save',true,'engine','matlab');
+                        close(gcf);
+                    end
+                end
+            end
+            
+            
         end
     end
 end

@@ -1,7 +1,7 @@
 function plot_tiled(obj)
 
 obj.save_tag = [];
-obj.load();
+obj.load('pdc');
 obj.check_info();
 
 [~,nchannels,~,nfreqs]=size(obj.pdc);

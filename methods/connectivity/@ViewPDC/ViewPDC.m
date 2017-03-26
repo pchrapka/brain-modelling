@@ -4,10 +4,12 @@ classdef ViewPDC < handle
     
     properties 
         w;
+        pdc_sig_file;
     end
     
     properties (SetAccess = protected)
         pdc;
+        pdc_sig;
         file;
         fs;
         info;
@@ -75,18 +77,39 @@ classdef ViewPDC < handle
             obj.pdc = [];
         end
         
-        function load(obj)
-            if isempty(obj.pdc)
-                print_msg_filename(obj.file,'loading');
-                data = loadfile(obj.file);
-                obj.pdc = data.pdc;
-                
-                dims = size(obj.pdc);
-                ndims = length(dims);
-                if ndims ~= 4
-                    obj.pdc = [];
-                    error('requires dynamic pdc data');
-                end
+        function load(obj,property)
+            switch property
+                case 'pdc'
+                    if isempty(obj.pdc)
+                        print_msg_filename(obj.file,'loading');
+                        data = loadfile(obj.file);
+                        obj.pdc = data.pdc;
+                        
+                        dims = size(obj.pdc);
+                        ndims = length(dims);
+                        if ndims ~= 4
+                            obj.pdc = [];
+                            error('requires dynamic pdc data');
+                        end
+                    end
+                case 'pdc_sig'
+                    if isempty(obj.pdc_sig)
+                        if isempty(obj.pdc_sig_file)
+                            error('missing pdc_sig_file');
+                        end
+                        print_msg_filename(obj.pdc_sig_file,'loading');
+                        obj.pdc_sig = loadfile(obj.pdc_sig_file);
+                        
+                        % pdc sig needs to be same size as pdc
+                        dims = size(obj.pdc_sig);
+                        if ~isequal(dims, size(obj.pdc))
+                            obj.pdc_sig = [];
+                            error('significant pdc is not the same size as pdc');
+                        end
+                    end
+ 
+                otherwise
+                    error('unknown property %s',property);
             end
         end
         

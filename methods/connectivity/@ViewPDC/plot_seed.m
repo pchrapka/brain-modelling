@@ -5,13 +5,19 @@ addRequired(p,'chseed',@isnumeric);
 addParameter(p,'direction','outgoing',@(x) any(validatestring(x,{'outgoing','incoming'})));
 addParameter(p,'vertlines',[],@isvector);
 addParameter(p,'threshold',0.05,@(x) x >= 0 && x <= 1);
+addParameter(p,'threshold_mode','numeric',@(x) any(validatestring(x,{'numeric','significance','significance_alpha'})));
 % addParameter(p,'save',false,@islogical);
 % addParameter(p,'outdir','',@ischar);
 parse(p,chseed,varargin{:});
 
 obj.save_tag = [];
-obj.load();
+obj.load('pdc');
 obj.check_info();
+
+switch p.Results.threshold_mode
+    case {'significance','significance_alpha'}
+        obj.load('pdc_sig');
+end
 
 [nsamples,nchannels,~,nfreqs] = size(obj.pdc);
     
@@ -30,6 +36,7 @@ label_seed = obj.info.label{p.Results.chseed};
 data_plot = zeros(nchannels,nsamples);
 yticklabel = cell(nchannels,1);
 count = 1;
+tag_threshold = '';
 for i=1:nchannels
     if i == p.Results.chseed
         % skip the diagonals, not informative
@@ -44,11 +51,27 @@ for i=1:nchannels
     end
     
     % threshold data
-    data_all = data_temp(data_temp > p.Results.threshold);
-    data_all = sum(data_all(:));
+    switch p.Results.threshold_mode
+        case 'numeric'
+            % zero out everything that doesn't meet the threshold
+            data_temp(data_temp < p.Results.threshold) = 0;
+            tag_threshold = sprintf('thresh%0.2f',p.Results.threshold);
+        case 'significiance'
+            % zero out everything that doesn't meet the threshold
+            data_temp(data_temp < obj.pdc_sig) = 0;
+            tag_threshold = 'threshsig';
+        case 'significance_alpha'
+            % plot all data, add significance as alpha layer
+            alpha = obj.pdc_sig;
+            tag_threshold = 'threshsigalpha';
+            % do nothing to data_temp
+        otherwise
+            % do nothing
+    end
     
     % only add to plot if the whole sum is not 0
-    if data_all > 0
+    data_sum = sum(data_temp(:));
+    if data_sum > 0
         % sum over frequencies
         data_plot(i,:) = sum(data_temp,2);
         yticklabel{i} = obj.info.label{i};
@@ -105,11 +128,18 @@ axes(ax1);
 set(ax1,'FontSize',12);
 
 clim = [0 1];
-imagesc(data_plot,clim);
+im = imagesc(data_plot,clim);
+
+% set colormap
 cmap = colormap(hot);
 cmap = flipdim(cmap,1);
 colormap(cmap);
 colorbar();
+
+switch p.Results.threshold_mode
+    case 'significance_alpha'
+        set(im,'AlphaData',alpha);
+end
 
 % add left axis with channel labels
 ytick = 1:length(yticklabel);
@@ -131,6 +161,7 @@ if ~isempty(obj.time)
     end
 end
 
+% set labels and save tag
 switch p.Results.direction
     case 'outgoing'
         str_xlabel = 'from';
@@ -151,8 +182,12 @@ switch p.Results.direction
         xlabel(xlabel_string);
         obj.save_tag = sprintf('-seed-in-i%d',p.Results.chseed);
 end
+if ~isempty(tag_threshold)
+    % add threshold tag
+    obj.save_tag = [obj.save_tag '-' tag_threshold];
+end
 
-% add region info
+% add region bar on left side
 if ~isempty(obj.info.region)
     set(ax2,'FontSize',12);
     set(ax2,'YLim',get(ax1,'YLim'),'YDir',get(ax1,'YDir'));

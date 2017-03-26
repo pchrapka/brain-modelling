@@ -47,7 +47,7 @@ if fresh || ~exist(outfile_pdc,'file')
     fprintf('computing pdc summary\n');
     
     % load data
-    obj.load();
+    obj.load('pdc');
     
     fprintf('summarizing data\n');
     
