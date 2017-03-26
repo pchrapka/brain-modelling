@@ -141,7 +141,11 @@ result = loadfile(pdc_file{1});
 pdc_dims = size(result.pdc);
 nsamples_data = pdc_dims(1);
 
-% split up pdc by sample
+% get tag between [pdc-dynamic-...].mat
+pattern = '.*(pdc-dynamic-.*).mat';
+result = regexp(pdc_file{1},pattern,'tokens');
+pdc_tag = result{1}{1};
+
 % loop over pdc files
 pdc_file_sample = cell(size(pdc_file,1),nsamples_data);
 parfor i=1:nresamples
@@ -151,9 +155,14 @@ parfor i=1:nresamples
     % loop over samples in pdc
     for j=1:nsamples_data
         % set up output file
-        pdc_file_sample{i,j} = strrep(pdc_file{i},'.mat',sprintf('-sample%d.mat',j));
+        [file_path, ~,~] = fileparts(pdc_file{i});
+        file_name_new = sprintf('pdc-sample%d.mat',j);
+        pdc_file_sample{i,j} = fullfile(file_path, pdc_tag, file_name_new);
+        
+        % check freshness
         fresh = isfresh(pdc_file_sample{i,j},pdc_file{i});
         if fresh || ~exist(pdc_file_sample{i,j},'file')
+            % split up pdc by sample
             fprintf('%s: splitting pdc sample %d/%d\n',mfilename,j,nsamples_data);
             if isempty(result)
                 % only load pdc once
@@ -169,11 +178,6 @@ parfor i=1:nresamples
 end
 
 %% compute significance levels
-
-% get tag between [pdc-dynamic-...].mat
-pattern = '.*(pdc-dynamic-.*).mat';
-result = regexp(pdc_file{1},pattern,'tokens');
-pdc_tag = result{1}{1};
 
 % create pdc signifiance file name
 outfilename = sprintf('%s-sig-n%d-alpha%0.2f.mat',...
@@ -192,7 +196,7 @@ if any(fresh) || ~exist(file_pdc_sig,'file')
         fprintf('%s: computing percentile for sample %d/%d\n',...
             mfilename,j,nsamples_data);
         
-        outfile = fullfile(workingdir, 'bootstrap-by-samples',...
+        outfile = fullfile(workingdir, 'bootstrap-by-samples', pdc_tag,...
             sprintf('sample%d-n%d.mat',j,nresamples));
         fresh = cellfun(@(x) isfresh(outfile, x), pdc_file_sampleT{j,:}, 'UniformOutput', true);
         if any(fresh) || ~exist(outfile,'file')
