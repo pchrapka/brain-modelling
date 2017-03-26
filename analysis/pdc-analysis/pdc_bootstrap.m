@@ -171,7 +171,7 @@ parfor i=1:nresamples
             end
             
             result_new = [];
-            result_new.pdc = result.pdc(j,:,:,:);
+            result_new.pdc = squeeze(result.pdc(j,:,:,:));
             save_parfor(pdc_file_sample{i,j}, result_new);
         end
     end
@@ -210,7 +210,7 @@ if any(fresh) || ~exist(file_pdc_sig,'file')
                 fprintf('%s: sample %d, collecting pdc resample %d/%d\n',mfilename,j,i,nresamples);
                 % collect results
                 result = loadfile(pdc_file_sampleT{j,i});
-                pdc_all(i,:,:,:) = result.pdc(:,:,:);
+                pdc_all(i,:,:,:) = squeeze(result.pdc);
             end
             save_parfor(outfile, pdc_all)
         else
