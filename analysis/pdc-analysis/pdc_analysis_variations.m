@@ -144,7 +144,7 @@ for i=1:length(params)
             for direc=1:length(directions)
                 for ch=1:nchannels
                     for idx_param=1:length(params_plot_seed)
-                        params_plot_seed_cur = params_plot_seed{idx_params};
+                        params_plot_seed_cur = params_plot_seed{idx_param};
                         
                         view_obj.plot_seed(ch,...
                             'direction',directions{direc},...
