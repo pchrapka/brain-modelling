@@ -8,6 +8,7 @@ addRequired(p,'leadfield_file',@ischar);
 addParameter(p,'patch_type','aal',@ischar);
 addParameter(p,'envelope',false,@islogical); % also none
 addParameter(p,'significance',[],@ischar);
+addParameter(p,'downsample',1,@isnumeric);
 parse(p,pdc_file,eeg_file,leadfield_file,varargin{:});
 
 %% set lattice options
@@ -27,7 +28,7 @@ clear lf;
 eegdata = loadfile(eeg_file);
 fsample = eegdata.fsample;
 time = eegdata.time{1};
-time = downsample(time,downsample_by);
+time = downsample(time,p.Results.downsample);
 clear eegdata;
 
 %%  set up ViewPDC object

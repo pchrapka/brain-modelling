@@ -105,6 +105,7 @@ for i=1:length(params)
             % select pdc view params
             params_pdc_view = copyfields(params2,[],...
                 {'patch_type','envelope'});
+            params_pdc_view.downsample = downsample_by;
             params_func = struct2namevalue(params_pdc_view);
             
             eeg_file = fullfile(outdirbase,'fthelpers.ft_phaselocked.mat');
