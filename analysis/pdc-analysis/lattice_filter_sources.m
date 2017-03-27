@@ -1,4 +1,4 @@
-function lf_files = lattice_filter_sources(filter, source_analysis, varargin)
+function [lf_files,sources_mini_file] = lattice_filter_sources(filter, source_analysis, varargin)
 %LATTICE_FILTER_SOURCES applies lattice filter to brain sources
 %   LATTICE_FILTER_SOURCES(filter, source_analysis,...) applies lattice
 %   filter to brain sources

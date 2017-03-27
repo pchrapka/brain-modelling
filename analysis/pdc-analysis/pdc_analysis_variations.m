@@ -91,7 +91,7 @@ for i=1:length(params)
             % added Rf for info criteria
             % added ferror for bootstrap
             params_func = struct2namevalue(params_lf);
-            lf_files = lf_analysis_main(pipeline, outdir, params_func{:});
+            [lf_files,sources_mini_file] = lf_analysis_main(pipeline, outdir, params_func{:});
             
             %% compute pdc
             downsample_by = 4;
@@ -121,6 +121,11 @@ for i=1:length(params)
             if p.Results.flag_bootstrap
                 pdc_sig_file = pdc_bootstrap(...
                     lf_files{1},'nresamples',100,'alpha',0.05,'pdc_params',pdc_params);
+                
+                check_bt_data = true;
+                if check_bt_data
+                    pdc_bootstrap_check(pdc_sig_file, sources_mini_file);
+                end
                 
                 view_sig_obj = pdc_analysis_create_view(...
                     pdc_sig_file,eeg_file,leadfield_file,params_func{:});
