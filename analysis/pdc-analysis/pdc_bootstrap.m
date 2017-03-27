@@ -223,7 +223,9 @@ if any(fresh) || ~exist(file_pdc_sig,'file')
     end
     
     % save pdc significance levels
-    save_parfor(file_pdc_sig,pdc_sig);
+    temp = [];
+    temp.pdc = pdc_sig;
+    save_parfor(file_pdc_sig,temp);
 end
 
 

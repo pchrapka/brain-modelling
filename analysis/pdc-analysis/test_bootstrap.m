@@ -74,12 +74,68 @@ lf_files = run_lattice_filter(...
     'warmup_data', true,...
     'force',false,...
     'verbosity',0,...
-    'tracefields',{'Kf','Kb','ferror'},...
+    'tracefields',{'Kf','Kb','Rf','ferror'},...
     'plot_pdc', false);
+
+% select pdc params
+downsample_by = 4;
+pdc_params = {...
+    'metric','diag',...
+    'downsample',downsample_by,...
+    };
+pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
 
 %% pdc_bootstrap
 
-% select pdc params
-pdc_params = {'downsample',4,'metric','diag'};
+pdc_sig_file = pdc_bootstrap(lf_files{1},'nresamples',10,'alpha',0.05,'pdc_params',pdc_params);
+% temp = loadfile(pdc_sig_file);
+% temp2 = [];
+% temp2.pdc = temp;
+% save_parfor(pdc_sig_file,temp2);
 
-pdc_bootstrap(lf_files{1},'nresamples',2,'alpha',0.05,'pdc_params',pdc_params);
+%% plot significance
+view_sig_obj = ViewPDC(pdc_sig_file,'fs',1,'outdir','data','w',[0 0.5]);
+directions = {'outgoing','incoming'};
+for direc=1:length(directions)
+    for ch=1:nchannels
+        
+        created = view_sig_obj.plot_seed(ch,...
+            'direction',directions{direc},...
+            'threshold_mode','numeric',...
+            'threshold',0.01,...
+            'vertlines',[0 0.5]);
+        
+        if created
+            view_sig_obj.save_plot('save',true,'engine','matlab');
+        end
+        close(gcf);
+    end
+end
+
+%%
+
+params_plot_seed = {};
+% params_plot_seed{1} = {'threshold',0.2};
+params_plot_seed{1} = {'threshold_mode','significance'};
+% params_plot_seed{2} = {'threshold_mode','significance_alpha'};
+
+view_obj = ViewPDC(pdc_files{1},'fs',1,'outdir','data','w',[0 0.5]);
+view_obj.pdc_sig_file = pdc_sig_file;
+directions = {'outgoing','incoming'};
+for direc=1:length(directions)
+    for ch=1:nchannels
+        for idx_param=1:length(params_plot_seed)
+            params_plot_seed_cur = params_plot_seed{idx_param};
+            
+            created = view_obj.plot_seed(ch,...
+                'direction',directions{direc},...
+                params_plot_seed_cur{:},...
+                'vertlines',[0 0.5]);
+            
+            if created
+                view_obj.save_plot('save',true,'engine','matlab');
+            end
+            close(gcf);
+        end
+    end
+end

@@ -115,18 +115,46 @@ for i=1:length(params)
                 pdc_files{1},eeg_file,leadfield_file,params_func{:});
             
             % add params for viewing
-            params_plot_seed{1} = {'threshold',0.2};
+            params_plot_seed{1} = {'threshold',0.001};
             
             %% bootstrap
             if p.Results.flag_bootstrap
                 pdc_sig_file = pdc_bootstrap(...
                     lf_files{1},'nresamples',100,'alpha',0.05,'pdc_params',pdc_params);
                 
+                view_sig_obj = pdc_analysis_create_view(...
+                    pdc_sig_file,eeg_file,leadfield_file,params_func{:});
+                
+                if params(i).envelope
+                    view_switch(view_sig_obj,'10')
+                    % following views at 0-10 Hz
+                else
+                    view_switch(view_sig_obj,'beta')
+                    % following views at 15-25 Hz
+                end
+                nchannels = length(view_sig_obj.info.label);
+                
+                directions = {'outgoing','incoming'};
+                for direc=1:length(directions)
+                    for ch=1:nchannels
+                        
+                        created = view_sig_obj.plot_seed(ch,...
+                            'direction',directions{direc},...
+                            'threshold_mode','numeric',...
+                            'threshold',0.001,...
+                            'vertlines',[0 0.5]);
+                        
+                        if created
+                            view_sig_obj.save_plot('save',true,'engine','matlab');
+                        end
+                        close(gcf);
+                    end
+                end
+                
                 % add significance threshold data
                 view_obj.pdc_sig_file = pdc_sig_file;
                 
                 params_plot_seed{2} = {'threshold_mode','significance'};
-                params_plot_seed{3} = {'threshold_mode','significance_alpha'};
             end
             
             %% views
@@ -146,12 +174,14 @@ for i=1:length(params)
                     for idx_param=1:length(params_plot_seed)
                         params_plot_seed_cur = params_plot_seed{idx_param};
                         
-                        view_obj.plot_seed(ch,...
+                        created = view_obj.plot_seed(ch,...
                             'direction',directions{direc},...
                             params_plot_seed_cur{:},...
                             'vertlines',[0 0.5]);
                         
-                        view_obj.save_plot('save',true,'engine','matlab');
+                        if created
+                            view_obj.save_plot('save',true,'engine','matlab');
+                        end
                         close(gcf);
                     end
                 end

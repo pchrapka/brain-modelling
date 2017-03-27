@@ -98,7 +98,8 @@ classdef ViewPDC < handle
                             error('missing pdc_sig_file');
                         end
                         print_msg_filename(obj.pdc_sig_file,'loading');
-                        obj.pdc_sig = loadfile(obj.pdc_sig_file);
+                        data = loadfile(obj.pdc_sig_file);
+                        obj.pdc_sig = data.pdc;
                         
                         % pdc sig needs to be same size as pdc
                         dims = size(obj.pdc_sig);
@@ -153,7 +154,7 @@ classdef ViewPDC < handle
         
         plot_adjacency(obj,varargin);
         plot_directed(obj,varargin)
-        plot_seed(obj,chseed,varargin)
+        created = plot_seed(obj,chseed,varargin)
         
         % summary function
         out = get_summary(obj,varargin)

@@ -1,11 +1,13 @@
-function plot_seed(obj,chseed,varargin)
+function created = plot_seed(obj,chseed,varargin)
 
 p = inputParser();
 addRequired(p,'chseed',@isnumeric);
-addParameter(p,'direction','outgoing',@(x) any(validatestring(x,{'outgoing','incoming'})));
+addParameter(p,'direction','outgoing',...
+    @(x) any(validatestring(x,{'outgoing','incoming'})));
 addParameter(p,'vertlines',[],@isvector);
 addParameter(p,'threshold',0.05,@(x) x >= 0 && x <= 1);
-addParameter(p,'threshold_mode','numeric',@(x) any(validatestring(x,{'numeric','significance','significance_alpha'})));
+addParameter(p,'threshold_mode','numeric',...
+    @(x) any(validatestring(x,{'numeric','significance','significance_alpha'})));
 % addParameter(p,'save',false,@islogical);
 % addParameter(p,'outdir','',@ischar);
 parse(p,chseed,varargin{:});
@@ -13,10 +15,24 @@ parse(p,chseed,varargin{:});
 obj.save_tag = [];
 obj.load('pdc');
 obj.check_info();
+created = false;
 
+tag_threshold = '';
 switch p.Results.threshold_mode
-    case {'significance','significance_alpha'}
+    case 'numeric'
+        tag_threshold = sprintf('thresh%0.2f',p.Results.threshold);
+    case 'significance'
         obj.load('pdc_sig');
+        tag_threshold = 'threshsig';
+    case 'significance_alpha'
+        obj.load('pdc_sig');
+        tag_threshold = 'threshsigalpha';
+        error('fix this mode');
+        % NOTE it doesn't make sense using the significance threshold as an
+        % alpha layer
+    otherwise
+        % do nothing
+        error('unknown threshold mode %s',p.Results.threshold_mode);
 end
 
 [nsamples,nchannels,~,nfreqs] = size(obj.pdc);
@@ -34,9 +50,9 @@ freq_idx = freq_idx(w_idx);
 label_seed = obj.info.label{p.Results.chseed};
 
 data_plot = zeros(nchannels,nsamples);
+data_alpha = zeros(nchannels,nsamples);
 yticklabel = cell(nchannels,1);
 count = 1;
-tag_threshold = '';
 for i=1:nchannels
     if i == p.Results.chseed
         % skip the diagonals, not informative
@@ -46,8 +62,14 @@ for i=1:nchannels
     switch p.Results.direction
         case 'outgoing'
             data_temp = squeeze(obj.pdc(:,i,p.Results.chseed,freq_idx));
+            if ~isempty(obj.pdc_sig)
+                data_alpha_temp = squeeze(obj.pdc_sig(:,i,p.Results.chseed,freq_idx));
+            end
         case 'incoming'
             data_temp = squeeze(obj.pdc(:,p.Results.chseed,i,freq_idx));
+            if ~isempty(obj.pdc_sig)
+                data_alpha_temp = squeeze(obj.pdc_sig(:,p.Results.chseed,i,freq_idx));;
+            end
     end
     
     % threshold data
@@ -55,33 +77,36 @@ for i=1:nchannels
         case 'numeric'
             % zero out everything that doesn't meet the threshold
             data_temp(data_temp < p.Results.threshold) = 0;
-            tag_threshold = sprintf('thresh%0.2f',p.Results.threshold);
-        case 'significiance'
+        case 'significance'
             % zero out everything that doesn't meet the threshold
-            data_temp(data_temp < obj.pdc_sig) = 0;
-            tag_threshold = 'threshsig';
+            data_temp(data_temp < data_alpha_temp) = 0;
         case 'significance_alpha'
-            % plot all data, add significance as alpha layer
-            alpha = obj.pdc_sig;
-            tag_threshold = 'threshsigalpha';
-            % do nothing to data_temp
+            % handle later
         otherwise
             % do nothing
+            error('unknown threshold mode %s',p.Results.threshold_mode);
     end
     
     % only add to plot if the whole sum is not 0
     data_sum = sum(data_temp(:));
-    if data_sum > 0
+    if data_sum > 0.01
         % sum over frequencies
         data_plot(i,:) = sum(data_temp,2);
         yticklabel{i} = obj.info.label{i};
+        
+        if isequal(p.Results.threshold_mode,'significance_alpha')
+            % plot all data, add significance as alpha layer
+            data_alpha(i,:) = sum(data_alpha_temp,2);
+        end
+            
     end
 end
 
 idx_empty = cellfun(@isempty,yticklabel,'UniformOutput',true);
 
 if sum(~idx_empty) == 0
-    fprintf('%s: no connections for %s\n',mfilename,label_seed);
+    fprintf('%s: no %s connections for %s\n',mfilename,p.Results.direction,label_seed);
+    created = false;
     return;
 end
 
@@ -138,8 +163,13 @@ colorbar();
 
 switch p.Results.threshold_mode
     case 'significance_alpha'
-        set(im,'AlphaData',alpha);
+        if verLessThan('matlab','7.15')
+            alpha(data_alpha)
+        else
+            set(im,'AlphaData',data_alpha);
+        end
 end
+created = true;
 
 % add left axis with channel labels
 ytick = 1:length(yticklabel);
