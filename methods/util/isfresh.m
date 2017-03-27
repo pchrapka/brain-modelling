@@ -1,4 +1,5 @@
 function fresh = isfresh(outfile,prevfile)
+% checks if prevfile is newer than outfile, if it is, returns true
 fresh = false;
 if exist(outfile,'file')
     prev_time = get_timestamp(prevfile);

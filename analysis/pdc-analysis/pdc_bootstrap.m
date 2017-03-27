@@ -11,6 +11,18 @@ parse(p,lf_file,varargin{:});
 workingdirname = sprintf('%s-bootstrap',filter_name);
 workingdir = fullfile(outdir,workingdirname);
 
+bootstrap_file = fullfile(workingdir,'bootstrap.txt');
+fresh = isfresh(bootstrap_file, lf_file);
+if fresh
+    % if lattice filter file is new, redo all bootstrap work
+    if exist(workingdir,'dir')
+        rmdir(workingdir,'s');
+    end
+else
+    temp = 'time marker';
+    save_parfor(bootstrap_file,temp);
+end
+
 threshold_stability = 10;
 
 %% create RCs for null distribution 
@@ -61,9 +73,10 @@ parfor i=1:nresamples
     data_bootstrap_file = fullfile(workingdir, resampledir, sprintf('resample%d.mat',i));
     
     % check lf freshness
-    fresh = isfresh(data_bootstrap_file, lf_file);
+    %fresh = isfresh(data_bootstrap_file, lf_file);
+    % freshness is taking too on network data
     
-    if fresh || ~exist(data_bootstrap_file,'file')
+    if ~exist(data_bootstrap_file,'file')
         % use all trials to generate one bootstrapped data set
         data_bootstrap = zeros(nchannels,nsamples,ntrials);
         for j=1:ntrials
@@ -160,8 +173,10 @@ parfor i=1:nresamples
         pdc_file_sample{i,j} = fullfile(file_path, pdc_tag, file_name_new);
         
         % check freshness
-        fresh = isfresh(pdc_file_sample{i,j},pdc_file{i});
-        if fresh || ~exist(pdc_file_sample{i,j},'file')
+        %fresh = isfresh(pdc_file_sample{i,j},pdc_file{i});
+        % freshness is taking too on network data
+        
+        if ~exist(pdc_file_sample{i,j},'file')
             % split up pdc by sample
             fprintf('%s: resample %d, splitting pdc sample %d/%d\n',mfilename,i,j,nsamples_data);
             if isempty(result)
@@ -186,8 +201,9 @@ outfilename = sprintf('%s-sig-n%d-alpha%0.2f.mat',...
 file_pdc_sig = fullfile(workingdir, outfilename);
 
 % fresh = isfresh(file_pdc_sig, lf_file);
-fresh = cellfun(@(x) isfresh(file_pdc_sig, x), pdc_file, 'UniformOutput', true);
-if any(fresh) || ~exist(file_pdc_sig,'file')
+% fresh = cellfun(@(x) isfresh(file_pdc_sig, x), pdc_file, 'UniformOutput', true);
+% freshness is taking too on network data
+if ~exist(file_pdc_sig,'file')
     
     % collect pdc results for each sample
     % otherwise the data set gets too big
@@ -199,8 +215,8 @@ if any(fresh) || ~exist(file_pdc_sig,'file')
         
         outfile = fullfile(workingdir, 'bootstrap-by-samples', pdc_tag,...
             sprintf('sample%d-n%d.mat',j,nresamples));
-        fresh = cellfun(@(x) isfresh(outfile, x), pdc_file_sampleT(j,:), 'UniformOutput', true);
-        if any(fresh) || ~exist(outfile,'file')
+        %fresh = cellfun(@(x) isfresh(outfile, x), pdc_file_sampleT(j,:), 'UniformOutput', true);
+        if ~exist(outfile,'file')
         
             fprintf('%s: reorganizing resamples\n',mfilename);
             pdc_all = nan([nresamples, pdc_dims(2:end)]);
