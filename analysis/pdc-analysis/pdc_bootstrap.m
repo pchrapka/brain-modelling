@@ -1,10 +1,32 @@
 function file_pdc_sig = pdc_bootstrap(lf_file,varargin)
+%PDC_BOOTSTRAP determine PDC significance levels
+%   PDC_BOOTSTRPA(lf_file,...) determine PDC significance level for a
+%   specific process and filter combination
+%
+%   Input
+%   -----
+%   lf_file (string)
+%       lattice filtered data
+%
+%   Parameters
+%   ----------
+%   nresamples (integer, default = 100)
+%       number of bootstrap resampling steps
+%   pdc_params (cell array, default = {})
+%       pdc parameters, this needs to be identical to pdc data that will be
+%       used for comparison
+%   alpha (float, default = 0.05)
+%       significance level
+%   normalization (string, default = 'none')
+%       normalization type, options: allchannels, eachchannel, none
 
 p = inputParser();
 addRequired(p,'lf_file',@ischar);
 addParameter(p,'nresamples',100,@isnumeric);
 addParameter(p,'pdc_params',{},@iscell);
 addParameter(p,'alpha',0.05,@(x) x > 0 && x < 1);
+options_norm = {'allchannels','eachchannel','none'};
+addParameter(p,'normalization','none',@(x) any(validatestring(x,options_norm)));
 parse(p,lf_file,varargin{:});
 
 [outdir,filter_name,~] = fileparts(lf_file);
@@ -64,6 +86,7 @@ nsamples_effective = size(resf,1);
 
 % copy vars
 nresamples = p.Results.nresamples;
+normalization = p.Results.normalization;
 filter_opts = {'lambda',datalf.filter.lambda,'gamma',datalf.filter.gamma};
 lf_btstrp = cell(p.Results.nresamples,1);
 % TODO switch back to parfor
@@ -109,6 +132,17 @@ parfor i=1:nresamples
                 else
                     fprintf('%s: resample %d, trial %d: stable\n',mfilename,i,j);
                     stable = true;
+                end
+                
+                % data normalization
+                % use same normalization method as in
+                % lattice_filter_sources
+                switch normalization
+                    case 'allchannels'
+                        data_bootstrap(:,:,j) = normalize(data_bootstrap(:,:,j));
+                    case 'eachchannel'
+                        data_bootstrap(:,:,j) = normalizev(data_bootstrap(:,:,j));
+                    case 'none'
                 end
                 
             end
@@ -160,6 +194,7 @@ result = regexp(pdc_file{1},pattern,'tokens');
 pdc_tag = result{1}{1};
 
 % loop over pdc files
+% TODO handle case if i'm adding more resamples
 pdc_file_sample = cell(size(pdc_file,1),nsamples_data);
 parfor i=1:nresamples
     fprintf('%s: splitting pdc %d/%d\n',mfilename,i,length(pdc_file));
