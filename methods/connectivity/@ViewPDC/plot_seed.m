@@ -68,7 +68,7 @@ for i=1:nchannels
         case 'incoming'
             data_temp = squeeze(obj.pdc(:,p.Results.chseed,i,freq_idx));
             if ~isempty(obj.pdc_sig)
-                data_alpha_temp = squeeze(obj.pdc_sig(:,p.Results.chseed,i,freq_idx));;
+                data_alpha_temp = squeeze(obj.pdc_sig(:,p.Results.chseed,i,freq_idx));
             end
     end
     

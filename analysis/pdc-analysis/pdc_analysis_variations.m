@@ -128,7 +128,11 @@ for i=1:length(params)
                 
                 check_bt_data = false;
                 if check_bt_data
-                    pdc_bootstrap_check(pdc_sig_file, sources_mini_file);
+                    %pdc_bootstrap_check(pdc_sig_file, sources_mini_file);
+                    resample_idx = 1;
+                    pdc_bootstrap_check_resample(pdc_sig_file,resample_idx,...
+                        params_func{:},...
+                        'eeg_file',eeg_file,'leadfield_file',leadfield_file);
                 end
                 
                 view_sig_obj = pdc_analysis_create_view(...
