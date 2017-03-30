@@ -81,7 +81,18 @@ resf = datalf.estimate.ferror(:,:,:,norder); % samples channels trials order
 nsamples_ends = ceil(0.05*nsamples);
 resf((end-nsamples_ends+1):end,:,:) = [];
 resf(1:nsamples_ends*2,:,:) = [];
-nsamples_effective = size(resf,1);
+
+rc_gen_noise = true;
+if rc_gen_noise
+    res_sigma = squeeze(var(resf)); % [channels trials]
+    
+    % add dummy vars for parfor
+    resf = [];
+    nsamples_effective = [];
+else
+    res_sigma = [];
+    nsamples_effective = size(resf,1);
+end
 % resb = datalf.estimate.berrord(:,:,:,norder);
 
 % copy vars
@@ -105,10 +116,17 @@ parfor i=1:nresamples
         for j=1:ntrials
             stable = false;
             while ~stable
-                % resample residual
-                idx = randi(nsamples_effective,nsamples,1);
-                res = resf(idx,:,j);
-                
+                if rc_gen_noise
+                    % generate noise
+                    mu = zeros(nchannels,1);
+                    Sigma = diag(res_sigma(:,j));
+                    res = mvnrnd(mu, Sigma, nsamples);
+                else
+                    % resample residual
+                    idx = randi(nsamples_effective,nsamples,1);
+                    res = resf(idx,:,j);
+                end
+                    
                 % generate data
                 % NOTE it should already be normalized since we're using
                 % the power from the filtered process
