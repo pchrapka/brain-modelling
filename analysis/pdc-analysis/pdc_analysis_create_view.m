@@ -26,7 +26,7 @@ clear lf;
 
 % get fsample
 eegdata = loadfile(eeg_file);
-fsample = eegdata.fsample;
+fsample = eegdata.fsample/p.Results.downsample;
 time = eegdata.time{1};
 time = downsample(time,p.Results.downsample);
 clear eegdata;
