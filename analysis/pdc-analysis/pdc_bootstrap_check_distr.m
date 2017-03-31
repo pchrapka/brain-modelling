@@ -22,6 +22,10 @@ pattern = '.*sig-n(\d+)-.*';
 result = regexp(sig_filename,pattern,'tokens');
 nresample = str2double(result{1}{1});
 
+pattern = '.*-alpha([\.\d]+).*';
+result = regexp(sig_filename,pattern,'tokens');
+alpha = str2double(result{1}{1});
+
 file_sample_name = sprintf('sample%d-n%d.mat',sample_idx,nresample);
 file_sample = fullfile(workingdir,'bootstrap-by-samples',pdc_tag,file_sample_name);
 
@@ -111,6 +115,16 @@ elseif isequal(p.Results.mode,'all')
             
             %imagesc(plot_data,clim);
             imagesc(plot_data);
+            
+            for k=1:length(f_idx)
+                f = f_idx(k);
+                pct = (1-alpha)*100;
+                sig_val = prctile(squeeze(data(:,row,col,f)),pct,1);
+                x = [k-0.5 k+0.5];
+                y_val = find(histc(sig_val,bins) > 0,1,'first');
+                y = y_val*ones(1,2);
+                line(x,y,'LineWidth',2,'Color',[1 1 1]);
+            end
             
             if col==1
                 ylabel(sprintf('ch %d',row));
