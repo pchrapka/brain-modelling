@@ -37,8 +37,10 @@ pdc_bootstrap_check_resample(pdc_sig_file,resample_idx,...
 %%  check pdc distribution
 if flag_test
     sample_idx = 40;
+    w_range = [0.2 0.3];
 else
     sample_idx = 500;
+    w_range = [0 10/2048*0.5];
 end
 
-pdc_bootstrap_check_distr(pdc_sig_file,sample_idx,'mode','all');
+pdc_bootstrap_check_distr(pdc_sig_file,sample_idx,'mode','all','w_range',w_range);

@@ -3,6 +3,7 @@ p = inputParser();
 addRequired(p,'file_pdc_sig',@ischar);
 addRequired(p,'resample_idx',@isnumeric);
 addParameter(p,'mode','all',@(x)any(validatestring(x,{'all','loop'})));
+addParameter(p,'w_range',[],@(x) length(x) == 2 && isnumeric(x));
 % addParameter(p,'eeg_file','',@ischar);
 % addParameter(p,'leadfield_file','',@ischar);
 % addParameter(p,'envelope',false,@islogical)
@@ -26,6 +27,14 @@ file_sample = fullfile(workingdir,'bootstrap-by-samples',pdc_tag,file_sample_nam
 
 data = loadfile(file_sample);
 [~,nchannels,~,nfreq] = size(data);
+
+w = 0:(nfreq-1);
+w = w/nfreq*0.5;
+if isempty(p.Results.w_range)
+    w_range = [0 0.5];
+else
+    w_range = p.Results.w_range;
+end
 
 bins = 1:19;
 bins = bins/20;
@@ -80,9 +89,13 @@ if isequal(p.Results.mode,'loop')
         end
     end
 elseif isequal(p.Results.mode,'all')
+    
     clim = [0 nresample];
-    w = 0:(nfreq-1);
-    w = w/nfreq*0.5;
+    w_select = (w >= w_range(1)) & (w <= w_range(2));
+    w = w(w_select);
+    f_idx = 1:nfreq;
+    f_idx = f_idx(w_select);
+    
     bins = [-inf bins inf];
     for row=1:nchannels
         for col=1:nchannels
@@ -90,10 +103,11 @@ elseif isequal(p.Results.mode,'all')
             subaxis(nchannels, nchannels, plot_idx,...
                 'Spacing', 0, 'SpacingVert', 0, 'Padding', 0, 'Margin', 0.1);
             
-            plot_data = zeros(length(bins),nfreq);
-            for f=1:nfreq
+            plot_data = zeros(length(bins),length(f_idx));
+            for k=1:length(f_idx)
+                f = f_idx(k);
                 count = histc(squeeze(data(:,row,col,f)),bins);
-                plot_data(:,f) = count';
+                plot_data(:,k) = count;
             end
             
             imagesc(plot_data,clim);
@@ -109,7 +123,7 @@ elseif isequal(p.Results.mode,'all')
             if col==1 && row==nchannels
                 xlabel({sprintf('ch %d',col),'freq'});
                 % set x ticks
-                ticks = [1 nfreq];
+                ticks = [1 length(f_idx)];
                 labels = cell(size(ticks));
                 for i=1:length(ticks)
                     labels{i} = sprintf('%0.1f',w(ticks(i)));
