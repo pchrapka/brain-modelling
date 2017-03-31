@@ -3,7 +3,7 @@ p = inputParser();
 addRequired(p,'file_pdc_sig',@ischar);
 addRequired(p,'resample_idx',@isnumeric);
 addParameter(p,'mode','all',@(x)any(validatestring(x,{'all','loop'})));
-addParameter(p,'w_range',[],@(x) length(x) == 2 && isnumeric(x));
+addParameter(p,'w_range',[],@(x) (length(x) == 2) && isnumeric(x));
 % addParameter(p,'eeg_file','',@ischar);
 % addParameter(p,'leadfield_file','',@ischar);
 % addParameter(p,'envelope',false,@islogical)
@@ -92,7 +92,6 @@ elseif isequal(p.Results.mode,'all')
     
     clim = [0 nresample];
     w_select = (w >= w_range(1)) & (w <= w_range(2));
-    w = w(w_select);
     f_idx = 1:nfreq;
     f_idx = f_idx(w_select);
     
@@ -110,7 +109,8 @@ elseif isequal(p.Results.mode,'all')
                 plot_data(:,k) = count;
             end
             
-            imagesc(plot_data,clim);
+            %imagesc(plot_data,clim);
+            imagesc(plot_data);
             
             if col==1
                 ylabel(sprintf('ch %d',row));
@@ -124,9 +124,13 @@ elseif isequal(p.Results.mode,'all')
                 xlabel({sprintf('ch %d',col),'freq'});
                 % set x ticks
                 ticks = [1 length(f_idx)];
+                if ticks(2) == 1
+                    ticks(2) = [];
+                end
                 labels = cell(size(ticks));
                 for i=1:length(ticks)
-                    labels{i} = sprintf('%0.1f',w(ticks(i)));
+                    w_idx = f_idx(ticks(i));
+                    labels{i} = sprintf('%0.1f',w(w_idx));
                 end
                 set(gca,'XTick', ticks);
                 set(gca,'XTickLabel',labels);
