@@ -9,7 +9,8 @@ addParameter(p,'patch_type','',@ischar);
 parse(p,file_pdc_sig,resample_idx,varargin{:});
 
 [workingdir,sig_filename,~] = fileparts(file_pdc_sig);
-filter_name = strrep(workingdir,'-bootstrap','');
+[~,filter_name,~] = fileparts([workingdir '.mat']);
+filter_name = strrep(filter_name,'-bootstrap','');
 
 % get tag between [pdc-dynamic-...-ds\d]-sig
 pattern = '.*(pdc-dynamic-.*)-sig';
@@ -20,7 +21,9 @@ resampledir = sprintf('resample%d',resample_idx);
 file_pdc_resample = fullfile(workingdir, resampledir, sprintf('%s-%s.mat',filter_name,pdc_tag));
 
 view_obj = pdc_analysis_create_view(...
-    file_pdc_resample,eeg_file,leadfield_file,...
+    file_pdc_resample,...
+    p.Results.eeg_file,...
+    p.Results.leadfield_file,...
     'envelope',p.Results.envelope,...
     'patch_type',p.Results.patch_type);
 
