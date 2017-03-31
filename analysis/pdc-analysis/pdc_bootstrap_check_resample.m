@@ -53,8 +53,4 @@ for direc=1:length(directions)
     end
 end
 
-
-
-
-
 end
