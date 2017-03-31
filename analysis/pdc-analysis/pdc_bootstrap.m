@@ -158,6 +158,7 @@ resf((end-nsamples_ends+1):end,:,:) = [];
 resf(1:nsamples_ends*2,:,:) = [];
 
 rc_gen_noise = true;
+% generate white noise instead of using model residual
 if rc_gen_noise
     res_sigma = squeeze(var(resf)); % [channels trials]
     
