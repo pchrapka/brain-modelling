@@ -10,7 +10,9 @@ parse(p,file_pdc_sig,resample_idx,varargin{:});
 
 [workingdir,sig_filename,~] = fileparts(file_pdc_sig);
 [~,filter_name,~] = fileparts([workingdir '.mat']);
-filter_name = strrep(filter_name,'-bootstrap','');
+pattern = '(.*)-bootstrap.*';
+result = regexp(filter_name,pattern,'tokens');
+filter_name = result{1}{1};
 
 % get tag between [pdc-dynamic-...-ds\d]-sig
 pattern = '.*(pdc-dynamic-.*)-sig';

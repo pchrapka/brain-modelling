@@ -1,6 +1,6 @@
 function file_pdc_sig = pdc_bootstrap(lf_file,varargin)
 %PDC_BOOTSTRAP determine PDC significance levels
-%   PDC_BOOTSTRPA(lf_file,...) determine PDC significance level for a
+%   PDC_BOOTSTRAP(lf_file,...) determine PDC significance level for a
 %   specific process and filter combination
 %
 %   Input
@@ -12,16 +12,33 @@ function file_pdc_sig = pdc_bootstrap(lf_file,varargin)
 %   ----------
 %   nresamples (integer, default = 100)
 %       number of bootstrap resampling steps
+%   alpha (float, default = 0.05)
+%       significance level
+%
 %   pdc_params (cell array, default = {})
 %       pdc parameters, this needs to be identical to pdc data that will be
 %       used for comparison
-%   alpha (float, default = 0.05)
-%       significance level
+%
+%   null_mode (string, default = 'estimate_ind_channels')
+%       selects null distribution mode
+%
+%       estimate_ind_channels
+%           uses the same filter to estimate channels independently,
+%           requires the original data file
+%       estimate_all_channels
+%           uses the reflection coefficients from the filter
+%
+%   data_file (string, default = [])
+%       original data file used to produce lf_file output
 %   normalization (string, default = 'none')
-%       normalization type, options: allchannels, eachchannel, none
+%       normalization type for bootstrapped data, 
+%       options: allchannels, eachchannel, none
 
 p = inputParser();
 addRequired(p,'lf_file',@ischar);
+options_null_mode = {'estimate_ind_channels','estimate_all_channels'};
+addParameter(p,'null_mode','estimate_ind_channels',@(x) any(validatestring(x,options_null_mode)));
+addParameter(p,'data_file',[],@ischar);
 addParameter(p,'nresamples',100,@isnumeric);
 addParameter(p,'pdc_params',{},@iscell);
 addParameter(p,'alpha',0.05,@(x) x > 0 && x < 1);
@@ -30,7 +47,7 @@ addParameter(p,'normalization','none',@(x) any(validatestring(x,options_norm)));
 parse(p,lf_file,varargin{:});
 
 [outdir,filter_name,~] = fileparts(lf_file);
-workingdirname = sprintf('%s-bootstrap',filter_name);
+workingdirname = sprintf('%s-bootstrap-%s',filter_name,p.Results.null_mode);
 workingdir = fullfile(outdir,workingdirname);
 
 bootstrap_file = fullfile(workingdir,'bootstrap.txt');
@@ -48,27 +65,85 @@ end
 threshold_stability = 10;
 
 %% create RCs for null distribution 
-% null distribution - no coupling
-% set off diagonal elements to zero
-
 datalf = loadfile(lf_file);
 ntrials = datalf.filter.ntrials;
 [nsamples, norder, nchannels, ~] = size(datalf.estimate.Kf);
-
-datalf_nocoupling = [];
-datalf_nocoupling.Kf = datalf.estimate.Kf;
-datalf_nocoupling.Kb = datalf.estimate.Kb;
-% order channels channels
-for i=1:nchannels
-    for j=1:nchannels
-        if i == j
-            % do nothing
-        else
-            % remove couplings
-            datalf_nocoupling.Kf(:,:,i,j) = 0;
-            datalf_nocoupling.Kb(:,:,i,j) = 0;
+filter_opts = {'lambda',datalf.filter.lambda,'gamma',datalf.filter.gamma};
+        
+switch p.Results.null_mode
+    case 'estimate_all_channels'
+        % null distribution - no coupling
+        % set off diagonal elements to zero
+        
+        datalf_nocoupling = [];
+        datalf_nocoupling.Kf = datalf.estimate.Kf;
+        datalf_nocoupling.Kb = datalf.estimate.Kb;
+        % order channels channels
+        for i=1:nchannels
+            for j=1:nchannels
+                if i == j
+                    % do nothing
+                else
+                    % remove couplings
+                    datalf_nocoupling.Kf(:,:,i,j) = 0;
+                    datalf_nocoupling.Kb(:,:,i,j) = 0;
+                end
+            end
         end
-    end
+        
+    case 'estimate_ind_channels'
+        
+        if isempty(p.Results.data_file)
+            error('requires the original data file');
+        end
+        
+        datalf_nocoupling = [];
+        datalf_nocoupling.Kf = zeros(size(datalf.estimate.Kf));
+        datalf_nocoupling.Kb = zeros(size(datalf.estimate.Kb));
+        
+        data_orig = loadfile(p.Results.data_file);
+        
+        lf_channels = cell(nchannels,1);
+        parfor i=1:nchannels
+            workingdir_ch = fullfile(workingdir,'channels-ind');
+            channel_dir = sprintf('ch%d',i);
+            
+            % create data file
+            file_channel = fullfile(workingdir_ch,channel_dir,[channel_dir '.mat']);
+            fresh = isfresh(file_channel, p.Results.data_file);
+            if fresh || ~exist(file_channel,'file')
+                data_temp = data_orig(i,:,:);
+                save_parfor(file_channel, data_temp);
+            end
+            
+            % set up lattice filter
+            filters = {};
+            filters{1} = MCMTLOCCD_TWL4(1, norder, ntrials, filter_opts{:});
+            
+            fprintf('%s: filtering channel %d\n',mfilename,i);
+
+            % lattice filter
+            lf_channels(i) = run_lattice_filter(...
+                file_channel,...
+                'basedir',fullfile(workingdir_ch,'fake.m'),...
+                'outdir',channel_dir,...
+                'filters', filters,...
+                'warmup_noise', true,...
+                'warmup_data', true,...
+                'force',false,...
+                'verbosity',0,...
+                'tracefields',{'Kf','Kb','Rf'},...
+                'plot_pdc', false);
+        end
+            
+        for i=1:nchannels
+            datalf_ch = loadfile(lf_channels{i});
+            datalf_nocoupling.Kf(:,:,i,i) = datalf_ch.estimate.Kf;
+            datalf_nocoupling.Kb(:,:,i,i) = datalf_ch.estimate.Kb;
+        end
+        
+    otherwise
+        error('unknown null_mode %s',p.Results.null_mode);
 end
 
 % create TV RC class
@@ -98,7 +173,6 @@ end
 % copy vars
 nresamples = p.Results.nresamples;
 normalization = p.Results.normalization;
-filter_opts = {'lambda',datalf.filter.lambda,'gamma',datalf.filter.gamma};
 lf_btstrp = cell(p.Results.nresamples,1);
 % TODO switch back to parfor
 parfor i=1:nresamples

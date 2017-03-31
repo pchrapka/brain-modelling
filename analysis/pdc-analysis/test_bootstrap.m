@@ -87,7 +87,10 @@ pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
 
 %% pdc_bootstrap
 
-pdc_sig_file = pdc_bootstrap(lf_files{1},'nresamples',10,'alpha',0.05,'pdc_params',pdc_params);
+pdc_sig_file = pdc_bootstrap(lf_files{1},...
+    'null_mode','estimate_ind_channels',...
+    'data_file',file_data,...
+    'nresamples',10,'alpha',0.05,'pdc_params',pdc_params);
 % temp = loadfile(pdc_sig_file);
 % temp2 = [];
 % temp2.pdc = temp;

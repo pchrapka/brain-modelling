@@ -3,7 +3,8 @@
 params = [];
 k=1;
 
-ntrials = [20, 40];
+% ntrials = [20, 40];
+ntrials = 20;
 
 for i=1:length(ntrials)
 
