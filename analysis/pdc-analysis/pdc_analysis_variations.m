@@ -7,6 +7,7 @@ addParameter(p,'flag_tune',false,@islogical);
 addParameter(p,'flag_tune_order',false,@islogical);
 addParameter(p,'flag_tune_lambda',false,@islogical);
 addParameter(p,'flag_tune_gamma',false,@islogical);
+addParameter(p,'flag_tune_trials',false,@islogical);
 addParameter(p,'flag_bootstrap',false,@islogical);
 parse(p,params,varargin{:});
 
@@ -25,51 +26,59 @@ for i=1:length(params)
     
     if p.Results.flag_tune
         if p.Results.flag_tune_order
+            % use parameters specified in params, 
+            % otherwise use default from tune_model_order
             params2 = params(i);
             params2 = rmfield(params2,'metrics');
             
-            params2.order = 1:14;
-            params2.lambda = 0.99;
-            params2.gamma = 1e-2;
-            
             params2.plot = true;
             params2.plot_crit = 'ewaic';
-            params2.plot_orders = params2.order;
+            %params2.plot_orders = params2.order;
             
             params_func = struct2namevalue(params2);
             tune_model_order(pipeline,outdir,params_func{:});
         end
         
         if p.Results.flag_tune_lambda
+            % use parameters specified in params, 
+            % otherwise use default from tune_lambda
             params2 = params(i);
             params2 = rmfield(params2,'metrics');
             
-            params2.order = 6;
-            params2.lambda = [0.9:0.02:0.98 0.99];
-            params2.gamma = 1e-2;
-            
             params2.plot = true;
             params2.plot_crit = 'normtime';
-            params2.plot_orders = [1 2 3 4];
+            %params2.plot_orders = [1 2 3 4];
             
             params_func = struct2namevalue(params2);
             tune_lambda(pipeline,outdir,params_func{:});
         end
         
         if p.Results.flag_tune_gamma
+            % use parameters specified in params, 
+            % otherwise use default from tune_gamma
             params2 = params(i);
             params2 = rmfield(params2,'metrics');
             
-            params2.order = 6;
-            params2.lambda = 0.99;
-            params2.gamma = [1e-4 1e-3 1e-2 0.1 1 10];
-            
             params2.plot = true;
             params2.plot_crit = 'normtime';
-            params2.plot_orders = [1 2 3 4];
+            %params2.plot_orders = [1 2 3 4];
             
             params_func = struct2namevalue(params2);
             tune_gamma(pipeline,outdir,params_func{:});
+        end
+        
+        if p.Results.flag_tune_trials
+            % use parameters specified in params, 
+            % otherwise use default from tune_trials
+            params2 = params(i);
+            params2 = rmfield(params2,'metrics');
+            
+            params2.plot = true;
+            params2.plot_crit = 'normtime';
+            %params2.plot_orders = [1 2 3 4];
+            
+            params_func = struct2namevalue(params2);
+            tune_trials(pipeline,outdir,params_func{:});
         end
         
     end

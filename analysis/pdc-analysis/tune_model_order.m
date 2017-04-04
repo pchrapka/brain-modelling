@@ -5,7 +5,7 @@ addRequired(p,'pipeline',@(x) isa(x,'ftb.AnalysisBeamformer'));
 addRequired(p,'outdir',@ischar);
 addParameter(p,'patch_type','aal',@ischar);
 addParameter(p,'ntrials',10,@isnumeric);
-addParameter(p,'order',1:6,@(x) isnumeric(x) && isvector(x));
+addParameter(p,'order',1:14,@(x) isnumeric(x) && isvector(x));
 addParameter(p,'lambda',0.99,@(x) isnumeric(x) && length(x) == 1);
 addParameter(p,'gamma',1e-2,@(x) isnumeric(x) && length(x) == 1);
 addParameter(p,'normalization','allchannels',@ischar); % also none
