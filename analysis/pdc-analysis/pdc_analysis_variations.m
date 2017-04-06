@@ -25,7 +25,21 @@ for i=1:length(params)
     outdir = fullfile(outdirbase,params(i).patch_type);
     
     if p.Results.flag_tune
+        
+        % use parameters specified in params,
+        % otherwise use default from tune_model_order
+        params2 = params(i);
+        params2 = rmfield(params2,'metrics');
+        
+        params2.plot = true;
+        params2.plot_crit = 'ewaic';
+        %params2.plot_orders = params2.order;
+        
+        params_func = struct2namevalue(params2);
+        tune_lf_parameters(pipeline,outdir,params_func{:});
+        
         if p.Results.flag_tune_order
+            error('deprecated');
             % use parameters specified in params, 
             % otherwise use default from tune_model_order
             params2 = params(i);
@@ -40,6 +54,7 @@ for i=1:length(params)
         end
         
         if p.Results.flag_tune_lambda
+            error('deprecated');
             % use parameters specified in params, 
             % otherwise use default from tune_lambda
             params2 = params(i);
@@ -54,6 +69,7 @@ for i=1:length(params)
         end
         
         if p.Results.flag_tune_gamma
+            error('deprecated');
             % use parameters specified in params, 
             % otherwise use default from tune_gamma
             params2 = params(i);
@@ -68,6 +84,7 @@ for i=1:length(params)
         end
         
         if p.Results.flag_tune_trials
+            error('deprecated');
             % use parameters specified in params, 
             % otherwise use default from tune_trials
             params2 = params(i);
