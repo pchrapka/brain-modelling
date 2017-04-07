@@ -9,10 +9,16 @@ params(k).ntrials = 20;
 params(k).order = 1:15;
 params(k).lambda = [0.96 0.98 0.99 0.995 0.999];
 % params(k).gamma = [1e-4 1e-3 1e-2 0.1 1 10];
-params(k).gamma = [1e-4 1e-3 1e-2 0.1 1];
+% params(k).gamma = [1e-4 1e-3 1e-2 0.1 1];
+params(k).gamma = [1e-4 1e-3 1e-2 0.1];
 params(k).normalization = 'allchannels';
 params(k).envelope = true;
+params(k).plot_crit = 'normtime';
 k = k+1;
+
+% best is 
+%   lambda 0.995, 
+%   gamma 1e-4, 1e-3
 
 %% tune order
 flag_run = false;

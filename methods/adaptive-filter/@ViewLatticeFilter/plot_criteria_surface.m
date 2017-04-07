@@ -91,6 +91,6 @@ end
 function labels = get_ticklabels(ticks,data)
 labels = cell(length(ticks),1);
 for i=1:length(ticks)
-    labels{i} = sprintf('%0.2g',data(ticks(i)));
+    labels{i} = sprintf('%0.3g',data(ticks(i)));
 end
 end
