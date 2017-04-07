@@ -56,6 +56,8 @@ idx_end = ceil(nsamples*0.95);
 npoints = ceil(nsamples/10);
 idx_start = idx_end - npoints + 1;
 
+figure('Position',[1 1 1000 800]);
+
 k = 1;
 for i=1:nrows
     for j=1:ncols
