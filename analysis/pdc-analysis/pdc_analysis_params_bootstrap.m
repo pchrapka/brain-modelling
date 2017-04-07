@@ -3,33 +3,38 @@
 params = [];
 k=1;
 
-ntrials = [20, 40];
+% ntrials = [20, 40];
+ntrials = 20;
+% gammas = [1e-4 1e-3];
+gammas = 1e-3;
 
-for i=1:length(ntrials)
-
-%% aal-coarse-19-outer-nocer-plus2 envelope
-
-params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
-params(k).metrics = {'diag'};
-params(k).ntrials = ntrials(i);
-params(k).order = 3;
-params(k).lambda = 0.99;
-params(k).gamma = 1e-3;
-params(k).normalization = 'allchannels';
-params(k).envelope = true;
-k = k+1;
-
-% no envelope
-params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
-params(k).metrics = {'diag'};
-params(k).ntrials = ntrials(i);
-params(k).order = 3;
-params(k).lambda = 0.99;
-params(k).gamma = 1e-3;
-params(k).normalization = 'allchannels';
-params(k).envelope = false;
-k = k+1;
-
+for j=1:length(gammas)
+    for i=1:length(ntrials)
+        
+        %% aal-coarse-19-outer-nocer-plus2 envelope
+        
+        params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+        params(k).metrics = {'diag'};
+        params(k).ntrials = ntrials(i);
+        params(k).order = 3;
+        params(k).lambda = 0.99;
+        params(k).gamma = gammas(j);
+        params(k).normalization = 'allchannels';
+        params(k).envelope = true;
+        k = k+1;
+        
+        % % no envelope
+        % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+        % params(k).metrics = {'diag'};
+        % params(k).ntrials = ntrials(i);
+        % params(k).order = 3;
+        % params(k).lambda = 0.99;
+        % params(k).gamma = 1e-3;
+        % params(k).normalization = 'allchannels';
+        % params(k).envelope = false;
+        % k = k+1;
+        
+    end
 end
 
 %% run analysis
