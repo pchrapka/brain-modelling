@@ -58,11 +58,17 @@ lf_files = lattice_filter_sources(filters, sources_file,...
 
 %% set up view lattice
 if p.Results.plot
+    if isempty(p.Results.plot_orders)
+        plot_orders = p.Results.order;
+    else
+        plot_orders = p.Results.plot_orders;
+    end
+    
     view_lf = ViewLatticeFilter(lf_files{1});
     crit_time = {'ewaic','normtime'};
     view_lf.compute(crit_time);
     view_lf.plot_criteria_surface('criteria',p.Results.plot_crit,...
-        'orders',p.Results.plot_orders,'file_list',1:length(lf_files));
+        'orders',plot_orders,'file_list',1:length(lf_files));
 end
 
 end
