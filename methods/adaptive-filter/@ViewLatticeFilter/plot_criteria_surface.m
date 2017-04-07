@@ -57,8 +57,8 @@ npoints = ceil(nsamples/10);
 idx_start = idx_end - npoints + 1;
 
 % average data
-data_avg = squeeze(mean(data_plot(:,:,:,idx_start:idx_end),4));
-clim = [min(data_avg(:)) max(data_avg(:)];
+data_avg = mean(data_plot(:,:,:,idx_start:idx_end),4);
+clim = [min(data_avg(:)) max(data_avg(:))];
 
 figure('Position',[1 1 1000 800]);
 
@@ -81,7 +81,11 @@ for i=1:nrows
             ylabel(sprintf('lambda - best %0.3g',lambda_unique(idx_lambda)));
             set_ticklabels(lambda_unique,'y');
             
-            title(sprintf('order %d',k));
+            title(sprintf('order %d',data_crit.order_lists{1}(k)));
+            
+            if k == 1
+                colorbar;
+            end
             
             k = k+1;
         end
