@@ -32,7 +32,7 @@ for i=1:length(params)
         params2 = rmfield(params2,'metrics');
         
         params2.plot = true;
-        params2.plot_crit = 'ewaic';
+        params2.plot_crit = 'normtime';%'ewaic';
         %params2.plot_orders = params2.order;
         
         params_func = struct2namevalue(params2);

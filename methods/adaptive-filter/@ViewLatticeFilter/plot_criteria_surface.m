@@ -71,10 +71,10 @@ for i=1:nrows
             
             % plot
             imagesc(avg_data);
-            xlabel(sprintf('gamma - best %0.2g',gamma_unique(idx_gamma)));
-            set(gca,'XTickLabels', get_ticklabels(get(gca,'XTick'),gamma_unique));
-            ylabel(sprintf('lambda - best %0.2g',lambda_unique(idx_lambda)));
-            set(gca,'YTickLabels', get_ticklabels(get(gca,'YTick'),lambda_unique));
+            xlabel(sprintf('gamma - best %0.3g',gamma_unique(idx_gamma)));
+            set(gca,'XTickLabel', get_ticklabels(get(gca,'XTick'),gamma_unique));
+            ylabel(sprintf('lambda - best %0.3g',lambda_unique(idx_lambda)));
+            set(gca,'YTickLabel', get_ticklabels(get(gca,'YTick'),lambda_unique));
             
             title(sprintf('order %d',k));
             
