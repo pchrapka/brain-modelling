@@ -59,22 +59,36 @@ idx_start = idx_end - npoints + 1;
 k = 1;
 for i=1:nrows
     for j=1:ncols
-        subplot(nrows, ncols, k);
-        
-        % average data
-        avg_data = squeeze(mean(data_plot(:,:,k,idx_start:idx_end),4));
-        imagesc(avg_data);
-        xlabel('gamma');
-        ylabel('lambda');
-        
-        % find min value and corresponding lambda and gamma
-        val_min = min(avg_data(:));
-        [idx_lambda,idx_gamma] = find(avg_data == val_min,1,'first');
-        title(sprintf('min %0.2g, \\lambda %0.2g, \\gamma %0.2g',...
-            val_min,lambda_unique(idx_lambda),gamma_unique(idx_gamma)));
-        k = k+1;
+        if k <= norder
+            subplot(nrows, ncols, k);
+            
+            % average data
+            avg_data = squeeze(mean(data_plot(:,:,k,idx_start:idx_end),4));
+            
+            % find min value and corresponding lambda and gamma
+            val_min = min(avg_data(:));
+            [idx_lambda,idx_gamma] = find(avg_data == val_min,1,'first');
+            
+            % plot
+            imagesc(avg_data);
+            xlabel(sprintf('gamma - best %0.2g',gamma_unique(idx_gamma)));
+            set(gca,'XTickLabels', get_ticklabels(get(gca,'XTick'),gamma_unique));
+            ylabel(sprintf('lambda - best %0.2g',lambda_unique(idx_lambda)));
+            set(gca,'YTickLabels', get_ticklabels(get(gca,'YTick'),lambda_unique));
+            
+            title(sprintf('order %d',k));
+            
+            k = k+1;
+        end
     end
 end
         
 
+end
+
+function labels = get_ticklabels(ticks,data)
+labels = cell(length(ticks),1);
+for i=1:length(ticks)
+    labels{i} = sprintf('%0.2g',data(ticks(i)));
+end
 end
