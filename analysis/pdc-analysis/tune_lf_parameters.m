@@ -62,7 +62,7 @@ if p.Results.plot
     crit_time = {'ewaic','normtime'};
     view_lf.compute(crit_time);
     view_lf.plot_criteria_surface('criteria',p.Results.plot_crit,...
-        'orders',p.Result.plot_orders,'file_list',1:length(lf_files));
+        'orders',p.Results.plot_orders,'file_list',1:length(lf_files));
 end
 
 end
