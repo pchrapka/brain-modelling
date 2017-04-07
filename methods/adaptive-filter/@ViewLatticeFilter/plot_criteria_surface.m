@@ -74,9 +74,9 @@ for i=1:nrows
             % plot
             imagesc(avg_data);
             xlabel(sprintf('gamma - best %0.3g',gamma_unique(idx_gamma)));
-            set(gca,'XTickLabel', get_ticklabels(get(gca,'XTick'),gamma_unique));
+            set_ticklabels(gamma_unique,'x');
             ylabel(sprintf('lambda - best %0.3g',lambda_unique(idx_lambda)));
-            set(gca,'YTickLabel', get_ticklabels(get(gca,'YTick'),lambda_unique));
+            set_ticklabels(lambda_unique,'y');
             
             title(sprintf('order %d',k));
             
@@ -88,9 +88,22 @@ end
 
 end
 
-function labels = get_ticklabels(ticks,data)
-labels = cell(length(ticks),1);
-for i=1:length(ticks)
+function set_ticklabels(data,axis)
+nticks = length(data);
+ticks = 1:nticks;
+labels = cell(nticks,1);
+for i=1:nticks
     labels{i} = sprintf('%0.3g',data(ticks(i)));
 end
+switch lower(axis)
+    case 'x'
+        set(gca, 'XTick', ticks);
+        set(gca, 'XTickLabel', labels);
+    case 'y'
+        set(gca, 'YTick', ticks);
+        set(gca, 'YTickLabel', labels);
+    otherwise
+        error('unknown axis %s',axis);
+end
+
 end
