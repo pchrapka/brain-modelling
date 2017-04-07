@@ -20,9 +20,9 @@ parse(p,varargin{:});
 params = struct2namevalue(p.Results);
 data_crit = obj.get_criteria(params{:});
 nfiles = length(data_crit.f);
-nsamples = size(data_crit.f{1},2);
+[norder,nsamples] = size(data_crit.f{1});
 
-nplots = length(data_crit.order_lists);
+nplots = length(data_crit.order_lists{1});
 nrows = ceil(sqrt(nplots));
 ncols = nrows;
 
@@ -41,10 +41,10 @@ for i=1:nfiles
     data_info(i).lambda = str2double(result{1}{1});
 end
 
-gamma_unique = unique(data_info.gamma);
-lambda_unique = unique(data_info.lambda);
+gamma_unique = unique([data_info.gamma]);
+lambda_unique = unique([data_info.lambda]);
 
-data_plot = nan(nlambda,ngamma,norder,nsamples);
+data_plot = nan(length(lambda_unique),length(gamma_unique),norder,nsamples);
 for i=1:nfiles
     idx_gamma = find(gamma_unique == data_info(i).gamma,1,'first');
     idx_lambda = find(lambda_unique == data_info(i).lambda,1,'first');
@@ -70,7 +70,7 @@ for i=1:nrows
         % find min value and corresponding lambda and gamma
         val_min = min(avg_data(:));
         [idx_lambda,idx_gamma] = find(avg_data == val_min,1,'first');
-        title(sprintf('min %0.2g, lambda %0.2g, gamma %0.2g',...
+        title(sprintf('min %0.2g, \\lambda %0.2g, \\gamma %0.2g',...
             val_min,lambda_unique(idx_lambda),gamma_unique(idx_gamma)));
         k = k+1;
     end

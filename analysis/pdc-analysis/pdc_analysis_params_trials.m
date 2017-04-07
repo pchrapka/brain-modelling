@@ -7,7 +7,7 @@ k=1;
 
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 params(k).metrics = {'diag'};
-params(k).ntrials = [1 2 5 10 15 20 40];
+params(k).ntrials = [2 5 10 15 20 40];
 params(k).order = 3;
 params(k).lambda = 0.99;
 params(k).gamma = 1e-3;
@@ -50,6 +50,7 @@ flag_tune_order = false;
 flag_tune_lambda = false;
 flag_tune_gamma = false;
 flag_tune_trials = true;
+flag_bootstrap = false;
 
 
 %% run variations
