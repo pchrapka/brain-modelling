@@ -64,7 +64,7 @@ if p.Results.plot
         plot_orders = p.Results.plot_orders;
     end
     
-    view_lf = ViewLatticeFilter(lf_files{1});
+    view_lf = ViewLatticeFilter(lf_files);
     crit_time = {'ewaic','normtime'};
     view_lf.compute(crit_time);
     view_lf.plot_criteria_surface('criteria',p.Results.plot_crit,...
