@@ -33,7 +33,8 @@ legend_str = {};
 dataf = {};
 datab = {};
 order_lists = {};
-for file_idx=1:nfiles
+for i=1:nfiles
+    file_idx = file_list(i);
     
     % load data
     obj.load('criteria',file_idx);
@@ -45,7 +46,7 @@ for file_idx=1:nfiles
     if isempty(order_user)
         order_user = obj.criteria.(criteria).orders;
     end
-    order_lists{file_idx} = order_user;
+    order_lists{i} = order_user;
     order_user_max = max(order_user);
     norders_user = length(order_user);
     
@@ -62,8 +63,8 @@ for file_idx=1:nfiles
     
     % extract criteria data
     % only use selected orders
-    dataf{file_idx} = obj.criteria.(criteria).f(order_user,:);
-    datab{file_idx} = obj.criteria.(criteria).b(order_user,:);
+    dataf{i} = obj.criteria.(criteria).f(order_user,:);
+    datab{i} = obj.criteria.(criteria).b(order_user,:);
     
     % create legend string
     for k=1:norders_user
@@ -82,5 +83,6 @@ out.f = dataf;
 out.b = datab;
 out.legend_str = legend_str;
 out.order_lists = order_lists;
+out.file_list = file_list;
 
 end

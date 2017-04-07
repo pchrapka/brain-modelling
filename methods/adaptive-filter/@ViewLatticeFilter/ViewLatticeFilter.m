@@ -110,7 +110,8 @@ classdef ViewLatticeFilter < handle
         
         % plot functions
         plot_criteria_vs_order(obj,varargin);
-        plot_criteria_vs_order_vs_time(obj,varargin)
+        plot_criteria_vs_order_vs_time(obj,varargin);
+        plot_criteria_surface(obj,varargin);
     end
     
     methods (Access = protected)
