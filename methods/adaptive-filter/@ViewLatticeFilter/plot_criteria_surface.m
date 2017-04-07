@@ -56,6 +56,10 @@ idx_end = ceil(nsamples*0.95);
 npoints = ceil(nsamples/10);
 idx_start = idx_end - npoints + 1;
 
+% average data
+data_avg = squeeze(mean(data_plot(:,:,:,idx_start:idx_end),4));
+clim = [min(data_avg(:)) max(data_avg(:)];
+
 figure('Position',[1 1 1000 800]);
 
 k = 1;
@@ -64,15 +68,14 @@ for i=1:nrows
         if k <= norder
             subplot(nrows, ncols, k);
             
-            % average data
-            avg_data = squeeze(mean(data_plot(:,:,k,idx_start:idx_end),4));
+            data_avg_temp = data_avg(:,:,k);
             
             % find min value and corresponding lambda and gamma
-            val_min = min(avg_data(:));
-            [idx_lambda,idx_gamma] = find(avg_data == val_min,1,'first');
+            val_min = min(data_avg_temp(:));
+            [idx_lambda,idx_gamma] = find(data_avg_temp == val_min,1,'first');
             
             % plot
-            imagesc(avg_data);
+            imagesc(data_avg_temp,clim);
             xlabel(sprintf('gamma - best %0.3g',gamma_unique(idx_gamma)));
             set_ticklabels(gamma_unique,'x');
             ylabel(sprintf('lambda - best %0.3g',lambda_unique(idx_lambda)));
