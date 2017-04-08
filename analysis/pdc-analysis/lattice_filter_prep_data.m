@@ -1,4 +1,4 @@
-function [sources_data_file,sources_mini_file] = lattice_filter_prep_data(pipeline, varargin)
+function [sources_data_file,sources_mini_file] = lattice_filter_prep_data(pipeline, eeg_file, varargin)
 %LATTICE_FILTER_PREP_DATA preps data for lattice filtering
 %   LATTICE_FILTER_PREP_DATA(pipeline,...) preps data for lattice filtering
 %
@@ -6,6 +6,8 @@ function [sources_data_file,sources_mini_file] = lattice_filter_prep_data(pipeli
 %   -----
 %   pipeline
 %       ftb.AnalysisBeamformer pipeline
+%   eeg_file (string)
+%       file name with data struct that contains the sampling rate
 %
 %   Parameters
 %   ----------
@@ -36,6 +38,7 @@ function [sources_data_file,sources_mini_file] = lattice_filter_prep_data(pipeli
 
 p = inputParser();
 addRequired(p,'pipeline',@(x) isa(x,'ftb.AnalysisBeamformer'));
+addRequired(p,'eeg_file',@ischar);
 addParameter(p,'outdir','',@ischar);
 addParameter(p,'ntrials_max',40,@isnumeric);
 addParameter(p,'samples',[],@isnumeric);
@@ -44,7 +47,7 @@ options_norm = {'allchannels','eachchannel','none'};
 addParameter(p,'normalization','none',@(x) any(validatestring(x,options_norm)));
 addParameter(p,'envelope',false,@islogical);
 addParameter(p,'patch_type','aal',@ischar);
-parse(p,pipeline,varargin{:});
+parse(p,pipeline,eeg_file,varargin{:});
 
 
 %% set up output dir
@@ -167,6 +170,8 @@ if ~exist(sources_data_file,'file')
         source_analysis = loadfile(source_analysis);
     end
     
+    eeg_data = loadfile(eeg_file);
+    
     data = [];
     data.sources_file = sources_mini_file;
     data.normalization = p.Results.normalization;
@@ -174,7 +179,7 @@ if ~exist(sources_data_file,'file')
     data.centroids = lf.patch_centroid(lf.inside,:);
     data.time = sources_analysis.time{1};
     data.patch_type = p.Results.patch_type;
-    data.fsample = sources_analysis.fsample;
+    data.fsample = eeg_data.fsample;
     error('check data.time');
     
     % save
