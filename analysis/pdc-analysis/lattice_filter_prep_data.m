@@ -177,10 +177,9 @@ if ~exist(sources_data_file,'file')
     data.normalization = p.Results.normalization;
     data.labels = patch_labels;
     data.centroids = lf.patch_centroid(lf.inside,:);
-    data.time = sources_analysis.time{1};
+    data.time = source_analysis.time;
     data.patch_type = p.Results.patch_type;
     data.fsample = eeg_data.fsample;
-    error('check data.time');
     
     % save
     save_parfor(sources_data_file, data);

@@ -25,7 +25,7 @@ parse(p,s,varargin{:});
 
 if ~isempty(p.Results.fields)
     % copy fields
-    temp = copyfields(s,[],fields);
+    temp = copyfields(s,[],p.Results.fields);
     s = temp;
 end
 

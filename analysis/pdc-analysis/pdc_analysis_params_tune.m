@@ -14,7 +14,7 @@ k=1;
 % params(k).normalization = 'allchannels';
 % params(k).envelope = true;
 % params(k).plot_crit = 'normtime';
-% k = k+1;
+% k = k+1;  
 
 % best is 
 %   lambda 0.995, 
