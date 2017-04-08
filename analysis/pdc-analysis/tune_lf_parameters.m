@@ -1,32 +1,21 @@
-function tune_lf_parameters(pipeline,outdir,varargin)
+function tune_lf_parameters(sources_mini_file,outdir,varargin)
 
 p = inputParser();
-addRequired(p,'pipeline',@(x) isa(x,'ftb.AnalysisBeamformer'));
+addRequired(p,'sources_mini_file',@ischar);
 addRequired(p,'outdir',@ischar);
-addParameter(p,'patch_type','aal',@ischar);
 addParameter(p,'ntrials',10,@isnumeric);
 addParameter(p,'order',1:14,@(x) isnumeric(x) && isvector(x));
 addParameter(p,'lambda',[0.9:0.02:0.98 0.99],@(x) isnumeric(x) && isvector(x));
 addParameter(p,'gamma',[1e-4 1e-3 1e-2 0.1 1 10],@(x) isnumeric(x) && isvector(x));
-addParameter(p,'normalization','allchannels',@ischar); % also none
-addParameter(p,'envelope',false,@islogical); % also none
 addParameter(p,'plot',true,@islogical);
 addParameter(p,'plot_crit','ewaic',@ischar);
 addParameter(p,'plot_orders',[],@isnumeric);
-parse(p,pipeline,outdir,varargin{:});
-
-lf_file = pipeline.steps{end}.lf.leadfield;
-sources_file = pipeline.steps{end}.sourceanalysis;
+parse(p,sources_mini_file,outdir,varargin{:});
 
 %% set lattice options
-lf = loadfile(lf_file);
-patch_labels = lf.filter_label(lf.inside);
-patch_labels = cellfun(@(x) strrep(x,'_',' '),...
-    patch_labels,'UniformOutput',false);
-npatch_labels = length(patch_labels);
-clear lf;
-
-nchannels = npatch_labels;
+% get nchannels from sources data
+sources = loadfile(sources_mini_file);
+nchannels = size(sources,1);
 
 filters = {};
 k = 1;
@@ -41,20 +30,25 @@ for i=1:length(p.Results.lambda)
     end
 end
 
-%% lattice filter
-
+%% run lattice filters
 % set up parfor
 parfor_setup('cores',12,'force',true);
 
+% filter results are dependent on all input file parameters
+[~,exp_name,~] = fileparts(sources_mini_file);
+
 verbosity = 0;
-lf_files = lattice_filter_sources(filters, sources_file,...
-    'normalization',p.Results.normalization,...
-    'envelope',p.Results.envelope,...
-    'tracefields',{'Kf','Kb','Rf','ferror','berrord'},...
+lf_files = run_lattice_filter(...
+    sources_mini_file,...
+    'basedir',outdir,...
+    'outdir',exp_name,... 
+    'filters', filters,...
+    'warmup_noise', true,...
+    'warmup_data', true,...
+    'force',false,...
     'verbosity',verbosity,...
-    ...'samples',[1:100],...
-    'ntrials_max',100,...
-    'outdir', outdir);
+    'tracefields', {'Kf','Kb','Rf','ferror','berrord'},...
+    'plot_pdc', false);
 
 %% set up view lattice
 if p.Results.plot

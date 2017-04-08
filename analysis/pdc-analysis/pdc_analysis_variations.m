@@ -24,18 +24,28 @@ for i=1:length(params)
     % separate following output based on patch model
     outdir = fullfile(outdirbase,params(i).patch_type);
     
+    %% prep source data
+    eeg_file = fullfile(outdirbase,'fthelpers.ft_phaselocked.mat');
+    params_func = struct2namevalue(params2, 'fields', {'normalization','envelope','patch_type'});
+    [sources_data_file,sources_filter_file] = lattice_filter_prep_data(...
+        pipeline,...
+        eeg_file,...
+        'outdir', outdir,...
+        'ntrials_max', 100,...
+        params_func{:});
+    
+    %% tune parameters
     if p.Results.flag_tune
         
         % use parameters specified in params,
         % otherwise use default from tune_model_order
         params2 = params(i);
         params2 = rmfield(params2,'metrics');
-        
-        params2.plot = true;
-        %params2.plot_orders = params2.order;
-        
         params_func = struct2namevalue(params2);
-        tune_lf_parameters(pipeline,outdir,params_func{:});
+        
+        tune_lf_parameters(sources_filter_file,outdir,...
+            'plot',true,...
+            params_func{:});
         
         if p.Results.flag_tune_order
             error('deprecated');
@@ -107,16 +117,6 @@ for i=1:length(params)
         
         % loop over metrics
         for j=1:length(params(i).metrics)
-            
-            %% prep source data
-            eeg_file = fullfile(outdirbase,'fthelpers.ft_phaselocked.mat');
-            params_func = struct2namevalue(params2, 'fields', {'normalization','envelope','patch_type'});
-            [sources_data_file,sources_filter_file] = lattice_filter_prep_data(...
-                pipeline,...
-                eeg_file,...
-                'outdir', outdir,...
-                'ntrials_max', 100,...
-                params_func{:});
             
             %% compute RC with lattice filter
             % select lf params
