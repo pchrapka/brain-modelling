@@ -1,18 +1,36 @@
-function param_list = struct2namevalue(param_struct)
+function namevalue = struct2namevalue(s,varargin)
 %STRUCT2NAMEVALUE converts struct to name value pairs
-%   params_list = STRUCT2NAMEVALUE(param_struct) converts struct to name
+%   params_list = STRUCT2NAMEVALUE(s) converts struct to name
 %   value pairs
 %
 %   Input
 %   -----
-%   param_struct (struct)
+%   s (struct)
 %       parameter struct
+%
+%   Parameter
+%   ---------
+%   fields (cell array of strings)
+%       cell array of field names
 %   
 %   Output
 %   ------
-%   param_list (cell array)
+%   namevalue (cell array)
 %       list of name value pairs
 
-param_list = [fieldnames(param_struct) struct2cell(param_struct)];
-param_list = reshape(param_list',1,numel(param_list));
+p = inputParser();
+addRequired(p,'s',@isstruct);
+addParameter(p,'fields',{},@iscell);
+parse(p,s,varargin{:});
+
+if ~isempty(p.Results.fields)
+    % copy fields
+    temp = copyfields(s,[],fields);
+    s = temp;
+end
+
+namevalue = [fieldnames(s) struct2cell(s)];
+namevalue = reshape(namevalue',1,numel(namevalue));
+
+    
 end

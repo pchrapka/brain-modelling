@@ -1,7 +1,7 @@
 function [lf_files,sources_mini_file] = lf_analysis_main(pipeline,outdir,varargin)
 
 p = inputParser();
-addRequired(p,'pipeline',@(x) isa(x,'ftb.AnalysisBeamformer'));
+% addRequired(p,'pipeline',@(x) isa(x,'ftb.AnalysisBeamformer'));
 addRequired(p,'outdir',@ischar);
 addParameter(p,'ntrials',10,@isnumeric);
 addParameter(p,'order',6,@isnumeric);

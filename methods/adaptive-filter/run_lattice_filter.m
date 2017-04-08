@@ -161,7 +161,7 @@ parfor k=1:nfilters
     fresh = false;
     
     if exist(outfile,'file')
-        % check freshness of data and filter analysis
+        % check freshness of data and filter analysis 
         filter_time = get_timestamp(outfile);
         if data_time > filter_time
             fresh = true;
