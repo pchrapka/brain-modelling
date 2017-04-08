@@ -13,7 +13,7 @@ for i=1:nrows
             subplot(nrows,ncols,count);
             imagesc(abs(cov(data(:,:,count))));
             colorbar;
-            title(sprintf('order %d',count));
+            title(sprintf('order %d',count-1));
             count = count + 1;
         end
     end

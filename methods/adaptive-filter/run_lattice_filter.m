@@ -181,15 +181,17 @@ parfor k=1:nfilters
             noise = gen_noise(nchannels, ntime, ntrials);
             
             % run filter on noise
-            warning('off','all');
-            try
-                trace.warmup(noise);
-            catch me
-                msgText = getReport(me);
-                warning('on','all');
-                warning(msgText);
-            end
-            warning('on','all');
+            trace.warmup(noise);
+            
+%             warning('off','all');
+%             try
+%                 trace.warmup(noise);
+%             catch me
+%                 msgText = getReport(me);
+%                 warning('on','all');
+%                 warning(msgText);
+%             end
+%             warning('on','all');
         end
         
         idx_start = 1;
@@ -200,29 +202,33 @@ parfor k=1:nfilters
             fprintf('warming up with data\n');
             
             % warm up filter on some data
-            warning('off','all');
-            try
-                trace.warmup(datain(:,:,idx_start:idx_end));
-            catch me
-                msgText = getReport(me);
-                warning('on','all');
-                warning(msgText);
-            end
-            warning('on','all');
+            trace.warmup(flipdim(datain(:,:,idx_start:idx_end),2));
+%             warning('off','all');
+%             %try
+%                 trace.warmup(flipdim(datain(:,:,idx_start:idx_end),2));
+%             catch me
+%                 msgText = getReport(me);
+%                 warning('on','all');
+%                 warning(msgText);
+%             end
+%             warning('on','all');
         end
         
         % run the filter on data
-        warning('off','all');
-        try
-            trace.run(datain(:,:,idx_start:idx_end),...
+        trace.run(datain(:,:,idx_start:idx_end),...
                 'verbosity',options.verbosity,...
                 'mode','none');
-        catch me
-            msgText = getReport(me);
-            warning('on','all');
-            warning(msgText);
-        end
-        warning('on','all');
+%         warning('off','all');
+%         try
+%             trace.run(datain(:,:,idx_start:idx_end),...
+%                 'verbosity',options.verbosity,...
+%                 'mode','none');
+%         catch me
+%             msgText = getReport(me);
+%             warning('on','all');
+%             warning(msgText);
+%         end
+%         warning('on','all');
         
         % copy the filter name
         trace.name = trace.filter.name;

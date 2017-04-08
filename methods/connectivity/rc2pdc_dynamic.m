@@ -1,6 +1,6 @@
-function result = rc2pdc_dynamic(Kf,Kb,Pf,varargin)
+function result = rc2pdc_dynamic(Kf,Kb,Pf,lambda,varargin)
 %RC2PDC_DYNAMIC converts dynamic RC to dynamic PDC
-%   RC2PDC_DYNAMIC(Kf, Kb, Pf) converts dynamic RC to dynamic PDC
+%   RC2PDC_DYNAMIC(Kf, Kb, Pf, lambda) converts dynamic RC to dynamic PDC
 %
 %   Input
 %   -----
@@ -10,6 +10,8 @@ function result = rc2pdc_dynamic(Kf,Kb,Pf,varargin)
 %       backward reflection coefficients, [samples order channels channels]
 %   Pf  
 %       forward prediction error covariance [samples channels channels]
+%   lambda
+%       exponential decay
 %
 %   Parameters
 %   ----------
@@ -26,11 +28,12 @@ p = inputParser();
 addRequired(p,'Kf',@(x) length(size(x)) == 4);
 addRequired(p,'Kb',@(x) length(size(x)) == 4);
 addRequired(p,'Pf',@(x) length(size(x)) == 3);
+addRequired(p,'lambda',@(x) isnumeric(x) && length(x) == 1);
 addParameter(p,'specden',false,@islogical);
 addParameter(p,'coherence',false,@islogical);
 addParameter(p,'metric','euc',@ischar);
 addParameter(p,'downsample',0,@(x) x >= 0);
-parse(p,Kf,Kb,Pf,varargin{:});
+parse(p,Kf,Kb,Pf,lambda,varargin{:});
 
 if size(Kf) ~= size(Kb)
     error('mismatched dimensions for Kf and Kb');
@@ -42,7 +45,7 @@ if dims(3) ~= dims(4)
 end
 
 options = copyfields(p.Results,[],...
-    {'specden','coherence','metric'});
+    {'specden','coherence','metric','lambda'});
 
 %% downsample
 if p.Results.downsample > 0
@@ -98,7 +101,8 @@ parfor i=1:nsamples
     Kftemp = squeeze(Kf(i,:,:,:));
     Kbtemp = squeeze(Kb(i,:,:,:));
     Pftemp = squeeze(Pf(i,:,:));
-    pdc_sample = rc2pdc(Kftemp, Kbtemp, Pftemp,...
+    weight = (1-options.lambda)/(1-options.lambda^i);
+    pdc_sample = rc2pdc(Kftemp, Kbtemp, weight*Pftemp,...
         'metric', options.metric,...
         'specden', options.specden,...
         'coherence', options.coherence,...
