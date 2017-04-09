@@ -340,6 +340,7 @@ classdef LatticeTrace < handle
                     end
                     
                 end
+                obj.filter.normalize(nsamples);
                 progbar.stop();
                 
             else
@@ -351,6 +352,7 @@ classdef LatticeTrace < handle
                 obj.filter = obj.filter.update_batch(...
                     permute(samples,[1 3 2]),...
                     'verbosity',p.Results.verbosity);
+                obj.filter.normalize(nsamples);
                 
                 % check last warning
                 [msg, lastid] = lastwarn();
