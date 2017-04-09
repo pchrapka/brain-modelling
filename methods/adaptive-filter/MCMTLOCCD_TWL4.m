@@ -94,6 +94,19 @@ classdef MCMTLOCCD_TWL4
             obj.ferror = zeros(obj.nchannels,obj.ntrials,obj.order+1);
         end
         
+        function obj = normalize(obj, nsamples)
+            %NORMALIZE normalize the covariance matrices
+            %   NORMALIZE(obj, nsamples) normalize the covariance matrices
+            
+            weight = (1-obj.lambda)/(1-obj.lambda^nsamples);
+            for i=1:obj.order+1
+                obj.Rf(i,:,:) = weight*obj.Rf(i,:,:);
+                obj.Rfb(i,:,:) = weight*obj.Rfb(i,:,:);
+                obj.Rb(i,:,:) = weight*obj.Rb(i,:,:);
+                obj.Rbf(i,:,:) = weight*obj.Rbf(i,:,:);
+            end
+        end
+        
         function obj = update(obj, y, varargin)
             %UPDATE updates reflection coefficients
             %   UPDATE(OBJ,Y) updates the reflection coefficients using the
