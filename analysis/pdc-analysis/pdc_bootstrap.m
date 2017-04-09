@@ -107,7 +107,7 @@ switch p.Results.null_mode
             
             % create data file
             file_channel = fullfile(workingdir_ch,channel_dir,[channel_dir '.mat']);
-            fresh = isfresh(file_channel, p.Results.data_file);
+            fresh = isfresh(file_channel, data_sources);
             if fresh || ~exist(file_channel,'file')
                 data_temp = data_sources(i,:,:);
                 save_parfor(file_channel, data_temp);

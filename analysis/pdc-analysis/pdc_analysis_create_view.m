@@ -6,7 +6,7 @@ addRequired(p,'sources_data_file',@ischar);
 addParameter(p,'downsample',1,@isnumeric);
 parse(p,pdc_file,sources_data_file,varargin{:});
 
-data = loadfield(sources_data_file);
+data = loadfile(sources_data_file);
 fsample = data.fsample/p.Results.downsample;
 time = data.time;
 time = downsample(time,p.Results.downsample);
