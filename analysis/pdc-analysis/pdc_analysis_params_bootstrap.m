@@ -11,11 +11,13 @@ k=1;
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 params(k).metrics = {'diag'};
 params(k).ntrials = 20;
-params(k).order = 6;
-params(k).lambda = 0.995;
-params(k).gamma = 1e-3;
+params(k).order = 12;
+params(k).lambda = 0.99;
+params(k).gamma = 1e-6;
 params(k).normalization = 'allchannels';
 params(k).envelope = true;
+params(k).nresamples = 10;
+params(k).alpha = 0.05;
 k = k+1;
 
 % % no envelope

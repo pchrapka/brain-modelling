@@ -18,6 +18,7 @@ sources = loadfile(sources_mini_file);
 nchannels = size(sources,1);
 
 filters = {};
+labels = {};
 k = 1;
 
 order_max = max(p.Results.order);
@@ -26,6 +27,8 @@ for i=1:length(p.Results.lambda)
         % tuning each parameter combination
         filters{k} = MCMTLOCCD_TWL4(nchannels,order_max,p.Results.ntrials,...
             'lambda',p.Results.lambda(i),'gamma',p.Results.gamma(j));
+        labels{k} = sprintf('lambda %0.3g gamma %0.3f',...
+            p.Results.lambda(i),p.Results.gamma(j));
         k = k+1;
     end
 end
@@ -58,19 +61,19 @@ if p.Results.plot
         plot_orders = p.Results.plot_orders;
     end
     
-    view_lf = ViewLatticeFilter(lf_files);
+    view_lf = ViewLatticeFilter(lf_files,'labels',labels);
     crit_time = {'ewaic','normtime'};
     view_lf.compute(crit_time);
-    if length(p.Results.lambda) == 1 && length(p.Results.gamma) == 1
-        view_lf.plot_criteria_vs_order_vs_time(...
-                'criteria',p.Results.plot_crit,...
-                'orders',plot_orders,...
-                'file_list',1:length(lf_files));
-    else
+    if length(p.Results.lambda) ~= 1 && length(p.Results.gamma) ~= 1
         view_lf.plot_criteria_surface(...
             'criteria',p.Results.plot_crit,...
             'orders',plot_orders,...
             'file_list',1:length(lf_files));
+    else
+        view_lf.plot_criteria_vs_order_vs_time(...
+                'criteria',p.Results.plot_crit,...
+                'orders',plot_orders,...
+                'file_list',1:length(lf_files));
     end
 end
 
