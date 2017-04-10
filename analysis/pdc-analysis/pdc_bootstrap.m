@@ -46,6 +46,15 @@ parse(p,lf_file,sources_data_file,varargin{:});
 workingdirname = sprintf('%s-bootstrap-%s',filter_name,p.Results.null_mode);
 workingdir = fullfile(outdir,workingdirname);
 
+% get the data folder
+comp_name = get_compname();
+switch comp_name
+    case {'blade16.ece.mcmaster.ca', sprintf('blade16.ece.mcmaster.ca\n')}
+        workingdir = strrep(workindir,'home','home.old');
+    otherwise
+        % do nothing
+end
+
 bootstrap_file = fullfile(workingdir,'bootstrap.txt');
 fresh = isfresh(bootstrap_file, lf_file);
 if fresh
