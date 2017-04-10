@@ -50,7 +50,8 @@ workingdir = fullfile(outdir,workingdirname);
 comp_name = get_compname();
 switch comp_name
     case {'blade16.ece.mcmaster.ca', sprintf('blade16.ece.mcmaster.ca\n')}
-        workingdir = strrep(workindir,'home','home.old');
+        workingdir = strrep(workingdir,'home/','home.old/');
+        workingdir = strrep(workingdir,'home-new/','home.old/');
     otherwise
         % do nothing
 end
@@ -107,7 +108,8 @@ switch p.Results.null_mode
         datalf_nocoupling.Kf = zeros(size(datalf.estimate.Kf));
         datalf_nocoupling.Kb = zeros(size(datalf.estimate.Kb));
         
-        data_sources = loadfile(sources_data.sources_file);
+        sources_file = sources_data.sources_file;
+        data_sources = loadfile(sources_file);
         
         lf_channels = cell(nchannels,1);
         parfor i=1:nchannels
@@ -116,7 +118,7 @@ switch p.Results.null_mode
             
             % create data file
             file_channel = fullfile(workingdir_ch,channel_dir,[channel_dir '.mat']);
-            fresh = isfresh(file_channel, data_sources);
+            fresh = isfresh(file_channel, sources_file);
             if fresh || ~exist(file_channel,'file')
                 data_temp = data_sources(i,:,:);
                 save_parfor(file_channel, data_temp);
