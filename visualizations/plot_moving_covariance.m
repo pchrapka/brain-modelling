@@ -8,6 +8,7 @@ function plot_moving_covariance(data, varargin)
 p = inputParser();
 addParameter(p,'lambda',0.99,@isnumeric);
 addParameter(p,'mode','channels',@(x) any(validatestring(x,{'channels','covariance'})));
+addParameter(p,'normalize',false,@islogical);
 parse(p,varargin{:});
 
 dims = size(data);
@@ -19,14 +20,17 @@ switch p.Results.mode
         end
         
         [nchannels, nsamples, ntrials] = size(data);
-        data_norm = zeros(size(data));
-        for i=1:ntrials
-            var_ch = var(data(:,:,i),0,2);
-            data_norm(:,:,i) = data(:,:,i)./repmat(var_ch,[1,nsamples]);
+        if p.Results.normalize
+            data_norm = zeros(size(data));
+            for i=1:ntrials
+                var_ch = var(data(:,:,i),0,2);
+                data_norm(:,:,i) = data(:,:,i)./repmat(var_ch,[1,nsamples]);
+            end
+        else
+            data_norm = data;
         end
-        
         R = zeros(nsamples, nchannels, nchannels);
-        for i=1:nsamples
+        for i=2:nsamples
             data_sample = squeeze(data_norm(:,i,:));
             weight = (1-p.Results.lambda)/(1-p.Results.lambda^i);
             R(i,:,:) = weight*(data_sample*data_sample')/ntrials;
@@ -42,18 +46,20 @@ switch p.Results.mode
         end
         
         [nsamples, nchannels, ~] = size(data);
-        R = zeros(nsamples, nchannels, nchannels);
-        for i=1:nsamples
-            weight = (1-p.Results.lambda)/(1-p.Results.lambda^i);
-            R(i,:,:) = weight*data(i,:,:);
-        end
+        R = data;
     otherwise
         error('unknown mode');
 end
 
+R_weighted = zeros(nsamples, nchannels, nchannels);
+for i=1:nsamples
+    weight = (1-p.Results.lambda)/(1-p.Results.lambda^i);
+    R_weighted(i,:,:) = weight*R(i,:,:);
+end
+
 corr_ch = zeros(nsamples, nchannels);
 for i=1:nsamples
-    Rtemp = abs(squeeze(R(i,:,:)));
+    Rtemp = abs(squeeze(R_weighted(i,:,:)));
     corr_ch(i,:) = diag(Rtemp)./sum(Rtemp,2);
 end
 
@@ -67,6 +73,8 @@ for i=1:nrows
         if count <= nchannels
             subplot(nrows,ncols,count);
             plot(1:nsamples, corr_ch(:,count));
+            ylim([0 1]);
+            xlim([1 nsamples]);
             title(sprintf('channel %d',count));
             count = count + 1;
         end
