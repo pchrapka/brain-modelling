@@ -14,7 +14,8 @@ for direc=1:length(directions)
             'get_save_tag',true);
         [outdir, outfile] = view_obj.get_fullsavefile();
         
-        if exist(fullfile(outdir,outfile),'file')
+        file_name_date = [datestr(now, 'yyyy-mm-dd')];
+        if exist(fullfile([outdir '/img'],[file_name_date '-' outfile '.eps']),'file')
             fprintf('%s: skipping %s\n',mfilename,outfile);
             return;
         end
