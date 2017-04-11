@@ -182,7 +182,7 @@ end
 % copy vars
 nresamples = p.Results.nresamples;
 lf_btstrp = cell(p.Results.nresamples,1);
-% TODO switch back to parfor
+
 parfor i=1:nresamples
 % for i=1:nresamples
     resampledir = sprintf('resample%d',i);
@@ -224,6 +224,10 @@ parfor i=1:nresamples
                     prompt = 'hit any key to continue';
                     resp = input(prompt,'s');
                 end
+                
+                % mean correct
+                data_bootstrap(:,:,j) = data_bootstrap(:,:,j) ...
+                    - repmat(mean(data_bootstrap(:,:,j),2),[1 nsamples]);
                 
                 %plot(data_bootstrap(:,:,j)');
                 data_max = max(max(abs(data_bootstrap(:,:,j))));
