@@ -25,10 +25,10 @@ view_obj = ViewPDC(pdc_file,...
     'w',[0 100]/fsample);
 
 if p.Results.envelope
-    view_switch(view_obj,'10')
+    view_switch(view_obj,'10');
     % following views at 0-10 Hz
 else
-    view_switch(view_obj,'beta')
+    view_switch(view_obj,'beta');
     % following views at 15-25 Hz
 end
 
