@@ -17,7 +17,7 @@ for direc=1:length(directions)
         file_name_date = [datestr(now, 'yyyy-mm-dd')];
         if exist(fullfile([outdir '/img'],[file_name_date '-' outfile '.eps']),'file')
             fprintf('%s: skipping %s\n',mfilename,outfile);
-            return;
+            continue;
         end
         
         created = view_obj.plot_seed(ch,...
