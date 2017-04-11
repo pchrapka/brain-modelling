@@ -149,8 +149,8 @@ for i=1:length(params)
             view_obj = pdc_analysis_create_view(...
                 pdc_files{1},...
                 sources_data_file,...
+                'envelope',params(i).envelope,...
                 'downsample',downsample_by);
-%                 params_func{:});
             
             % add params for viewing
             params_plot_seed{1} = {'threshold',0.001};
@@ -159,12 +159,20 @@ for i=1:length(params)
             if p.Results.flag_bootstrap
                 params_func = struct2namevalue(params2,...
                     'fields', {'nresamples','alpha','null_mode'});
-                pdc_sig_file = pdc_bootstrap(...
+                [pdc_sig_file, pdc_resample_files] = pdc_bootstrap(...
                     lf_files{1},...
                     sources_data_file,...
                     params_func{:},...
                     'pdc_params',pdc_params);
                 
+                % add significance threshold data
+                view_obj.pdc_sig_file = pdc_sig_file;
+                
+                params_plot_seed{2} = {...
+                    'threshold_mode','significance',...
+                    'tag',params2.null_mode};
+                
+                % bootstrap checks
                 check_bt_data = false;
                 if check_bt_data
                     %pdc_bootstrap_check(pdc_sig_file, sources_mini_file);
@@ -174,57 +182,30 @@ for i=1:length(params)
                         'eeg_file',eeg_file,'leadfield_file',leadfield_file);
                 end
                 
+                % plot significance level
                 view_sig_obj = pdc_analysis_create_view(...
                     pdc_sig_file,...
                     sources_data_file,...
+                    'envelope',params(i).envelope,...
                     'downsample',downsample_by);
-%                     params_func{:});
                 
-                if params(i).envelope
-                    view_switch(view_sig_obj,'10')
-                    % following views at 0-10 Hz
-                else
-                    view_switch(view_sig_obj,'beta')
-                    % following views at 15-25 Hz
-                end
-                nchannels = length(view_sig_obj.info.label);
+                pdc_plot_seed_threshold(view_sig_obj);
                 
-                directions = {'outgoing','incoming'};
-                for direc=1:length(directions)
-                    for ch=1:nchannels
-                        
-                        created = view_sig_obj.plot_seed(ch,...
-                            'direction',directions{direc},...
-                            'threshold_mode','numeric',...
-                            'threshold',0.001,...
-                            'vertlines',[0 0.5]);
-                        
-                        if created
-                            view_sig_obj.save_plot('save',true,'engine','matlab');
-                        end
-                        close(gcf);
-                    end
+                % plot pdc for each surrogate data set
+                for k=1:length(pdc_resample_files)
+                    view_obj_resample = pdc_analysis_create_view(...
+                        pdc_resample_files{k},...
+                        sources_data_file,...
+                        'envelope',params(i).envelope,...
+                        'downsample',downsample_by);
+                    
+                    pdc_plot_seed_threshold(view_obj_resample);
                 end
                 
-                % add significance threshold data
-                view_obj.pdc_sig_file = pdc_sig_file;
-                
-                params_plot_seed{2} = {...
-                    'threshold_mode','significance',...
-                    'tag',params2.null_mode};
             end
-            
-            %% views
-            if params(i).envelope
-                view_switch(view_obj,'10')
-                % following views at 0-10 Hz
-            else
-                view_switch(view_obj,'beta')
-                % following views at 15-25 Hz
-            end
-            nchannels = length(view_obj.info.label);
             
             %% plot seed
+            nchannels = length(view_obj.info.label);
             directions = {'outgoing','incoming'};
             for direc=1:length(directions)
                 for ch=1:nchannels

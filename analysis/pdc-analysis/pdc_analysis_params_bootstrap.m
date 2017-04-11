@@ -21,7 +21,7 @@ k=1;
 % k = k+1;
 
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
-params(k).metrics = {'euc','diag','info'};
+params(k).metrics = {'euc','diag'};
 params(k).ntrials = 20;
 params(k).order = 11;
 params(k).lambda = 0.99;

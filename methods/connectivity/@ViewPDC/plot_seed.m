@@ -18,6 +18,9 @@ obj.load('pdc');
 obj.check_info();
 created = false;
 
+label_seed = obj.info.label{p.Results.chseed};
+
+%% set up save tag
 tag_threshold = '';
 switch p.Results.threshold_mode
     case 'numeric'
@@ -36,6 +39,31 @@ switch p.Results.threshold_mode
         error('unknown threshold mode %s',p.Results.threshold_mode);
 end
 
+% set labels and save tag
+switch p.Results.direction
+    case 'outgoing'
+        obj.save_tag = sprintf('-seed-out-j%d',p.Results.chseed);
+    case 'incoming'        
+        obj.save_tag = sprintf('-seed-in-i%d',p.Results.chseed);
+end
+if ~isempty(tag_threshold)
+    % add threshold tag
+    obj.save_tag = [obj.save_tag '-' tag_threshold];
+end
+
+if ~isempty(p.Results.tag)
+    % add user tag
+    obj.save_tag = [obj.save_tag '-' p.Results.tag];
+end
+
+outfile = obj.get_savefile();
+if exist(outfile,'file')
+    % don't plot if it exists
+    fprintf('%s: skipping, already exists - %s %s\n',mfilename,p.Results.direction,label_seed);
+    return;
+end
+
+%% plot
 [nsamples,nchannels,~,nfreqs] = size(obj.pdc);
     
 w = 0:nfreqs-1;
@@ -47,8 +75,6 @@ w_idx = (w >= obj.w(1)) & (w <= obj.w(2));
 f = w(w_idx)*obj.fs;
 freq_idx = 1:nfreqs;
 freq_idx = freq_idx(w_idx);
-
-label_seed = obj.info.label{p.Results.chseed};
 
 data_plot = zeros(nchannels,nsamples);
 data_alpha = zeros(nchannels,nsamples);
@@ -192,7 +218,7 @@ if ~isempty(obj.time)
     end
 end
 
-% set labels and save tag
+% set labels
 switch p.Results.direction
     case 'outgoing'
         str_xlabel = 'from';
@@ -202,7 +228,6 @@ switch p.Results.direction
         end 
         ylabel('to');
         xlabel(xlabel_string);
-        obj.save_tag = sprintf('-seed-out-j%d',p.Results.chseed);
     case 'incoming'
         str_xlabel = 'to';
         xlabel_string{1} = sprintf('%s %s',str_xlabel,label_seed);
@@ -211,16 +236,6 @@ switch p.Results.direction
         end
         ylabel('from');
         xlabel(xlabel_string);
-        obj.save_tag = sprintf('-seed-in-i%d',p.Results.chseed);
-end
-if ~isempty(tag_threshold)
-    % add threshold tag
-    obj.save_tag = [obj.save_tag '-' tag_threshold];
-end
-
-if ~isempty(p.Results.tag)
-    % add user tag
-    obj.save_tag = [obj.save_tag '-' p.Results.tag];
 end
 
 % add region bar on left side

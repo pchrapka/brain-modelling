@@ -1,4 +1,4 @@
-function file_pdc_sig = pdc_bootstrap(lf_file,sources_data_file,varargin)
+function [file_pdc_sig, files_pdc] = pdc_bootstrap(lf_file,sources_data_file,varargin)
 %PDC_BOOTSTRAP determine PDC significance levels
 %   PDC_BOOTSTRAP(lf_file,...) determine PDC significance level for a
 %   specific process and filter combination
@@ -285,34 +285,34 @@ end
 %% compute pdc
 % compute pdc for all files
 % already takes care of freshness and existence
-pdc_file = rc2pdc_dynamic_from_lf_files(lf_btstrp,'params',p.Results.pdc_params);
+files_pdc = rc2pdc_dynamic_from_lf_files(lf_btstrp,'params',p.Results.pdc_params);
 
 % get pdc size
-result = loadfile(pdc_file{1});
+result = loadfile(files_pdc{1});
 pdc_dims = size(result.pdc);
 nsamples_data = pdc_dims(1);
 
 % get tag between [pdc-dynamic-...].mat
 pattern = '.*(pdc-dynamic-.*).mat';
-result = regexp(pdc_file{1},pattern,'tokens');
+result = regexp(files_pdc{1},pattern,'tokens');
 pdc_tag = result{1}{1};
 
 % loop over pdc files
 % TODO handle case if i'm adding more resamples
-pdc_file_sample = cell(size(pdc_file,1),nsamples_data);
+pdc_file_sample = cell(size(files_pdc,1),nsamples_data);
 parfor i=1:nresamples
-    fprintf('%s: splitting pdc %d/%d\n',mfilename,i,length(pdc_file));
+    fprintf('%s: splitting pdc %d/%d\n',mfilename,i,length(files_pdc));
     result = [];
     
     % loop over samples in pdc
     for j=1:nsamples_data
         % set up output file
-        [file_path, ~,~] = fileparts(pdc_file{i});
+        [file_path, ~,~] = fileparts(files_pdc{i});
         file_name_new = sprintf('pdc-sample%d.mat',j);
         pdc_file_sample{i,j} = fullfile(file_path, pdc_tag, file_name_new);
         
         % check freshness
-        %fresh = isfresh(pdc_file_sample{i,j},pdc_file{i});
+        %fresh = isfresh(pdc_file_sample{i,j},files_pdc{i});
         % freshness is taking too on network data
         
         if ~exist(pdc_file_sample{i,j},'file')
@@ -320,8 +320,8 @@ parfor i=1:nresamples
             fprintf('%s: resample %d, splitting pdc sample %d/%d\n',mfilename,i,j,nsamples_data);
             if isempty(result)
                 % only load pdc once
-                fprintf('loading %s\n',pdc_file{i});
-                result = loadfile(pdc_file{i});
+                fprintf('loading %s\n',files_pdc{i});
+                result = loadfile(files_pdc{i});
             end
             
             result_new = [];
@@ -340,7 +340,7 @@ outfilename = sprintf('%s-sig-n%d-alpha%0.2f.mat',...
 file_pdc_sig = fullfile(workingdir, outfilename);
 
 % fresh = isfresh(file_pdc_sig, lf_file);
-% fresh = cellfun(@(x) isfresh(file_pdc_sig, x), pdc_file, 'UniformOutput', true);
+% fresh = cellfun(@(x) isfresh(file_pdc_sig, x), files_pdc, 'UniformOutput', true);
 % freshness is taking too on network data
 if ~exist(file_pdc_sig,'file')
     

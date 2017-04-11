@@ -4,6 +4,7 @@ p = inputParser();
 addRequired(p,'pdc_file',@ischar);
 addRequired(p,'sources_data_file',@ischar);
 addParameter(p,'downsample',1,@isnumeric);
+addParameter(p,'envelope',false,@islogical);
 parse(p,pdc_file,sources_data_file,varargin{:});
 
 data = loadfile(sources_data_file);
@@ -22,5 +23,15 @@ view_obj = ViewPDC(pdc_file,...
     'time',time,...
     'outdir','data',...
     'w',[0 100]/fsample);
+
+if p.Results.envelope
+    view_switch(view_obj,'10')
+    % following views at 0-10 Hz
+else
+    view_switch(view_obj,'beta')
+    % following views at 15-25 Hz
+end
+
+
 
 end
