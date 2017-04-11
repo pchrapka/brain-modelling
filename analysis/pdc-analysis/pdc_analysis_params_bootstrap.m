@@ -30,6 +30,20 @@ params(k).normalization = 'allchannels';
 params(k).envelope = true;
 params(k).nresamples = 100;
 params(k).alpha = 0.05;
+params(k).null_mode = 'estimate_ind_channels';
+k = k+1;
+
+params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+params(k).metrics = {'euc','diag','info'};
+params(k).ntrials = 20;
+params(k).order = 11;
+params(k).lambda = 0.99;
+params(k).gamma = 1e-5;
+params(k).normalization = 'allchannels';
+params(k).envelope = true;
+params(k).nresamples = 100;
+params(k).alpha = 0.05;
+params(k).null_mode = 'estimate_all_channels';
 k = k+1;
 
 % % no envelope

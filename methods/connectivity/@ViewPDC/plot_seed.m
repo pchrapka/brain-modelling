@@ -8,6 +8,7 @@ addParameter(p,'vertlines',[],@isvector);
 addParameter(p,'threshold',0.05,@(x) x >= 0 && x <= 1);
 addParameter(p,'threshold_mode','numeric',...
     @(x) any(validatestring(x,{'numeric','significance','significance_alpha'})));
+addParameter(p,'tag','',@ischar);
 % addParameter(p,'save',false,@islogical);
 % addParameter(p,'outdir','',@ischar);
 parse(p,chseed,varargin{:});
@@ -215,6 +216,11 @@ end
 if ~isempty(tag_threshold)
     % add threshold tag
     obj.save_tag = [obj.save_tag '-' tag_threshold];
+end
+
+if ~isempty(p.Results.tag)
+    % add user tag
+    obj.save_tag = [obj.save_tag '-' p.Results.tag];
 end
 
 % add region bar on left side
