@@ -192,7 +192,8 @@ for i=1:length(params)
                 pdc_plot_seed_threshold(view_sig_obj);
                 
                 % plot pdc for each surrogate data set
-                for k=1:length(pdc_resample_files)
+                max_files = min(5,length(pdc_resample_files));
+                for k=1:max_files
                     view_obj_resample = pdc_analysis_create_view(...
                         pdc_resample_files{k},...
                         sources_data_file,...
