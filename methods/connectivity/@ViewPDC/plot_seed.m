@@ -9,6 +9,7 @@ addParameter(p,'threshold',0.05,@(x) x >= 0 && x <= 1);
 addParameter(p,'threshold_mode','numeric',...
     @(x) any(validatestring(x,{'numeric','significance','significance_alpha'})));
 addParameter(p,'tag','',@ischar);
+addParameter(p,'get_save_tag',false,@islogical);
 % addParameter(p,'save',false,@islogical);
 % addParameter(p,'outdir','',@ischar);
 parse(p,chseed,varargin{:});
@@ -56,10 +57,7 @@ if ~isempty(p.Results.tag)
     obj.save_tag = [obj.save_tag '-' p.Results.tag];
 end
 
-outfile = obj.get_savefile();
-if exist(outfile,'file')
-    % don't plot if it exists
-    fprintf('%s: skipping, already exists - %s %s\n',mfilename,p.Results.direction,label_seed);
+if p.Results.get_save_tag
     return;
 end
 

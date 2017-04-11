@@ -114,6 +114,24 @@ classdef ViewPDC < handle
             end
         end
         
+        function [outdir, outfile] = get_fullsavefile(obj,varargin)
+            %   Parameters
+            %   ----------
+            %   outdir (string, default = pwd)
+            %       output directory
+            %       by default uses output directory set in ViewPDC.outdir,
+            %       can be overriden here with:
+            %       1. 'data' - same directory where data is located
+            %       2. any regular path
+            
+            p = inputParser();
+            addParameter(p,'outdir','',@ischar);
+            parse(p,varargin{:});
+            
+            outdir = obj.get_outdir(p.Results.outdir);
+            outfile = obj.get_savefile();
+        end
+        
         function save_plot(obj,varargin)
             %   Parameters
             %   ----------
