@@ -192,15 +192,18 @@ for i=1:length(params)
                 pdc_plot_seed_threshold(view_sig_obj);
                 
                 % plot pdc for each surrogate data set
-                max_files = min(5,length(pdc_resample_files));
-                for k=1:max_files
-                    view_obj_resample = pdc_analysis_create_view(...
-                        pdc_resample_files{k},...
-                        sources_data_file,...
-                        'envelope',params(i).envelope,...
-                        'downsample',downsample_by);
-                    
-                    pdc_plot_seed_threshold(view_obj_resample);
+                plot_resample_pdc = false;
+                if plot_resample_pdc
+                    max_files = min(5,length(pdc_resample_files));
+                    for k=1:max_files
+                        view_obj_resample = pdc_analysis_create_view(...
+                            pdc_resample_files{k},...
+                            sources_data_file,...
+                            'envelope',params(i).envelope,...
+                            'downsample',downsample_by);
+                        
+                        pdc_plot_seed_threshold(view_obj_resample);
+                    end
                 end
                 
             end
