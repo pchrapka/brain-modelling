@@ -5,8 +5,6 @@ obj.load('pdc');
 obj.check_info();
 
 [~,nchannels,~,nfreqs]=size(obj.pdc);
-
-obj.fs = p.Results.fs;
     
 w = 0:nfreqs-1;
 w = w/(2*nfreqs);

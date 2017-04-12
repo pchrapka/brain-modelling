@@ -17,6 +17,9 @@ function plot_rc(data,varargin)
 %       image-order
 %           plots reflection coefficients vs time, where each order is
 %           plotted in its own subplot
+%       image-order-summary
+%           plots sum of reflection coefficients over time, where each
+%           order is plotted in its own subplot
 %       image-max
 %           plots the max reflection coefficient from all orders vs time
 %       movie-order
@@ -76,11 +79,6 @@ switch p.Results.mode
             rc = rc';
             rc = transform_data(rc,p.Results);
             
-            if ~isequal(p.Results.threshold,'none')
-                rc(rc > p.Results.threshold) = NaN;
-                rc(rc < -p.Results.threshold) = NaN;
-            end
-            
             if isequal(p.Results.clim,'none')
                 imagesc(rc);
                 colorbar;
@@ -99,6 +97,45 @@ switch p.Results.mode
                 xlabel('Time');
             end
         end
+        
+    case 'image-order-summary'
+        [~,norder,nchannels,~] = size(data.Kf);
+        rc = squeeze(data.Kf);
+        rc = transform_data(rc,p.Results);
+        data_plot = sum(rc,1);
+        clim = [min(data_plot(:)) max(data_plot(:))];
+        
+        ticks = 1:nchannels;
+        tick_labels = cell(nchannels,1);
+        for i=1:nchannels
+            tick_labels{i} = num2str(i);
+        end
+        
+        for j=1:norder
+            rc = squeeze(data.Kf(:,j,:,:));
+            rc = transform_data(rc,p.Results);
+            
+            data_plot = sum(rc,1);
+            
+            if ~isequal(p.Results.clim,'none')
+                warning('ignoring clim');
+            end
+            
+            imagesc(data_plot,clim);
+            if j == norder
+                colorbar();
+            end
+            axis square
+            xlabel('Channels');
+            ylabel('Channels');
+            
+            set(gca,...
+                'Xtick',ticks,...
+                'XtickLabel',tick_labels,...
+                'Ytick',ticks,...
+                'YtickLabel',tick_labels);
+        end
+        
     case 'image-max'
         data_max = squeeze(max(data.Kf,[],2));
         niters = size(data_max,1);
