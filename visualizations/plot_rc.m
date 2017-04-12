@@ -43,7 +43,15 @@ addParameter(p,'mode','image-all',@ischar);
 addParameter(p,'clim',[-1.5 1.5],@(x) isvector(x) || isequal(x,'none'));
 addParameter(p,'abs',false,@islogical);
 addParameter(p,'threshold','none',@(x) isnumeric(x) || isequal(x,'none'));
+addParameter(p,'clear_diag',false,@islogical);
 parse(p,data,varargin{:});
+
+if p.Results.clear_diag
+    [~,~,nchannels,~] = size(data.Kf);
+    for i=1:nchannels
+        data.Kf(:,:,i,i) = NaN;
+    end
+end
 
 switch p.Results.mode
     case 'image-all'
