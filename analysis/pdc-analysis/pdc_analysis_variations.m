@@ -40,7 +40,6 @@ for i=1:length(params)
         % use parameters specified in params,
         % otherwise use default from tune_model_order
         params2 = params(i);
-        params2 = rmfield(params2,'metrics');
         params_func = struct2namevalue(params2,...
             'fields',{'ntrials','gamma','lambda','order',...
             'plot_crit','plot_orders'});
@@ -114,8 +113,6 @@ for i=1:length(params)
     if p.Results.flag_run
         % copy params
         params2 = params(i);
-        % remove metrics field
-        params2 = rmfield(params2,'metrics');
         
         % loop over metrics
         for j=1:length(params(i).metrics)
