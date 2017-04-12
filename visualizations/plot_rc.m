@@ -102,7 +102,11 @@ switch p.Results.mode
         [~,norder,nchannels,~] = size(data.Kf);
         rc = squeeze(data.Kf);
         rc = transform_data(rc,p.Results);
-        data_plot = sum(rc,1);
+        data_plot = squeeze(sum(rc,1));
+        
+        if ~isequal(p.Results.clim,'none')
+            warning('ignoring clim');
+        end
         clim = [min(data_plot(:)) max(data_plot(:))];
         
         ticks = 1:nchannels;
@@ -111,17 +115,14 @@ switch p.Results.mode
             tick_labels{i} = num2str(i);
         end
         
+        nplots = norder;
+        nrows = 2;
+        ncols = ceil(nplots/nrows);
         for j=1:norder
-            rc = squeeze(data.Kf(:,j,:,:));
-            rc = transform_data(rc,p.Results);
+            subaxis(nrows, ncols, j,...
+                'Spacing', 0.05, 'SpacingVert', 0.05, 'Padding', 0, 'Margin', 0.05);
             
-            data_plot = sum(rc,1);
-            
-            if ~isequal(p.Results.clim,'none')
-                warning('ignoring clim');
-            end
-            
-            imagesc(data_plot,clim);
+            imagesc(squeeze(data_plot(j,:,:)),clim);
             if j == norder
                 colorbar();
             end
@@ -129,6 +130,7 @@ switch p.Results.mode
             xlabel('Channels');
             ylabel('Channels');
             
+            title(sprintf('P=%d',j));
             set(gca,...
                 'Xtick',ticks,...
                 'XtickLabel',tick_labels,...
