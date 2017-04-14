@@ -32,6 +32,15 @@ function run_lattice_benchmark(varargin)
 %   warmup_data (logical, default = false)
 %       flag for warming up the filter with simulated data, this helps with
 %       filter initialization
+%   warmup_data_same (logical, default = false)
+%       flag for warming up the filter with the same data as used for
+%       filtering
+%   warmup_flipdata (logical, default = false)
+%       flag for flipping data, it passes the data through the filter
+%       backwards
+%   warmup_flipstate (logical, default = false)
+%       flag for flip state of lattice filter when switching from backward
+%       to forward
 %   warmup_data_nsims (integer, default = 1)
 %       selects number of sims to pass through filter for warmup, relevant
 %       only if warmup_data = true
@@ -62,7 +71,10 @@ addParameter(p,'basedir','',@ischar);
 addParameter(p,'sim_params',[]);
 addParameter(p,'warmup_noise',true,@islogical);
 addParameter(p,'warmup_data',false,@islogical);
+addParameter(p,'warmup_data_same',false,@islogical);
 addParameter(p,'warmup_data_nsims',1,@isnumeric);
+addParameter(p,'warmup_flipdata',false,@islogical);
+addParameter(p,'warmup_flipstate',false,@islogical);
 addParameter(p,'normalized',false,@islogical);
 addParameter(p,'nsims',1,@isnumeric);
 addParameter(p,'force',false,@islogical);
@@ -199,16 +211,33 @@ for k=1:nsim_params
                 warning('on','all');
             end
             
-            % warmup filter with simulated data
-            if p.Results.warmup_data
+            if p.Results.warmup_data_same
+                % use same data as real filtering
+                sim_idx_start = (j-1)*ntrials + 1;
+                sim_idx_end = sim_idx_start + ntrials - 1;
+            else
                 % use last
                 sim_idx_start = (nsims-1)*ntrials + 1;
                 sim_idx_end = sim_idx_start + ntrials - 1;
+            end
                 
+            % warmup filter with simulated data
+            if p.Results.warmup_data
                 % run filter on sim data
-                warning('off','all');
-                trace.warmup(sources(:,:,sim_idx_start:sim_idx_end));
-                warning('on','all');
+                if p.Results.warmup_flipdata
+                    warning('off','all');
+                    trace.warmup(flipdim(sources(:,2:end,sim_idx_start:sim_idx_end),2));
+                    warning('on','all');
+                else
+                    warning('off','all');
+                    trace.warmup(sources(:,:,sim_idx_start:sim_idx_end));
+                    warning('on','all');
+                end
+            end
+            
+            % flip state from forwards to backwards
+            if p.Results.warmup_flipstate
+                trace.flipstate();
             end
             
             % calculate indices to select simulation instances from data
@@ -327,7 +356,7 @@ if p.Results.plot_avg_nmse
     drawnow;
     save_fig_exp(script_name,'tag','nmse-all');
     
-    ylim([10^(-1) 10^(3)]);
+    ylim([10^(-2) 10^(3)]);
     drawnow;
     save_fig_exp(script_name,'tag','nmse-all-axis');
 end

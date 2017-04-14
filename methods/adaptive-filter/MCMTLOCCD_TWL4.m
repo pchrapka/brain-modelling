@@ -107,6 +107,23 @@ classdef MCMTLOCCD_TWL4
             end
         end
         
+        function obj = flipstate(obj)
+            props = {...
+                {'Rf', 'Rb'};...
+                {'Rfb','Rbf'};...
+                {'Kf','Kb'};...
+                {'ferror','berrord'};...
+                };
+            for i=1:length(props)
+                prop1 = props{i}{1};
+                prop2 = props{i}{1};
+                
+                temp = obj.(prop1);
+                obj.(prop1) = obj.(prop2);
+                obj.(prop2) = temp;
+            end
+        end
+        
         function obj = update(obj, y, varargin)
             %UPDATE updates reflection coefficients
             %   UPDATE(OBJ,Y) updates the reflection coefficients using the

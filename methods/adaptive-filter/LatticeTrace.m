@@ -253,6 +253,12 @@ classdef LatticeTrace < handle
             end
         end
         
+        function flipstate(obj)
+            % Flip the state of the lattice filter
+            
+            obj.filter.flipstate();
+        end
+        
         function warmup(obj,noise)
             %   Input
             %   -----
