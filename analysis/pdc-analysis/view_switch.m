@@ -4,9 +4,9 @@ switch name
     case 'beta'
         view_obj.w = [15 25]/view_obj.fs;
     case '10'
-        view_obj.w = [0 10]/view_obj.fs;
+        view_obj.w = [0.01 10]/view_obj.fs;
     case '100'
-        view_obj.w = [0 100]/view_obj.fs;
+        view_obj.w = [0.01 100]/view_obj.fs;
     otherwise
         error('unknown view settings');
 end
