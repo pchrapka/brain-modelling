@@ -224,15 +224,13 @@ for k=1:nsim_params
             % warmup filter with simulated data
             if p.Results.warmup_data
                 % run filter on sim data
+                warning('off','all');
                 if p.Results.warmup_flipdata
-                    warning('off','all');
-                    trace.warmup(flipdim(sources(:,2:end,sim_idx_start:sim_idx_end),2));
-                    warning('on','all');
+                    trace.warmup(flipdim(sources(:,:,sim_idx_start:sim_idx_end),2));
                 else
-                    warning('off','all');
                     trace.warmup(sources(:,:,sim_idx_start:sim_idx_end));
-                    warning('on','all');
                 end
+                warning('on','all');
             end
             
             % flip state from forwards to backwards
@@ -246,9 +244,15 @@ for k=1:nsim_params
             
             % run the filter on data
             warning('off','all');
-            trace.run(sources(:,:,sim_idx_start:sim_idx_end),...
-                'verbosity',p.Results.verbosity,...
-                'mode','none');
+            if p.Results.warmup_flipdata
+                trace.run(sources(:,2:end,sim_idx_start:sim_idx_end),...
+                    'verbosity',p.Results.verbosity,...
+                    'mode','none');
+            else
+                trace.run(sources(:,:,sim_idx_start:sim_idx_end),...
+                    'verbosity',p.Results.verbosity,...
+                    'mode','none');
+            end
             warning('on','all');
             
             trace.name = trace.filter.name;
