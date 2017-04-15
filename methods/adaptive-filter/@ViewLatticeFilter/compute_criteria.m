@@ -55,6 +55,35 @@ switch criteria
             Vbprev = Vb;
         end
         
+    case 'whitetime'
+        % allocate mem
+        cb = zeros(nsamples,1);
+        cf = zeros(nsamples,1);
+        lambda = obj.data.filter.lambda;
+        
+        Vfprev = zeros(nchannels,nchannels);
+        Vbprev = zeros(nchannels,nchannels);
+        
+        for j=1:nsamples
+            
+            % extract sample data
+            [ferror,berror] = obj.get_error(order_idx,j);
+            
+            Vf = lambda*Vfprev + ferror*ferror'/ntrials;
+            Vb = lambda*Vbprev + berror*berror'/ntrials;
+            
+            weight = (1-lambda)/(1-lambda^j);
+            Vf_weighted = abs(weight*Vf);
+            Vb_weighted = abs(weight*Vb);
+            
+            % compute ratio of the main diagonal to sum of the column
+            temp = diag(Vf_weighted)./sum(Vf_weighted,2);
+            cf(j) = mean(temp);
+            temp = diag(Vb_weighted)./sum(Vb_weighted,2);
+            cb(j) = mean(temp);
+        end
+        
+        
     case 'normtime'
         % allocate mem
         cb = zeros(nsamples,1);

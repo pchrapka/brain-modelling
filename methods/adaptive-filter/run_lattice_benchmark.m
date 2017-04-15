@@ -245,7 +245,8 @@ for k=1:nsim_params
             % run the filter on data
             warning('off','all');
             if p.Results.warmup_flipdata
-                trace.run(sources(:,2:end,sim_idx_start:sim_idx_end),...
+                % start with second sample
+                trace.run(circshift(sources(:,:,sim_idx_start:sim_idx_end),[0 -1 0]),...
                     'verbosity',p.Results.verbosity,...
                     'mode','none');
             else
