@@ -98,8 +98,12 @@ DATASETS=(
     # "2017-03-10-MCMTLOCCD_TWL4-T20-C12-P3-lambda=0.9900-gamma=1.000e-01-pdc-dynamic-info-seed-*-0.0000-0.0049"
 
     # C12 envelop, 20 trials, gamma 1e-3, significant
-    "2017-04-01-MCMTLOCCD_TWL4-T20-C12-P3-lambda=0.9900-gamma=1.000e-03-pdc-dynamic-diag-ds4-seed-*-thresh0.00-0.0000-0.0195"
-    "2017-04-01-MCMTLOCCD_TWL4-T20-C12-P3-lambda=0.9900-gamma=1.000e-03-pdc-dynamic-diag-ds4-seed-*-threshsig-0.0000-0.0195"
+    #"2017-04-01-MCMTLOCCD_TWL4-T20-C12-P3-lambda=0.9900-gamma=1.000e-03-pdc-dynamic-diag-ds4-seed-*-thresh0.00-0.0000-0.0195"
+    #"2017-04-01-MCMTLOCCD_TWL4-T20-C12-P3-lambda=0.9900-gamma=1.000e-03-pdc-dynamic-diag-ds4-seed-*-threshsig-0.0000-0.0195"
+
+    # C12 envelope, 20 trials, gamma 1e-5,
+    "2017-04-14-MCMTLOCCD_TWL4-T20-C12-P11-lambda=0.9900-gamma=1.000e-05-pdc-dynamic-diag-ds4-seed-*-thresh0.00-0.0000-0.0195"
+    "2017-04-14-MCMTLOCCD_TWL4-T20-C12-P11-lambda=0.9900-gamma=1.000e-05-pdc-dynamic-diag-ds4-seed-*-threshsig-estimate_ind_channels-0.0000-0.0195"
 )
 
 for DATASET in "${DATASETS[@]}"
