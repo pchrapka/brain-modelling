@@ -146,6 +146,7 @@ classdef VRC < VARProcess
             addParameter(p,'ncoefs',0,@isnumeric);
             addParameter(p,'ncouplings',0,@isnumeric);
             addParameter(p,'stable',false,@islogical);
+            addParameter(p,'max_order',false,@islogical);
             addParameter(p,'verbose',0,@isnumeric);
             parse(p,varargin{:});
             
