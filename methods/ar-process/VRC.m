@@ -362,6 +362,7 @@ classdef VRC < VARProcess
             addParameter(p,'probability',0.1,@isnumeric);
             addParameter(p,'ncoefs',0,@isnumeric);
             addParameter(p,'stable',false,@islogical);
+            addParameter(p,'max_order',false,@islogical);
             addParameter(p,'verbose',0,@isnumeric);
             parse(p,varargin{:});
             
@@ -370,15 +371,31 @@ classdef VRC < VARProcess
             obj.Kb = zeros(obj.P,obj.K,obj.K);
             
             ncoefs = numel(obj.Kf);
-            switch p.Results.mode
-                case 'probability'
-                    % randomly select coefficient indices
-                    idx = rand(ncoefs,1) < p.Results.probability;
-                case 'exact'
-                    % randomly select coefficient indices
-                    num_idx = randsample(1:ncoefs,p.Results.ncoefs);
-                    idx = false(ncoefs,1);
-                    idx(num_idx) = true;
+            flag_run = true;
+            while flag_run
+                switch p.Results.mode
+                    case 'probability'
+                        % randomly select coefficient indices
+                        idx = rand(ncoefs,1) < p.Results.probability;
+                    case 'exact'
+                        % randomly select coefficient indices
+                        num_idx = randsample(1:ncoefs,p.Results.ncoefs);
+                        idx = false(ncoefs,1);
+                        idx(num_idx) = true;
+                end
+                idx_hier = reshape(idx,obj.P,obj.K,obj.K);
+                
+                if p.Results.max_order
+                    % make sure that there is at least one coefficient in
+                    % the last order
+                    idx_max = idx_hier(end,:,:);
+                    if any(idx_max(:))
+                        flag_run = false;
+                    end
+                else
+                    % move on
+                    flag_run = false;
+                end
             end
             
             % interval for uniform distribution
@@ -390,7 +407,6 @@ classdef VRC < VARProcess
                 % this makes it a bit easire to get something stable for
                 % higher orders
                 max_iters = 200;
-                idx_hier = reshape(idx,obj.P,obj.K,obj.K);
                 i = 1;
                 while (i <= obj.P)
                     if p.Results.verbose > 0
@@ -456,6 +472,7 @@ classdef VRC < VARProcess
             addParameter(p,'ncoefs',0,@isnumeric);
             addParameter(p,'ncouplings',0,@isnumeric);
             addParameter(p,'stable',false,@islogical);
+            addParameter(p,'max_order',false,@islogical);
             addParameter(p,'verbose',0,@isnumeric);
             parse(p,varargin{:});
             
@@ -473,25 +490,40 @@ classdef VRC < VARProcess
                 while ~stable
                     obj.init = true;
                     
-                    % generate sparse coefs for each channel
-                    for i=1:obj.K
-                        var1 = VRC(1,obj.P);
-                        switch p.Results.mode
-                            case 'probability'
-                                var1.coefs_gen_sparse(...
-                                    'structure','all',...
-                                    'mode','probability',...
-                                    'probability',p.Results.probability,...
-                                    'stable',true);
-                            case 'exact'
-                                ncoefs_perchannel = floor(ncoefs_channel / obj.K);
-                                var1.coefs_gen_sparse(...
-                                    'structure','all',...
-                                    'mode','exact',...
-                                    'ncoefs',ncoefs_perchannel,...
-                                    'stable',true);
+                    flag_run = true;
+                    while flag_run
+                        % generate sparse coefs for each channel
+                        for i=1:obj.K
+                            var1 = VRC(1,obj.P);
+                            switch p.Results.mode
+                                case 'probability'
+                                    var1.coefs_gen_sparse(...
+                                        'structure','all',...
+                                        'mode','probability',...
+                                        'probability',p.Results.probability,...
+                                        'stable',true);
+                                case 'exact'
+                                    ncoefs_perchannel = floor(ncoefs_channel / obj.K);
+                                    var1.coefs_gen_sparse(...
+                                        'structure','all',...
+                                        'mode','exact',...
+                                        'ncoefs',ncoefs_perchannel,...
+                                        'stable',true);
+                            end
+                            obj.Kf(:,i,i) = var1.Kf;
                         end
-                        obj.Kf(:,i,i) = var1.Kf;
+                        
+                        if p.Results.max_order
+                            % make sure that there is at least one coefficient in
+                            % the last order
+                            order_max = obj.Kf(end,:,:);
+                            if any(order_max(:))
+                                flag_run = false;
+                            end
+                        else
+                            % move on
+                            flag_run = false;
+                        end
                     end
                     
                     coupling_count = 0;

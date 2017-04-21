@@ -32,6 +32,12 @@ classdef VARGenerator < handle
             %       options:
             %       vrc-coupling0-fixed
             %           2 independent VRC processes
+            %       vrc-full-coupling-rnd
+            %           stationary VRC model with the following characteristics:
+            %           - each channel is a sparse VRC process
+            %           - there is a specific level of channel coefficient sparsity
+            %           - there is a specific level of coupling coefficient sparsity
+            %           - there is at least one coefficient in the max order specified
             %       vrc-cp-ch2-coupling2-rnd
             %           a VRCConstPulse process on 2 channels with 2
             %           coupling coefficients, each process and coupling
@@ -101,6 +107,8 @@ classdef VARGenerator < handle
                         [obj.process,obj.nsamples] = obj.gen_var_no_coupling(varargin{:});
                     case 'vrc-coupling0-fixed'
                         [obj.process,obj.nsamples] = obj.gen_vrc_coupling0_fixed(varargin{:});
+                    case 'vrc-full-coupling-rnd'
+                        [obj.process,obj.nsamples] = obj.gen_vrc_full_coupling_rnd(varargin{:});
                     case 'vrc-cp-ch2-coupling2-rnd'
                         [obj.process,obj.nsamples] = obj.gen_vrc_cp_ch2_coupling2_rnd(varargin{:});
                     case 'vrc-cp-ch2-coupling1-fixed'

@@ -22,8 +22,10 @@ function run_lattice_benchmark(varargin)
 %       array of benchmark parameters, including the following fields
 %       filter (object)
 %           filter Object
-%       data (string)
-%           data generator name
+%       gen_params (cell array)
+%           parameters for VARGenerator
+%       gen_config_params (cell array)
+%           parameters to configure VARGenerator
 %       label (string)
 %           data label for plots
 %   warmup_noise (logical, default = true)
@@ -154,9 +156,9 @@ for k=1:nsim_params
     
     % load data
     nchannels = sim_param.filter.nchannels;
-    var_gen = VARGenerator(sim_param.data, nchannels);
-    if isfield(sim_param,'data_params') && ~var_gen.hasprocess
-        var_gen.configure(sim_param.data_params{:});
+    var_gen = VARGenerator(sim_param.gen_params{:});
+    if isfield(sim_param,'gen_config_params') && ~var_gen.hasprocess
+        var_gen.configure(sim_param.gen_config_params{:});
     end
     data_var = var_gen.generate('ntrials',nsims_generate*ntrials);
     % get the data time stamp
@@ -292,7 +294,7 @@ for k=1:nsim_params
             % TODO fix labels
             drawnow;
             save_fig_exp(script_name,...
-                'tag',sprintf('mse-%s-%s-s%d',sim_param.data,slug_filter,j));
+                'tag',sprintf('mse-%s-%s-s%d',sim_param.gen_params{1},slug_filter,j));
             close(h);
         end
     end
@@ -310,7 +312,7 @@ for k=1:nsim_params
             % TODO fix labels
             drawnow;
             save_fig_exp(script_name,...
-                'tag',sprintf('nmse-%s-%s-s%d',sim_param.data,slug_filter,j));
+                'tag',sprintf('nmse-%s-%s-s%d',sim_param.gen_params{1},slug_filter,j));
             close(h);
         end
     end
