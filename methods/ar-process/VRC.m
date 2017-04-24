@@ -544,15 +544,16 @@ classdef VRC < VARProcess
                         fprintf('working on order %d\n',i);
                         idx_order = idx(i,:,:);
                         ncouplings_order = sum(idx_order(:));
+                        if ncouplings_order == 0
+                            % move on to next order
+                            continue;
+                        end
                         stable_coupling = false;
                         scaling = 1;
                         % set number of attempts
                         iters = 1;
                         max_iters = 200;
                         while ~stable_coupling  && (iters <= max_iters)
-                            if ncouplings_order == 0
-                                continue;
-                            end 
                             fprintf('attempt %d\n',iters);
                             % sample all couplings at once
                             coefs_new = scaling*unifrnd(a,b,[ncouplings_order, 1]);
