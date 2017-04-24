@@ -205,7 +205,7 @@ classdef VRC < VARProcess
                             stable = true;
                         end
                     case 'ar'
-                        A1 = rc2ar(obj.Kf,obj.Kb);
+                        [A1,~] = rc2ar(obj.Kf,obj.Kb);
                         A = rcarrayformat(A1,'format',3,'transpose',false);
                         var_obj = VAR(obj.K, obj.P);
                         var_obj.coefs_set(A);
@@ -620,52 +620,6 @@ classdef VRC < VARProcess
                             break;
                         end 
                     end
-                    
-                    
-%                     coupling_count = 0;
-%                     while coupling_count < p.Results.ncouplings
-%                         coupled_channels = randsample(1:obj.K,2);
-%                         coupled_order = randsample(1:obj.P,1);
-%                         
-%                         % check if we've already chosen this one
-%                         if obj.Kf(coupled_order,coupled_channels(1),coupled_channels(2)) == 0
-%                             
-%                             stable_coupling = false;
-%                             scaling = 1;
-%                             iters = 1;
-%                             max_iters = 200;
-%                             while ~stable_coupling  && (iters <= max_iters)
-%                                 % generate a new coefficient
-%                                 coef_new = scaling*unifrnd(a, b);
-%                                 obj.Kf(coupled_order,coupled_channels(1),coupled_channels(2))...
-%                                     = coef_new;
-%                                 obj.Kb(coupled_order,coupled_channels(1),coupled_channels(2))...
-%                                     = coef_new;
-%                                 
-%                                 % check coupling stability
-%                                 stable_coupling = obj.coefs_stable(false);
-%                                 
-%                                 % make sampling interval smaller, so we can
-%                                 % converge to something
-%                                 scaling = 0.99*scaling;
-%                                 
-%                                 iters = iters+1;
-%                             end
-%                             
-%                             if stable_coupling
-%                                 % increment counter
-%                                 coupling_count = coupling_count + 1;
-%                                 if p.Results.verbose > 0
-%                                     fprintf('%d/%d couplings\n',coupling_count,p.Results.ncouplings);
-%                                 end
-%                             else
-%                                 % reset coefficient
-%                                 obj.Kf(coupled_order,coupled_channels(1),coupled_channels(2)) = 0;
-%                                 obj.Kb(coupled_order,coupled_channels(1),coupled_channels(2)) = 0;
-%                             end
-%                             
-%                         end
-%                     end
                     
                     % check stability
                     stable1 = obj.coefs_stable(false,'method','ar');
