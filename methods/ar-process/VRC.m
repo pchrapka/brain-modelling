@@ -534,6 +534,7 @@ classdef VRC < VARProcess
                     for i=1:obj.K
                         idx(:,i,i) = false(obj.P,1);
                     end
+                    % randomly select coupling indices
                     idx_couplings = find(idx);
                     idx_couplings_sel = randsample(idx_couplings,p.Results.ncouplings);
                     idx = false(size(obj.Kf));
@@ -549,7 +550,10 @@ classdef VRC < VARProcess
                         iters = 1;
                         max_iters = 200;
                         while ~stable_coupling  && (iters <= max_iters)
-                            fprintf('iteration %d\n',iters);
+                            if ncouplings_order == 0
+                                continue;
+                            end 
+                            fprintf('attempt %d\n',iters);
                             % sample all couplings at once
                             coefs_new = scaling*unifrnd(a,b,[ncouplings_order, 1]);
                             obj.Kf(i,idx_order) = coefs_new;
