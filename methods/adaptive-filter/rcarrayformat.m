@@ -20,13 +20,16 @@ function out = rcarrayformat(coefs,varargin)
 %       coefficient matrix [order,channels,channels]
 
 p = inputParser();
-addRequired(p,'coefs',@(x) length(size(x)) == 3);
+addRequired(p,'coefs',@isnumeric);
 addParameter(p,'format',1,@isnumeric);
 addParameter(p,'transpose',false,@islogical);
 parse(p,coefs,varargin{:});
 
 % check original format
 dims = size(coefs);
+if length(dims) < 3
+    dims(3) = 1;
+end
 if dims(1) == dims(2)
     format_orig = 3;
     norder = dims(3);

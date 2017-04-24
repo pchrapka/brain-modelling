@@ -181,24 +181,41 @@ classdef VRC < VARProcess
             end
             
             if obj.init
-                % simulate some data
-                [x,~,~] = obj.simulate(3000);
-                x_max = max(abs(x(:)));
-                thresh = 5;
-                
-                % check signal max
-                if x_max > thresh
-                    if verbose
-                        fprintf('unstable VRC\n');
-                        disp(x_max);
-                    end
-                    stable = false;
-                else
-                    if verbose
-                        fprintf('stable VRC\n');
-                    end
-                    stable = true;
-                end                
+                method = 'ar';
+                switch method
+                    case 'sim'
+                        % simulate some data
+                        [x,~,~] = obj.simulate(3000);
+                        x_max = max(abs(x(:)));
+                        thresh = 5;
+                        
+                        % check signal max
+                        if x_max > thresh
+                            if verbose
+                                fprintf('unstable VRC\n');
+                                disp(x_max);
+                            end
+                            stable = false;
+                        else
+                            if verbose
+                                fprintf('stable VRC\n');
+                            end
+                            stable = true;
+                        end
+                    case 'ar'
+                        A1 = rc2ar(obj.Kf,obj.Kb);
+                        A = rcarrayformat(A1,'format',3,'transpose',false);
+                        var_obj = VAR(obj.K, obj.P);
+                        var_obj.coefs_set(A);
+                        stable = var_obj.coefs_stable();
+                        if verbose
+                            if stable
+                                fprintf('stable VRC\n');
+                            else
+                                fprintf('unstable VRC\n');
+                            end
+                        end
+                end
             else
                 error('no coefficients set');
             end
@@ -351,6 +368,24 @@ classdef VRC < VARProcess
             
             % Normalize variance of each channel to unit variance
             Y_norm = normalizev(Y);
+        end
+        
+        function plot(obj,varargin)
+            p = inputParser();
+            addParameter(p,'interactive',true,@islogical);
+            addParameter(p,'ntrials',[],@isnumeric);
+            parse(p,varargin{:});
+            
+            nsamples = 2000;
+            [data,~,~] = obj.simulate(nsamples);
+            
+            figure;
+            ncols = 2;
+            nrows = ceil(obj.K/ncols);
+            for j=1:obj.K
+                subplot(nrows, ncols, j);
+                plot(1:nsamples, data(j,:));
+            end
         end
     end
     

@@ -18,12 +18,15 @@ function [A,Ab] = rc2ar(Kf,Kb)
 %       autoregressive coefficients, [order channels channels]
 
 p = inputParser();
-addRequired(p,'Kf',@(x) length(size(x)) == 3);
-addRequired(p,'Kb',@(x) length(size(x)) == 3);
+addRequired(p,'Kf',@(x) length(size(x)) <= 3);
+addRequired(p,'Kb',@(x) length(size(x)) <= 3);
 parse(p,Kf,Kb);
 
 % check format
 dims = size(Kf);
+if length(dims) < 3
+    dims(3) = 1;
+end
 if dims(1) == dims(2)
     norder = dims(3);
     nchannels = dims(1);
@@ -35,8 +38,8 @@ else
 end
 
 rc(:,:,1) = eye(nchannels);
-rc(:,:,2:norder+1) = -1*rcarrayformat(Kf,'format',3);
 rcb(:,:,1) = eye(nchannels);
+rc(:,:,2:norder+1) = -1*rcarrayformat(Kf,'format',3);
 rcb(:,:,2:norder+1) = -1*rcarrayformat(Kb,'format',3);
 
 [par, parb] = rc2parv(rc,rcb);
