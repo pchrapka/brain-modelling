@@ -177,6 +177,37 @@ classdef VARGenerator < handle
             
         end
         
+        function plot(obj,varargin)
+            p = inputParser();
+            addParameter(p,'interactive',true,@islogical);
+            addParameter(p,'ntrials',[],@isnumeric);
+            parse(p,varargin{:});
+            
+            if isempty(p.Results.ntrials)
+                data = obj.generate();
+            else
+                data = obj.generate('ntrials',p.Results.ntrials);
+            end
+            [nchannels,nsamples,ntrials] = size(data);
+            
+            figure;
+            ncols = 2;
+            nrows = ceil(nchannels/ncols);
+            for i=1:ntrials
+                for j=1:nchannels
+                    subplot(nrows, ncols, j);
+                    plot(1:nsamples, data(j,:,i));
+                end
+                
+                prompt = 'press any key to continue, q to quit';
+                result = input(prompt,'s');
+                switch lower(result)
+                    case 'q'
+                        return
+                end
+            end
+        end
+        
         function outfile = get_file(obj)
             
             if isnumeric(obj.version)

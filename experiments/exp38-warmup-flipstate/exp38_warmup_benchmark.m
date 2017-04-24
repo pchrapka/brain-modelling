@@ -2,7 +2,7 @@
 
 %% set options
 % nsims = 20;
-nsims = 1;
+nsims = 5;
 nsims_benchmark = nsims;
 nchannels = 4;
 
