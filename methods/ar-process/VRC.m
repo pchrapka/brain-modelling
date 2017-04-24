@@ -483,6 +483,8 @@ classdef VRC < VARProcess
             ncoefs_channel = p.Results.ncoefs - p.Results.ncouplings;
             if p.Results.stable
                 
+                obj.init = true;
+                
                 stable = false;
                 while ~stable
                     % reset coefs
@@ -606,7 +608,6 @@ classdef VRC < VARProcess
                     % check stability
                     stable = obj.coefs_stable(false);
                     
-                    obj.init = true;
                 end
                 
             else
