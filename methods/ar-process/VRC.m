@@ -184,8 +184,7 @@ classdef VRC < VARProcess
             stable = false;
             
             if obj.init
-                method = 'ar';
-                switch method
+                switch p.Results.method
                     case 'sim'
                         % simulate some data
                         [x,~,~] = obj.simulate(3000);
