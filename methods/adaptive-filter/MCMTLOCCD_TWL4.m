@@ -62,7 +62,7 @@ classdef MCMTLOCCD_TWL4
             p = inputParser;
             addRequired(p,'channels', @(x) isnumeric(x) && isscalar(x));
             addRequired(p,'order', @(x) isnumeric(x) && isscalar(x));
-            addRequired(p,'trials',@(x) x > 1 && isnumeric(x) && isscalar(x));
+            addRequired(p,'trials',@(x) isnumeric(x) && isscalar(x));
             addParameter(p,'lambda',0.99, @(x) isnumeric(x) && isscalar(x));
             addParameter(p,'gamma',1.2, @(x) isnumeric(x) && isscalar(x));
             parse(p,channels,order,trials,varargin{:});
