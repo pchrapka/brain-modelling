@@ -540,6 +540,7 @@ classdef VRC < VARProcess
                     iters = 1;
                     max_iters = 200;
                     while ~stable_coupling  && (iters <= max_iters)
+                        fprintf('iteration %d\n',iters);
                         % sample all couplings at once
                         idx_couplings_sel = randsample(idx_couplings,p.Results.ncouplings);
                         coefs_new = scaling*unifrnd(a,b,[p.Results.ncouplings, 1]);
