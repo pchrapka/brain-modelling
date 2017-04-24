@@ -542,6 +542,7 @@ classdef VRC < VARProcess
                     for i=1:obj.P
                         fprintf('working on order %d\n',i);
                         idx_order = idx(i,:,:);
+                        ncouplings_order = sum(idx_order(:));
                         stable_coupling = false;
                         scaling = 1;
                         % set number of attempts
@@ -550,7 +551,7 @@ classdef VRC < VARProcess
                         while ~stable_coupling  && (iters <= max_iters)
                             fprintf('iteration %d\n',iters);
                             % sample all couplings at once
-                            coefs_new = scaling*unifrnd(a,b,[p.Results.ncouplings, 1]);
+                            coefs_new = scaling*unifrnd(a,b,[ncouplings_order, 1]);
                             obj.Kf(i,idx_order) = coefs_new;
                             obj.Kb(i,idx_order) = coefs_new;
                             
