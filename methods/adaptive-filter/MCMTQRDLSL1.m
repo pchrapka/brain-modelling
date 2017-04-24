@@ -98,6 +98,13 @@ classdef MCMTQRDLSL1
                 trials, channels, order, lambda);
         end
         
+        function obj = normalize(obj, nsamples)
+            %NORMALIZE normalize the covariance matrices
+            %   NORMALIZE(obj, nsamples) normalize the covariance matrices
+            
+            %weight = (1-obj.lambda)/(1-obj.lambda^nsamples);
+        end
+        
         function obj = update(obj, x, varargin)
             %UPDATE updates reflection coefficients
             %   UPDATE(OBJ,X,...) updates the reflection coefficients using the
