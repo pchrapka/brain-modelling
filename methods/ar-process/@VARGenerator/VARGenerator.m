@@ -188,7 +188,7 @@ classdef VARGenerator < handle
             else
                 data = obj.generate('ntrials',p.Results.ntrials);
             end
-            [nchannels,nsamples,ntrials] = size(data);
+            [nchannels,nsamples,ntrials] = size(data.signal);
             
             figure;
             ncols = 2;
@@ -196,7 +196,7 @@ classdef VARGenerator < handle
             for i=1:ntrials
                 for j=1:nchannels
                     subplot(nrows, ncols, j);
-                    plot(1:nsamples, data(j,:,i));
+                    plot(1:nsamples, data.signal(j,:,i));
                 end
                 
                 prompt = 'press any key to continue, q to quit';

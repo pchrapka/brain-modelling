@@ -182,7 +182,7 @@ classdef VRC < VARProcess
             
             if obj.init
                 % simulate some data
-                [x,~,~] = obj.simulate(1000);
+                [x,~,~] = obj.simulate(3000);
                 x_max = max(abs(x(1,:)));
                 thresh = 5;
                 
@@ -495,6 +495,7 @@ classdef VRC < VARProcess
                     while flag_run
                         % generate sparse coefs for each channel
                         for i=1:obj.K
+                            fprintf('working on channel %d\n',i);
                             var1 = VRC(1,obj.P);
                             switch p.Results.mode
                                 case 'probability'
