@@ -520,8 +520,11 @@ classdef VRC < VARProcess
                 
                 obj.init = true;
                 
+                flag_restart = false;
                 stable = false;
-                while ~stable
+                while ~stable || flag_restart
+                    flag_restart = false;
+                    
                     % reset coefs
                     obj.Kf = zeros(obj.P,obj.K,obj.K);
                     obj.Kb = zeros(obj.P,obj.K,obj.K);
@@ -609,6 +612,11 @@ classdef VRC < VARProcess
                             iters = iters+1;
                         end
                         progbar.stop();
+                        
+                        if ~stable_coupling
+                            flag_restart = true;
+                            break;
+                        end 
                     end
                     
                     
