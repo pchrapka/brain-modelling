@@ -1,11 +1,16 @@
 %% exp38_warmup_flipstate2
 
+data_mode = 'concat';
+% data_mode = 'seq';
+
 %% set options
 % nsims = 20;
 nsims = 1;
 nsims_benchmark = nsims;
-nchannels = 4;
 
+ntrials = 5;
+
+nchannels = 4;
 order_est = 10;
 lambda = 0.99;
 
@@ -18,16 +23,7 @@ verbosity = 0;
 data_type = 'vrc-cp-ch2-coupling1-fixed';
 data_params = {};
 
-%% set up filter
-
-k=1;
-sim_params = [];
-
-ntrials = 5;
-sigma = 10^(-1);
-gamma = sqrt(2*sigma^2*nsamples*log(nchannels));
-
-%%
+%% set up data
 
 % load data
 var_gen = VARGenerator(data_type, nchannels);
@@ -36,6 +32,10 @@ if ~var_gen.hasprocess
 end
 data_var = var_gen.generate('ntrials',nsims*ntrials);
 nsamples = size(data_var.signal_norm,2);
+
+%% set up filter options part 2
+sigma = 10^(-1);
+gamma = sqrt(2*sigma^2*nsamples*log(nchannels));
 
 %% set up data scenarios
 params = [];
@@ -97,7 +97,8 @@ for k=1:nparams
         data = loadfile(datafile);
     end
     
-    outfiles{k} = fullfile('output',data_type,sprintf('filtered-%s.mat',outlabels{k}));
+    outfiles{k} = fullfile('output',data_type,...
+        sprintf('filtered-%s-mode%s.mat',outlabels{k},data_mode));
     fresh = isfresh(outfiles{k},datafile);
     if fresh || ~exist(outfiles{k},'file')
         filter = MCMTLOCCD_TWL4(nchannels,order_est,ntrials,'lambda',lambda,'gamma',gamma);
@@ -106,13 +107,34 @@ for k=1:nparams
         tracefields = {'Kf','Kb','Rf','ferror','berrord'};
         trace = LatticeTrace(filter,'fields',tracefields);
         
-        for i=1:nsections
-            if i==3 && params(k).flipstate
-                trace.flipstate();
-            end
-            if ~isempty(data{i})
-                trace.run(data{i},'verbosity',0,'mode','none');
-            end
+        switch data_mode
+            case 'concat'
+                data_concat = [];
+                for i=1:nsections
+                    if params(k).flipstate
+                        warning('ignoring flip state');
+                    end
+                    if ~isempty(data{i})
+                        if isempty(data_concat)
+                            data_concat = data{i};
+                        else
+                            data_concat = cat(2,data_concat,data{i});
+                        end
+                    end
+                end
+                trace.run(data_concat,'verbosity',0,'mode','none');
+                
+            case 'seq'
+                for i=1:nsections
+                    if i==3 && params(k).flipstate
+                        trace.flipstate();
+                    end
+                    if ~isempty(data{i})
+                        trace.run(data{i},'verbosity',0,'mode','none');
+                    end
+                end
+            otherwise
+                error('unknown mode %s',data_mode);
         end
         
         % save data

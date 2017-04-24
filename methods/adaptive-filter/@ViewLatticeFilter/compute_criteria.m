@@ -48,8 +48,8 @@ switch criteria
             end
             
             
-            cf(j) = log((1-lambda)/(1-lambda^n)) + logdet(Vf) + g;
-            cb(j) = log((1-lambda)/(1-lambda^n)) + logdet(Vb) + g;
+            cf(j) = log((1-lambda)/(1-lambda^j)) + logdet(Vf) + g;
+            cb(j) = log((1-lambda)/(1-lambda^j)) + logdet(Vb) + g;
             
             Vfprev = Vf;
             Vbprev = Vb;
