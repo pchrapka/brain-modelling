@@ -189,7 +189,7 @@ classdef VRC < VARProcess
                         % simulate some data
                         [x,~,~] = obj.simulate(3000);
                         x_max = max(abs(x(:)));
-                        thresh = 20;
+                        thresh = 5*obj.K;
                         
                         % check signal max
                         if x_max > thresh
