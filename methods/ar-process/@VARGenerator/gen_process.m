@@ -53,7 +53,7 @@ while j <= p.Results.ntrials
     [signal,signal_norm,~] = process.simulate(p.Results.nsamples);
     
     x_max = max(abs(signal(:)));
-    thresh = 5;
+    thresh = 20;
     if x_max > thresh
         fprintf('unstable VRC\n');
         continue;
