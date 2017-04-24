@@ -161,7 +161,7 @@ classdef VRC < VARProcess
             
         end
         
-        function stable = coefs_stable(obj,verbose)
+        function stable = coefs_stable(obj,verbose,varargin)
             %COEFS_STABLE checks VRC coefficients for stability
             %   stable = COEFS_STABLE([verbose]) checks VRC coefficients for stability
             %
@@ -175,10 +175,13 @@ classdef VRC < VARProcess
             %   stable (boolean)
             %       true if stable, false otherwise
             
+            p = inputParser();
+            addOptional(p,'verbose',false,@islogical);
+            addParameter(p,'method','ar',@(x) any(validatestring(x,{'ar','sim'})));
+            parse(p,verbose,varargin{:});
+            
+            verbose = p.Results.verbose;
             stable = false;
-            if nargin < 2
-                verbose = false;
-            end
             
             if obj.init
                 method = 'ar';
@@ -666,7 +669,9 @@ classdef VRC < VARProcess
 %                     end
                     
                     % check stability
-                    stable = obj.coefs_stable(false);
+                    stable1 = obj.coefs_stable(false,'method','ar');
+                    stable2 = obj.coefs_stable(false,'method','sim');
+                    stable = stable1 && stable2;
                     
                 end
                 
