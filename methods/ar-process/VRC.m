@@ -513,6 +513,7 @@ classdef VRC < VARProcess
                                         'stable',true);
                             end
                             obj.Kf(:,i,i) = var1.Kf;
+                            obj.Kb(:,i,i) = var1.Kb;
                         end
                         
                         if p.Results.max_order
@@ -542,8 +543,11 @@ classdef VRC < VARProcess
                             max_iters = 200;
                             while ~stable_coupling  && (iters <= max_iters)
                                 % generate a new coefficient
+                                coef_new = scaling*unifrnd(a, b);
                                 obj.Kf(coupled_order,coupled_channels(1),coupled_channels(2))...
-                                    = scaling*unifrnd(a, b);
+                                    = coef_new;
+                                obj.Kb(coupled_order,coupled_channels(1),coupled_channels(2))...
+                                    = coef_new;
                                 
                                 % check coupling stability
                                 stable_coupling = obj.coefs_stable(false);
@@ -564,6 +568,7 @@ classdef VRC < VARProcess
                             else
                                 % reset coefficient
                                 obj.Kf(coupled_order,coupled_channels(1),coupled_channels(2)) = 0;
+                                obj.Kb(coupled_order,coupled_channels(1),coupled_channels(2)) = 0;
                             end
                             
                         end
@@ -575,10 +580,6 @@ classdef VRC < VARProcess
                 
             else
                 error('not implemented');
-            end
-            
-            for i=1:obj.P
-                obj.Kb(i,:,:) = squeeze(obj.Kf(i,:,:))';
             end
             
         end
