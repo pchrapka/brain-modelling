@@ -548,13 +548,17 @@ classdef VRC < VARProcess
                             % move on to next order
                             continue;
                         end
+                        % set some vars
                         stable_coupling = false;
                         scaling = 1;
+                        
                         % set number of attempts
                         iters = 1;
                         max_iters = 200;
+                        
+                        progbar = ProgressBar(max_iters);
                         while ~stable_coupling  && (iters <= max_iters)
-                            fprintf('attempt %d\n',iters);
+                            progbar.progress();
                             % sample all couplings at once
                             coefs_new = scaling*unifrnd(a,b,[ncouplings_order, 1]);
                             obj.Kf(i,idx_order) = coefs_new;
@@ -569,6 +573,7 @@ classdef VRC < VARProcess
                             
                             iters = iters+1;
                         end
+                        progbar.stop();
                     end
                     
                     
