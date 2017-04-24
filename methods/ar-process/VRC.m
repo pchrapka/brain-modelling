@@ -535,28 +535,34 @@ classdef VRC < VARProcess
                         idx(:,i,i) = false(obj.P,1);
                     end
                     idx_couplings = find(idx);
+                    idx_couplings_sel = randsample(idx_couplings,p.Results.ncouplings);
+                    idx = false(size(obj.Kf));
+                    idx(idx_couplings_sel) = true;
                     
-                    stable_coupling = false;
-                    scaling = 1;
-                    % set number of attempts
-                    iters = 1;
-                    max_iters = 200;
-                    while ~stable_coupling  && (iters <= max_iters)
-                        fprintf('iteration %d\n',iters);
-                        % sample all couplings at once
-                        idx_couplings_sel = randsample(idx_couplings,p.Results.ncouplings);
-                        coefs_new = scaling*unifrnd(a,b,[p.Results.ncouplings, 1]);
-                        obj.Kf(idx_couplings_sel) = coefs_new;
-                        obj.Kb(idx_couplings_sel) = coefs_new;
-                        
-                        % check coupling stability
-                        stable_coupling = obj.coefs_stable(false);
-                        
-                        % make sampling interval smaller, so we can
-                        % converge to something
-                        scaling = 0.99*scaling;
-                        
-                        iters = iters+1;
+                    for i=1:obj.P
+                        fprintf('working on order %d\n',i);
+                        idx_order = idx(i,:,:);
+                        stable_coupling = false;
+                        scaling = 1;
+                        % set number of attempts
+                        iters = 1;
+                        max_iters = 200;
+                        while ~stable_coupling  && (iters <= max_iters)
+                            fprintf('iteration %d\n',iters);
+                            % sample all couplings at once
+                            coefs_new = scaling*unifrnd(a,b,[p.Results.ncouplings, 1]);
+                            obj.Kf(i,idx_order) = coefs_new;
+                            obj.Kb(i,idx_order) = coefs_new;
+                            
+                            % check coupling stability
+                            stable_coupling = obj.coefs_stable(false);
+                            
+                            % make sampling interval smaller, so we can
+                            % converge to something
+                            scaling = 0.99*scaling;
+                            
+                            iters = iters+1;
+                        end
                     end
                     
                     
