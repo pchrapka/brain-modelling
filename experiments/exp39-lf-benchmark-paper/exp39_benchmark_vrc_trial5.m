@@ -21,7 +21,7 @@ if flag_tune
         var_gen.configure(gen_config_params{:});
         fresh = true;
     end
-    data_var = var_gen.generate(ntrials);
+    data_var = var_gen.generate('ntrials',ntrials);
     
     [nchannels,nsamples,~] = size(data_var.signal_norm);
     
@@ -38,6 +38,7 @@ if flag_tune
         fullfile(file_path,outdir),...
         'filter','MCMTLOCCD_TWL4',...
         'filter_params',{nchannels,norder,ntrials,'lambda',lambda,'gamma',x(1)},...
+        'run_options',{'warmup_noise', false,'warmup_data', false},...
         'criteria','normtime',...
         'criteria_samples',[idx_start idx_end]);
     
@@ -46,6 +47,10 @@ if flag_tune
     lb = zeros(n,1);
     
     params_bayes = [];
+    params_bayes.n_iterations = 20;
+    params_bayes.n_init_samples = 10;
+    params_bayes.verbose_level = 1;
+    params_bayes.log_filename = 'matbopt.log';
     [x_opt,y] = bayesoptcont(func_bayes, n, params_bayes, lb, ub);
     
     error('set gamma to %g and set flag_tune to false\n',x_opt);

@@ -5,12 +5,13 @@ addRequired(p,'data_file',@ischar);
 addRequired(p,'outdir',@ischar);
 addParameter(p,'filter','MCMTLOCCD_TWL4',@ischar);
 addParameter(p,'filter_params',{},@iscell);
+addParameter(p,'run_options',{},@iscell);
 addParameter(p,'criteria','normtime',@ischar);
 addParameter(p,'criteria_samples',[],@(x) (length(x) == 2) && isnumeric(x));
 parse(p,varargin{:});
 
 func_filter = str2func(p.Results.filter);
-filters{1} = func_filter(p.Results.filter_params);
+filters{1} = func_filter(p.Results.filter_params{:});
 
 % filter results are dependent on all input file parameters
 [~,exp_name,~] = fileparts(data_file);
@@ -21,10 +22,9 @@ lf_files = run_lattice_filter(...
     'basedir',outdir,...
     'outdir',exp_name,... 
     'filters', filters,...
-    'warmup_noise', true,...
-    'warmup_data', true,...
+    p.Results.run_options{:},...
     'force',false,...
-    'verbosity',verbosity,...
+    'verbosity',0,...
     'tracefields', {'Kf','Kb','Rf','ferror','berrord'},...
     'plot_pdc', false);
 
@@ -39,5 +39,8 @@ if isempty(crit_idx)
     crit_idx = [1 length(crit_val)];
 end
 value = mean(crit_val(crit_idx(1):crit_idx(2)));
+
+delete(lf_files{1});
+delete(view_lf.criteriafiles{1});
 
 end

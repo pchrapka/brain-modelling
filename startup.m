@@ -22,7 +22,7 @@ addpath(fullfile(pwd,'external','libsvm-321','matlab'));
 addpath(fullfile(pwd,'external','LSPC'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','FEAST'));
 addpath(fullfile(pwd,'external','FEAST-v1.1.1','MIToolbox'));
-addpath(fullfile('external','bayesopt','matlab'));
+addpath(fullfile(pwd,'external','bayesopt','matlab'));
 addpath(genpath(fullfile(pwd,'external','AutomaticSpectra')));
 addpath(fullfile(pwd,'external','asymp_package_v2b','routines'));
 addpath(genpath(fullfile(pwd,'external','asymp_package_v2b','supporting')));
@@ -83,7 +83,7 @@ if ~exist('bayesoptcont.mexa64','file')
     % Compile bayesopt
     fprintf('Compiling bayesopt\n');
     curdir = pwd;
-    cd(fullfile('external','bayesopt','matlab'));
+    cd(fullfile(pwd,'external','bayesopt','matlab'));
     try
         compile_matlab
     catch

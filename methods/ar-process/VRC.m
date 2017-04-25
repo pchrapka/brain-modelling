@@ -208,8 +208,8 @@ classdef VRC < VARProcess
                         [A1,~] = rc2ar(obj.Kf,obj.Kb);
                         A = rcarrayformat(A1,'format',3,'transpose',false);
                         var_obj = VAR(obj.K, obj.P);
-                        var_obj.coefs_set(A);
-                        stable = var_obj.coefs_stable();
+                        var_obj.coefs_set(-1*A);
+                        stable = var_obj.coefs_stable(verbose);
                         if verbose
                             if stable
                                 fprintf('stable VRC\n');
@@ -381,7 +381,6 @@ classdef VRC < VARProcess
             nsamples = 2000;
             [data,~,~] = obj.simulate(nsamples);
             
-            figure;
             ncols = 2;
             nrows = ceil(obj.K/ncols);
             for j=1:obj.K
@@ -567,6 +566,17 @@ classdef VRC < VARProcess
                             % move on
                             flag_run = false;
                         end
+                        
+                        % check stability
+                        stable1 = obj.coefs_stable(false,'method','ar');
+                        stable2 = obj.coefs_stable(false,'method','sim');
+                        stable = stable1 && stable2;
+                        
+                        if ~stable
+                            obj.coefs_stable(true,'method','ar');
+                            obj.plot();
+                            drawnow;
+                        end
                     end
                     
                     % get indices of potential couplings
@@ -625,6 +635,12 @@ classdef VRC < VARProcess
                     stable1 = obj.coefs_stable(false,'method','ar');
                     stable2 = obj.coefs_stable(false,'method','sim');
                     stable = stable1 && stable2;
+                    
+                    if ~stable
+                        obj.coefs_stable(true,'method','ar');
+                        obj.plot();
+                        drawnow;
+                    end
                     
                 end
                 
