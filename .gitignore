@@ -29,6 +29,17 @@ external/bayesopt/.git
 # no compiled code
 external/libsvm*/matlab/*.mex*
 external/FEAST*/**/*.mex*
+external/bayesopt/CMakeFiles
+external/bayesopt/bin
+external/bayesopt/nlopt2/CMakeFiles
+external/bayesopt/examples/CMakeFiles
+external/bayesopt/**/*.mex*
+external/bayesopt/**/*.cmake
+external/bayesopt/**/Makefile
+external/bayesopt/CMakeCache.txt
+external/bayesopt/install_manifest.txt
+external/bayesopt/nlopt2/config.h
+external/bayesopt/lib
 
 # no large data files
 !external/fieldtrip-20160128/template/atlas/**/*.nii
