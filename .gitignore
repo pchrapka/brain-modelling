@@ -24,6 +24,7 @@ external/asymp_package_v2b/Chap*
 external/asymp_package_v2b/examples
 external/psom/.git
 external/export_fig/.git
+external/bayesopt/.git
 
 # no compiled code
 external/libsvm*/matlab/*.mex*
