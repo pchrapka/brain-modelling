@@ -12,7 +12,7 @@ ntrials = 5;
 lambda = 0.99;
 
 %% tune parameters
-flag_tune = false;
+flag_tune = true;
 if flag_tune
     tune_file = tune_file_from_generator(...
         fullfile(file_path,outdir),...
@@ -38,7 +38,11 @@ end
 
 %% set filter parameters
 
-gamma = 1e-4;
+if nchannels == 10
+    gamma = 1e-4;
+else
+    gamma = 0;
+end
 
 %% set up benchmark params
 
