@@ -40,8 +40,12 @@ end
 
 if nchannels == 10
     gamma = 1e-4;
+    % bayesopt goes down to 1.6e-14 but when you plot it seems to level off
+    % at 1e-4
 else
-    gamma = 0;
+    gamma = 1e-2;
+    % bayesopt goes down to 1.29-14 but when you plot it seems to level off
+    % at ?
 end
 
 %% set up benchmark params

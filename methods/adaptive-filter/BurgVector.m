@@ -57,6 +57,10 @@ classdef BurgVector
             end
         end 
         
+        function obj = normalize(obj, nsamples)
+            % do nothing
+        end
+        
         function obj = update_batch(obj, x, varargin)
             %UPDATE_BATCH updates reflection coefficients
             %   UPDATE_BATCH(OBJ,X) updates the reflection coefficients
