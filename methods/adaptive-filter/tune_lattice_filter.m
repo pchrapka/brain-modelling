@@ -39,6 +39,7 @@ if isempty(crit_idx)
     crit_idx = [1 length(crit_val)];
 end
 value = mean(crit_val(crit_idx(1):crit_idx(2)));
+fprintf('value: %g\n',value);
 
 delete(lf_files{1});
 delete(view_lf.criteriafiles{1});

@@ -12,54 +12,33 @@ ntrials = 5;
 lambda = 0.99;
 
 %% tune parameters
-flag_tune = true;
+flag_tune = false;
 if flag_tune
-    var_gen = VARGenerator(gen_params{:});
-    if var_gen.hasprocess
-        fresh = false;
-    else
-        var_gen.configure(gen_config_params{:});
-        fresh = true;
-    end
-    data_var = var_gen.generate('ntrials',ntrials);
-    
-    [nchannels,nsamples,~] = size(data_var.signal_norm);
-    
-    data_file = fullfile(file_path,outdir,'tuning-data.mat');
-    if fresh || isfresh(data_file,var_gen.get_file())
-        save_parfor(data_file, data_var.signal_norm);
-    end
-    
-    idx_start = floor(nsamples*0.05);
-    idx_end = ceil(nsamples*0.95);
-    
-    func_bayes = @(x) tune_lattice_filter(...
-        data_file,...
+    tune_file = tune_file_from_generator(...
         fullfile(file_path,outdir),...
-        'filter','MCMTLOCCD_TWL4',...
-        'filter_params',{nchannels,norder,ntrials,'lambda',lambda,'gamma',x(1)},...
-        'run_options',{'warmup_noise', false,'warmup_data', false},...
-        'criteria','normtime',...
-        'criteria_samples',[idx_start idx_end]);
+        'gen_params',gen_params,...
+        'gen_config_params',gen_config_params,...
+        'ntrials',ntrials);
     
-    n = 1;
-    ub = [10]; %[gamma]
-    lb = zeros(n,1);
+    filter_params = [];
+    filter_params.nchannels = nchannels;
+    filter_params.ntrials = ntrials;
+    filter_params.lambda = lambda;
+    filter_params.norder = norder;
     
-    params_bayes = [];
-    params_bayes.n_iterations = 20;
-    params_bayes.n_init_samples = 10;
-    params_bayes.verbose_level = 1;
-    params_bayes.log_filename = 'matbopt.log';
-    [x_opt,y] = bayesoptcont(func_bayes, n, params_bayes, lb, ub);
+    [opt,~] = tune_lattice_filter_bayesopt(...
+        fullfile(file_path,outdir),...
+        tune_file,...
+        'filter_params',filter_params,...
+        'opt_mode','MCMTLOCCD_TWL4_gamma');
     
-    error('set gamma to %g and set flag_tune to false\n',x_opt);
+    error('set gamma to %g and set flag_tune to false\n',opt);
     
 end
 
 %% set filter parameters
 
-gamma = 1;
+gamma = 1e-4;
 
 %% set up benchmark params
 
@@ -78,8 +57,8 @@ sim_params(k).gen_config_params = gen_config_params;
 sim_params(k).label = sim_params(k).filter.name;
 k = k+1;
 
-sigma = sqrt(0.1);
-gamma = sqrt(2*sigma^2*nsamples*log(nchannels));
+% sigma = sqrt(0.1);
+% gamma = sqrt(2*sigma^2*nsamples*log(nchannels));
 
 sim_params(k).filter = MCMTLOCCD_TWL4(nchannels,norder,ntrials,'lambda',lambda,'gamma',gamma);
 sim_params(k).gen_params = gen_params;
@@ -88,14 +67,16 @@ sim_params(k).label = sim_params(k).filter.name;
 k = k+1;
 
 %% run
+[~,data_name,~] = fileparts(var_gen.get_file());
 exp_path = fullfile(file_path,[outdir '.m']);
 
 run_lattice_benchmark(...
-    'outdir',outdir,...
+    'outdir',fullfile(outdir,data_name),...
     'basedir',exp_path,...
     'sim_params', sim_params,...
     'nsims', nsims,...
     'warmup_noise', false,...
+    'warmup_data', false,...
     'normalized',true,...
     'force',false,...
     'plot_avg_mse', true,...
