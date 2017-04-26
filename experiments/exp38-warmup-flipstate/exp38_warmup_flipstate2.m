@@ -149,12 +149,12 @@ for k=1:nparams
     
     % view errors
     view_obj = ViewLatticeFilter(outfiles{k},'labels',outlabels{k});
-    view_obj.compute({'ewaic','normtime'});
+    view_obj.compute({'ewaic','normerrortime'});
     view_obj.plot_criteria_vs_order_vs_time(...
-        'criteria','normtime',...
+        'criteria','normerrortime',...
         'orders',6:10);
     
-    save_fig2('path',fullfile('output',data_type),'tag',[outlabels{k} '-normtime'],'save_flag',true,'formats',{'png'});
+    save_fig2('path',fullfile('output',data_type),'tag',[outlabels{k} '-normerrortime'],'save_flag',true,'formats',{'png'});
     close(gcf);
     
     view_obj.plot_criteria_vs_order_vs_time(...
@@ -167,13 +167,13 @@ end
 
 %% view all
 view_obj = ViewLatticeFilter(outfiles,'labels',outlabels);
-view_obj.compute({'ewaic','normtime','whitetime'});
+view_obj.compute({'ewaic','normerrortime','whitetime'});
 view_obj.plot_criteria_vs_order_vs_time(...
-    'criteria','normtime',...
+    'criteria','normerrortime',...
     'file_list',1:nparams,...
     'orders',10);
 
-save_fig2('path',fullfile('output',data_type),'tag','all-normtime','save_flag',true,'formats',{'png'});
+save_fig2('path',fullfile('output',data_type),'tag','all-normerrortime','save_flag',true,'formats',{'png'});
 close(gcf);
 
 view_obj.plot_criteria_vs_order_vs_time(...

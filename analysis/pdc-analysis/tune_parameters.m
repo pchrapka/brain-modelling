@@ -10,9 +10,9 @@ tune_model_order
 
 % tune gamma and lambda with a (hopefully) diminished model order
 
-% use NORMTIME to evaluate
+% use normerrortime to evaluate
 tune_lambda
 
-% use NORMTIME to evaluate
+% use normerrortime to evaluate
 tune_gamma
 

@@ -36,7 +36,7 @@ end
 
 %% plot prediction error
 
-crit = 'normtime';
+crit = 'normerrortime';
 
 view_lf = ViewLatticeFilter(lf_files,'labels',data_labels);
 view_lf.compute({crit});

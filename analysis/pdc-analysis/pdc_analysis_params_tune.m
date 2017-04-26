@@ -14,7 +14,7 @@ k=1;
 % params(k).gamma = [1e-6 1e-5 1e-4 1e-3 1e-2 0.1];
 % params(k).normalization = 'allchannels';
 % params(k).envelope = true;
-% params(k).plot_crit = 'normtime';
+% params(k).plot_crit = 'normerrortime';
 % k = k+1;  
 
 % best is 
@@ -32,7 +32,7 @@ k=1;
 % % params(k).gamma = 1e-6;
 % params(k).normalization = 'allchannels';
 % params(k).envelope = true;
-% params(k).plot_crit = 'normtime';
+% params(k).plot_crit = 'normerrortime';
 % params(k).plot_orders = 6;
 % k = k+1;  
 
@@ -73,7 +73,7 @@ k=1;
 % params(k).gamma = [1e-6 1e-5 1e-4 1e-3 1e-2 0.1];
 % params(k).normalization = 'eachchannel';
 % params(k).envelope = true;
-% params(k).plot_crit = 'normtime';
+% params(k).plot_crit = 'normerrortime';
 % k = k+1;  
 % 
 % % best is 

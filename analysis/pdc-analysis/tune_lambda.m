@@ -11,7 +11,7 @@ addParameter(p,'gamma',1e-2,@(x) isnumeric(x) && length(x) == 1);
 addParameter(p,'normalization','allchannels',@ischar); % also none
 addParameter(p,'envelope',false,@islogical); % also none
 addParameter(p,'plot',true,@islogical);
-addParameter(p,'plot_crit','normtime',@ischar);
+addParameter(p,'plot_crit','normerrortime',@ischar);
 addParameter(p,'plot_orders',[],@isnumeric);
 parse(p,pipeline,outdir,varargin{:});
 
@@ -55,7 +55,7 @@ lf_files = lattice_filter_sources(filters, sources_file,...
     'outdir', outdir);
 
 %% plot criteria for each gamma
-crit_all = {'aic','ewaic','normtime'};
+crit_all = {'aic','ewaic','normerrortime'};
 
 if p.Results.plot
     for k=1:length(lf_files)
@@ -63,7 +63,7 @@ if p.Results.plot
         view_lf.compute(crit_all);
         
         switch p.Results.plot_crit
-            case {'ewaic','ewsc','normtime'}
+            case {'ewaic','ewsc','normerrortime'}
                 view_lf.plot_criteria_vs_order_vs_time(...
                     'criteria',p.Results.plot_crit,...
                     'orders',1:p.Results.order);
@@ -81,7 +81,7 @@ if p.Results.plot
     view_lf.compute(crit_all);
     
     switch p.Results.plot_crit
-        case {'ewaic','ewsc','normtime'}
+        case {'ewaic','ewsc','normerrortime'}
             view_lf.plot_criteria_vs_order_vs_time(...
                 'criteria',p.Results.plot_crit,...
                 'orders',p.Results.plot_orders,...

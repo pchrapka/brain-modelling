@@ -139,6 +139,37 @@ classdef ViewLatticeFilter < handle
             out = linetypes{idx_new};
         end
         
+        function [Kf,Kb] = get_coefs(obj,order_idx,sample_idx)
+            if isempty(order_idx)
+                order_idx = 1:size(obj.data.estimate.Kf,2);
+            else
+                order_idx = 1:order_idx;
+            end
+            
+            dims = size(obj.data.estimate.Kf);
+            
+            if isempty(sample_idx)
+                switch length(dims)
+                    case 4
+                        Kf = obj.data.estimate.Kf(:,order_idx,:,:);
+                        Kb = obj.data.estimate.Kb(:,order_idx,:,:);
+                    otherwise
+                        error('uh oh\n');
+                end
+            else
+                switch length(dims)
+                    case 4
+                        Kf = obj.data.estimate.Kf(sample_idx,order_idx,:,:);
+                        Kb = obj.data.estimate.Kb(sample_idx,order_idx,:,:);
+                    otherwise
+                        error('uh oh\n');
+                end
+            end
+            
+            Kf = squeeze(Kf);
+            Kb = squeeze(Kb);
+        end
+        
         function [ferror,berror] = get_error(obj,order_idx,sample_idx)
             if nargin < 2
                 sample_idx = [];

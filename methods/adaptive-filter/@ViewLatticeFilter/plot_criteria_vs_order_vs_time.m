@@ -14,7 +14,7 @@ function plot_criteria_vs_order_vs_time(obj,varargin)
 
 p = inputParser();
 addParameter(p,'criteria','ewaic',...
-    @(x) any(validatestring(x,{'ewaic','ewsc','normtime','whitetime'})));
+    @(x) any(validatestring(x,{'ewaic','ewsc','normerrortime','whitetime'})));
 addParameter(p,'orders',[],@(x) true);
 addParameter(p,'file_list',[],@(x) true);
 parse(p,varargin{:});

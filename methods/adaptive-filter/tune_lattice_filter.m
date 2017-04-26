@@ -6,7 +6,7 @@ addRequired(p,'outdir',@ischar);
 addParameter(p,'filter','MCMTLOCCD_TWL4',@ischar);
 addParameter(p,'filter_params',{},@iscell);
 addParameter(p,'run_options',{},@iscell);
-addParameter(p,'criteria','normtime',@ischar);
+addParameter(p,'criteria','normerrortime',@ischar);
 addParameter(p,'criteria_samples',[],@(x) (length(x) == 2) && isnumeric(x));
 parse(p,varargin{:});
 
@@ -32,13 +32,15 @@ lf_files = run_lattice_filter(...
 view_lf = ViewLatticeFilter(lf_files);
 view_lf.compute({p.Results.criteria});
 
-crit_val = view_lf.criteria.(p.Results.criteria).f(end,:);
+crit_val_f = view_lf.criteria.(p.Results.criteria).f(end,:);
+crit_val_b = view_lf.criteria.(p.Results.criteria).b(end,:);
 
 crit_idx = p.Results.criteria_samples;
 if isempty(crit_idx)
     crit_idx = [1 length(crit_val)];
 end
-value = mean(crit_val(crit_idx(1):crit_idx(2)));
+value = mean(crit_val_f(crit_idx(1):crit_idx(2))) + ...
+    mean(crit_val_b(crit_idx(1):crit_idx(2)));
 fprintf('value: %g\n',value);
 
 delete(lf_files{1});

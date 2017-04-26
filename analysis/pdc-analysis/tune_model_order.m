@@ -55,13 +55,13 @@ lf_files = lattice_filter_sources(filters, sources_file,...
 %% set up view lattice
 if p.Results.plot
     view_lf = ViewLatticeFilter(lf_files{1});
-    crit_time = {'ewaic','ewsc','normtime'};
+    crit_time = {'ewaic','ewsc','normerrortime'};
     crit_single = {'aic','sc','norm'};
     view_lf.compute([crit_time crit_single]);
     
     % plot order vs estimation error
     switch p.Results.plot_crit
-        case {'ewaic','ewsc','normtime'}
+        case {'ewaic','ewsc','normerrortime'}
             view_lf.plot_criteria_vs_order_vs_time(...
                 'criteria',p.Results.plot_crit,'orders',p.Results.plot_orders);
         case {'aic','sc','norm'}

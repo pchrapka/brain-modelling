@@ -28,11 +28,11 @@ switch p.Results.opt_mode
             'filter','MCMTLOCCD_TWL4',...
             'filter_params',[filter_params, 'gamma',x(1)],...
             'run_options',{'warmup_noise', false,'warmup_data', false},...
-            'criteria','ewaic',...
+            'criteria','normerror_normcoefs_time',...
             'criteria_samples',[idx_start idx_end]);
         
         n = 1;
-        ub = [10]; %[gamma]
+        ub = [40]; %[gamma]
         lb = zeros(n,1);
         labels = {'gamma'};
     otherwise
@@ -50,13 +50,14 @@ params_bayes.n_iterations = 30;
 params_bayes.n_init_samples = 10;
 params_bayes.verbose_level = 6;
 params_bayes.log_filename = fullfile(bayes_dir,'bayesopt.log');
-% params_bayes.load_filename= fullfile(bayes_dir,'bayesopt.dat');
-params_bayes.save_filename = fullfile(bayes_dir,'bayesopt.dat');
-% if exist(params_bayes.save_filename,'file')
-%     params_bayes.load_save_flag = 3;
-% else
+params_files = fullfile(bayes_dir,'bayesopt.dat');
+if exist(params_files,'file')
+    params_bayes.load_save_flag = 3;
+    params_bayes.load_filename = params_files;
+else
     params_bayes.load_save_flag = 2;
-% end
+    params_bayes.save_filename = params_files;
+end
 [opt,y] = bayesoptcont(func_bayes, n, params_bayes, lb, ub);
 
 for i=1:length(labels)

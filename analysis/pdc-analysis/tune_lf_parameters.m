@@ -62,7 +62,7 @@ if p.Results.plot
     end
     
     view_lf = ViewLatticeFilter(lf_files,'labels',labels);
-    crit_time = {'ewaic','normtime'};
+    crit_time = {'ewaic','normerrortime'};
     view_lf.compute(crit_time);
     if length(p.Results.lambda) ~= 1 && length(p.Results.gamma) ~= 1
         view_lf.plot_criteria_surface(...

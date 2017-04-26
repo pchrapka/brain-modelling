@@ -11,7 +11,7 @@ switch length(dims)
         nchannels = dims(2);
 end
 
-order_idx = order+1;
+error_order_idx = order+1;
 
 switch criteria
     case {'ewaic','ewsc'}
@@ -27,7 +27,7 @@ switch criteria
         for j=1:nsamples
             
             % extract sample data
-            [ferror,berror] = obj.get_error(order_idx,j);
+            [ferror,berror] = obj.get_error(error_order_idx,j);
             
             %Taylor, James W. "Exponentially weighted information criteria for
             %selecting among forecasting models." International Journal of
@@ -67,7 +67,7 @@ switch criteria
         for j=1:nsamples
             
             % extract sample data
-            [ferror,berror] = obj.get_error(order_idx,j);
+            [ferror,berror] = obj.get_error(error_order_idx,j);
             
             Vf = lambda*Vfprev + ferror*ferror'/ntrials;
             Vb = lambda*Vbprev + berror*berror'/ntrials;
@@ -84,7 +84,7 @@ switch criteria
         end
         
         
-    case 'normtime'
+    case 'normerrortime'
         % allocate mem
         cb = zeros(nsamples,1);
         cf = zeros(nsamples,1);
@@ -92,7 +92,7 @@ switch criteria
         for j=1:nsamples
             
             % extract sample data
-            [ferror,berror] = obj.get_error(order_idx,j);
+            [ferror,berror] = obj.get_error(error_order_idx,j);
             
             % compute the magnitude over all channels and trials
             cf(j) = norm(ferror(:))/ntrials;
@@ -110,12 +110,12 @@ switch criteria
             
             for j=1:nsamples
                 % extract sample data
-                [ferror,berror] = obj.get_error(order_idx,j);
+                [ferror,berror] = obj.get_error(error_order_idx,j);
                 Vf = Vf + ferror*ferror'/n;
                 Vb = Vb + berror*berror'/n;
             end
         else
-            [ferror,berror] = obj.get_error(order_idx,[]);
+            [ferror,berror] = obj.get_error(error_order_idx,[]);
             Vf = ferror*ferror'/n;
             Vb = berror*berror'/n;
         end
@@ -140,11 +140,28 @@ switch criteria
     case 'norm'
         
         % extract sample data
-        [ferror,berror] = obj.get_error(order_idx,[]);
+        [ferror,berror] = obj.get_error(error_order_idx,[]);
         
         % compute the magnitude over all channels and trials
         cf = norm(ferror(:));
         cb = norm(berror(:));
+        
+    case 'normerror_normcoefs_time'
+        
+        % allocate mem
+        cb = zeros(nsamples,1);
+        cf = zeros(nsamples,1);
+        
+        for j=1:nsamples
+            
+            % extract sample data
+            [ferror,berror] = obj.get_error(error_order_idx,j);
+            [Kf,Kb] = obj.get_coefs(order,j);
+            
+            % compute the magnitude over all channels and trials
+            cf(j) = norm(ferror(:))/ntrials + norm(Kf(:));
+            cb(j) = norm(berror(:))/ntrials + norm(Kb(:));
+        end
         
     otherwise
         error('unknown criteria %s',criteria);

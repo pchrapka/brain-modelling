@@ -71,7 +71,7 @@ for i=1:length(params)
             params2 = rmfield(params2,'metrics');
             
             params2.plot = true;
-            params2.plot_crit = 'normtime';
+            params2.plot_crit = 'normerrortime';
             %params2.plot_orders = [1 2 3 4];
             
             params_func = struct2namevalue(params2);
@@ -86,7 +86,7 @@ for i=1:length(params)
             params2 = rmfield(params2,'metrics');
             
             params2.plot = true;
-            params2.plot_crit = 'normtime';
+            params2.plot_crit = 'normerrortime';
             %params2.plot_orders = [1 2 3 4];
             
             params_func = struct2namevalue(params2);
@@ -101,7 +101,7 @@ for i=1:length(params)
             params2 = rmfield(params2,'metrics');
             
             params2.plot = true;
-            params2.plot_crit = 'normtime';
+            params2.plot_crit = 'normerrortime';
             %params2.plot_orders = [1 2 3 4];
             
             params_func = struct2namevalue(params2);
