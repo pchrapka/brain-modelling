@@ -6,13 +6,8 @@ addRequired(p,'outdir',@ischar);
 addRequired(p,'tune_file',@ischar);
 addParameter(p,'opt_mode','',@ischar);
 addParameter(p,'filter_params',[],@isstruct);
+addParameter(p,'criteria_samples',[],@isnumeric);
 parse(p,outdir,tune_file,varargin{:});
-
-data = loadfile(tune_file);
-nsamples = size(data,2);
-
-idx_start = floor(nsamples*0.05);
-idx_end = ceil(nsamples*0.95);
 
 switch p.Results.opt_mode
     case 'MCMTLOCCD_TWL4_gamma'
@@ -28,11 +23,11 @@ switch p.Results.opt_mode
             'filter','MCMTLOCCD_TWL4',...
             'filter_params',[filter_params, 'gamma',x(1)],...
             'run_options',{'warmup_noise', false,'warmup_data', false},...
-            'criteria','normerror_normcoefs_time',...
-            'criteria_samples',[idx_start idx_end]);
+            'criteria','minorigin_normerror_norm1coefs_time',...
+            'criteria_samples',p.Results.criteria_samples);
         
         n = 1;
-        ub = [40]; %[gamma]
+        ub = 100; %[gamma]
         lb = zeros(n,1);
         labels = {'gamma'};
     otherwise
@@ -46,18 +41,18 @@ if ~exist(bayes_dir,'dir')
 end
 
 params_bayes = [];
-params_bayes.n_iterations = 30;
+params_bayes.n_iterations = 10;
 params_bayes.n_init_samples = 10;
-params_bayes.verbose_level = 6;
+params_bayes.verbose_level = 2; % 6 errors -> log file
 params_bayes.log_filename = fullfile(bayes_dir,'bayesopt.log');
-params_files = fullfile(bayes_dir,'bayesopt.dat');
-if exist(params_files,'file')
-    params_bayes.load_save_flag = 3;
-    params_bayes.load_filename = params_files;
-else
+params_file = fullfile(bayes_dir,'bayesopt.dat');
+% if exist(params_file,'file')
+%     params_bayes.load_save_flag = 3;
+%     params_bayes.load_filename = params_file;
+% else
     params_bayes.load_save_flag = 2;
-    params_bayes.save_filename = params_files;
-end
+    params_bayes.save_filename = params_file;
+% end
 [opt,y] = bayesoptcont(func_bayes, n, params_bayes, lb, ub);
 
 for i=1:length(labels)

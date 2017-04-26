@@ -14,7 +14,7 @@ end
 error_order_idx = order+1;
 
 switch criteria
-    case {'ewaic','ewsc'}
+    case {'ewaic','ewsc','ewlogdet'}
         % allocate mem
         cb = zeros(nsamples,1);
         cf = zeros(nsamples,1);
@@ -45,11 +45,13 @@ switch criteria
                 case 'ewsc'
                     % Bayesian Schwartz
                     g = log(n)*order*nchannels^2/n;
+                case 'ewlogdet'
+                    g = 0;
             end
             
             
-            cf(j) = log((1-lambda)/(1-lambda^j)) + logdet(Vf) + g;
-            cb(j) = log((1-lambda)/(1-lambda^j)) + logdet(Vb) + g;
+            cf(j) = logdet((1-lambda)/(1-lambda^j)*Vf) + g;
+            cb(j) = logdet((1-lambda)/(1-lambda^j)*Vb) + g;
             
             Vfprev = Vf;
             Vbprev = Vb;
@@ -95,8 +97,8 @@ switch criteria
             [ferror,berror] = obj.get_error(error_order_idx,j);
             
             % compute the magnitude over all channels and trials
-            cf(j) = norm(ferror(:))/ntrials;
-            cb(j) = norm(berror(:))/ntrials;
+            cf(j) = norm2(ferror,ntrials);
+            cb(j) = norm2(berror,ntrials);
         end
         
     case {'aic','sc'}
@@ -143,10 +145,10 @@ switch criteria
         [ferror,berror] = obj.get_error(error_order_idx,[]);
         
         % compute the magnitude over all channels and trials
-        cf = norm(ferror(:));
-        cb = norm(berror(:));
+        cf = norm2(ferror,ntrials);
+        cb = norm2(berror,ntrials);
         
-    case 'normerror_normcoefs_time'
+    case 'sum_normerror_normcoefs_time'
         
         % allocate mem
         cb = zeros(nsamples,1);
@@ -159,8 +161,73 @@ switch criteria
             [Kf,Kb] = obj.get_coefs(order,j);
             
             % compute the magnitude over all channels and trials
-            cf(j) = norm(ferror(:))/ntrials + norm(Kf(:));
-            cb(j) = norm(berror(:))/ntrials + norm(Kb(:));
+            cf(j) = norm2(ferror,ntrials) + norm1(Kf);
+            cb(j) = norm2(berror,ntrials) + norm1(Kb);
+        end
+        
+    case 'norm1coefs_time'
+        
+        % allocate mem
+        cb = zeros(nsamples,1);
+        cf = zeros(nsamples,1);
+        
+        for j=1:nsamples
+            
+            % extract sample data
+            [Kf,Kb] = obj.get_coefs(order,j);
+            
+            % compute the magnitude over all channels and trials
+            cf(j) = norm1(Kf);
+            cb(j) = norm1(Kb);
+        end
+        
+    case 'minorigin_normerror_norm1coefs_time'
+        
+        % allocate mem
+        cb = zeros(nsamples,1);
+        cf = zeros(nsamples,1);
+        
+        for j=1:nsamples
+            
+            % extract sample data
+            [ferror,berror] = obj.get_error(error_order_idx,j);
+            [Kf,Kb] = obj.get_coefs(order,j);
+            
+            % compute the magnitude over all channels and trials
+            cf(j) = norm([norm2(ferror,ntrials), norm1(Kf)]);
+            cb(j) = norm([norm2(berror,ntrials), norm1(Kb)]);
+        end
+        
+    case 'minorigin_deterror_norm1coefs_time'
+        
+        % allocate mem
+        cb = zeros(nsamples,1);
+        cf = zeros(nsamples,1);
+        
+        lambda = obj.data.filter.lambda;
+
+        delta = eps/nchannels;
+        Vfprev = delta*eye(nchannels,nchannels);
+        Vbprev = delta*eye(nchannels,nchannels);
+        
+        for j=1:nsamples
+            
+            % extract sample data
+            [ferror,berror] = obj.get_error(error_order_idx,j);
+            [Kf,Kb] = obj.get_coefs(order,j);
+            
+            Vf = lambda*Vfprev + ferror*ferror'/ntrials;
+            Vb = lambda*Vbprev + berror*berror'/ntrials;
+            
+            Vfdet = exp(logdet((1-lambda)/(1-lambda^j)*Vf));
+            Vbdet = exp(logdet((1-lambda)/(1-lambda^j)*Vb));
+            
+            % compute the magnitude over all channels and trials
+            cf(j) = norm([Vfdet, norm1(Kf)]);
+            cb(j) = norm([Vbdet, norm1(Kb)]);
+            
+            Vfprev = Vf;
+            Vbprev = Vb;
         end
         
     otherwise
@@ -168,6 +235,14 @@ switch criteria
         
 end
 
+end
+
+function out = norm2(value,ntrials)
+out = norm(value(:))/ntrials;
+end
+
+function out = norm1(value)
+out = norm(value(:),1);
 end
 
 
