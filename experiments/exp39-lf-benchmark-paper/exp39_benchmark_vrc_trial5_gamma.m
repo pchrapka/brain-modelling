@@ -18,7 +18,7 @@ sim_params = [];
 
 % gamma_exp = [-14:2:0 1];
 gamma_exp = [-2:1:2];
-gamma = [10.^gamma_exp 30 40 50 60 78.3];
+gamma = [10.^gamma_exp 8.88 30 50 78.3];
 gamma = sort(gamma);
 
 for k=1:length(gamma);

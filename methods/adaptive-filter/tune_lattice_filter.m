@@ -54,7 +54,6 @@ switch p.Results.criteria_mode
         
         value = mean(crit_val_f(crit_idx(1):crit_idx(2))) + ...
             mean(crit_val_b(crit_idx(1):crit_idx(2)));
-        fprintf('value: %g\n',value);
         
     case 'criteria_target'
         crit_error = [];
@@ -74,6 +73,7 @@ switch p.Results.criteria_mode
         error('unknown criteria mode %s',p.Results.criteria_mode);
 end
 
+fprintf('value: %g\n',value);
 
 delete(lf_files{1});
 delete(view_lf.criteriafiles{1});

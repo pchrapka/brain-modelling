@@ -1,4 +1,4 @@
-function opt = tune_lattice_filter_gamma(tune_file,outdir,varargin)
+function gamma_opt = tune_lattice_filter_gamma(tune_file,outdir,varargin)
 
 p = inputParser();
 p.StructExpand = false;

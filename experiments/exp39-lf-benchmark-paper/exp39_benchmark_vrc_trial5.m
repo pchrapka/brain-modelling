@@ -54,7 +54,8 @@ if nchannels == 10
     % bayesopt goes down to 1.6e-14 but when you plot it seems to level off
     % at 1e-4
 else
-    gamma = 1e-2;
+    %gamma = 1e-2;
+    gamma = 8.88;
     % bayesopt goes down to 1.29-14 but when you plot it seems to level off
     % at ?
 end
