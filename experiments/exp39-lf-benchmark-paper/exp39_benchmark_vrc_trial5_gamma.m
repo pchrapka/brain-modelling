@@ -18,7 +18,8 @@ sim_params = [];
 
 % gamma_exp = [-14:2:0 1];
 gamma_exp = [-2:1:2];
-gamma = [10.^gamma_exp 60 78.3];
+gamma = [10.^gamma_exp 30 40 50 60 78.3];
+gamma = sort(gamma);
 
 for k=1:length(gamma);
     
@@ -72,15 +73,29 @@ lf_files = run_lattice_filter(...
 
 
 %% plot criteria
-% criteria = 'minorigin_normerror_norm1coefs_time';
-% criteria = 'norm1coefs_time';
-% criteria = 'normerrortime';
-criteria = 'minorigin_deterror_norm1coefs_time';
-% criteria = 'ewlogdet';
 view_lf = ViewLatticeFilter(lf_files,...
     'labels',{sim_params(1:end-1).label});
+
+% criteria = 'minorigin_normerror_norm1coefs_time';
+% criteria = 'norm1coefs_time';
+criteria = 'normerrortime';
+% criteria = 'minorigin_deterror_norm1coefs_time';
+% criteria = 'ewlogdet';
 view_lf.compute({criteria});
+
+%% plot criteria
 view_lf.plot_criteria_vs_order_vs_time(...
     'criteria',criteria,...
     'orders',norder,...
     'file_list',1:length(lf_files));
+
+%% plot residual norm vs coef norm
+idx_start = floor(nsamples*0.15);
+idx_end = ceil(nsamples*0.95);
+    
+view_lf.plot_criteria_vs_criteria(...
+    'criteria1','normerrortime',...
+    'criteria2','norm1coefs_time',...
+    'orders',norder,...
+    'file_list',1:length(lf_files),...
+    'criteria_samples',[idx_start idx_end]);

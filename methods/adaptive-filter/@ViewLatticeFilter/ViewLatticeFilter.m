@@ -112,10 +112,13 @@ classdef ViewLatticeFilter < handle
         plot_criteria_vs_order(obj,varargin);
         plot_criteria_vs_order_vs_time(obj,varargin);
         plot_criteria_surface(obj,varargin);
+        plot_criteria_vs_criteria(obj,varargin);
+        
+        % get function
+        out = get_criteria(obj,varargin);
     end
     
     methods (Access = protected)
-        out = get_criteria(obj,varargin);
         [cf,cb] = compute_criteria(obj,criteria,order)
         
         function fresh = check_data_freshness(obj,idx)

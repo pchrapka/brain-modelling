@@ -1,38 +1,14 @@
-function [opt,labels] = tune_lattice_filter_bayesopt(outdir,tune_file,varargin)
+function opt = tune_lattice_filter_bayesopt(tune_file,outdir,func_bayes,n,lb,ub)
 
 p = inputParser();
 p.StructExpand = false;
-addRequired(p,'outdir',@ischar);
 addRequired(p,'tune_file',@ischar);
-addParameter(p,'opt_mode','',@ischar);
-addParameter(p,'filter_params',[],@isstruct);
-addParameter(p,'criteria_samples',[],@isnumeric);
-parse(p,outdir,tune_file,varargin{:});
-
-switch p.Results.opt_mode
-    case 'MCMTLOCCD_TWL4_gamma'
-        filter_params = {...
-            p.Results.filter_params.nchannels,...
-            p.Results.filter_params.norder,...
-            p.Results.filter_params.ntrials,...
-            'lambda',p.Results.filter_params.lambda};
-        
-        func_bayes = @(x) tune_lattice_filter(...
-            tune_file,...
-            outdir,...
-            'filter','MCMTLOCCD_TWL4',...
-            'filter_params',[filter_params, 'gamma',x(1)],...
-            'run_options',{'warmup_noise', false,'warmup_data', false},...
-            'criteria','minorigin_deterror_norm1coefs_time',...
-            'criteria_samples',p.Results.criteria_samples);
-        
-        n = 1;
-        ub = 100; %[gamma]
-        lb = zeros(n,1);
-        labels = {'gamma'};
-    otherwise
-        error('not implemented %s',p.Results.opt_mode);
-end
+addRequired(p,'outdir',@ischar);
+addRequired(p,'func_bayes',@(x) isa(x,'function_handle'));
+addRequired(p,'n',@isnumeric);
+addRequired(p,'lb',@isnumeric);
+addRequired(p,'ub',@isnumeric);
+parse(p,tune_file,outdir,func_bayes,n,lb,ub);
 
 [~,datadir,~] = fileparts(tune_file);
 bayes_dir = fullfile(outdir,datadir);
@@ -54,9 +30,5 @@ params_file = fullfile(bayes_dir,'bayesopt.dat');
     params_bayes.save_filename = params_file;
 % end
 [opt,y] = bayesoptcont(func_bayes, n, params_bayes, lb, ub);
-
-for i=1:length(labels)
-    fprintf('set %s to %g\n',labels{i},opt(i));
-end
 
 end
