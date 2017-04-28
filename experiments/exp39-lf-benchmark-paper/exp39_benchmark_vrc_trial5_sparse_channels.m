@@ -102,8 +102,7 @@ for i=1:length(var_params)
     if nchannels == 10
         switch i
             case 1
-                var_params(i).gamma = 8.88;
-                error('set gamma');
+                var_params(i).gamma = 2.856;
             otherwise
                 error('unknown i %d',i);
         end
