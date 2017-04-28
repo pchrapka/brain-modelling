@@ -3,7 +3,7 @@
 %% set options
 nsims = 20;
 nchannels = 10;
-nchannels = 4;
+% nchannels = 4;
 
 norder = 8;
 verbosity = 0;

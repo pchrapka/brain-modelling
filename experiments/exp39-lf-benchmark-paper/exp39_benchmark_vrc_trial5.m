@@ -12,7 +12,7 @@ ntrials = 5;
 lambda = 0.99;
 
 %% tune parameters
-flag_tune = true;
+flag_tune = false;
 if flag_tune
     tune_file = tune_file_from_generator(...
         fullfile(file_path,outdir),...
@@ -50,14 +50,9 @@ end
 %% set filter parameters
 
 if nchannels == 10
-    gamma = 1e-4;
-    % bayesopt goes down to 1.6e-14 but when you plot it seems to level off
-    % at 1e-4
+    gamma = 4.55;
 else
-    %gamma = 1e-2;
     gamma = 8.88;
-    % bayesopt goes down to 1.29-14 but when you plot it seems to level off
-    % at ?
 end
 
 %% set up benchmark params
@@ -81,6 +76,13 @@ k = k+1;
 % gamma = sqrt(2*sigma^2*nsamples*log(nchannels));
 
 sim_params(k).filter = MCMTLOCCD_TWL4(nchannels,norder,ntrials,'lambda',lambda,'gamma',gamma);
+sim_params(k).gen_params = gen_params;
+sim_params(k).gen_config_params = gen_config_params;
+sim_params(k).label = sim_params(k).filter.name;
+k = k+1;
+
+% NOTE gamma was not explicitly tuned for this one
+sim_params(k).filter = MCMTLOCCD_TWL4(nchannels,norder,ntrials,'lambda',0.90,'gamma',gamma);
 sim_params(k).gen_params = gen_params;
 sim_params(k).gen_config_params = gen_config_params;
 sim_params(k).label = sim_params(k).filter.name;

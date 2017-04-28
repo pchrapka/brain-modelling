@@ -31,8 +31,7 @@ external/libsvm*/matlab/*.mex*
 external/FEAST*/**/*.mex*
 external/bayesopt/CMakeFiles
 external/bayesopt/bin
-external/bayesopt/nlopt2/CMakeFiles
-external/bayesopt/examples/CMakeFiles
+external/bayesopt/**/CMakeFiles
 external/bayesopt/**/*.mex*
 external/bayesopt/**/*.cmake
 external/bayesopt/**/Makefile
