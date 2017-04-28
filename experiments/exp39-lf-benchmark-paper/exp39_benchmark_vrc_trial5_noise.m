@@ -22,7 +22,7 @@ var_params(2).gen_params = {...
     'vrc-full-coupling-rnd-copy',nchannels,...
     'version','exp39-sparsity0-05-noise0-01'};
 var_params(2).noise_sigma = 0.01;
-var_params(2).flag_tune = true;
+var_params(2).flag_tune = false;
 
 % each channel is a sparse VRC process
 % there is a certain level of coupling sparsity
@@ -61,6 +61,7 @@ outdir = 'vrc-stationary-trial5-nowarmup-noise';
 [file_path,~,~] = fileparts(mfilename('fullpath'));
 
 %% tune parameters
+opt = zeros(length(var_params),1);
 for i=1:length(var_params)
     if var_params(i).flag_tune
         tune_file = tune_file_from_generator(...
@@ -91,7 +92,7 @@ for i=1:length(var_params)
             'gamma',gammas,...
             'run_options',{'warmup_noise', false,'warmup_data', false},...
             'criteria_samples',[idx_start idx_end]);
-        fprintf('set gamma to %g\n',opt(i));
+        fprintf('set gamma to %g for process %d\n',opt(i),i);
     end
 end
     
@@ -106,8 +107,7 @@ for i=1:length(var_params)
             case 1
                 var_params(i).gamma = 8.88;
             case 2
-                error('set gamma');
-                var_params(i).gamma = 8.88;
+                var_params(i).gamma = 8.97;
             otherwise
                 error('unknown i %d',i);
         end
