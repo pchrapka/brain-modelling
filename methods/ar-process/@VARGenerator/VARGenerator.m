@@ -15,6 +15,8 @@ classdef VARGenerator < handle
         [process,nsamples] = gen_vrc_cp_ch2_coupling1_fixed(obj,varargin);
         [process,nsamples] = gen_vrc_cp_ch2_coupling2_rnd(obj,varargin);
         [process,nsamples] = gen_vrc_coupling0_fixed(obj,varargin);
+        [process,nsamples] = gen_vrc_full_coupling_rnd(obj,varargin)
+        [process,nsamples] = gen_vrc_sparsechannels_coupling_rnd(obj,varargin)
         
         data = gen_process(obj, process, varargin)
     end
@@ -109,6 +111,8 @@ classdef VARGenerator < handle
                         [obj.process,obj.nsamples] = obj.gen_vrc_coupling0_fixed(varargin{:});
                     case 'vrc-full-coupling-rnd'
                         [obj.process,obj.nsamples] = obj.gen_vrc_full_coupling_rnd(varargin{:});
+                    case 'vrc-sparsechannels-coupling-rnd'
+                        [obj.process,obj.nsamples] = obj.gen_vrc_sparsechannels_coupling_rnd(varargin{:});
                     case 'vrc-cp-ch2-coupling2-rnd'
                         [obj.process,obj.nsamples] = obj.gen_vrc_cp_ch2_coupling2_rnd(varargin{:});
                     case 'vrc-cp-ch2-coupling1-fixed'
