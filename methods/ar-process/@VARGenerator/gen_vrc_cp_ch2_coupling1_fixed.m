@@ -1,12 +1,19 @@
 function [process,nsamples] = gen_vrc_cp_ch2_coupling1_fixed(obj,varargin)
 
 p = inputParser();
+addParameter(p,'changepoints',[],@isnumeric);
 parse(p,varargin{:});
 
 nchannels = obj.nchannels;
 
 norder = 10;
 ntime = 358;
+
+% set changepoints
+changepoints = p.Results.changepoints;
+if isempty(changepoints)
+    changepoints = [20 100] + (ntime - 256);
+end
 
 % set VRC processes
 k_vrc1 = zeros(norder,1,1);
@@ -40,9 +47,6 @@ vrc_const(:,source_channels(1),source_channels(1)) = vrc1.Kf;
 % set pulse to vrc 2
 vrc_pulse_source = zeros(norder, nchannels, nchannels);
 vrc_pulse_source(:,source_channels(2),source_channels(2)) = vrc2.Kf;
-
-% set changepoints
-changepoints = [20 100] + (ntime - 256);
 
 % select coupled channels randomly
 coupled_channels = randsample(source_channels,2);

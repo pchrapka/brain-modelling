@@ -208,7 +208,7 @@ classdef VRC < VARProcess
                         [A1,~] = rc2ar(obj.Kf,obj.Kb);
                         A = rcarrayformat(A1,'format',3,'transpose',false);
                         var_obj = VAR(obj.K, obj.P);
-                        var_obj.coefs_set(-1*A);
+                        var_obj.coefs_set(A);
                         stable = var_obj.coefs_stable(verbose);
                         if verbose
                             if stable
