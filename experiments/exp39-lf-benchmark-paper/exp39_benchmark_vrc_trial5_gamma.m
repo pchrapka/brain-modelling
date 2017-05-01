@@ -4,7 +4,7 @@ params_vrc_stationary
 
 %% set parameters
 
-outdir = 'vrc-stationary-trial5-nowarmup-gamma';
+outdir = fullfile('output','vrc-stationary-trial5-nowarmup-gamma');
 [file_path,~,~] = fileparts(mfilename('fullpath'));
 
 nsims = 1;

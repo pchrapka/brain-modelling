@@ -56,7 +56,7 @@ end
 
 %% set parameters
 
-outdir = 'vrc-stationary-trial5-nowarmup-sparsechannels';
+outdir = fullfile('output','vrc-stationary-trial5-nowarmup-sparsechannels');
 [file_path,~,~] = fileparts(mfilename('fullpath'));
 
 %% tune parameters

@@ -26,7 +26,7 @@ sim_params(k).label = sim_params(k).filter.name;
 k = k+1;
 
 %% run
-outdir = 'vrc-stationary-trial1-nowarmup';
+outdir = fullfile('output','vrc-stationary-trial1-nowarmup');
 [file_path,~,~] = fileparts(mfilename('fullpath'));
 exp_path = fullfile(file_path,[outdir '.m']);
 

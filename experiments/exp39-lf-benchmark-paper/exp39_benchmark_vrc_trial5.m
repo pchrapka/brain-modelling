@@ -4,10 +4,10 @@ params_vrc_stationary
 
 %% set parameters
 
-outdir = 'vrc-stationary-trial5-nowarmup';
+outdir = fullfile('output','vrc-stationary-trial5-nowarmup');
 [file_path,~,~] = fileparts(mfilename('fullpath'));
 
-nsims = 1;
+nsims = 5;
 ntrials = 5;
 lambda = 0.99;
 
@@ -102,4 +102,9 @@ run_lattice_benchmark(...
     'normalized',true,...
     'force',false,...
     'plot_avg_mse', true,...
-    'plot_avg_nmse', true);
+    'plot_avg_nmse', false);
+
+ylim([10^(-2) 10^(-0.9)]);
+ylabel('Reflection Coefficient MSE');
+xlim([1 1000]);
+xlabel('Sample');
