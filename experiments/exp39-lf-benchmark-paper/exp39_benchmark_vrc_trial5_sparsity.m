@@ -27,7 +27,7 @@ params_sp(k).label = '0-05';
 k = k+1;
 
 params_sp(k).sparsity = 0.1;
-params_sp(k).gamma = NaN;
+params_sp(k).gamma = 3.85;
 params_sp(k).label = '0-1';
 k = k+1;
 

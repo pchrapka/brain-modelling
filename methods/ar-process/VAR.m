@@ -181,7 +181,7 @@ classdef VAR < VARProcess
                 %disp(lambda);
                 %disp(abs(lambda));
                 
-                % Check eigenvalues
+                % Check eigenvalues                    
                 if max(abs(lambda)) >= 1
                     if verbose
                         fprintf('unstable VAR\n');
@@ -346,6 +346,86 @@ classdef VAR < VARProcess
             
             % Normalize variance of each channel to unit variance
             Y_norm = normalizev(Y);
+        end
+        
+        function plot(obj,varargin)
+            p = inputParser();
+            addParameter(p,'interactive',true,@islogical);
+            addParameter(p,'ntrials',[],@isnumeric);
+            parse(p,varargin{:});
+            
+            nsamples = 2000;
+            [data,~,~] = obj.simulate(nsamples);
+            
+            ncols = 2;
+            nrows = ceil(obj.K/ncols);
+            for j=1:obj.K
+                subplot(nrows, ncols, j);
+                plot(1:nsamples, data(j,:));
+            end
+        end
+        
+        function stable_coupling = coefs_gen_coupling(obj,mask,varargin)
+            
+            p = inputParser();
+            addRequired(p,'mask',@islogical);
+            addParameter(p,'ncouplings',10,@isnumeric);
+            parse(p,mask,varargin{:});
+            
+            if p.Results.ncouplings == 0
+                stable_coupling = true;
+            end
+
+            % randomly select coupling indices
+            idx_couplings = find(mask);
+            idx_couplings_sel = randsample(idx_couplings,p.Results.ncouplings);
+            idx = false(size(obj.A));
+            idx(idx_couplings_sel) = true;
+                  
+            a = -1;
+            b = 1;
+            
+            for i=1:obj.P
+                fprintf('working on order %d\n',i);
+                idx_order = idx(:,:,i);
+                ncouplings_order = sum(idx_order(:));
+                if ncouplings_order == 0
+                    % move on to next order
+                    continue;
+                end
+                % set some vars
+                stable_coupling = false;
+                scaling = 1;
+                
+                % set number of attempts
+                iters = 1;
+                max_iters = 200;
+                
+                progbar = ProgressBar(max_iters);
+                while ~stable_coupling  && (iters <= max_iters)
+                    progbar.progress();
+                    % sample all couplings at once
+                    coefs_new = scaling*unifrnd(a,b,[ncouplings_order, 1]);
+                    A_temp = obj.A(:,:,i);
+                    A_temp(idx_order) = coefs_new;
+                    obj.A(:,:,i) = A_temp;
+                    
+                    % check coupling stability
+                    stable_coupling = obj.coefs_stable(false);
+                    
+                    % make sampling interval smaller, so we can
+                    % converge to something
+                    scaling = 0.99*scaling;
+                    
+                    iters = iters+1;
+                end
+                progbar.stop();
+                
+                if ~stable_coupling
+                    break;
+                end
+            end
+            
         end
     end
     

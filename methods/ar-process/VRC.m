@@ -435,6 +435,11 @@ classdef VRC < VARProcess
                     
                     % check coupling stability
                     stable_coupling = obj.coefs_stable(false);
+                    if stable_coupling
+                        % double check
+                        stable_coupling = obj.coefs_stable(false,'method','sim');
+                        %obj.plot();
+                    end
                     
                     % make sampling interval smaller, so we can
                     % converge to something
