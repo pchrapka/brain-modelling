@@ -50,7 +50,18 @@ else
     nsims = 1;
 end
 
-cc = jet(ndata);
+nplots = ndata/2;
+if nplots <= 4
+    cc = [0 0 0;% black
+        0 0 1; % blue
+        0 1 0; % green
+        1 0 1; % magenta
+        ];
+else
+    cc = jet(nplots);
+end
+line_types_default = {'-',':','-.','--'};
+line_types = repmat(line_types_default,1,ceil(nplots/4));
 j = 1;
 h = [];
 for i=1:2:ndata
@@ -62,9 +73,9 @@ for i=1:2:ndata
     niter = size(data_mse,1);
     switch p.Results.mode
         case 'log'
-            h(j) = semilogy(1:niter,data_mse,'Color',cc(i,:),'LineWidth',2);
+            h(j) = semilogy(1:niter,data_mse,line_types{j},'Color',cc(j,:),'LineWidth',2);
         case 'plot'
-            h(j) = plot(1:niter,data_mse,'Color',cc(i,:),'LineWidth',2);
+            h(j) = plot(1:niter,data_mse,line_types{j},'Color',cc(j,:),'LineWidth',2);
     end
     hold on;
     

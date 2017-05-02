@@ -1,4 +1,4 @@
-function run_lattice_benchmark(varargin)
+function outfile = run_lattice_benchmark(varargin)
 %RUN_LATTICE_BENCHMARK benchmarks lattice algs against each other
 %   RUN_LATTICE_BENCHMARK benchmarks lattice algs against each other on a
 %   specific data set
@@ -132,6 +132,8 @@ large_error = zeros(nsim_params,nsims);
 large_error_name = cell(nsim_params,nsims);
 labels = cell(nsim_params,1);
 
+outfile = cell(nsim_params,nsims);
+
 for k=1:nsim_params
     
     % copy sim parameters
@@ -180,23 +182,23 @@ for k=1:nsim_params
     slug_filter = sim_param.filter.name;
     slug_filter = strrep(slug_filter,' ','-');
     
-    
+    outfile_temp = cell(nsims,1);
     parfor j=1:nsims
     %for j=1:nsims
         fresh = false;
         
         slug_data_filt = sprintf('%s-s%d-%s',slug_data,j,slug_filter);
-        outfile = fullfile(outdir,[slug_data_filt '.mat']);
+        outfile_temp{j} = fullfile(outdir,[slug_data_filt '.mat']);
         
-        if exist(outfile,'file')
+        if exist(outfile_temp{j},'file')
             % check freshness of data and filter analysis
-            filter_time = get_timestamp(outfile);
+            filter_time = get_timestamp(outfile_temp{j});
             if data_time > filter_time
                 fresh = true;
             end
         end
         
-        if p.Results.force || fresh || ~exist(outfile,'file')
+        if p.Results.force || fresh || ~exist(outfile_temp{j},'file')
             fprintf('running: %s\n', slug_data_filt)
             
             trace = LatticeTrace(sim_param.filter,'fields',{'Kf'});
@@ -266,11 +268,11 @@ for k=1:nsim_params
             % save data
             data = [];
             data.estimate = estimate{j};
-            save_parfor(outfile,data);
+            save_parfor(outfile_temp{j},data);
         else
             fprintf('loading: %s\n', slug_data_filt);
             % load data
-            data = loadfile(outfile);
+            data = loadfile(outfile_temp{j});
             estimate{j} = data.estimate;
             kf_true_sims{j} = data_true_kf;
         end
@@ -281,6 +283,8 @@ for k=1:nsim_params
             large_error(k,j) = true;
         end
     end
+    
+    outfile(k,:) = outfile_temp;
     
     % plot MSE for each sim
     if p.Results.plot_sim_mse
