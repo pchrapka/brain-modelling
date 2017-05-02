@@ -12,17 +12,37 @@ nsims = 1;
 ntrials = 5;
 lambda = 0.99;
 
-sparsity = [0.01 0.05 0.1 0.2];
-label = {'0-01','0-05','0-1','0-2'};
-gamma = [NaN 4.55 NaN NaN];
+%% set data params
+params_sp = [];
+k = 1;
+
+params_sp(k).sparsity = 0.01;
+params_sp(k).gamma = 3.897;
+params_sp(k).label = '0-01';
+k = k+1;
+
+params_sp(k).sparsity = 0.05;
+params_sp(k).gamma = 4.55;
+params_sp(k).label = '0-05';
+k = k+1;
+
+params_sp(k).sparsity = 0.1;
+params_sp(k).gamma = NaN;
+params_sp(k).label = '0-1';
+k = k+1;
+
+params_sp(k).sparsity = 0.2;
+params_sp(k).gamma = NaN;
+params_sp(k).label = '0-2';
+k = k+1;
 
 var_params = [];
-for i=1:length(sparsity)
+for i=1:length(params_sp)
     var_params(i).gen_params = {...
         'vrc-full-coupling-rnd',nchannels,...
-        'version',sprintf('exp39-sparsity%s',label{i})};
-    var_params(i).gamma = gamma(i);
-    if isnan(gamma(i))
+        'version',sprintf('exp39-sparsity%s',params_sp(i).label)};
+    var_params(i).gamma = params_sp(i).gamma;
+    if isnan(params_sp(i).gamma)
         var_params(i).flag_tune = true;
     else
         var_params(i).flag_tune = false;
@@ -36,7 +56,7 @@ for i=1:length(sparsity)
         'order',norder,...
         'nsamples', nsamples,...
         'channel_sparsity', 0.4,...
-        'coupling_sparsity', sparsity(i)};
+        'coupling_sparsity', params_sp(i).sparsity};
 end
 
 %% set parameters
@@ -64,7 +84,7 @@ for i=1:length(var_params)
         idx_start = floor(nsamples*0.15);
         idx_end = ceil(nsamples*0.95);
         
-        gammas_exp = -14:2:1;
+        gammas_exp = [-15 -10 -5 -1 0 1];
         gammas = [10.^gammas_exp 5 20 30];
         gammas = sort(gammas);
         opt(i) = tune_lattice_filter_gamma(...
@@ -74,7 +94,7 @@ for i=1:length(var_params)
             'filter','MCMTLOCCD_TWL4',...
             'filter_params',filter_params,...
             'gamma',gammas,...
-            'run_options',{'warmup_noise', false,'warmup_data', false},...
+            'run_options',{'warmup_noise',false, 'warmup_data', false},...
             'criteria_samples',[idx_start idx_end]);
         fprintf('set gamma to %g for process %d\n',opt(i),i);
     end
