@@ -267,6 +267,7 @@ for k=1:nsim_params
             
             % save data
             data = [];
+            data.truth = data_true_kf;
             data.estimate = estimate{j};
             save_parfor(outfile_temp{j},data);
         else
@@ -274,7 +275,7 @@ for k=1:nsim_params
             % load data
             data = loadfile(outfile_temp{j});
             estimate{j} = data.estimate;
-            kf_true_sims{j} = data_true_kf;
+            kf_true_sims{j} = data.truth;
         end
         
         data_mse = mse_iteration(estimate{j},kf_true_sims{j});

@@ -32,8 +32,18 @@ params_sp(k).label = '0-1';
 k = k+1;
 
 params_sp(k).sparsity = 0.2;
-params_sp(k).gamma = NaN;
+params_sp(k).gamma = 3.57;
 params_sp(k).label = '0-2';
+k = k+1;
+
+params_sp(k).sparsity = 0.5;
+params_sp(k).gamma = 2.18;
+params_sp(k).label = '0-5';
+k = k+1;
+
+params_sp(k).sparsity = 0.8;
+params_sp(k).gamma = 2.43;
+params_sp(k).label = '0-8';
 k = k+1;
 
 var_params = [];
@@ -42,6 +52,7 @@ for i=1:length(params_sp)
         'vrc-full-coupling-rnd',nchannels,...
         'version',sprintf('exp39-sparsity%s',params_sp(i).label)};
     var_params(i).gamma = params_sp(i).gamma;
+    var_params(i).sparsity = params_sp(i).sparsity;
     if isnan(params_sp(i).gamma)
         var_params(i).flag_tune = true;
     else
@@ -69,7 +80,7 @@ opt = zeros(length(var_params),1);
 for i=1:length(var_params)
     if var_params(i).flag_tune
         tune_file = tune_file_from_generator(...
-            fullfile(file_path,outdir),...
+            fullfile(file_path,'output',outdir),...
             'gen_params',var_params(i).gen_params,...
             'gen_config_params',var_params(i).gen_config_params,...
             'ntrials',ntrials);
@@ -89,7 +100,7 @@ for i=1:length(var_params)
         gammas = sort(gammas);
         opt(i) = tune_lattice_filter_gamma(...
             tune_file,...
-            fullfile(file_path,outdir),...
+            fullfile(file_path,'output',outdir),...
             'plot_fit',true,...
             'filter','MCMTLOCCD_TWL4',...
             'filter_params',filter_params,...
@@ -99,23 +110,27 @@ for i=1:length(var_params)
         fprintf('set gamma to %g for process %d\n',opt(i),i);
     end
 end
-    
+
+k=1;
+sim_params = [];
 for i=1:length(var_params)
     
     %% set up benchmark params
-    k=1;
-    sim_params = [];
-    
-    sim_params(k).filter = MCMTQRDLSL1(nchannels,norder,ntrials,lambda);
-    sim_params(k).gen_params = var_params(i).gen_params;
-    sim_params(k).gen_config_params = var_params(i).gen_config_params;
-    sim_params(k).label = sim_params(k).filter.name;
-    k = k+1;
     
     sim_params(k).filter = MQRDLSL3(nchannels,norder,lambda);
     sim_params(k).gen_params = var_params(i).gen_params;
     sim_params(k).gen_config_params = var_params(i).gen_config_params;
-    sim_params(k).label = sim_params(k).filter.name;
+    sim_params(k).label = sprintf('%0.2f %s',var_params(i).sparsity,sim_params(k).filter.name);
+    sim_params(k).label2 = strrep(sim_params(k).filter.name,'MQRDLSL3','MQRDLSL');
+    sim_params(k).sparsity = var_params(i).sparsity;
+    k = k+1;
+    
+    sim_params(k).filter = MCMTQRDLSL1(nchannels,norder,ntrials,lambda);
+    sim_params(k).gen_params = var_params(i).gen_params;
+    sim_params(k).gen_config_params = var_params(i).gen_config_params;
+    sim_params(k).label = sprintf('%0.2f %s',var_params(i).sparsity,sim_params(k).filter.name);
+    sim_params(k).label2 = strrep(sim_params(k).filter.name,'MCMTQRDLSL1','MCMTQRDLSL');
+    sim_params(k).sparsity = var_params(i).sparsity;
     k = k+1;
     
     % sigma = sqrt(0.1);
@@ -125,22 +140,73 @@ for i=1:length(var_params)
         'lambda',lambda,'gamma',var_params(i).gamma);
     sim_params(k).gen_params = var_params(i).gen_params;
     sim_params(k).gen_config_params = var_params(i).gen_config_params;
-    sim_params(k).label = sim_params(k).filter.name;
+    sim_params(k).label = sprintf('%0.2f %s',var_params(i).sparsity,sim_params(k).filter.name);
+    sim_params(k).label2 = strrep(sim_params(k).filter.name,'MCMTLOCCD_TWL4','MCMTLOCCD-TWL');
+    sim_params(k).sparsity = var_params(i).sparsity;
     k = k+1;
     
-    %% run
-    [~,data_name,~] = fileparts(var_gen(i).get_file());
-    exp_path = fullfile(file_path,'output',[outdir '.m']);
-    
-    run_lattice_benchmark(...
-        'outdir',fullfile(outdir,data_name),...
-        'basedir',exp_path,...
-        'sim_params', sim_params,...
-        'nsims', nsims,...
-        'warmup_noise', false,...
-        'warmup_data', false,...
-        'normalized',true,...
-        'force',false,...
-        'plot_avg_mse', true,...
-        'plot_avg_nmse', false);
 end
+
+%% run
+exp_path = fullfile(file_path,'output',[outdir '.m']);
+
+out_files = run_lattice_benchmark(...
+    'outdir',outdir,...
+    'basedir',exp_path,...
+    'sim_params', sim_params,...
+    'nsims', nsims,...
+    'warmup_noise', false,...
+    'warmup_data', false,...
+    'normalized',true,...
+    'force',false,...
+    'plot_avg_mse', true,...
+    'plot_avg_nmse', false);
+
+%% plot MSE vs sparsity
+nsparsity = length(params_sp);
+[nparams,nsims] = size(out_files);
+nfilters = nparams/nsparsity;
+
+% reorganize data
+data_series = [];
+for i=1:nparams
+    idx_filter = mod(i,nfilters);
+    if idx_filter == 0
+        idx_filter = 3;
+    end
+    idx_sparsity = floor((i-1)/nfilters)+1;
+    
+    estimate = cell(nsims,1);
+    truth = cell(nsims,1);
+    for j=1:nsims
+        data_bench = loadfile(out_files{i,j});
+        estimate{j} = data_bench.estimate;
+        truth{j} = data_bench.truth;
+    end
+    data_series(idx_filter).estimate{idx_sparsity} = estimate;
+    data_series(idx_filter).truth{idx_sparsity} = truth;
+end
+
+h = figure('Position',[1 1 1600 1000]);
+idx_start = ceil(nsamples/2);
+idx_end = nsamples;
+
+labels = cell(nfilters,1);
+for i=1:nfilters
+    labels{i} = sim_params(i).label2;
+end
+
+plot_mse_vs_sparsity(...
+    data_series,...
+    [params_sp.sparsity],...
+    'labels',labels,...
+    'samples',[idx_start idx_end],...
+    'normalized',false,...
+    'mode','log');
+set(gca,'fontsize',16)
+
+% save
+save_fig2('path',fullfile(file_path,'output',outdir),...
+    'tag','sparsity-paper',...
+    'formats',{'eps'},...
+    'save_flag', true);
