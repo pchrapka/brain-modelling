@@ -21,6 +21,7 @@ addParameter(p,'tag','',@ischar);
 addParameter(p,'formats',{},@iscell);
 addParameter(p,'save_flag',true,@islogical);
 addParameter(p,'engine','export_fig',@(x) any(validatestring(x,{'export_fig','matlab'})));
+addParameter(p,'nodate',false,@islogical);
 parse(p,varargin{:});
 
 if ~p.Results.save_flag
@@ -36,9 +37,16 @@ end
 % save the figure in the experiment dir with the experiment as the file
 % name with an optional tag
 if isempty(p.Results.tag)
+    if p.Results.nodate
+        error('cannot have nodate and no tag');
+    end
     file_name_date = [datestr(now, 'yyyy-mm-dd')];
 else
-    file_name_date = [datestr(now, 'yyyy-mm-dd') '-' p.Results.tag];
+    if p.Results.nodate
+        file_name_date = p.Results.tag;
+    else
+        file_name_date = [datestr(now, 'yyyy-mm-dd') '-' p.Results.tag];
+    end
 end
 file_name_full = fullfile(imgdir,file_name_date);
 
