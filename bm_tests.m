@@ -25,7 +25,8 @@ verbosity = 1;
 % suite = TestSuite.fromClass(?tests.TestVRC);
 % suite = TestSuite.fromClass(?tests.Test_rc2ar);
 % suite = TestSuite.fromClass(?tests.TestFilters);
-suite = TestSuite.fromClass(?tests.TestChannelInfo);
+% suite = TestSuite.fromClass(?tests.TestChannelInfo);
+suite = TestSuite.fromClass(?tests.TestLatticeFilterOptimalParameters);
 if verbosity > 0
     disp({suite.Name}');
 end
