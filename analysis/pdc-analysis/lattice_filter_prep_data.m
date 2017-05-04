@@ -94,8 +94,10 @@ else
     slug_env = 'envno';
 end
 
-sources_file_tag = sprintf('%s-trials%d-%s-%s-%s',...
-        name, p.Results.ntrials_max, slug_samples, slug_norm, slug_env);
+slug_prepend = sprintf('prepend%s',p.Results.prepend_data);
+
+sources_file_tag = sprintf('%s-trials%d-%s-%s-%-%s',...
+        name, p.Results.ntrials_max, slug_samples, slug_norm, slug_env, slug_prepend);
 sources_mini_file = fullfile(outdir, sprintf('%s-for-filter.mat',sources_file_tag));
 sources_data_file = fullfile(outdir, sprintf('%s.mat',sources_file_tag));
 
