@@ -1,4 +1,8 @@
 function gamma_opt = tune_lattice_filter_gamma(tune_file,outdir,varargin)
+%   Parameters
+%   ----------
+%   filter_params
+%       requires the following fields: nchannels,norder,ntrials,lambda
 
 p = inputParser();
 p.StructExpand = false;
@@ -11,15 +15,24 @@ default_gamma = 10.^default_gamma_exp;
 addParameter(p,'gamma',default_gamma,@isnumeric);
 addParameter(p,'run_options',{},@iscell);
 addParameter(p,'criteria_samples',[],@(x) (length(x) == 2) && isnumeric(x));
-addParameter(p,'plot_fit',false,@islogical);
+addParameter(p,'plot_gamma_fit',false,@islogical);
 parse(p,tune_file,outdir,varargin{:});
+
+% check filter_params
+fields = {'nchannels','norder','ntrials','lambda'};
+for i=1:length(fields)
+    if ~isfield(p.Results.filter_params,fields{i})
+        error([mfilename ':input'],'missing field %s in filter_params',fields{i});
+    end
+end
+
 
 func_filter = str2func(p.Results.filter);
 ngamma = length(p.Results.gamma);
 
 filters = cell(ngamma,1);
 for k=1:ngamma
-    % TODO the order here is specific to MCMTLOCCD_TWL4, it's ok for now
+    % TODO the parameter order here is specific to MCMTLOCCD_TWL4, it's ok for now
     filter_params = {...
         p.Results.filter_params.nchannels,...
         p.Results.filter_params.norder,...
@@ -62,7 +75,7 @@ if isempty(crit_idx)
     crit_idx = [1 nsamples];
 end
 
-data = zeros(ngamma,3);
+data = zeros(ngamma,length(criteria)+1);
 data(:,3) = p.Results.gamma;
 
 for j=1:length(criteria)
@@ -117,7 +130,7 @@ target_crit2_norm = curve(target_crit1_norm);
 range = max(data(:,2)) - min(data(:,2));
 target_crit2 = (target_crit2_norm - 0.1)*range + min(data(:,2));
 
-if p.Results.plot_fit
+if p.Results.plot_gamma_fit
     figure;
     subplot(2,2,1);
     plot(data(:,1),data(:,2));

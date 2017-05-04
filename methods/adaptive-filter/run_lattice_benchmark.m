@@ -343,7 +343,7 @@ end
 %% Plot MSE
 
 if p.Results.plot_avg_mse
-    h = figure('Position',[1 1 1600 1000]);
+    h = figure('Position',[1 1 800 500]);
     clf;
     plot_mse_vs_iteration(...
         data_args{:},...
@@ -358,7 +358,7 @@ if p.Results.plot_avg_mse
 end
 
 if p.Results.plot_avg_nmse
-    h = figure('Position',[1 1 1600 1000]);
+    h = figure('Position',[1 1 800 500]);
     clf;
     plot_mse_vs_iteration(...
         data_args{:},...

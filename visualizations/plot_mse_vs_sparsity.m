@@ -44,7 +44,7 @@ addRequired(p,'sparsity',@isnumeric);
 addParameter(p,'labels',{},@iscell);
 addParameter(p,'samples',[],@(x) isnumeric(x) && (length(x) == 2));
 addParameter(p,'normalized',false,@islogical);
-params_mode = {'plot','log'};
+params_mode = {'plot','semilogy','loglog'};
 addParameter(p,'mode','plot',@(x)any(validatestring(x,params_mode)));
 parse(p,data_series,sparsity,varargin{:});
 
@@ -105,14 +105,10 @@ for i=1:nseries
         data_plot(j) = mean(data_mse(samples(1):samples(2)),1);
     end
     
-    switch p.Results.mode
-        case 'log'
-            h(i) = semilogy(p.Results.sparsity(:),data_plot,...
-                [line_types{i} markers{i}],'Color',cc(i,:),'LineWidth',2);
-        case 'plot'
-            h(i) = plot(p.Results.sparsity(:),data_plot,...
-                [line_types{i} markers{i}],'Color',cc(i,:),'LineWidth',2);
-    end
+    func_plot = str2func(p.Results.mode);
+    h(i) = func_plot(p.Results.sparsity(:),data_plot,...
+        [line_types{i} markers{i}],'Color',cc(i,:),'LineWidth',2);
+        
     hold on;
 end
 
@@ -124,7 +120,7 @@ end
 xlabel('Sparsity');
 
 if ~isempty(p.Results.labels)
-    legend(h,p.Results.labels);%,'Location','BestOutside');
+    legend(h,p.Results.labels,'Location','Best');
 end
 
 end
