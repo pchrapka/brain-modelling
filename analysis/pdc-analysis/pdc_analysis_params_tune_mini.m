@@ -1,12 +1,39 @@
 %% pdc_analysis_params_tune_mini
-
-ntrials = 20;
+flag_test = true;
 
 if flag_test
+    ntrials = 5;
+    nchannels = 10;
+    norder = 8;
+    [file_path,~,~] = fileparts(mfilename('fullpath'));
+    outdir = fullfile('output','tune-mini-test');
+    
     orders = 5;
     lambdas = 0.99;
-    gammas = 1;
+    gammas = [0.0001 0.1 1 10];
+%     gammas_exp = -14:2:1;
+%     gammas = [10.^gammas_exp 5 20 30];
+%     gammas = sort(gammas);
+    
+    gen_params = {...
+        'vrc-full-coupling-rnd',nchannels,...
+        'version','exp39-sparsity0-05'};
+
+    nsamples = 2000;
+    gen_config_params = {...
+        'order',norder,...
+        'nsamples', nsamples,...
+        'channel_sparsity', 0.4,...
+        'coupling_sparsity', 0.05};
+    
+    tune_file = tune_file_from_generator(...
+        fullfile(file_path,outdir),...
+        'gen_params',gen_params,...
+        'gen_config_params',gen_config_params,...
+        'ntrials',ntrials);
 else
+    ntrials = 20;
+    
     orders = 1:14;
     
     lambdas = [0.94 0.96 0.98 0.99 0.995];
@@ -14,50 +41,21 @@ else
     gammas_exp = -14:2:1;
     gammas = [10.^gammas_exp 5 20 30];
     gammas = sort(gammas);
+    
+    % TODO get file for tuning
 end
 
 nlambda = length(lambdas);
 norder = length(orders);
 ngamma = length(gammas);
 
-% TODO get file for tuning
-
-% tune_file = tune_file_from_generator(...
-%     fullfile(file_path,outdir),...
-%     'gen_params',gen_params,...
-%     'gen_config_params',gen_config_params,...
-%     'ntrials',ntrials);
-
-% [tunedir,tunename,~] = fileparts(tune_file);
-% tune_outdir = fullfile(tunedir,[tunename '-tuning']);
-% if ~exist(tune_outdir,'dir')
-%     mkdir(tune_outdir);
-% end
-% 
-% file_opt_params = fullfile(tune_outdir,sprintf('opt-params-ntrials%d.mat',ntrials));
-% if exist(file_opt_params,'file') && ~isfresh(file_opt_params,tune_file)
-%     opt_params = loadfile(file_opt_params);
-% else
-%     opt_params = [];
-%     temp = repmat(orders,nlambda,1);
-%     opt_params.gamma = temp(:);
-%     opt_params.gamma(:,2) = repmat(lambdas(:),norder,1); 
-%     opt_params.gamma(:,3) = NaN;
-%     % [order lambda opt_gamma]
-%     
-%     opt_params.lambda(:,1) = orders(:);
-%     opt_params.lambda(:,2) = NaN;
-%     % [order opt_lambda]
-%     
-%     opt_params.order = NaN;
-%     % [opt_order]
-% end
-
+% TODO remove extra tuning when creating folder, just use the tune_file
+% name
 tune_obj = LatticeFilterOptimalParameters(tune_file,ntrials);
 
 % get data size info from tune_file
-tune_data = loadfield(tune_file);
-[nchannels,nsamples] = size(tune_data);
+tune_data = loadfile(tune_file);
+[nchannels,nsamples,~] = size(tune_data);
 
 filter_params = [];
 filter_params.nchannels = nchannels;
