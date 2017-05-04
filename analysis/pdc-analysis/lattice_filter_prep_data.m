@@ -140,7 +140,6 @@ if ~exist(sources_mini_file,'file')
     
     switch p.Results.prepend_data
         case 'flipdata'
-            error('check sources size');
             sources = cat(2,flipdim(sources,2),sources);
         case 'none'
             % do nothing

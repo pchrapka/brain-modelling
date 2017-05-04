@@ -1,13 +1,16 @@
 %% pdc_analysis_params_bootstrap_test
 
+k = 1;
+params = [];
+
 %% aal-coarse-19-outer-nocer-plus2, envelope, eachchannel
 
 % g 1e-6, l 0.99, order 13
 
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
-params(k).metrics = {'euc','diag','info'};
+params(k).metrics = {'diag'};
 params(k).ntrials = 20;
-params(k).order = 14;
+params(k).order = 4;
 params(k).lambda = 0.99;
 params(k).gamma = 1;
 params(k).normalization = 'eachchannel';

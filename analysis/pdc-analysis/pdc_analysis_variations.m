@@ -110,7 +110,6 @@ for i=1:length(params)
             if isfield(params(i),'prepend_data')
                 switch params(i).prepend_data
                     case 'flipdata'
-                        error('check this function');
                         lf_files = lattice_filter_remove_data(lf_files,[1 nsamples/2]);
                 end
             end
@@ -139,9 +138,6 @@ for i=1:length(params)
             
             %% bootstrap
             if p.Results.flag_bootstrap
-                % TODO fix bootstrap
-                error('propagate flipdata changes further down');
-                
                 params_func = struct2namevalue(params2,...
                     'fields', {'nresamples','alpha','null_mode'});
                 [pdc_sig_file, pdc_resample_files] = pdc_bootstrap(...
