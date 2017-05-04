@@ -4,10 +4,6 @@ p = inputParser();
 addRequired(p,'params',@isstruct);
 addParameter(p,'flag_run',true,@islogical);
 addParameter(p,'flag_tune',false,@islogical);
-addParameter(p,'flag_tune_order',false,@islogical);
-addParameter(p,'flag_tune_lambda',false,@islogical);
-addParameter(p,'flag_tune_gamma',false,@islogical);
-addParameter(p,'flag_tune_trials',false,@islogical);
 addParameter(p,'flag_bootstrap',false,@islogical);
 parse(p,params,varargin{:});
 
@@ -47,66 +43,6 @@ for i=1:length(params)
         tune_lf_parameters(sources_filter_file,outdir,...
             'plot',true,...
             params_func{:});
-        
-        if p.Results.flag_tune_order
-            error('deprecated');
-            % use parameters specified in params, 
-            % otherwise use default from tune_model_order
-            params2 = params(i);
-            params2 = rmfield(params2,'metrics');
-            
-            params2.plot = true;
-            params2.plot_crit = 'ewaic';
-            %params2.plot_orders = params2.order;
-            
-            params_func = struct2namevalue(params2);
-            tune_model_order(pipeline,outdir,params_func{:});
-        end
-        
-        if p.Results.flag_tune_lambda
-            error('deprecated');
-            % use parameters specified in params, 
-            % otherwise use default from tune_lambda
-            params2 = params(i);
-            params2 = rmfield(params2,'metrics');
-            
-            params2.plot = true;
-            params2.plot_crit = 'normerrortime';
-            %params2.plot_orders = [1 2 3 4];
-            
-            params_func = struct2namevalue(params2);
-            tune_lambda(pipeline,outdir,params_func{:});
-        end
-        
-        if p.Results.flag_tune_gamma
-            error('deprecated');
-            % use parameters specified in params, 
-            % otherwise use default from tune_gamma
-            params2 = params(i);
-            params2 = rmfield(params2,'metrics');
-            
-            params2.plot = true;
-            params2.plot_crit = 'normerrortime';
-            %params2.plot_orders = [1 2 3 4];
-            
-            params_func = struct2namevalue(params2);
-            tune_gamma(pipeline,outdir,params_func{:});
-        end
-        
-        if p.Results.flag_tune_trials
-            error('deprecated');
-            % use parameters specified in params, 
-            % otherwise use default from tune_trials
-            params2 = params(i);
-            params2 = rmfield(params2,'metrics');
-            
-            params2.plot = true;
-            params2.plot_crit = 'normerrortime';
-            %params2.plot_orders = [1 2 3 4];
-            
-            params_func = struct2namevalue(params2);
-            tune_trials(pipeline,outdir,params_func{:});
-        end
         
     end
     

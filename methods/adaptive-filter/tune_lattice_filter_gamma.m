@@ -1,6 +1,9 @@
 function gamma_opt = tune_lattice_filter_gamma(tune_file,outdir,varargin)
 %   Parameters
 %   ----------
+%   outdir
+%       output directory for temp files, the name should reflect the
+%       tune_file and the current filter parmeters
 %   filter_params
 %       requires the following fields: nchannels,norder,ntrials,lambda
 
@@ -26,7 +29,6 @@ for i=1:length(fields)
     end
 end
 
-
 func_filter = str2func(p.Results.filter);
 ngamma = length(p.Results.gamma);
 
@@ -42,14 +44,14 @@ for k=1:ngamma
     filters{k} = func_filter(filter_params{:});
 end
 
-% filter results are dependent on all input file parameters
-[~,exp_name,~] = fileparts(tune_file);
+% separate outdir into a basedir and outdir
+[basedir,outdir2,~] = fileparts([outdir '.m']);
 
 % run filter
 lf_files = run_lattice_filter(...
     tune_file,...
-    'basedir',outdir,...
-    'outdir',exp_name,... 
+    'basedir',basedir,...
+    'outdir',outdir2,... 
     'filters', filters,...
     p.Results.run_options{:},...
     'force',false,...

@@ -54,6 +54,8 @@ classdef TestLatticeFilterOptimalParameters < matlab.unittest.TestCase
             t.set_opt('order',order);
             value = t.get_opt('order');
             testCase.verifyEqual(value,order);
+            
+            t.reset();
         end
         
         function test_LatticeFilterOptimalParameters_get_lambda(testCase)
@@ -86,6 +88,8 @@ classdef TestLatticeFilterOptimalParameters < matlab.unittest.TestCase
             testCase.verifyEqual(value,lambda+1);
             value = t.get_opt('lambda','order',order+2);
             testCase.verifyEqual(value,lambda+2);
+            
+            t.reset();
         end
         
         function test_LatticeFilterOptimalParameters_get_gamma(testCase)
@@ -121,6 +125,8 @@ classdef TestLatticeFilterOptimalParameters < matlab.unittest.TestCase
             testCase.verifyEqual(value,gamma+1);
             value = t.get_opt('gamma','lambda',lambda+1,'order',order+1);
             testCase.verifyEqual(value,gamma+2);
+            
+            t.reset();
         end
         
         function test_LatticeFilterOptimalParameters_set_error(testCase)
@@ -157,6 +163,8 @@ classdef TestLatticeFilterOptimalParameters < matlab.unittest.TestCase
             
             testCase.verifyError(...
                 @() t.set_opt('gamma'),'MATLAB:minrhs');
+            
+            t.reset();
 
         end
     end

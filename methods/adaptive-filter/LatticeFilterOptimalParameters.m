@@ -17,7 +17,7 @@ classdef LatticeFilterOptimalParameters < handle
             obj.tune_file = tune_file;
             % create tuning dir
             [tunedir,tunename,~] = fileparts(tune_file);
-            obj.tune_outdir = fullfile(tunedir,[tunename '-tuning']);
+            obj.tune_outdir = fullfile(tunedir,tunename);
             if ~exist(obj.tune_outdir,'dir')
                 mkdir(obj.tune_outdir);
             end
@@ -47,7 +47,7 @@ classdef LatticeFilterOptimalParameters < handle
             save(obj.opt_params_file, 'data', '-v7.3');
         end
         
-        function delete(obj)
+        function reset(obj)
             if exist(obj.opt_params_file,'file')
                 delete(obj.opt_params_file);
             end
@@ -175,7 +175,7 @@ classdef LatticeFilterOptimalParameters < handle
                         value = NaN;
                     else    
                         idx = ismember(obj.opt_params_lambda(:,1),p2.Results.order);
-                        if isempty(idx)
+                        if isempty(idx) || sum(idx) == 0
                             value = NaN;
                         else
                             value = obj.opt_params_lambda(idx,2);
@@ -203,7 +203,7 @@ classdef LatticeFilterOptimalParameters < handle
                         idx1 = ismember(obj.opt_params_gamma(:,1),p2.Results.order);
                         idx2 = ismember(obj.opt_params_gamma(:,2),p2.Results.lambda);
                         idx = idx1 & idx2;
-                        if isempty(idx)
+                        if isempty(idx) || sum(idx) == 0
                             value = NaN;
                         else
                             value = obj.opt_params_gamma(idx,3);

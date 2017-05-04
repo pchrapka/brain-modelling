@@ -20,7 +20,7 @@ switch criteria
         cf = zeros(nsamples,1);
         lambda = obj.data.filter.lambda;
 
-        delta = eps/nchannels;
+        delta = 10*eps/nchannels;
         Vfprev = delta*eye(nchannels,nchannels);
         Vbprev = delta*eye(nchannels,nchannels);
         

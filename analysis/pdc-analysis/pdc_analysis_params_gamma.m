@@ -37,31 +37,7 @@ flag_tune_order = false;
 flag_tune_lambda = false;
 flag_tune_gamma = false;
 
-%% tune order
-% flag_run = false;
-% flag_tune = true;
-% flag_tune_order = true;
-% flag_tune_lambda = false;
-% flag_tune_gamma = false;
-
-%% tune lambda
-% flag_run = false;
-% flag_tune = true;
-% flag_tune_order = false;
-% flag_tune_lambda = true;
-% flag_tune_gamma = false;
-
-%% tune gamma
-% flag_run = false;
-% flag_tune = true;
-% flag_tune_order = false;
-% flag_tune_lambda = false;
-% flag_tune_gamma = true;
-
 %% run variations
 pdc_analysis_variations(params,...
     'flag_run',flag_run,...
-    'flag_tune',flag_tune,...
-    'flag_tune_order',flag_tune_order,...
-    'flag_tune_lambda',flag_tune_lambda,...
-    'flag_tune_gamma',flag_tune_gamma);
+    'flag_tune',flag_tune);

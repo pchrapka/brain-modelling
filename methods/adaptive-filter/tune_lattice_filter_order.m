@@ -1,4 +1,4 @@
-function lambda_opt = tune_lattice_filter_lambda(tune_file,outdir,varargin)
+function order_opt = tune_lattice_filter_order(tune_file,outdir,varargin)
 %   Parameters
 %   ----------
 %   outdir
@@ -14,52 +14,55 @@ addRequired(p,'outdir',@ischar);
 addParameter(p,'filter','MCMTLOCCD_TWL4',@ischar);
 addParameter(p,'filter_params',[],@isstruct);
 addParameter(p,'gamma_opt',[],@isnumeric);
-default_lambda = [0.9:0.02:0.98 0.99];
-addParameter(p,'lambda',default_lambda,@isnumeric);
+addParameter(p,'lambda_opt',[],@isnumeric);
+default_order = 1:14;
+addParameter(p,'order',default_order,@isnumeric);
 addParameter(p,'run_options',{},@iscell);
 addParameter(p,'criteria_samples',[],@(x) (length(x) == 2) && isnumeric(x));
-addParameter(p,'plot_lambda',false,@islogical);
+addParameter(p,'plot_order',false,@islogical);
 parse(p,tune_file,outdir,varargin{:});
 
 % check filter_params
-fields = {'nchannels','norder','ntrials'};
+fields = {'nchannels','ntrials'};
 for i=1:length(fields)
     if ~isfield(p.Results.filter_params,fields{i})
         error([mfilename ':input'],'missing field %s in filter_params',fields{i});
     end
 end
 
-% make sure only one order was specified
-if length(p.Results.filter_params.norder) ~= 1
-    error([mfilename ':input'],'specify only one order');
-end
-
-nlambda = length(p.Results.lambda);
+norder = length(p.Results.order);
 
 % check gamma_opt
-if length(p.Results.gamma_opt) ~= nlambda
+if length(p.Results.gamma_opt) ~= norder
     error([mfilename ':input'],...
         'not enough optimized gammas: got %d, expected %d',...
-        length(p.Results.gamma_opt), nlambda);
+        length(p.Results.gamma_opt), norder);
+end
+
+% check lambda_opt
+if length(p.Results.lambda_opt) ~= norder
+    error([mfilename ':input'],...
+        'not enough optimized lambdas: got %d, expected %d',...
+        length(p.Results.lambda_opt), norder);
 end
 
 %% set up filters
 
-filters = cell(nlambda,1);
-labels = cell(nlambda,1);
+filters = cell(norder,1);
+labels = cell(norder,1);
 func_filter = str2func(p.Results.filter);
 
-for i=1:nlambda
+for i=1:norder
     % TODO the parameter order here is specific to MCMTLOCCD_TWL4, it's ok for now
     filter_params = {...
         p.Results.filter_params.nchannels,...
-        p.Results.filter_params.norder,...
+        p.Results.order(i),...
         p.Results.filter_params.ntrials,...
-        'lambda',p.Results.lambda(i),...
+        'lambda',p.Results.lambda_opt(i),...
         'gamma',p.Results.gamma_opt(i)};
     filters{i} = func_filter(filter_params{:});
-    labels{i} = sprintf('lambda %0.3g gamma %0.3f',...
-        p.Results.lambda(i),p.Results.gamma_opt(i));
+    labels{i} = sprintf('order %d lambda %0.3g gamma %0.3f',...
+        p.Results.order(i),p.Results.lambda_opt(i),p.Results.gamma_opt(i));
 end
 
 %% run filters
@@ -80,7 +83,7 @@ lf_files = run_lattice_filter(...
 
 %% compute criteria
 view_lf = ViewLatticeFilter(lf_files,'labels',labels);
-criteria = {'normerrortime'};
+criteria = {'ewaic'};
 view_lf.compute(criteria);
 
 crit_idx = p.Results.criteria_samples;
@@ -97,38 +100,40 @@ if isempty(crit_idx)
 end
 
 ndims = length(criteria)+1;
-data = zeros(nlambda,ndims);
-data(:,ndims) = p.Results.lambda;
+data = zeros(norder,ndims);
+data(:,ndims) = p.Results.order;
 
 for j=1:length(criteria)
-    % get criteria
-    crit_val = view_lf.get_criteria(...
-        'criteria',criteria{j},...
-        'orders',p.Results.filter_params.norder,...
-        'file_list',1:nlambda);
         
-    for k=1:nlambda
+    for k=1:norder
+        % get criteria
+        crit_val = view_lf.get_criteria(...
+            'criteria',criteria{j},...
+            'orders',p.Results.order(k),...
+            'file_list',k);
         
         % take mean of forward
-        crit_mean_f = mean(crit_val.f{k}(crit_idx(1):crit_idx(2)));
-        % take mean of backward
-        crit_mean_b = mean(crit_val.b{k}(crit_idx(1):crit_idx(2)));
+        crit_mean_f = mean(crit_val.f{1}(crit_idx(1):crit_idx(2)));
+        % % take mean of backward
+        % crit_mean_b = mean(crit_val.b{1}(crit_idx(1):crit_idx(2)));
         
-        % data = [criteria1 criteria2 lambda]
-        data(k,j) = crit_mean_f + crit_mean_b;
+        % data = [criteria1 criteria2 order]
+        data(k,j) = crit_mean_f; % + crit_mean_b;
         
     end
 end
 
 % find min criteria
 [~,idx] = min(data(:,1));
-lambda_opt = data(idx,ndims);
+order_opt = data(idx,ndims);
 
-if p.Results.plot_lambda
-    view_lf.plot_criteria_vs_order_vs_time(...
-        'criteria',criteria{1},...
-        'orders',p.Results.filter_params.norder,...
-        'file_list',1:length(lf_files));
-end
+% if p.Results.plot_order
+%     % TODO not sure this would work
+%     % FIXME change orders
+%     view_lf.plot_criteria_vs_order_vs_time(...
+%         'criteria',criteria{1},...
+%         'orders',1:p.Results.filter_params.norder,...
+%         'file_list',1:length(lf_files));
+% end
 
 end
