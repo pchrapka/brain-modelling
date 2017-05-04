@@ -29,6 +29,7 @@ tune_outdir = tunename;
 % get data size info from tune_file
 tune_data = loadfile(tune_file);
 [nchannels,~,~] = size(tune_data);
+clear tune_data;
 
 filter_params = [];
 filter_params.nchannels = nchannels;
