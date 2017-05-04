@@ -40,6 +40,7 @@ addParameter(p,'null_mode','estimate_ind_channels',@(x) any(validatestring(x,opt
 addParameter(p,'nresamples',100,@isnumeric);
 addParameter(p,'pdc_params',{},@iscell);
 addParameter(p,'alpha',0.05,@(x) x > 0 && x < 1);
+addParameter(p,'run_options',{},@iscell);
 parse(p,lf_file,sources_data_file,varargin{:});
 
 [outdir,filter_name,~] = fileparts(lf_file);
@@ -74,6 +75,7 @@ threshold_stability = 10;
 
 sources_data = loadfile(p.Results.sources_data_file);
 normalization = sources_data.normalization;
+prepend_data = sources_data.prepend_data;
 
 %% create RCs for null distribution 
 datalf = loadfile(lf_file);
@@ -138,12 +140,18 @@ switch p.Results.null_mode
                 'basedir',fullfile(workingdir_ch,'fake.m'),...
                 'outdir',channel_dir,...
                 'filters', filters,...
-                'warmup_noise', true,...
-                'warmup_data', true,...
+                p.Results.run_options{:},...
                 'force',false,...
                 'verbosity',0,...
                 'tracefields',{'Kf','Kb','Rf','ferror'},...
                 'plot_pdc', false);
+            
+        end
+        
+        switch prepend_data
+            case 'flipdata'
+                % remove prepended data
+                lf_channels = lattice_filter_remove_data(lf_channels,[1 nsamples]);
         end
             
         for i=1:nchannels
@@ -183,6 +191,7 @@ end
 
 % copy vars
 nresamples = p.Results.nresamples;
+run_options = p.Results.run_options;
 lf_btstrp = cell(p.Results.nresamples,1);
 
 parfor i=1:nresamples
@@ -240,6 +249,17 @@ parfor i=1:nresamples
                     stable = true;
                 end
                 
+                % prepend data
+                switch prepend_data
+                    case 'flipdata'
+                        error('check sources size');
+                        data_bootstrap = cat(2,flipdim(data_bootstrap,2),data_bootstrap);
+                    case 'none'
+                        % do nothing
+                    otherwise
+                        error('unknown prepend mode');
+                end
+                
                 % data normalization
                 % use same normalization method as in
                 % lattice_filter_sources
@@ -275,13 +295,20 @@ parfor i=1:nresamples
         'basedir',fullfile(workingdir,'fake.m'),...
         'outdir',resampledir,...
         'filters', filters,...
-        'warmup_noise', true,...
-        'warmup_data', true,...
+        run_options{:},...
         'force',false,...
         'verbosity',0,...
         'tracefields',{'Kf','Kb','Rf'},...
         'plot_pdc', false);
     
+end
+
+%% remove extra data
+
+switch prepend_data
+    case 'flipdata'
+        error('check this function');
+        lf_btstrp = lattice_filter_remove_data(lf_btstrp,[1 nsamples/2]);
 end
 
 %% compute pdc

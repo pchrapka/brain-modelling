@@ -1,6 +1,8 @@
 %% pdc_analysis_params_tune_mini
 flag_test = true;
 
+prepend_data = 'none';
+
 if flag_test
     flag_plot = false;
     
@@ -43,17 +45,44 @@ else
     gammas = [10.^gammas_exp 5 20 30];
     gammas = sort(gammas);
     
-    % TODO get file for tuning
+    sources_filter_file = '';
+    sources_data_file = '';
+    error('fill in these files');
+    
+    tune_file = strrep(sources_filter_file,'.mat','-tuning.mat');
+    copyfile(sources_filter_file, tune_file);
+    
+    sources_data = loadfield(sources_data_file);
+    prepend_data = sources_data.prepend_data;
 end
 
 % get data size info from tune_file
 tune_data = loadfile(tune_file);
 [nchannels,nsamples,~] = size(tune_data);
 
-idx_start = floor(nsamples*0.15);
+idx_start = floor(nsamples*0.05);
 idx_end = ceil(nsamples*0.95);
+
+switch prepend_data
+    case 'flipdata'
+        nsamples_half = nsamples/2;
+        idx_start = floor(nsamples_half*0.05) + nsamples_half;
+        idx_end = ceil(nsamples_half*0.95) + nsamples_half;
+end
 criteria_samples = [idx_start idx_end];
-run_options = {'warmup_noise', false,'warmup_data', false};
+
+% set default options to warmup
+run_options = {...
+    'warmup_noise',true,...
+    'warmup_data',true};
+
+switch prepend_data
+    case 'flipdata'
+        % no warmup necessary if lattice_filter_prep_data prepends data
+        run_options = {...
+            'warmup_noise',false,...
+            'warmup_data', false};
+end
 
 tune_lattice_filter_parameters(...
     tune_file,...

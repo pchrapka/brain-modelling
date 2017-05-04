@@ -45,6 +45,8 @@ addParameter(p,'samples',[],@isnumeric);
 addParameter(p,'verbosity',0,@isnumeric);
 options_norm = {'allchannels','eachchannel','none'};
 addParameter(p,'normalization','none',@(x) any(validatestring(x,options_norm)));
+options_prepend = {'flipdata','none'};
+addParameter(p,'prepend_data','none',@(x) any(validatestring(x,options_prepend)));
 addParameter(p,'envelope',false,@islogical);
 addParameter(p,'patch_type','aal',@ischar);
 parse(p,pipeline,eeg_file,varargin{:});
@@ -134,7 +136,17 @@ if ~exist(sources_mini_file,'file')
     % don't put in more data than required i.e. ntrials + ntrials_warmup
     sources = sources(:,sample_idx,1:p.Results.ntrials_max);
     
-    [nchannels,~,ntrials] = size(sources);
+    switch p.Results.prepend_data
+        case 'flipdata'
+            error('check sources size');
+            sources = cat(2,flipdim(sources,2),sources);
+        case 'none'
+            % do nothing
+        otherwise
+            error('unknown prepend mode');
+    end
+    
+    [nchannels,nsamples,ntrials] = size(sources);
     
     % compute envelope
     if p.Results.envelope
@@ -149,6 +161,7 @@ if ~exist(sources_mini_file,'file')
     % data normalization
     switch p.Results.normalization
         case 'allchannels'
+            warning('this can result in bad boostrapping results');
             for i=1:ntrials
                 sources(:,:,i) = normalize(sources(:,:,i));
             end
@@ -173,8 +186,10 @@ if ~exist(sources_data_file,'file')
     eeg_data = loadfile(eeg_file);
     
     data = [];
+    data.nsamples = nsamples;
     data.sources_file = sources_mini_file;
     data.normalization = p.Results.normalization;
+    data.prepend_data = p.Results.prepend_data;
     data.labels = patch_labels;
     data.centroids = lf.patch_centroid(lf.inside,:);
     data.time = source_analysis.time;

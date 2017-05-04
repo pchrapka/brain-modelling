@@ -31,9 +31,6 @@ function outfiles = run_lattice_filter(datain,varargin)
 %   verbosity (integer, default = 0)
 %       verbosity level
 %
-%   plot_pdc (logical, default = true)
-%       flag for plotting the pdc for each filter
-%
 %   Output
 %   ------
 %   outfiles (cell array)
@@ -50,7 +47,6 @@ addParameter(p,'warmup_noise',true,@islogical);
 addParameter(p,'warmup_data',false,@islogical);
 addParameter(p,'force',false,@islogical);
 addParameter(p,'verbosity',0,@isnumeric);
-addParameter(p,'plot_pdc',true,@islogical);
 addParameter(p,'tracefields',{'Kf','Kb'},@iscell);
 options_norm = {'allchannels','eachchannel','none'};
 addParameter(p,'normalization','none',@(x) any(validatestring(x,options_norm)));
@@ -119,9 +115,6 @@ clear ntrials;
 % allocate mem
 large_error = zeros(nfilters,1);
 large_error_name = cell(nfilters,1);
-
-estimate_kf = cell(nfilters,1);
-estimate_kb = cell(nfilters,1);
 
 % copy fields for parfor, don't want to pass another copy of datain if it's
 % a struct
@@ -250,10 +243,6 @@ parfor k=1:nfilters
             large_error(k) = true;
         end
     end
-end
-    
-if p.Results.plot_pdc
-    error('use ViewPDC');
 end
 
 %% Print extra info
