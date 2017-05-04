@@ -5,6 +5,7 @@ addRequired(p,'params',@isstruct);
 addParameter(p,'flag_run',true,@islogical);
 addParameter(p,'flag_tune',false,@islogical);
 addParameter(p,'flag_bootstrap',false,@islogical);
+addParameter(p,'flag_plot_seed',false,@islogical);
 parse(p,params,varargin{:});
 
 
@@ -194,22 +195,24 @@ for i=1:length(params)
             end
             
             %% plot seed
-            nchannels = length(view_obj.info.label);
-            directions = {'outgoing','incoming'};
-            for direc=1:length(directions)
-                for ch=1:nchannels
-                    for idx_param=1:length(params_plot_seed)
-                        params_plot_seed_cur = params_plot_seed{idx_param};
-                        
-                        created = view_obj.plot_seed(ch,...
-                            'direction',directions{direc},...
-                            params_plot_seed_cur{:},...
-                            'vertlines',[0 0.5]);
-                        
-                        if created
-                            view_obj.save_plot('save',true,'engine','matlab');
+            if p.Results.flag_plot_seed
+                nchannels = length(view_obj.info.label);
+                directions = {'outgoing','incoming'};
+                for direc=1:length(directions)
+                    for ch=1:nchannels
+                        for idx_param=1:length(params_plot_seed)
+                            params_plot_seed_cur = params_plot_seed{idx_param};
+                            
+                            created = view_obj.plot_seed(ch,...
+                                'direction',directions{direc},...
+                                params_plot_seed_cur{:},...
+                                'vertlines',[0 0.5]);
+                            
+                            if created
+                                view_obj.save_plot('save',true,'engine','matlab');
+                            end
+                            close(gcf);
                         end
-                        close(gcf);
                     end
                 end
             end
