@@ -1,5 +1,5 @@
 %% pdc_analysis_params_tune_mini
-flag_test = true;
+flag_test = false;
 
 prepend_data = 'none';
 
@@ -10,7 +10,7 @@ if flag_test
     nchannels = 10;
     norder = 8;
     [file_path,~,~] = fileparts(mfilename('fullpath'));
-    outdir = fullfile('output','tune-mini-test');
+    outdir = fullfile(file_path,'output','tune-mini-test');
     
     orders = [4 5];
     lambdas = [0.98 0.99];
@@ -28,7 +28,7 @@ if flag_test
         'coupling_sparsity', 0.05};
     
     tune_file = tune_file_from_generator(...
-        fullfile(file_path,outdir),...
+        outdir,...
         'gen_params',gen_params,...
         'gen_config_params',gen_config_params,...
         'ntrials',ntrials);
@@ -45,14 +45,19 @@ else
     gammas = [10.^gammas_exp 5 20 30];
     gammas = sort(gammas);
     
-    sources_filter_file = '';
-    sources_data_file = '';
-    error('fill in these files');
+    outdir = ['/media/phil/p.eanut/'...
+        'projects/brain-modelling/analysis/pdc-analysis/'...
+        'output/std-s03-10/aal-coarse-19-outer-nocer-plus2'...
+        ];
+    sources_data_file = fullfile(outdir,...
+        'lf-sources-ch12-trials100-samplesall-normeachchannel-envyes-prependflipdata.mat');
+    sources_filter_file = fullfile(outdir,...
+        'lf-sources-ch12-trials100-samplesall-normeachchannel-envyes-prependflipdata-for-filter.mat');
     
     tune_file = strrep(sources_filter_file,'.mat','-tuning.mat');
     copyfile(sources_filter_file, tune_file);
     
-    sources_data = loadfield(sources_data_file);
+    sources_data = loadfile(sources_data_file);
     prepend_data = sources_data.prepend_data;
 end
 
@@ -86,7 +91,7 @@ end
 
 tune_lattice_filter_parameters(...
     tune_file,...
-    fullfile(file_path,outdir),...
+    outdir,...
     'plot',flag_plot,...
     'filter','MCMTLOCCD_TWL4',...
     'ntrials',ntrials,...
