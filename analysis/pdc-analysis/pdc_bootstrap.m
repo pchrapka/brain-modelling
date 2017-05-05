@@ -194,7 +194,7 @@ run_options = p.Results.run_options;
 lf_btstrp = cell(p.Results.nresamples,1);
 
 parfor i=1:nresamples
-% for i=1:nresamples
+%for i=1:nresamples
     resampledir = sprintf('resample%d',i);
     data_bootstrap_file = fullfile(workingdir, resampledir, sprintf('resample%d.mat',i));
     
@@ -205,6 +205,7 @@ parfor i=1:nresamples
     if ~exist(data_bootstrap_file,'file')
         % use all trials to generate one bootstrapped data set
         data_bootstrap = zeros(nchannels,nsamples,ntrials);
+        data_bs_prepend = zeros(nchannels,nsamples,ntrials);
         for j=1:ntrials
             stable = false;
             while ~stable
@@ -251,10 +252,14 @@ parfor i=1:nresamples
                 % prepend data
                 switch prepend_data
                     case 'flipdata'
-                        error('check sources size');
-                        data_bootstrap = cat(2,flipdim(data_bootstrap,2),data_bootstrap);
+                        if size(data_bs_prepend,2) == nsamples
+                            data_bs_prepend = zeros(nchannels,2*nsamples,ntrials);
+                        end
+                        data_bs_prepend(:,:,j) = cat(2,...
+                            flipdim(data_bootstrap(:,:,j),2),data_bootstrap(:,:,j));
                     case 'none'
                         % do nothing
+                        data_bs_prepend(:,:,j) = data_bootstrap(:,:,j);
                     otherwise
                         error('unknown prepend mode');
                 end
@@ -264,20 +269,21 @@ parfor i=1:nresamples
                 % lattice_filter_sources
                 switch normalization
                     case 'allchannels'
-                        data_bootstrap(:,:,j) = normalize(data_bootstrap(:,:,j));
+                        data_bs_prepend(:,:,j) = normalize(data_bs_prepend(:,:,j));
                     case 'eachchannel'
-                        data_bootstrap(:,:,j) = normalizev(data_bootstrap(:,:,j));
+                        data_bs_prepend(:,:,j) = normalizev(data_bs_prepend(:,:,j));
                     case 'none'
                 end
                 
             end
         end
+        
         % save generated data
         % NOTE i don't think it's necessary to save the generated data once it's
         % filtered, but i would then need to check the freshness of the
         % filter file and i don't have access to that here
         % hopefully the generated file isn't too big...
-        save_parfor(data_bootstrap_file, data_bootstrap);
+        save_parfor(data_bootstrap_file, data_bs_prepend);
         %clear data_bootstrap;
     else
         fprintf('%s: resample %d already exists\n',mfilename,i);
@@ -297,8 +303,7 @@ parfor i=1:nresamples
         run_options{:},...
         'force',false,...
         'verbosity',0,...
-        'tracefields',{'Kf','Kb','Rf'},...
-        'plot_pdc', false);
+        'tracefields',{'Kf','Kb','Rf'});
     
 end
 
@@ -306,8 +311,7 @@ end
 
 switch prepend_data
     case 'flipdata'
-        error('check this function');
-        lf_btstrp = lattice_filter_remove_data(lf_btstrp,[1 nsamples/2]);
+        lf_btstrp = lattice_filter_remove_data(lf_btstrp,[1 nsamples]);
 end
 
 %% compute pdc

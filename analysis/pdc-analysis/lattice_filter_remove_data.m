@@ -19,10 +19,14 @@ for i=1:nfiles
             dims = size(data.estimate.(field));
             ndims = length(dims);
             switch ndims
+                case 2
+                    data.estimate.(field)(samples(1):samples(2),:) = [];
                 case 3
                     data.estimate.(field)(samples(1):samples(2),:,:) = [];
                 case 4
                     data.estimate.(field)(samples(1):samples(2),:,:,:) = [];
+                otherwise
+                    error('unknown dims %d',ndims);
             end
         end
         
