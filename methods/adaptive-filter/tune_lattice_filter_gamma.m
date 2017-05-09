@@ -106,14 +106,26 @@ data_norm = data_norm./repmat(max(data_norm),ngamma,1);
 data_norm = data_norm + 0.1*ones(ngamma,2);
 
 % fit curve
-hyperbola_eqn = 'b/(a*(x-d))+c';
-start_points = [1 1 0 0];
-foptions = fitoptions('Method','NonlinearLeastSquares',...
-    'Lower',[0 0 -Inf -Inf],...
-    'Upper',[Inf,Inf,Inf,Inf],...
-    'StartPoint',start_points);
-ft = fittype(hyperbola_eqn,'options',foptions);
-curve = fit(data_norm(:,1), data_norm(:,2),ft);
+% hyperbola_eqn = 'b/(a*(x-d))+c';
+% start_points = [1 1 0 0];
+% foptions = fitoptions('Method','NonlinearLeastSquares',...
+%     'Lower',[0 0 -Inf -Inf],...
+%     'Upper',[Inf,Inf,Inf,Inf],...
+%     'StartPoint',start_points);
+% ft = fittype(hyperbola_eqn,'options',foptions);
+
+% gaussEqn = 'a*exp(-((x-b)/c)^2)+d';
+% start_points = [1 0 1 0];
+% foptions = fitoptions('Method','NonlinearLeastSquares',...
+%     'Lower',[-Inf -Inf eps -Inf],...
+%     'Upper',[Inf,Inf,Inf,Inf],...
+%     'StartPoint',start_points);
+% ft = fittype(gaussEqn,'options',foptions);
+% 
+% 
+% curve = fit(data_norm(:,1), data_norm(:,2),ft);
+
+curve = fit(data_norm(:,1), data_norm(:,2),'exp2');
 
 % compute curvature
 x_data = linspace(min(data_norm(:,1)),max(data_norm(:,1)),100);

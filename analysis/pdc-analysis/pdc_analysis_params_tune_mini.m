@@ -39,7 +39,7 @@ else
     
     orders = 3:14;
     
-    lambdas = [0.94 0.96 0.98 0.99 0.995];
+    lambdas = [0.94 0.96 0.98 0.99];% 0.995];
     
     gammas_exp = [-10:4:-2 0 1] ;
     gammas = [10.^gammas_exp 5 20 30];
