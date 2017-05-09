@@ -47,6 +47,7 @@ params(k).lambda = 0.995;
 params(k).gamma = 0.38;
 params(k).normalization = 'eachchannel';
 params(k).envelope = true;
+params(k).prepend_data = 'flipdata';
 params(k).nresamples = 100;
 params(k).alpha = 0.05;
 params(k).null_mode = 'estimate_ind_channels';
