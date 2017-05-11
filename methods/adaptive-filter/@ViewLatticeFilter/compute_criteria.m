@@ -101,6 +101,24 @@ switch criteria
             cb(j) = norm2(berror,ntrials);
         end
         
+    case 'mserrortime'
+        % allocate mem
+        cb = zeros(nsamples,1);
+        cf = zeros(nsamples,1);
+        
+        [ferror,berror] = obj.get_error(error_order_idx,1);
+        zero_mat = zeros(size(ferror(:)));
+        
+        for j=1:nsamples
+            
+            % extract sample data
+            [ferror,berror] = obj.get_error(error_order_idx,j);
+            
+            % compute the magnitude over all channels and trials
+            cf(j) = mse(ferror(:),zero_mat);
+            cb(j) = mse(berror(:),zero_mat);
+        end
+        
     case {'aic','sc'}
         
         
@@ -179,6 +197,22 @@ switch criteria
             % compute the magnitude over all channels and trials
             cf(j) = norm1(Kf);
             cb(j) = norm1(Kb);
+        end
+        
+    case 'meannorm1coefs_time'
+        
+        % allocate mem
+        cb = zeros(nsamples,1);
+        cf = zeros(nsamples,1);
+        
+        for j=1:nsamples
+            
+            % extract sample data
+            [Kf,Kb] = obj.get_coefs(order,j);
+            
+            % compute the magnitude over all channels and trials
+            cf(j) = norm1(Kf)/(order*nchannels^2);
+            cb(j) = norm1(Kb)/(order*nchannels^2);
         end
         
     case 'minorigin_normerror_norm1coefs_time'

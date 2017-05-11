@@ -1,4 +1,4 @@
-%% pdc_analysis_params_tune_mini
+%% pdc_analysis_params_tune_gamma_mini
 flag_test = false;
 
 prepend_data = 'none';
@@ -12,8 +12,8 @@ if flag_test
     [file_path,~,~] = fileparts(mfilename('fullpath'));
     outdir = fullfile(file_path,'output','tune-mini-test');
     
-    orders = [4 5];
-    lambdas = [0.98 0.99];
+    order = 5;
+    lambda = 0.99;
     gammas = [0.0001 0.1 1 10];
     
     gen_params = {...
@@ -43,8 +43,8 @@ else
     % NOTE: lambda = 0.995 makes things very uninteresting
     
     flag_plot = true;
-    orders = 11;
-    lambdas = 0.99;
+    order = 11;
+    lambda = 0.99;
     
     gammas_exp = [-10:4:-2 0 1] ;
     gammas = [10.^gammas_exp 5 20 30];
@@ -94,15 +94,25 @@ switch prepend_data
             'warmup_data', false};
 end
 
-tune_lattice_filter_parameters(...
+[~,tunename,~] = fileparts(tune_file);
+tune_outdir = tunename;
+
+trials_dir = sprintf('trials%d',ntrials);
+order_dir = sprintf('order%d',order);
+lambda_dir = sprintf('lambda%g',lambda);
+
+filter_params = [];
+filter_params.nchannels = nchannels;
+filter_params.ntrials = ntrials;
+filter_params.norder = order;
+filter_params.lambda = lambda;
+
+tune_lattice_filter_gamma(...
     tune_file,...
-    outdir,...
-    'plot',flag_plot,...
+    fullfile(outdir,tune_outdir,trials_dir,order_dir,lambda_dir),...
+    'plot_gamma',flag_plot,...
     'filter','MCMTLOCCD_TWL4',...
-    'ntrials',ntrials,...
-    'gamma',gammas,...
-    'lambda',lambdas,...
-    'order',orders,...
+    'filter_params',filter_params,...
     'run_options',run_options,...
     'criteria_samples',criteria_samples);
 

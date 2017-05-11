@@ -9,6 +9,7 @@ addParameter(p,'run_options',{},@iscell);
 addParameter(p,'criteria_mode','criteria_value',@ischar);
 addParameter(p,'criteria','normerrortime',@(x) ischar(x) || iscell(x));
 addParameter(p,'criteria_target',[],@isnumeric); % should be same length as criteria when criteria_mode = criteria_target
+addParameter(p,'criteria_weight',[],@isnumeric); % should be same length as criteria when criteria_mode = criteria_value
 addParameter(p,'criteria_samples',[],@(x) (length(x) == 2) && isnumeric(x));
 parse(p,tune_file,outdir,varargin{:});
 
@@ -42,17 +43,23 @@ crit_idx = p.Results.criteria_samples;
 if isempty(crit_idx)
     crit_idx = [1 length(crit_val)];
 end
+crit_weight = p.Results.criteria_weight;
+if isempty(crit_weight)
+    crit_weight = ones(length(criteria),1);
+end
 
 switch p.Results.criteria_mode
     case 'criteria_value'
-        if length(criteria) > 1
-            error('can only use one criteria in this mode');
+        crit_val = [];
+        for i=1:length(criteria)
+            crit_val_f = view_lf.criteria.(criteria{i}).f(end,:);
+            crit_val_b = view_lf.criteria.(criteria{i}).b(end,:);
+            
+            crit_val(i) = mean(crit_val_f(crit_idx(1):crit_idx(2))) + ...
+                mean(crit_val_b(crit_idx(1):crit_idx(2)));
         end
-        crit_val_f = view_lf.criteria.(criteria).f(end,:);
-        crit_val_b = view_lf.criteria.(criteria).b(end,:);
-        
-        value = mean(crit_val_f(crit_idx(1):crit_idx(2))) + ...
-            mean(crit_val_b(crit_idx(1):crit_idx(2)));
+        crit_val = crit_val.*crit_weight;
+        value = sum(crit_val);
         
     case 'criteria_target'
         crit_error = [];
@@ -73,8 +80,5 @@ switch p.Results.criteria_mode
 end
 
 fprintf('value: %g\n',value);
-
-delete(lf_files{1});
-delete(view_lf.criteriafiles{1});
 
 end

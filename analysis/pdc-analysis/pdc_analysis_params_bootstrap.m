@@ -54,12 +54,16 @@ k=1;
 % params(k).null_mode = 'estimate_ind_channels';
 % k = k+1;
 
+% NOTE bayes opt: gamma 0.733, lambda 0.99, order 11
+% new optimization: gamma 0.26, lambda 0.99, order 11, note just tried
+% order 11 and lambda 0.99
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
-params(k).metrics = {'diag','euc','info'};
+% params(k).metrics = {'diag','euc','info'};
+params(k).metrics = {'diag'};
 params(k).ntrials = 20;
 params(k).order = 11;
 params(k).lambda = 0.99;
-params(k).gamma = 0.733;
+params(k).gamma = 0.26;
 params(k).normalization = 'eachchannel';
 params(k).envelope = true;
 params(k).prepend_data = 'flipdata';
@@ -71,8 +75,8 @@ k = k+1;
 %% run analysis
 flag_run = true;
 flag_tune = false;
-flag_bootstrap = true;
-% flag_bootstrap = false;
+% flag_bootstrap = true;
+flag_bootstrap = false;
 
 %% run variations
 pdc_analysis_variations(params,...

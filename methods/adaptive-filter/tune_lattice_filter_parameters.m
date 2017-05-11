@@ -40,6 +40,7 @@ for i=1:norder
     order_dir = sprintf('order%d',order_cur);
     
     gamma_opt = NaN(nlambda,1);
+%     parfor j=1:nlambda
     for j=1:nlambda
         lambda_cur = p.Results.lambda(j);
         lambda_dir = sprintf('lambda%g',lambda_cur);
@@ -62,11 +63,16 @@ for i=1:norder
                 'gamma',p.Results.gamma,...
                 'run_options',p.Results.run_options,...
                 'criteria_samples',p.Results.criteria_samples);
-            tune_obj.set_opt('gamma',gamma_opt(j),'order',order_cur,'lambda',lambda_cur);
+            %tune_obj.set_opt('gamma',gamma_opt(j),'order',order_cur,'lambda',lambda_cur);
         else
             fprintf('already optimized gamma for order %d, lambda %g\n',order_cur,lambda_cur);
         end
-        
+    end
+    
+    % update tune obj
+    for j=1:nlambda
+        lambda_cur = p.Results.lambda(j);
+        tune_obj.set_opt('gamma',gamma_opt(j),'order',order_cur,'lambda',lambda_cur);
     end
     
     % check if i've already optimized lambda for this order
