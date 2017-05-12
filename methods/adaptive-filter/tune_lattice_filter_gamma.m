@@ -20,6 +20,8 @@ addParameter(p,'lower_bound',10^(-10),@isnumeric);
 addParameter(p,'run_options',{},@iscell);
 addParameter(p,'criteria_samples',[],@(x) (length(x) == 2) && isnumeric(x));
 addParameter(p,'plot_gamma',false,@islogical);
+options_mode = {'existing','continue'};
+addParameter(p,'mode','existing',@(x) any(validatestring(x,options_mode)));
 parse(p,tune_file,outdir,varargin{:});
 
 % check filter_params
@@ -111,8 +113,17 @@ if ~isempty(data_old)
     end
     ub = data_plot(idx_next,1);
     lb = data_plot(idx_prev,1);
-   
-    maxevals = maxevals - length(data_old);
+    
+    switch p.Results.mode
+        case 'existing'
+            % use existing data
+            maxevals = 0;
+        case 'continue'
+            % continue with optimization
+            maxevals = maxevals - length(data_old);
+        otherwise
+            error('unknown mode');
+    end
 end
 
 if maxevals <= 0
@@ -129,6 +140,8 @@ else
         log10(ub),...
         options);
     gamma_opt = 10^gamma_exp_opt;
+    
+    
 end
 
 fprintf('set gamma to %g\n',gamma_opt);
