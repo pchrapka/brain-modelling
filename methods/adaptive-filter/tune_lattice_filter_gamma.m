@@ -39,7 +39,7 @@ filter_params = {...
 
 criteria = {'mserrortime','meannorm1coefs_time'};
 criteria_weight = [100 1];
-criteria_weight = [1 1];
+% criteria_weight = [1 1];
 % criteria = {'mserrortime'};
 % criteria = {'meannorm1coefs_time'};
 
