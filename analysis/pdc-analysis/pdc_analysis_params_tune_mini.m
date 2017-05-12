@@ -37,18 +37,20 @@ else
         
     ntrials = 20;
     
-%     orders = 3:14;
+    orders = 3:14;
     
-%     lambdas = [0.94 0.96 0.98 0.99];% 0.995];
+    lambdas = [0.94 0.96 0.98 0.99 0.995];
     % NOTE: lambda = 0.995 makes things very uninteresting
     
-    flag_plot = true;
-    orders = 11;
-    lambdas = 0.99;
+    %flag_plot = true;
+    %orders = 11;
+    %lambdas = 0.99;
     
-    gammas_exp = [-10:4:-2 0 1] ;
-    gammas = [10.^gammas_exp 5 20 30];
-    gammas = sort(gammas);
+    %gammas_exp = [-10:4:-2 0 1] ;
+    %gammas = [10.^gammas_exp 5 20 30];
+    %gammas = sort(gammas);
+    
+    gammas = [10^(-6) 10^(-3)];
     
     outdir = ['/media/phil/p.eanut/'...
         'projects/brain-modelling/analysis/pdc-analysis/'...

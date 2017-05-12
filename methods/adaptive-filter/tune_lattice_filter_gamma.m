@@ -78,7 +78,7 @@ filter_params = {...
     'lambda',p.Results.filter_params.lambda};
 
 criteria = {'mserrortime','meannorm1coefs_time'};
-criteria_weight = [100000 1];
+criteria_weight = [1e5 1];
 % criteria_weight = [600 1];
 % criteria_weight = [1 1];
 % criteria = {'mserrortime'};
@@ -146,13 +146,15 @@ if ~isempty(data_old)
     idx_prev = idx-1;
     idx_next = idx+1;
     if idx_prev < 1
-        idx_prev = 1;
+        lb = p.Results.lower_bound;
+    else
+        lb = data_plot(idx_prev,1);
     end
     if idx_next > length(data_old)
-        idx_next = length(data_old);
+        ub = p.Results.upper_bound;
+    else
+        ub = data_plot(idx_next,1);
     end
-    ub = data_plot(idx_next,1);
-    lb = data_plot(idx_prev,1);
     
     switch p.Results.mode
         case 'existing'

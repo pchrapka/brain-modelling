@@ -105,7 +105,8 @@ switch p.Results.criteria_mode
                 mean(crit_val_b(crit_idx(1):crit_idx(2)));
         end
         crit_val = crit_val.*crit_weight;
-        value = sum(crit_val);
+        value = norm(crit_val);
+        %value = sum(crit_val);
         
     case 'criteria_target'
         crit_error = [];

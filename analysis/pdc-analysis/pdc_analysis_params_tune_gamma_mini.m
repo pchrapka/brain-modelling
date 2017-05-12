@@ -2,8 +2,8 @@
 flag_test = false;
 
 tune_gamma_method = 'fminbnd';
-tune_mode = 'existing';
-% tune_mode = 'continue';
+% tune_mode = 'existing';
+tune_mode = 'continue';
     
 % tune_gamma_method = 'bayesopt';
 
@@ -52,9 +52,10 @@ else
     order = 11;
     lambda = 0.99;
     
-    gammas_exp = [-10:4:-2 0 1] ;
-    gammas = [10.^gammas_exp 5 20 30];
-    gammas = sort(gammas);
+    %gammas_exp = [-10:4:-2 0 1] ;
+    %gammas = [10.^gammas_exp 5 20 30];
+    %gammas = sort(gammas);
+    gammas = [10^(-6) 10^(-3)];
     
     outdir = ['/media/phil/p.eanut/'...
         'projects/brain-modelling/analysis/pdc-analysis/'...
@@ -123,6 +124,8 @@ switch tune_gamma_method
             'filter_params',filter_params,...
             'run_options',run_options,...
             'mode',tune_mode,...
+            'upper_bound',max(gammas),...
+            'lower_bound',min(gammas),...
             'criteria_samples',criteria_samples);
     case 'bayesopt'
         tune_lattice_filter_gamma_bayesopt(...

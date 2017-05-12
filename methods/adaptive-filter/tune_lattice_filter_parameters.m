@@ -53,6 +53,17 @@ addParameter(p,'criteria_samples',[],@(x) (length(x) == 2) && isnumeric(x));
 addParameter(p,'plot',false,@islogical);
 parse(p,tune_file,outdir,varargin{:});
 
+% get the data folder
+comp_name = get_compname();
+switch comp_name
+    case {'blade16.ece.mcmaster.ca', sprintf('blade16.ece.mcmaster.ca\n')}
+        % use old drive
+        outdir = strrep(outdir,'home/','home.old/');
+        outdir = strrep(outdir,'home-new/','home.old/');
+    otherwise
+        % do nothing
+end
+
 nlambda = length(p.Results.lambda);
 norder = length(p.Results.order);
 % ngamma = length(p.Results.gamma);
@@ -96,6 +107,8 @@ for i=1:norder
                 'filter','MCMTLOCCD_TWL4',...
                 'filter_params',filter_params,...
                 'run_options',p.Results.run_options,...
+                'upper_bound',max(p.Results.gamma),...
+                'lower_bound',min(p.Results.gamma),...
                 'criteria_samples',p.Results.criteria_samples);
 %             gamma_opt(j) = tune_lattice_filter_gamma_bayesopt(...
 %                 tune_file,...
