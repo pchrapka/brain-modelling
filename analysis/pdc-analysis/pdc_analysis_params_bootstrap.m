@@ -60,6 +60,8 @@ k=1;
 % order 11 and lambda 0.99
 % new optimization: gamma 0.01, lambda 0.99, order 11, note just tried
 % order 11 and lambda 0.99 with [100 1] weighting
+% new optimization: gamma 0.0008695, lambda 0.99, order 11, note just tried
+% order 11 and lambda 0.99 with [600 1] weighting
 
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'diag','euc','info'};
@@ -67,7 +69,7 @@ params(k).metrics = {'diag'};
 params(k).ntrials = 20;
 params(k).order = 11;
 params(k).lambda = 0.99;
-params(k).gamma = 0.01;
+params(k).gamma = 0.0008695;
 params(k).normalization = 'eachchannel';
 params(k).envelope = true;
 params(k).prepend_data = 'flipdata';
