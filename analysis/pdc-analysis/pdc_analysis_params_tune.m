@@ -109,6 +109,23 @@ k=1;
 % 
 % % best order 11
 
+%% aal-coarse-19-outer-nocer-plus2, envelope, eachchannel
+%% new optimization
+
+params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+params(k).metrics = {'diag'};
+params(k).ntrials = 20;
+params(k).order = 3:14;
+params(k).lambda = [0.94 0.96 0.98 0.99 0.995];
+params(k).gamma = [10^(-6) 10^(-3)];
+params(k).normalization = 'eachchannel';
+params(k).envelope = true;
+params(k).prepend_data = 'flipdata';
+params(k).nresamples = 100;
+params(k).alpha = 0.05;
+params(k).null_mode = 'estimate_ind_channels';
+k = k+1;
+
 %% tune parameters
 flag_run = false;
 flag_tune = true;
@@ -117,4 +134,5 @@ flag_bootstrap = false;
 %% run variations
 pdc_analysis_variations(params,...
     'flag_run',flag_run,...
+    'flag_bootstrap',flag_bootstrap,...
     'flag_tune',flag_tune);
