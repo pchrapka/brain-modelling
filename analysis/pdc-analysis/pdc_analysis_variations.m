@@ -55,8 +55,12 @@ for i=1:length(params)
     if p.Results.flag_tune
         
         tune_file = strrep(sources_filter_file,'.mat','-tuning.mat');
-        copyfile(sources_filter_file, tune_file);
-        error('check where tune_file is going');
+        if ~isfresh(tune_file,sources_filter_file)
+            if exist(tune_file,'file')
+                delete(tune_file);
+            end
+            copyfile(sources_filter_file, tune_file);
+        end
         
         idx_start = floor(nsamples*0.05);
         idx_end = ceil(nsamples*0.95);
