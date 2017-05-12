@@ -1,10 +1,46 @@
 function tune_lattice_filter_parameters(tune_file,outdir,varargin)
+%   Input
+%   -----
+%   tune_file (string)
+%       data file for tuning
+%   outdir (string)
+%       output directory for temp files, the name should reflect the
+%       tune_file and the current filter parmeters
+%       example:
+%           outdir = data-set1/order4/lambda0.99
+%
+%   Parameters
+%   ----------
+%
+%   filter options
+%   --------------
+%   filter (string, default = 'MCMTLOCCD_TWL4')
+%       lattice filter to be tuned
+%   run_options (cell)
+%       options for run_lattice_filter function
+%   ntrials (integer, defaut = 1)
+%       number of trials
+%   order (vector, default = 1:14)
+%       model orders to evaluate
+%   gamma (vector, default = ...)
+%       gammas to evaluate
+%       TODO deprecated or specific to bayes gamma
+%   lambda (vector, default = 0.9:0.02:0.98 0.99)
+%       lambdas to evaluate
+%   plot (logical, default = false)
+%       plot parameter performance
+%
+%   criteria options
+%   -----------------
+%   criteria_samples (2x1 vector)
+%       starting and ending indices for evaluating criteria
 
 p = inputParser();
 p.StructExpand = false;
 addRequired(p,'tune_file',@ischar);
 addRequired(p,'outdir',@ischar);
 addParameter(p,'filter','MCMTLOCCD_TWL4',@ischar);
+addParameter(p,'run_options',{},@iscell);
 addParameter(p,'ntrials',1,@isnumeric);
 addParameter(p,'order',1:14,@isnumeric);
 gamma_exp = -14:2:1;
@@ -13,7 +49,6 @@ default_gamma = sort(default_gamma);
 addParameter(p,'gamma',default_gamma,@isnumeric);
 default_lambda = [0.9:0.02:0.98 0.99];
 addParameter(p,'lambda',default_lambda,@isnumeric);
-addParameter(p,'run_options',{},@iscell);
 addParameter(p,'criteria_samples',[],@(x) (length(x) == 2) && isnumeric(x));
 addParameter(p,'plot',false,@islogical);
 parse(p,tune_file,outdir,varargin{:});
@@ -40,8 +75,8 @@ for i=1:norder
     order_dir = sprintf('order%d',order_cur);
     
     gamma_opt = NaN(nlambda,1);
-%     parfor j=1:nlambda
-    for j=1:nlambda
+    parfor j=1:nlambda
+%     for j=1:nlambda
         lambda_cur = p.Results.lambda(j);
         lambda_dir = sprintf('lambda%g',lambda_cur);
         
@@ -57,12 +92,20 @@ for i=1:norder
             gamma_opt(j) = tune_lattice_filter_gamma(...
                 tune_file,...
                 fullfile(outdir,tune_outdir,trials_dir,order_dir,lambda_dir),...
-                'plot_gamma_fit',p.Results.plot,...
+                'plot_gamma',p.Results.plot,...
                 'filter','MCMTLOCCD_TWL4',...
                 'filter_params',filter_params,...
-                'gamma',p.Results.gamma,...
                 'run_options',p.Results.run_options,...
                 'criteria_samples',p.Results.criteria_samples);
+%             gamma_opt(j) = tune_lattice_filter_gamma_bayesopt(...
+%                 tune_file,...
+%                 fullfile(outdir,tune_outdir,trials_dir,order_dir,lambda_dir),...
+%                 'plot_gamma_fit',p.Results.plot,...
+%                 'filter','MCMTLOCCD_TWL4',...
+%                 'filter_params',filter_params,...
+%                 'gamma',p.Results.gamma,...
+%                 'run_options',p.Results.run_options,...
+%                 'criteria_samples',p.Results.criteria_samples);
             %tune_obj.set_opt('gamma',gamma_opt(j),'order',order_cur,'lambda',lambda_cur);
         else
             fprintf('already optimized gamma for order %d, lambda %g\n',order_cur,lambda_cur);

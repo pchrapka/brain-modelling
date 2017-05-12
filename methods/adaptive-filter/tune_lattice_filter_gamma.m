@@ -1,11 +1,49 @@
 function gamma_opt = tune_lattice_filter_gamma(tune_file,outdir,varargin)
-%   Parameters
-%   ----------
-%   outdir
+%   Input
+%   -----
+%   tune_file (string)
+%       data file for tuning
+%   outdir (string)
 %       output directory for temp files, the name should reflect the
 %       tune_file and the current filter parmeters
-%   filter_params
+%       example:
+%           outdir = data-set1/order4/lambda0.99
+%
+%   Parameters
+%   ----------
+%
+%   filter options
+%   --------------
+%   filter (string, default = 'MCMTLOCCD_TWL4')
+%       lattice filter to be tuned
+%   filter_params (struct)
+%       filter parameters for lattice filter constructor
 %       requires the following fields: nchannels,norder,ntrials,lambda
+%   run_options (cell)
+%       options for run_lattice_filter function
+%
+%   optimization options
+%   --------------------
+%   mode (string, default = 'existing')
+%       mode of operation
+%
+%       existing - uses existing data only, does not run additional
+%       optimization iterations
+%       continue - uses existing data and runs additional iterations up to
+%       maxevals
+%
+%   criteria_samples (2x1 vector)
+%       starting and ending indices for evaluating criteria
+%   
+%   gamma options
+%   -------------
+%   upper_bound (numeric, default = 100)
+%       upper bound for gamma
+%   lower_bound (numeric, default = 10^(-10))
+%       lower bound for gamma
+%
+%   plot_gamma (logical, default = false)
+%       plots the criteria value vs gamma
 
 p = inputParser();
 p.StructExpand = false;
@@ -40,7 +78,8 @@ filter_params = {...
     'lambda',p.Results.filter_params.lambda};
 
 criteria = {'mserrortime','meannorm1coefs_time'};
-criteria_weight = [600 1];
+criteria_weight = [100000 1];
+% criteria_weight = [600 1];
 % criteria_weight = [1 1];
 % criteria = {'mserrortime'};
 % criteria = {'meannorm1coefs_time'};
@@ -99,6 +138,7 @@ if ~isempty(data_old)
         semilogx(data_plot(:,1),data_plot(:,2),'-o');
         xlabel('gamma');
         ylabel('criteria');
+        drawnow;
     end
     
     % adjust optimization parameters

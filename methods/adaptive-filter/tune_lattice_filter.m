@@ -1,4 +1,50 @@
 function value = tune_lattice_filter(tune_file, outdir, varargin)
+%TUNE_LATTICE_FILTER evalutes a lattice filter wrt a criteria
+%   TUNE_LATTICE_FILTER(tune_file,outdir,...) evalutes a lattice filter wrt
+%   a criteria. Returns a value describing the filter performance.
+%
+%   Input
+%   -----
+%   tune_file (string)
+%       data file for tuning
+%   outdir (string)
+%       output directory for temp files, the name should reflect the
+%       tune_file and the current filter parmeters
+%       example:
+%           outdir = data-set1/order4/lambda0.99
+%
+%   Parameters
+%   ----------
+%
+%   filter options
+%   --------------
+%   filter (string, default = 'MCMTLOCCD_TWL4')
+%       lattice filter to be tuned
+%   filter_params (struct)
+%       filter parameters for lattice filter constructor
+%       requires the following fields: nchannels,norder,ntrials,lambda
+%   run_options (cell)
+%       options for run_lattice_filter function
+%
+%   criteria options
+%   -----------------
+%   criteria (cell, default = normerrortime)
+%       criteria to be considered when evaluting the performance
+%   criteria_mode (string, default = criteria_value)
+%       criteria_value - mean of criteria of criteria_samples
+%       criteria_target - error between the mean of criteria of
+%       criteria_samples and the criteria_target option
+%
+%       if multiple criteria are specfied, then it's the sum
+%
+%   criteria_target (vector)
+%       targets when criteria_mode = 'criteria_target', same length as
+%       number of criteria
+%   criteria_weight (vector)
+%       weight applied to each criteria
+%
+%   criteria_samples (2x1 vector)
+%       starting and ending indices for evaluating criteria
 
 p = inputParser();
 addRequired(p,'tune_file',@ischar);
@@ -6,8 +52,8 @@ addRequired(p,'outdir',@ischar);
 addParameter(p,'filter','MCMTLOCCD_TWL4',@ischar);
 addParameter(p,'filter_params',{},@iscell);
 addParameter(p,'run_options',{},@iscell);
-addParameter(p,'criteria_mode','criteria_value',@ischar);
 addParameter(p,'criteria','normerrortime',@(x) ischar(x) || iscell(x));
+addParameter(p,'criteria_mode','criteria_value',@ischar);
 addParameter(p,'criteria_target',[],@isnumeric); % should be same length as criteria when criteria_mode = criteria_target
 addParameter(p,'criteria_weight',[],@isnumeric); % should be same length as criteria when criteria_mode = criteria_value
 addParameter(p,'criteria_samples',[],@(x) (length(x) == 2) && isnumeric(x));
