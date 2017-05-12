@@ -55,7 +55,7 @@ for i=1:length(params)
     if p.Results.flag_tune
         
         tune_file = strrep(sources_filter_file,'.mat','-tuning.mat');
-        if ~isfresh(tune_file,sources_filter_file)
+        if ~exist(tune_file,'file') || isfresh(tune_file,sources_filter_file)
             if exist(tune_file,'file')
                 delete(tune_file);
             end
