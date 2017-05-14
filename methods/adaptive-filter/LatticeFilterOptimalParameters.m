@@ -11,21 +11,17 @@ classdef LatticeFilterOptimalParameters < handle
         tune_outdir;
     end
     
-    methods (Static)
-                
-        function obj = loadobj(s)
-            if isstruct(s)
-                obj.opt_params_order = s.opt_params_order;
-                obj.opt_params_lambda = s.opt_params_lambda;
-                obj.opt_params_gamma = s.opt_params_gamma;
-                obj.opt_params_file = s.opt_params_file;
-                obj.tune_file = s.tune_file;
-                obj.tune_outdir = s.tune_outdir;
-            else
-                obj = s;
-            end
-        end
-    end
+%     methods (Static)
+%                 
+%         function obj = loadobj(s)
+%             obj.opt_params_order = s.opt_params_order;
+%             obj.opt_params_lambda = s.opt_params_lambda;
+%             obj.opt_params_gamma = s.opt_params_gamma;
+%             obj.opt_params_file = s.opt_params_file;
+%             obj.tune_file = s.tune_file;
+%             obj.tune_outdir = s.tune_outdir;
+%         end
+%     end
     
     methods
         function obj = LatticeFilterOptimalParameters(tune_file,ntrials)

@@ -92,7 +92,9 @@ for i=1:norder
         lambda_dir = sprintf('lambda%g',lambda_cur);
         
         % check if i've already optimized gamma for this lambda and order
-        gamma_opt(j) = tune_obj.get_opt('gamma','order',order_cur,'lambda',lambda_cur);
+        % NOTE use object as read-only in inner loop
+        tune_obj_inner = LatticeFilterOptimalParameters(tune_file,p.Results.ntrials);
+        gamma_opt(j) = tune_obj_inner.get_opt('gamma','order',order_cur,'lambda',lambda_cur);
         if isnan(gamma_opt(j))
             filter_params = [];
             filter_params.nchannels = nchannels;
