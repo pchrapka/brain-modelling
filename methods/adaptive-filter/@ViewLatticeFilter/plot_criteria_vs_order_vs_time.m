@@ -18,12 +18,46 @@ addParameter(p,'criteria','ewaic',...
     'whitetime','minorigin_normerror_norm1coefs_time',...
     'minorigin_deterror_norm1coefs_time',...
     'norm1coefs_time','ewlogdet'})));
+options_order_mode = {'all','each'};
+addParameter(p,'order_mode','all',@(x) any(validatestring(x,options_order_mode)));
 addParameter(p,'orders',[],@(x) true);
 addParameter(p,'file_list',[],@(x) true);
 parse(p,varargin{:});
 
-params = struct2namevalue(p.Results);
-data_crit = obj.get_criteria(params{:});
+switch p.Results.order_mode
+    case 'all'
+        data_crit = obj.get_criteria(...
+            'criteria',p.Results.criteria,...
+            'orders',p.Results.orders,...
+            'file_list',p.Results.file_list);
+    case 'each'
+        if length(p.Results.file_list) ~= length(p.Results.orders)
+            % orders can be empty
+            if ~isempty(p.Results.orders)
+                error('order_mode = each, requires 1 order for each file');
+            end
+        end
+        data_crit = [];
+        for i=1:length(p.Results.file_list)
+            if isempty(p.Results.orders)
+                order = [];
+            else
+                order = p.Results.orders(i);
+            end
+            data_crit_file = obj.get_criteria(...
+                'criteria',p.Results.criteria,...
+                'orders',order,...
+                'file_list',p.Results.file_list(i));
+            
+            data_crit.f{i} = data_crit_file.f{1};
+            data_crit.b{i} = data_crit_file.b{1};
+            data_crit.legend_str{i} = data_crit_file.legend_str{1};
+            data_crit.order_lists{i} = data_crit_file.order_lists{1};
+            data_crit.file_list(i) = data_crit_file.file_list(1);
+        end
+    otherwise
+        error('unknown order_mode %s',p.Results.order_mode);
+end
 
 ndata = length(data_crit.legend_str);
 nfiles = length(data_crit.f);
