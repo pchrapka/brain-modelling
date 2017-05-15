@@ -18,6 +18,7 @@ addParameter(p,'criteria','ewaic',...
     'whitetime','minorigin_normerror_norm1coefs_time',...
     'minorigin_deterror_norm1coefs_time',...
     'norm1coefs_time','ewlogdet'})));
+addParameter(p,'criteria_samples',[],@(x) (length(x) == 2) && isnumeric(x));
 options_order_mode = {'all','each'};
 addParameter(p,'order_mode','all',@(x) any(validatestring(x,options_order_mode)));
 addParameter(p,'orders',[],@(x) true);
@@ -62,6 +63,15 @@ end
 ndata = length(data_crit.legend_str);
 nfiles = length(data_crit.f);
 nsamples = size(data_crit.f{1},2);
+
+if isempty(p.Results.criteria_samples)
+    idx_end = ceil(nsamples*0.95);
+    npoints = ceil(nsamples/10);
+    idx_start = idx_end - npoints + 1;
+    crit_idx = [idx_start idx_end];
+else
+    crit_idx = p.Results.criteria_samples;
+end
 
 % create figure name
 [~,name,~] = fileparts(obj.datafiles{1});
@@ -132,13 +142,10 @@ for i=1:nrows
         
         if j==2
             % plot converged avg IC vs order
-            idx_end = ceil(nsamples*0.95);
-            npoints = ceil(nsamples/10);
-            idx_start = idx_end - npoints + 1;
             
             h = zeros(nfiles,1);
             for file_idx=1:nfiles
-                avg_data = mean(data{file_idx}(:,idx_start:idx_end),2);
+                avg_data = mean(data{file_idx}(:,crit_idx(1):crit_idx(2)),2);
                 h(file_idx) = plot(data_crit.order_lists{file_idx},...
                     avg_data,...
                     ['-' markers{file_idx}],'MarkerSize',10);
@@ -147,7 +154,7 @@ for i=1:nrows
             xlim_cur = xlim;
             xlim([xlim_cur(1)-0.5 xlim_cur(2)+0.5]);
             xlabel('Order');
-            title_str{2} = sprintf('avg of samples %d-%d',idx_start,idx_end);
+            title_str{2} = sprintf('avg of samples %d-%d',crit_idx(1),crit_idx(2));
             if nfiles > 1
                 legend(h,obj.datafile_labels);
             end
