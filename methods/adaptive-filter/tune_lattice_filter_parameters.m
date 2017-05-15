@@ -68,7 +68,6 @@ end
 
 nlambda = length(p.Results.lambda);
 norder = length(p.Results.order);
-% ngamma = length(p.Results.gamma);
 
 tune_obj = LatticeFilterOptimalParameters(tune_file,p.Results.ntrials);
 [~,tunename,~] = fileparts(tune_file);
@@ -104,6 +103,7 @@ for i=1:norder
             filter_params.norder = order_cur;
             filter_params.lambda = lambda_cur;
             
+            % tune gamma
             gamma_opt(j) = tune_lattice_filter_gamma(...
                 tune_file,...
                 fullfile(outdir,tune_outdir,trials_dir,order_dir,lambda_dir),...
@@ -129,7 +129,7 @@ for i=1:norder
         end
     end
     
-    % update tune obj
+    % update tune obj with optimal gammas for each lambda
     for j=1:nlambda
         lambda_cur = p.Results.lambda(j);
         tune_obj.set_opt('gamma',gamma_opt(j),'order',order_cur,'lambda',lambda_cur);
@@ -169,6 +169,7 @@ if isnan(order_opt)
     filter_params.nchannels = nchannels;
     filter_params.ntrials = p.Results.ntrials;
         
+    % tune order
     order_opt = tune_lattice_filter_order(...
         tune_file,...
         fullfile(outdir,tune_outdir,trials_dir),...
