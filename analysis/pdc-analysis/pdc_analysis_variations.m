@@ -70,6 +70,8 @@ for i=1:length(params)
                 nsamples_rest = nsamples - nsamples_trial;
                 idx_start = floor(nsamples_rest*0.05) + nsamples_trial;
                 idx_end = ceil(nsamples_rest*0.95) + nsamples_trial;
+            otherwise
+                error('missing start and end for %s',params(i).stimulus);
         end
         
         if isfield(params(i),'prepend_data')
