@@ -6,6 +6,7 @@ k=1;
 %% aal-coarse-19-outer-nocer-plus2 envelope
 
 % NOTE gamma parameter not stable in bootstrapping step
+% params(k).stimulus = 'std';
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -20,6 +21,7 @@ k=1;
 % k = k+1;
 
 % % GOOD config
+% params(k).stimulus = 'std';
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'euc','diag'};
 % params(k).ntrials = 20;
@@ -40,6 +42,7 @@ k=1;
 % g 1e-6, l 0.99, order 13
 
 % % NOTE: lambda = 0.995 gives very little in terms of output
+% params(k).stimulus = 'std';
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'diag','euc','info'};
 % params(k).ntrials = 20;
@@ -63,6 +66,7 @@ k=1;
 % new optimization: gamma 0.0008695, lambda 0.99, order 11, note just tried
 % order 11 and lambda 0.99 with [600 1] weighting
 
+params(k).stimulus = 'std';
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'diag','euc','info'};
 params(k).metrics = {'diag'};

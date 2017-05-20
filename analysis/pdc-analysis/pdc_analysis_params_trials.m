@@ -5,6 +5,7 @@ k=1;
 
 %% aal-coarse-19-outer-nocer-plus2 envelope
 
+params(k).stimulus = 'std';
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 params(k).metrics = {'diag'};
 params(k).ntrials = [2 5 10 15 20 40];
