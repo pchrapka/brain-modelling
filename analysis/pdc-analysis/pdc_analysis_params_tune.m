@@ -4,6 +4,7 @@ params = [];
 k=1;
 
 %% aal-coarse-19-outer-nocer-plus2, envelope, allchannels
+% params(k).stimulus = 'std';
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -22,6 +23,7 @@ k=1;
 %   gamma 1e-6
 
 % % compare one set
+% params(k).stimulus = 'std';
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -36,6 +38,7 @@ k=1;
 % params(k).plot_orders = 6;
 % k = k+1;  
 
+% params(k).stimulus = 'std';
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -49,6 +52,7 @@ k=1;
 
 % best order 12
 % 
+% params(k).stimulus = 'std';
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -63,6 +67,7 @@ k=1;
 % % best order 11
 
 %% aal-coarse-19-outer-nocer-plus2, envelope, eachchannel
+% params(k).stimulus = 'std';
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -81,6 +86,7 @@ k=1;
 % %   lambda 0.99
 % %   gamma 1e-6
 
+% params(k).stimulus = 'std';
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -95,6 +101,7 @@ k=1;
 % 
 % % best order 13
 % 
+% params(k).stimulus = 'std';
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -109,22 +116,23 @@ k=1;
 % 
 % % best order 11
 
-%% aal-coarse-19-outer-nocer-plus2, envelope, eachchannel
+%% aal-coarse-19-outer-nocer-plus2, envelope, eachchannel, flip data
 %% new optimization
 
-params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
-params(k).metrics = {'diag'};
-params(k).ntrials = 20;
-params(k).order = 3:14;
-params(k).lambda = [0.94 0.96 0.98 0.99 0.995];
-params(k).gamma = [10^(-6) 10^(-3)];
-params(k).normalization = 'eachchannel';
-params(k).envelope = true;
-params(k).prepend_data = 'flipdata';
-params(k).nresamples = 100;
-params(k).alpha = 0.05;
-params(k).null_mode = 'estimate_ind_channels';
-k = k+1;
+% params(k).stimulus = 'std';
+% params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+% params(k).metrics = {'diag'};
+% params(k).ntrials = 20;
+% params(k).order = 3:14;
+% params(k).lambda = [0.94 0.96 0.98 0.99 0.995];
+% params(k).gamma = [10^(-6) 10^(-3)];
+% params(k).normalization = 'eachchannel';
+% params(k).envelope = true;
+% params(k).prepend_data = 'flipdata';
+% params(k).nresamples = 100;
+% params(k).alpha = 0.05;
+% params(k).null_mode = 'estimate_ind_channels';
+% k = k+1;
 
 %% tune parameters
 flag_run = false;

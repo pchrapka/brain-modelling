@@ -66,10 +66,10 @@ switch comp_name
         % do nothing
 end
 
+ngamma = length(p.Results.gamma);
 nlambda = length(p.Results.lambda);
 norder = length(p.Results.order);
 
-tune_obj = LatticeFilterOptimalParameters(tune_file,p.Results.ntrials);
 [~,tunename,~] = fileparts(tune_file);
 tune_outdir = tunename;
 
@@ -79,115 +79,141 @@ tune_data = loadfile(tune_file);
 clear tune_data;
 
 trials_dir = sprintf('trials%d',p.Results.ntrials);
+outdir_new = fullfile(outdir,tune_outdir,trials_dir);
 
-lambda_opt = NaN(norder,1);
-gamma_opt_lambda = NaN(norder,1);
-for i=1:norder
-    order_cur = p.Results.order(i);
-    order_dir = sprintf('order%d',order_cur);
+if (ngamma > 1) && (nlambda > 1) && (norder > 1)
+    tune_obj = LatticeFilterOptimalParameters(tune_file,p.Results.ntrials);
     
-    gamma_opt = NaN(nlambda,1);
-    parfor j=1:nlambda
-%     for j=1:nlambda
-        lambda_cur = p.Results.lambda(j);
-        lambda_dir = sprintf('lambda%g',lambda_cur);
+    lambda_opt = NaN(norder,1);
+    gamma_opt_lambda = NaN(norder,1);
+    for i=1:norder
+        order_cur = p.Results.order(i);
+        order_dir = sprintf('order%d',order_cur);
         
-        % check if i've already optimized gamma for this lambda and order
-        % NOTE use object as read-only in inner loop
-        tune_obj_inner = LatticeFilterOptimalParameters(tune_file,p.Results.ntrials);
-        gamma_opt(j) = tune_obj_inner.get_opt('gamma','order',order_cur,'lambda',lambda_cur);
-        if isnan(gamma_opt(j))
+        gamma_opt = NaN(nlambda,1);
+        parfor j=1:nlambda
+            %     for j=1:nlambda
+            lambda_cur = p.Results.lambda(j);
+            lambda_dir = sprintf('lambda%g',lambda_cur);
+            
+            % check if i've already optimized gamma for this lambda and order
+            % NOTE use object as read-only in inner loop
+            tune_obj_inner = LatticeFilterOptimalParameters(tune_file,p.Results.ntrials);
+            gamma_opt(j) = tune_obj_inner.get_opt('gamma','order',order_cur,'lambda',lambda_cur);
+            if isnan(gamma_opt(j))
+                filter_params = [];
+                filter_params.nchannels = nchannels;
+                filter_params.ntrials = p.Results.ntrials;
+                filter_params.norder = order_cur;
+                filter_params.lambda = lambda_cur;
+                
+                % tune gamma
+                gamma_opt(j) = tune_lattice_filter_gamma(...
+                    tune_file,...
+                    fullfile(outdir_new,order_dir,lambda_dir),...
+                    'plot_gamma',p.Results.plot_gamma,...
+                    'filter','MCMTLOCCD_TWL4',...
+                    'filter_params',filter_params,...
+                    'run_options',p.Results.run_options,...
+                    'upper_bound',max(p.Results.gamma),...
+                    'lower_bound',min(p.Results.gamma),...
+                    'criteria_samples',p.Results.criteria_samples);
+                %             gamma_opt(j) = tune_lattice_filter_gamma_bayesopt(...
+                %                 tune_file,...
+                %                 fullfile(outdir_new,order_dir,lambda_dir),...
+                %                 'plot_gamma_fit',p.Results.plot,...
+                %                 'filter','MCMTLOCCD_TWL4',...
+                %                 'filter_params',filter_params,...
+                %                 'gamma',p.Results.gamma,...
+                %                 'run_options',p.Results.run_options,...
+                %                 'criteria_samples',p.Results.criteria_samples);
+                %tune_obj.set_opt('gamma',gamma_opt(j),'order',order_cur,'lambda',lambda_cur);
+            else
+                fprintf('already optimized gamma for order %d, lambda %g\n',order_cur,lambda_cur);
+            end
+        end
+        
+        % update tune obj with optimal gammas for each lambda
+        for j=1:nlambda
+            lambda_cur = p.Results.lambda(j);
+            tune_obj.set_opt('gamma',gamma_opt(j),'order',order_cur,'lambda',lambda_cur);
+        end
+        
+        % check if i've already optimized lambda for this order
+        lambda_opt(i) = tune_obj.get_opt('lambda','order',order_cur);
+        if isnan(lambda_opt(i))
             filter_params = [];
             filter_params.nchannels = nchannels;
             filter_params.ntrials = p.Results.ntrials;
             filter_params.norder = order_cur;
-            filter_params.lambda = lambda_cur;
             
-            % tune gamma
-            gamma_opt(j) = tune_lattice_filter_gamma(...
+            % tune lambda
+            lambda_opt(i) = tune_lattice_filter_lambda(...
                 tune_file,...
-                fullfile(outdir,tune_outdir,trials_dir,order_dir,lambda_dir),...
-                'plot_gamma',p.Results.plot_gamma,...
+                fullfile(outdir_new,order_dir),...
                 'filter','MCMTLOCCD_TWL4',...
                 'filter_params',filter_params,...
+                'lambda',p.Results.lambda,...
+                'gamma_opt',gamma_opt,...
                 'run_options',p.Results.run_options,...
-                'upper_bound',max(p.Results.gamma),...
-                'lower_bound',min(p.Results.gamma),...
-                'criteria_samples',p.Results.criteria_samples);
-%             gamma_opt(j) = tune_lattice_filter_gamma_bayesopt(...
-%                 tune_file,...
-%                 fullfile(outdir,tune_outdir,trials_dir,order_dir,lambda_dir),...
-%                 'plot_gamma_fit',p.Results.plot,...
-%                 'filter','MCMTLOCCD_TWL4',...
-%                 'filter_params',filter_params,...
-%                 'gamma',p.Results.gamma,...
-%                 'run_options',p.Results.run_options,...
-%                 'criteria_samples',p.Results.criteria_samples);
-            %tune_obj.set_opt('gamma',gamma_opt(j),'order',order_cur,'lambda',lambda_cur);
+                'criteria_samples',p.Results.criteria_samples,...
+                'plot_lambda',p.Results.plot_lambda);
+            tune_obj.set_opt('lambda',lambda_opt(i),'order',order_cur);
         else
-            fprintf('already optimized gamma for order %d, lambda %g\n',order_cur,lambda_cur);
+            fprintf('already optimized lambda for order %d\n',order_cur);
         end
+        gamma_opt_lambda(i) = tune_obj.get_opt('gamma','lambda',lambda_opt(i),'order',order_cur);
+        
     end
     
-    % update tune obj with optimal gammas for each lambda
-    for j=1:nlambda
-        lambda_cur = p.Results.lambda(j);
-        tune_obj.set_opt('gamma',gamma_opt(j),'order',order_cur,'lambda',lambda_cur);
-    end
-    
-    % check if i've already optimized lambda for this order
-    lambda_opt(i) = tune_obj.get_opt('lambda','order',order_cur);
-    if isnan(lambda_opt(i))
+    % check if i've already optimized order
+    order_opt = tune_obj.get_opt('order');
+    if isnan(order_opt)
         filter_params = [];
         filter_params.nchannels = nchannels;
         filter_params.ntrials = p.Results.ntrials;
-        filter_params.norder = order_cur;
         
-        % tune lambda
-        lambda_opt(i) = tune_lattice_filter_lambda(...
+        % tune order
+        order_opt = tune_lattice_filter_order(...
             tune_file,...
-            fullfile(outdir,tune_outdir,trials_dir,order_dir),...
+            outdir_new,...
             'filter','MCMTLOCCD_TWL4',...
             'filter_params',filter_params,...
-            'lambda',p.Results.lambda,...
-            'gamma_opt',gamma_opt,...
+            'order',p.Results.order,...
+            'lambda_opt',lambda_opt,...
+            'gamma_opt',gamma_opt_lambda,...
             'run_options',p.Results.run_options,...
             'criteria_samples',p.Results.criteria_samples,...
-            'plot_lambda',p.Results.plot_lambda);
-        tune_obj.set_opt('lambda',lambda_opt(i),'order',order_cur);
-    else
-        fprintf('already optimized lambda for order %d\n',order_cur);
+            'plot_order',p.Results.plot_order);
+        tune_obj.set_opt('order',order_opt);
     end
-    gamma_opt_lambda(i) = tune_obj.get_opt('gamma','lambda',lambda_opt(i),'order',order_cur);
     
-end
-
-% check if i've already optimized order
-order_opt = tune_obj.get_opt('order');
-if isnan(order_opt)
+    fprintf('order opt: %d\n',order_opt);
+    lambda_opt = tune_obj.get_opt('lambda','order',order_opt);
+    fprintf('lambda opt: %g\n',lambda_opt);
+    gamma_opt = tune_obj.get_opt('gamma','lambda',lambda_opt,'order',order_opt);
+    fprintf('gamma opt: %g\n',gamma_opt);
+    
+elseif (ngamma == 1) && (nlambda == 1) && (norder > 1)
+    % tune order only
+    
     filter_params = [];
     filter_params.nchannels = nchannels;
     filter_params.ntrials = p.Results.ntrials;
-        
+    
     % tune order
     order_opt = tune_lattice_filter_order(...
         tune_file,...
-        fullfile(outdir,tune_outdir,trials_dir),...
+        outdir_new,...
         'filter','MCMTLOCCD_TWL4',...
         'filter_params',filter_params,...
         'order',p.Results.order,...
-        'lambda_opt',lambda_opt,...
-        'gamma_opt',gamma_opt_lambda,...
+        'lambda_opt',p.Results.lambda,...
+        'gamma_opt',p.Results.gamma,...
         'run_options',p.Results.run_options,...
         'criteria_samples',p.Results.criteria_samples,...
         'plot_order',p.Results.plot_order);
-    tune_obj.set_opt('order',order_opt);
-end
-
-fprintf('order opt: %d\n',order_opt);
-lambda_opt = tune_obj.get_opt('lambda','order',order_opt);
-fprintf('lambda opt: %g\n',lambda_opt);
-gamma_opt = tune_obj.get_opt('gamma','lambda',lambda_opt,'order',order_opt);
-fprintf('gamma opt: %g\n',gamma_opt);
-
+    
+    fprintf('order opt: %d\n',order_opt);
+    
 end

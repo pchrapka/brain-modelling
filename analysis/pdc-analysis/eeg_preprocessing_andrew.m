@@ -10,7 +10,7 @@ function eeg_preprocessing_andrew(subject, deviant_percent, stimulus, varargin)
 %   deviant_percent (integer)
 %       percentage of deviant trials 10 or 20
 %   stimulus (string)
-%       stimulus type, can be std or odd
+%       stimulus type, can be std, odd, std-prestim1
 %
 %   Parameters
 %   ----------
@@ -20,7 +20,7 @@ function eeg_preprocessing_andrew(subject, deviant_percent, stimulus, varargin)
 p = inputParser();
 addRequired(p,'subject',@isnumeric);
 addRequired(p,'deviant_percent',@(x) isequal(x,10) || isequal(x,20));
-addRequired(p,'stimulus',@(x) any(validatestring(x,{'std','odd'})));
+addRequired(p,'stimulus',@(x) any(validatestring(x,{'std','odd','std-prestim1'})));
 addParameter(p,'outdir','',@ischar);
 parse(p,subject, deviant_percent, stimulus, varargin{:});
 
@@ -99,11 +99,24 @@ switch stimulus
         
         cfg_dt.trialmid.prestim = 0.5; % in seconds
         cfg_dt.trialmid.poststim = 1; % in seconds
+    case 'std-prestim1'
+        cfg_dt.trialfun= 'fthelpers.ft_trialfun_triplet';
+        cfg_dt.trialmid.eventtype = 'STATUS';
+        cfg_dt.trialmid.eventvalue = 1; % standard
+        cfg_dt.trialpre.eventtype = 'STATUS';
+        cfg_dt.trialpre.eventvalue = 1; % standard
+        cfg_dt.trialpost.eventtype = 'STATUS';
+        cfg_dt.trialpost.eventvalue = 1; % standard
+        
+        cfg_dt.trialmid.prestim = 1; % in seconds
+        cfg_dt.trialmid.poststim = 1; % in seconds
     case 'odd'
         cfg_dt.trialdef.eventtype = 'STATUS';
         cfg_dt.trialdef.eventvalue = {2}; % deviant
         cfg_dt.trialdef.prestim = 0.5; % in seconds
         cfg_dt.trialdef.poststim = 1; % in seconds
+    otherwise
+        error('missing stimulus %s',stimulus);
 end
 
 % define the trial
@@ -180,11 +193,24 @@ switch stimulus
         
         cfg_dt.trialmid.prestim = 0.5; % in seconds
         cfg_dt.trialmid.poststim = 1; % in seconds
+    case 'std-prestim1'
+        cfg_dt.trialfun= 'fthelpers.ft_trialfun_triplet';
+        cfg_dt.trialmid.eventtype = 'STATUS';
+        cfg_dt.trialmid.eventvalue = 1; % standard
+        cfg_dt.trialpre.eventtype = 'STATUS';
+        cfg_dt.trialpre.eventvalue = 1; % standard
+        cfg_dt.trialpost.eventtype = 'STATUS';
+        cfg_dt.trialpost.eventvalue = 1; % standard
+        
+        cfg_dt.trialmid.prestim = 1; % in seconds
+        cfg_dt.trialmid.poststim = 1; % in seconds
     case 'odd'
         cfg_dt.trialdef.eventtype = 'STATUS';
         cfg_dt.trialdef.eventvalue = {2}; % deviant
         cfg_dt.trialdef.prestim = 0.5; % in seconds
         cfg_dt.trialdef.poststim = 1; % in seconds
+    otherwise
+        error('missing stimulus %s',stimulus);
 end
 
 file_dt = fthelpers.run_ft_function('ft_definetrial',cfg_dt,params{:});

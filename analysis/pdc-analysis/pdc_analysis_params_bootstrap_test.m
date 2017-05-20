@@ -7,6 +7,7 @@ params = [];
 
 % g 1e-6, l 0.99, order 13
 
+params(k).stimulus = 'std';
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 params(k).metrics = {'diag'};
 params(k).ntrials = 20;
