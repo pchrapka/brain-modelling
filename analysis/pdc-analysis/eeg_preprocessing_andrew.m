@@ -99,6 +99,8 @@ switch stimulus
         
         cfg_dt.trialmid.prestim = 0.5; % in seconds
         cfg_dt.trialmid.poststim = 1; % in seconds
+        
+        threshold = 60;
     case 'std-prestim1'
         cfg_dt.trialfun= 'fthelpers.ft_trialfun_triplet';
         cfg_dt.trialmid.eventtype = 'STATUS';
@@ -110,11 +112,15 @@ switch stimulus
         
         cfg_dt.trialmid.prestim = 1; % in seconds
         cfg_dt.trialmid.poststim = 1; % in seconds
+        
+        threshold = 70;
     case 'odd'
         cfg_dt.trialdef.eventtype = 'STATUS';
         cfg_dt.trialdef.eventvalue = {2}; % deviant
         cfg_dt.trialdef.prestim = 0.5; % in seconds
         cfg_dt.trialdef.poststim = 1; % in seconds
+        
+        threshold = 60;
     otherwise
         error('missing stimulus %s',stimulus);
 end
@@ -143,7 +149,6 @@ cfg_at.trl = data_dt.trl;
 clear data_dt
 cfg_at.continuous = 'no';
 cfg_at.artfctdef.threshold.bpfilter = 'no';
-threshold = 60;
 cfg_at.artfctdef.threshold.min = -1*threshold;
 cfg_at.artfctdef.threshold.max = threshold;
 
