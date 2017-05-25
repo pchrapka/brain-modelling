@@ -171,8 +171,9 @@ classdef ViewPDC < handle
         plot_tiled(obj);
         
         plot_adjacency(obj,varargin);
-        plot_directed(obj,varargin)
-        created = plot_seed(obj,chseed,varargin)
+        plot_directed(obj,varargin);
+        plot_connectivity_matrix(obj,varargin);
+        created = plot_seed(obj,chseed,varargin);
         
         % summary function
         out = get_summary(obj,varargin)

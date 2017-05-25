@@ -6,6 +6,7 @@ addParameter(p,'flag_run',true,@islogical);
 addParameter(p,'flag_tune',false,@islogical);
 addParameter(p,'flag_bootstrap',false,@islogical);
 addParameter(p,'flag_plot_seed',false,@islogical);
+addParameter(p,'flag_plot_conn',false,@islogical);
 parse(p,params,varargin{:});
 
 
@@ -230,6 +231,27 @@ for i=1:length(params)
                         end
                     end
                 end
+            end
+            
+            %% plot connectivity
+            if p.Results.flag_plot_conn
+                idx_start = 0.25*nsamples;
+                idx_end = nsamples;
+                sample_idx = idx_start:idx_end;
+                
+                if isfield(params(i),'prepend_data')
+                    switch params(i).prepend_data
+                        case 'flipdata'
+                            idx_start = 0.25*nsamples/2;
+                            idx_end = nsamples/2;
+                            sample_idx = idx_start:idx_end;
+                    end
+                end
+                
+                view_obj.plot_connectivity_matrix('samples',sample_idx);
+                
+                view_obj.save_plot('save',true,'engine','matlab');
+                close(gcf);
             end
             
             
