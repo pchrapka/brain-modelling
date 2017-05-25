@@ -235,15 +235,16 @@ for i=1:length(params)
             
             %% plot connectivity
             if p.Results.flag_plot_conn
-                idx_start = 0.25*nsamples;
-                idx_end = nsamples;
+                nsamples_real = floor(nsamples/downsample_by);
+                idx_start = 0.25*nsamples_real;
+                idx_end = nsamples_real;
                 sample_idx = idx_start:idx_end;
                 
                 if isfield(params(i),'prepend_data')
                     switch params(i).prepend_data
                         case 'flipdata'
-                            idx_start = 0.25*nsamples/2;
-                            idx_end = nsamples/2;
+                            idx_start = 0.25*nsamples_real/2;
+                            idx_end = nsamples_real/2;
                             sample_idx = idx_start:idx_end;
                     end
                 end

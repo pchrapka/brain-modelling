@@ -49,6 +49,9 @@ conn_mat = obj.pdc(sample_idx,:,:,freq_idx);
 % conn_mat1(conn_mat1 < threshold) = 0;
 conn_mat = sum(conn_mat,4);
 conn_mat = squeeze(mean(conn_mat,1));
+for i=1:nchannels
+    conn_mat(i,i) = 0;
+end
 
 % plot
 imagesc(conn_mat);
@@ -61,9 +64,49 @@ xtick = 1:length(xticklabel);
 ytick = 1:length(yticklabel);
 set(gca,...
     'XTick', xtick,...
-    'XTickLabel', xticklabel, ...
+    'XTickLabel','',...
+    ...'XTickLabel', xticklabel, ...
     'FontSize',12);
-xlabel('From');
+ax = axis;
+xl = ax(1:2);
+yl = ax(3:4);
+t = text(xtick,yl(2)*ones(1,length(xtick)),xticklabel);
+set(t,'HorizontalAlignment','right','VerticalAlignment','top', ...
+      'Rotation',90,'FontSize',12);
+  
+% Get the Extent of each text object.  This loop is unavoidable.
+ext = [];
+%ext_norm = [];
+for i = 1:length(t)
+  ext(i,:) = get(t(i),'Extent');
+  %set(t(i),'Units','normalized');
+  %ext_norm(i,:) = get(t(i),'Extent');
+  %set(t(i),'Units','data');
+end
+
+% Determine the lowest point.  The X-label will be
+% placed so that the top is aligned with this point.
+min_ylabel = max(ext(:,2));
+
+x_mid = xl(1)+abs(diff(xl))/2;
+t_xlabel = text(x_mid,min_ylabel,'From', ...
+    'VerticalAlignment','top', ...
+    'HorizontalAlignment','center',...
+    'FontSize',12);
+
+set(t_xlabel,'Units','normalized');
+ext_xlabel = get(t_xlabel,'Extent');
+
+% outpos = get(gca,'OuterPosition');
+% outpos(2) = outpos(2) - ext_xlabel(2);
+% outpos(4) = outpos(4) - abs(ext_xlabel(2));
+% set(gca,'OuterPosition',outpos);
+outpos = get(gca,'Position');
+outpos(2) = outpos(2) - ext_xlabel(2)/2;
+outpos(4) = outpos(4) - abs(ext_xlabel(2))/2;
+set(gca,'Position',outpos);
+
+% xlabel('From');
 set(gca,...
     'YTick', ytick,...
     'YTickLabel', yticklabel, ...
