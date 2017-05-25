@@ -6,6 +6,7 @@ k=1;
 
 % gammas = [1e-3 1e-2 1e-1];
 gammas = [1e-5 1e-4 1e-3];
+orders = [5 3 3];
 
 for i=1:length(gammas)
 %     %% aal-coarse-19-outer-nocer-plus2
@@ -29,7 +30,7 @@ for i=1:length(gammas)
     params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
     params(k).metrics = {'diag'};%,'info'};
     params(k).ntrials = 20;
-    params(k).order = 11;
+    params(k).order = orders(i);
     params(k).lambda = 0.99;
     params(k).gamma = gammas(i);
     params(k).normalization = 'eachchannel';

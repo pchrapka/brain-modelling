@@ -81,7 +81,8 @@ for i=1:length(params)
                         error('flipdata is not necessary for std-prestim1');
                     end
                     nsamples_half = nsamples/2;
-                    idx_start = floor(nsamples_half*0.05) + nsamples_half;
+                    %idx_start = floor(nsamples_half*0.05) + nsamples_half;
+                    idx_start = floor(nsamples_half*0.5) + nsamples_half;
                     idx_end = ceil(nsamples_half*0.95) + nsamples_half;
             end
         end
