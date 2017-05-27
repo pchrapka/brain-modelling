@@ -175,13 +175,7 @@ parfor k=1:nfilters
         trace.name = trace.filter.name;
         
         % save data
-        data = [];
-        data.filter = trace.filter;
-        for i=1:length(options.tracefields)
-            field = options.tracefields{i};
-            data.estimate.(field) = trace.trace.(field);
-        end
-        save_parfor(outfile,data);
+        trace.save('filename',outfile);
         
         % check mse from 0
         data_true_kf = zeros(size(trace.trace.Kf));

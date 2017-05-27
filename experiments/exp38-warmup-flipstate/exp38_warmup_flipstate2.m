@@ -138,13 +138,7 @@ for k=1:nparams
         end
         
         % save data
-        out = [];
-        out.filter = trace.filter;
-        for i=1:length(tracefields)
-            field = tracefields{i};
-            out.estimate.(field) = trace.trace.(field);
-        end
-        save_parfor(outfiles{k},out);
+        trace.save('filename',outfiles{k});
     end
     
     % view errors

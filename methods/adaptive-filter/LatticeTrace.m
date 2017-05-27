@@ -23,6 +23,9 @@ classdef LatticeTrace < handle
     properties (Access = protected)
         % fields to track
         fields;
+        
+        % options
+        warmup;
     end
     
     methods
@@ -259,6 +262,28 @@ classdef LatticeTrace < handle
             obj.filter.flipstate();
         end
         
+        function save(obj,varargin)
+            % save trace fields and filter information
+            p = inputParser();
+            addParameter(p,'filename','',@ischar);
+            parse(p,varargin{:});
+            
+            outfile = p.Results.filename;
+            if isempty(outfile)
+                slug_filter = strrep(obj.filter.name,' ','-');
+                outfile = [slug_filter '.mat'];
+            end
+            
+            data = [];
+            data.warmup = obj.warmup;
+            data.filter = obj.filter;
+            for i=1:length(obj.fields)
+                field = obj.fields{i};
+                data.estimate.(field) = obj.trace.(field);
+            end
+            save(outfile,'data','-v7.3');
+        end
+        
         function warmup(obj,noise)
             % warms up lattice filter with noise/data provided
             %
@@ -310,6 +335,7 @@ classdef LatticeTrace < handle
             [nchannels,nsamples,ntrials] = size(samples);
             
             if ~isempty(p.Results.warmup)
+                obj.warmup = p.Results.warmup;
                 % warm up filter
                 for i=1:length(p.Results.warmup)
                     switch p.Results.warmup{i}
