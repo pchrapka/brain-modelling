@@ -52,6 +52,7 @@ for i=1:length(params)
     pdc_obj.gamma = params(i).gamma;
     pdc_obj.lambda = params(i).lambda;
     pdc_obj.order = params(i).order;
+    pdc_obj.ncores = 12;
     
     if isfield(params(i),'prepend_data')
         switch params(i).prepend_data
@@ -63,14 +64,6 @@ for i=1:length(params)
     
     %% tune parameters
     if p.Results.flag_tune
-        
-        tune_file = strrep(sources_filter_file,'.mat','-tuning.mat');
-        if ~exist(tune_file,'file') || isfresh(tune_file,sources_filter_file)
-            if exist(tune_file,'file')
-                delete(tune_file);
-            end
-            copyfile(sources_filter_file, tune_file);
-        end
         
         switch params(i).stimulus
             case 'std'

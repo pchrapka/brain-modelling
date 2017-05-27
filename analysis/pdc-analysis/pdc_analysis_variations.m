@@ -103,23 +103,32 @@ for i=1:length(params)
     end
     
     if p.Results.flag_run
-        % copy params
-        params2 = params(i);
         
         % loop over metrics
         for j=1:length(params(i).metrics)
             
             %% compute RC with lattice filter
-            % select lf params
-            params_func = struct2namevalue(params2, 'fields', {'ntrials','order','lambda','gamma'});
             
-            lf_files = lattice_filter_sources(...
-                sources_filter_file,...
-                'outdir',outdir,...
-                'run_options',run_options,...
-                'tracefields', {'Kf','Kb','Rf','ferror','berrord'},...
-                'verbosity',0,...
-                params_func{:});
+            % set lattice options
+            % get nchannels from sources data
+            sources = loadfile(sources_filter_file);
+            nchannels = size(sources,1);
+            clear sources
+            
+            filters{1} = MCMTLOCCD_TWL4(nchannels,params(i).order,params(i).ntrials,...
+                'lambda',params(i).lambda,'gamma',params(i).gamma);
+            
+            % filter results are dependent on all input file parameters
+            [~,exp_name,~] = fileparts(sources_mini_file);
+            
+            lf_files = run_lattice_filter(...
+                sources_mini_file,...
+                'basedir',outdir,...
+                'outdir',exp_name,...
+                'filters', filters,...
+                run_options{:},...
+                'force',false,...
+                'tracefields',{'Kf','Kb','Rf','ferror','berrord'});
             % added Rf for info criteria
             % added ferror for bootstrap
             
@@ -131,6 +140,9 @@ for i=1:length(params)
             end
             
             %% compute pdc
+            % set up parfor
+            parfor_setup('cores',12,'force',true);
+            
             pdc_params = {...
                 'metric',params(i).metrics{j},...
                 'downsample',params(i).downsample,...
@@ -139,7 +151,6 @@ for i=1:length(params)
             
             %% view set up
             % select pdc view params
-%             params_func = struct2namevalue(params2,'fields',{'patch_type','envelope'});
             
             % create the ViewPDC obj
             view_obj = pdc_analysis_create_view(...

@@ -19,10 +19,12 @@ classdef PDCAnalysis < handle
         % prepend? flipped data? or do i take care of that in the data
         % phase outside of this class
         
+        ncores = 1;
+        
         % lattice filter options
         ntrials = 0;
         nchannels = 0;
-        filter_name = 'MCMTLOCCD_TWL4';
+        filter_func = 'MCMTLOCCD_TWL4';
         gamma = 0;
         lambda = 0;
         order = 0;
@@ -30,6 +32,7 @@ classdef PDCAnalysis < handle
         tracefields = {'Kf','Kb','Rf','ferror','berrord'};
         % added Rf for info criteria
         % added ferror for bootstrap
+        filter_verbosity = 1;
         
         filter_post_remove_samples = [];
         
@@ -73,32 +76,47 @@ classdef PDCAnalysis < handle
         function pdc(obj)
             % compute pdc
             
+            % set lattice options
+            
+            % get nchannels from sources data
+            sources = loadfile(obj.file_data);
+            nchannels = size(sources,1);
+            % TODO is there a better way to get the number of channels?
+            % parameter? or read from data?
+            
+            filter_func = str2func(obj.filter_func);
+            filters{1} = filter_func(nchannels,obj.order,obj.ntrials,...
+                'lambda',obj.lambda,'gamma',obj.gamma);
+            
+            % filter results are dependent on all input file parameters
+            [~,exp_name,~] = fileparts(obj.file_data);
+            
             % compute RC with lattice filter
-            % TODO replace lattice_filter_sources with content from that
-            % function
-            lf_files = lattice_filter_sources(...
+            lf_files = run_lattice_filter(...
                 obj.file_data,...
-                'outdir',obj.outdir,... 
-                'run_options',{'warmup',obj.warmup},...
-                'tracefields', obj.tracefields,...
-                'verbosity',0,...
-                'ntrials',obj.ntrials,...
-                'gamma',obj.gamma,...
-                'lambda',obj.lambda,...
-                'order',obj.order);
+                'basedir',obj.outdir,...
+                'outdir',exp_name,...
+                'filters', filters,...
+                'warmup',obj.warmup,...
+                'force',false,...
+                'verbosity',obj.filter_verbosity,...
+                'tracefields',obj.tracefields);
             
             if ~isempty(obj.filter_post_remove_samples)
                 lf_files = lattice_filter_remove_data(lf_files,obj.filter_post_remove_samples);
             end
             obj.file_lf = lf_files{1};
             
+            if obj.ncores > 1
+                % set up parfor
+                parfor_setup('cores',obj.ncores,'force',true);
+            end
+            
             % compute pdc
             pdc_params = {...
                 'metric',obj.metric,...
                 'downsample',obj.downsample,...
                 };
-            % TODO replace rc2pdc_dynamic_from_lf_files, i'm only doing one
-            % file
             pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
             obj.file_pdc = pdc_files{1};
             
@@ -165,13 +183,27 @@ classdef PDCAnalysis < handle
         function tune(obj)
             % tune lattice filter
             
+            % copy data file for tuning, since
+            % tune_lattice_filter_parameters sets up a directory based on
+            % the name
+            % TODO is this necessary, why not set up a tuning folder
+            % inside?
+            tune_file = strrep(obj.file_data,'.mat','-tuning.mat');
+            if ~exist(tune_file,'file') || isfresh(tune_file,obj.file_data)
+                if exist(tune_file,'file')
+                    delete(tune_file);
+                end
+                copyfile(obj.file_data, tune_file);
+            end
+            
+            % run the tuning function
             tune_lattice_filter_parameters(...
                 tune_file,... % is this just the source file?
-                obj.outdir,... % TODO
+                obj.outdir,...
                 'plot_gamma',obj.tune_plot_gamma,...
                 'plot_lambda',obj.tune_plot_lambda,...
                 'plot_order',obj.tune_plot_order,...
-                'filter',obj.filter_name,...
+                'filter',obj.filter_func,...
                 'ntrials',obj.ntrials,...
                 'gamma',obj.gamma,...
                 'lambda',obj.lambda,...
