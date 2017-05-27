@@ -6,7 +6,10 @@ classdef PDCAnalysis < handle
         file_data = '';
         file_pdc = '';
         file_pdc_sig = '';
+        files_pdc_resample = {};
         file_lf = '';
+        
+        outdir;
         
         view;
         % what do i do with plots?
@@ -26,6 +29,8 @@ classdef PDCAnalysis < handle
         warmup_noise = true;
         warmup_data = true;
         tracefields = {'Kf','Kb','Rf','ferror','berrord'};
+        % added Rf for info criteria
+        % added ferror for bootstrap
         
         filter_post_remove_samples = [];
         
@@ -50,29 +55,31 @@ classdef PDCAnalysis < handle
     end
     
     methods
-        function obj = PDCAnalysis(data_file,view)
-            % TODO set defaults
+        function obj = PDCAnalysis(data_file,view,outdir)
+            
+            p = inputParser();
+            addRequired(p,'data_file',@ischar);
+            addRequired(p,'view',@(x) isa(x,'ViewPDC'));
+            addRequired(p,'outdir',@ischar);
+            parse(p,data_file,view,outdir);
+            
             % TODO what about a parameter list of inputs? or just let
             % whoever modify them as required using the properties
             % TODO sanity check data in data_file
             obj.file_data = data_file;
-            % TODO set up output dirs
-            
-            % TODO can i know the pdc output file name?
-            %view = ViewPDC(); % TODO create empty object 
             obj.view = view;
+            obj.outdir = outdir;
         end
         
         function pdc(obj)
             % compute pdc
             
             % compute RC with lattice filter
-            
             % TODO replace lattice_filter_sources with content from that
             % function
             lf_files = lattice_filter_sources(...
                 obj.file_data,...
-                'outdir',outdir,... % TODO
+                'outdir',obj.outdir,... 
                 'run_options',{obj.warmup_data,obj.warmup_noise},...
                 'tracefields', obj.tracefields,...
                 'verbosity',0,...
@@ -80,8 +87,6 @@ classdef PDCAnalysis < handle
                 'gamma',obj.gamma,...
                 'lambda',obj.lambda,...
                 'order',obj.order);
-            % added Rf for info criteria
-            % added ferror for bootstrap
             
             if ~isempty(obj.filter_post_remove_samples)
                 lf_files = lattice_filter_remove_data(lf_files,obj.filter_post_remove_samples);
@@ -105,7 +110,7 @@ classdef PDCAnalysis < handle
             % do surrogate analysis
             % NOTE requireds pdc() to be run first
             
-            [obj.file_pdc_sig, pdc_resample_files] = pdc_bootstrap(...
+            [obj.file_pdc_sig, obj.files_pdc_resample] = pdc_bootstrap(...
                 obj.file_lf,...
                 sources_data_file,... % TODO how do i get this info?
                 'run_options',{obj.warmup_data,obj.warmup_noise},...
@@ -116,11 +121,6 @@ classdef PDCAnalysis < handle
             
             % add significance threshold data
             obj.view.file_pdc_sig = obj.file_pdc_sig;
-
-            % TODO figure out how to do sig plots
-%             params_plot_seed{2} = {...
-%                 'threshold_mode','significance',...
-%                 'tag',obj.surrogate_null_mode};    
             
         end
         
@@ -147,8 +147,7 @@ classdef PDCAnalysis < handle
             % plot pdc for each surrogate data set
             for k=1:p.Results.nplots
                 
-                % TODO sample resample files
-                obj.view.file_pdc = pdc_resample_files{k};
+                obj.view.file_pdc = obj.files_pdc_resample{k};
                 
                 params = {
                     'threshold_mode','numeric',...
@@ -163,11 +162,11 @@ classdef PDCAnalysis < handle
         end
         
         function tune(obj)
-            % do tuning stuff
+            % tune lattice filter
             
             tune_lattice_filter_parameters(...
                 tune_file,... % is this just the source file?
-                outdir,... % TODO
+                obj.outdir,... % TODO
                 'plot_gamma',obj.tune_plot_gamma,...
                 'plot_lambda',obj.tune_plot_lambda,...
                 'plot_order',obj.tune_plot_order,...
@@ -181,6 +180,7 @@ classdef PDCAnalysis < handle
         end
         
         function plot_seed(obj,varargin)
+            % pdc seed plots for all channels and both incoming and outgoing
             
             nchannels = length(obj.view.info.label);
             
@@ -192,10 +192,10 @@ classdef PDCAnalysis < handle
                     % get the save tag only
                     obj.view.plot_seed(ch, params_plot{:},...
                         'get_save_tag',true);
-                    [outdir, outfile] = obj.view.get_fullsavefile();
+                    [outdir_seed, outfile] = obj.view.get_fullsavefile();
                     
                     file_name_date = datestr(now, 'yyyy-mm-dd');
-                    if exist(fullfile([outdir '/img'],[file_name_date '-' outfile '.eps']),'file')
+                    if exist(fullfile([outdir_seed '/img'],[file_name_date '-' outfile '.eps']),'file')
                         fprintf('%s: skipping %s\n',mfilename,outfile);
                         continue;
                     end

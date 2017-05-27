@@ -38,11 +38,14 @@ for i=1:length(params)
     
     % TODO replace this
     pdc_view = pdc_analysis_create_view(...
-                sources_data_file,...
-                'envelope',params(i).envelope,... % TODO need envelope info?
-                'downsample',params(i).downsample);
+        sources_data_file,...
+        'envelope',params(i).envelope,... % TODO need envelope info?
+        'downsample',params(i).downsample);
+            
+    % NOTE params not required after this point
+    % - envelope
     
-    pdc_obj = PDCAnalysis(sources_data_file,pdc_view);
+    pdc_obj = PDCAnalysis(sources_filter_file,pdc_view,outdir);
     pdc_obj.ntrials = params(i).ntrials;
     pdc_obj.gamma = params(i).gamma;
     pdc_obj.lambda = params(i).lambda;
@@ -101,13 +104,11 @@ for i=1:length(params)
     end
     
     if p.Results.flag_run
-        % copy params
-        params2 = params(i);
         
         % loop over metrics
         for j=1:length(params(i).metrics)
             
-            %% compute pdc
+            %% pdc analysis
             if isfield(params(i),'prepend_data')
                 switch params(i).prepend_data
                     case 'flipdata'
@@ -122,16 +123,16 @@ for i=1:length(params)
             % add params for viewing
             params_plot_seed{1} = {'threshold',0.001};
             
-            %% bootstrap
+            %% surrogate analysis
             if p.Results.flag_bootstrap
-                pdc_obj.surrogate_nresamples = params2.nresamples;
-                pdc_obj.surrogate_alpha = params2.alpha;
-                pdc_obj.surrogate_null_mode = params2.null_mode;
+                pdc_obj.surrogate_nresamples = params(i).nresamples;
+                pdc_obj.surrogate_alpha = params(i).alpha;
+                pdc_obj.surrogate_null_mode = params(i).null_mode;
                 pdc_obj.surrogate();
                 
                 params_plot_seed{2} = {...
                     'threshold_mode','significance',...
-                    'tag',params2.null_mode};
+                    'tag',params(i).null_mode};
                 
                 % plot significance levels
                 pdc_obj.plot_significance_level();
