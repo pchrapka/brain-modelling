@@ -51,8 +51,6 @@ classdef PDCAnalysis < handle
         surrogate_nresamples = 0;
         surrogate_alpha = 0;
         
-        % surrogate plot options
-        %surrogate_threshold_mode = 'significance';
         
     end
     
@@ -67,7 +65,7 @@ classdef PDCAnalysis < handle
             
             % TODO what about a parameter list of inputs? or just let
             % whoever modify them as required using the properties
-            % TODO sanity check data in data_file
+            % TODO sanity check data in data_file?
             obj.file_data = data_file;
             obj.view = view;
             obj.outdir = outdir;
@@ -81,11 +79,12 @@ classdef PDCAnalysis < handle
             % get nchannels from sources data
             sources = loadfile(obj.file_data);
             nchannels = size(sources,1);
+            clear sources;
             % TODO is there a better way to get the number of channels?
             % parameter? or read from data?
             
-            filter_func = str2func(obj.filter_func);
-            filters{1} = filter_func(nchannels,obj.order,obj.ntrials,...
+            filter_func_handle = str2func(obj.filter_func);
+            filters{1} = filter_func_handle(nchannels,obj.order,obj.ntrials,...
                 'lambda',obj.lambda,'gamma',obj.gamma);
             
             % filter results are dependent on all input file parameters

@@ -148,6 +148,7 @@ for i=1:length(params)
                 'downsample',params(i).downsample,...
                 };
             pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
+            file_pdc = pdc_files{1};
             
             %% view set up
             % select pdc view params
@@ -157,7 +158,7 @@ for i=1:length(params)
                 sources_data_file,...
                 'envelope',params(i).envelope,...
                 'downsample',params(i).downsample);
-            view_obj.file_pdc = pdc_files{1};
+            view_obj.file_pdc = file_pdc;
             
             % add params for viewing
             params_plot_seed{1} = {'threshold',0.001};
@@ -187,38 +188,32 @@ for i=1:length(params)
                 end
                 
                 % plot significance level
-                view_sig_obj = pdc_analysis_create_view(...
-                    sources_data_file,...
-                    'envelope',params(i).envelope,...
-                    'downsample',params(i).downsample);
-                view_sig_obj.file_pdc = file_pdc_sig;
+                view_obj.file_pdc = file_pdc_sig;
                 
                 params_plot = {...
                             'threshold_mode','numeric',...
                             'threshold',0.001,...
                             'vertlines',[0 0.5],...
                             };
-                pdc_plot_seed_all(view_sig_obj,params_plot{:});
+                pdc_plot_seed_all(view_obj,params_plot{:});
                 
                 % plot pdc for each surrogate data set
                 plot_resample_pdc = false;
                 if plot_resample_pdc
                     max_files = min(5,length(pdc_resample_files));
                     for k=1:max_files
-                        view_obj_resample = pdc_analysis_create_view(...
-                            sources_data_file,...
-                            'envelope',params(i).envelope,...
-                            'downsample',params(i).downsample);
-                        view_obj_resample.file_pdc = pdc_resample_files{k};
+                        view_obj.file_pdc = pdc_resample_files{k};
                         
                         params_plot = {...
                             'threshold_mode','numeric',...
                             'threshold',0.001,...
                             'vertlines',[0 0.5],...
                             };
-                        pdc_plot_seed_all(view_obj_resample,params_plot{:});
+                        pdc_plot_seed_all(view_obj,params_plot{:});
                     end
                 end
+                
+                view_obj.file_pdc = file_pdc;
                 
             end
             
