@@ -87,17 +87,18 @@ pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
 
 %% pdc_bootstrap
 
-pdc_sig_file = pdc_bootstrap(lf_files{1},...
+file_pdc_sig = pdc_bootstrap(lf_files{1},...
     'null_mode','estimate_ind_channels',...
     'data_file',file_data,...
     'nresamples',10,'alpha',0.05,'pdc_params',pdc_params);
-% temp = loadfile(pdc_sig_file);
+% temp = loadfile(file_pdc_sig);
 % temp2 = [];
 % temp2.pdc = temp;
-% save_parfor(pdc_sig_file,temp2);
+% save_parfor(file_pdc_sig,temp2);
 
 %% plot significance
-view_sig_obj = ViewPDC(pdc_sig_file,'fs',1,'outdir','data','w',[0 0.5]);
+view_sig_obj = ViewPDC('fs',1,'outdir','data','w',[0 0.5]);
+view_sig_obj.file_pdc = file_pdc_sig;
 directions = {'outgoing','incoming'};
 for direc=1:length(directions)
     for ch=1:nchannels
@@ -122,8 +123,9 @@ params_plot_seed = {};
 params_plot_seed{1} = {'threshold_mode','significance'};
 % params_plot_seed{2} = {'threshold_mode','significance_alpha'};
 
-view_obj = ViewPDC(pdc_files{1},'fs',1,'outdir','data','w',[0 0.5]);
-view_obj.pdc_sig_file = pdc_sig_file;
+view_obj = ViewPDC('fs',1,'outdir','data','w',[0 0.5]);
+view_obj.file_pdc = pdc_files{1};
+view_obj.file_pdc_sig = file_pdc_sig;
 directions = {'outgoing','incoming'};
 for direc=1:length(directions)
     for ch=1:nchannels

@@ -8,6 +8,7 @@ k=1;
 
 params(k).stimulus = 'std-prestim1';
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+params(k).downsample = 4;
 params(k).metrics = {'diag'};
 params(k).ntrials = 20;
 params(k).order = ?;
@@ -23,6 +24,7 @@ k = k+1;
 
 params(k).stimulus = 'std-prestim1';
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+params(k).downsample = 4;
 params(k).metrics = {'diag'};
 params(k).ntrials = 20;
 params(k).order = ?;
@@ -38,6 +40,7 @@ k = k+1;
 
 params(k).stimulus = 'std-prestim1';
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+params(k).downsample = 4;
 params(k).metrics = {'diag'};
 params(k).ntrials = 20;
 params(k).order = ?;

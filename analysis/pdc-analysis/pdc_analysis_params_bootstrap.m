@@ -8,6 +8,7 @@ k=1;
 % NOTE gamma parameter not stable in bootstrapping step
 % params(k).stimulus = 'std';
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+% params(k).downsample = 4;
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
 % params(k).order = 12;
@@ -23,6 +24,7 @@ k=1;
 % % GOOD config
 % params(k).stimulus = 'std';
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+% params(k).downsample = 4;
 % params(k).metrics = {'euc','diag'};
 % params(k).ntrials = 20;
 % params(k).order = 11;
@@ -44,6 +46,7 @@ k=1;
 % % NOTE: lambda = 0.995 gives very little in terms of output
 % params(k).stimulus = 'std';
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+% params(k).downsample = 4;
 % params(k).metrics = {'diag','euc','info'};
 % params(k).ntrials = 20;
 % params(k).order = 7;
@@ -68,6 +71,7 @@ k=1;
 
 params(k).stimulus = 'std';
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+params(k).downsample = 4;
 % params(k).metrics = {'diag','euc','info'};
 params(k).metrics = {'diag'};
 params(k).ntrials = 20;
@@ -83,6 +87,7 @@ params(k).null_mode = 'estimate_ind_channels';
 k = k+1;
 
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+params(k).downsample = 4;
 % params(k).metrics = {'diag','euc','info'};
 params(k).metrics = {'diag'};
 params(k).ntrials = 20;

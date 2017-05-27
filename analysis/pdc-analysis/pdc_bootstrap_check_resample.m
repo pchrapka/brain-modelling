@@ -8,6 +8,8 @@ addParameter(p,'envelope',false,@islogical)
 addParameter(p,'patch_type','',@ischar);
 parse(p,file_pdc_sig,resample_idx,varargin{:});
 
+error('deprecated');
+
 [workingdir,sig_filename,~] = fileparts(file_pdc_sig);
 [~,filter_name,~] = fileparts([workingdir '.mat']);
 pattern = '(.*)-bootstrap.*';
@@ -22,12 +24,12 @@ pdc_tag = result{1}{1};
 resampledir = sprintf('resample%d',resample_idx);
 file_pdc_resample = fullfile(workingdir, resampledir, sprintf('%s-%s.mat',filter_name,pdc_tag));
 
-view_obj = pdc_analysis_create_view(...
-    file_pdc_resample,...
+view_obj = pdc_analysis_create_view(... 
     p.Results.eeg_file,...
     p.Results.leadfield_file,...
     'envelope',p.Results.envelope,...
     'patch_type',p.Results.patch_type);
+view_obj.file_pdc = file_pdc_resample;
 
 if p.Results.envelope
     view_switch(view_obj,'10')
@@ -36,23 +38,12 @@ else
     view_switch(view_obj,'beta')
     % following views at 15-25 Hz
 end
-nchannels = length(view_obj.info.label);
 
-directions = {'outgoing','incoming'};
-for direc=1:length(directions)
-    for ch=1:nchannels
-        
-        created = view_obj.plot_seed(ch,...
-            'direction',directions{direc},...
-            'threshold_mode','numeric',...
-            'threshold',0.001,...
-            'vertlines',[0 0.5]);
-        
-        if created
-            view_obj.save_plot('save',true,'engine','matlab');
-        end
-        close(gcf);
-    end
-end
+params_plot = {...
+    'threshold_mode','numeric',...
+    'threshold',0.001,...
+    'vertlines',[0 0.5],...
+    };
+pdc_plot_seed_all(view_obj_resample,params_plot{:});
 
 end

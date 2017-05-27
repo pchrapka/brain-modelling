@@ -7,6 +7,7 @@ k=1;
 
 params(k).stimulus = 'std';
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+params(k).downsample = 4;
 params(k).metrics = {'diag'};
 params(k).ntrials = [2 5 10 15 20 40];
 params(k).order = 3;

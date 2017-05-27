@@ -12,6 +12,7 @@ for i=1:length(gammas)
 %     %% aal-coarse-19-outer-nocer-plus2
 %     params(k).stimulus = 'std';
 %     params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+%     params(k).downsample = 4;
 %     params(k).metrics = {'diag','info'};
 %     params(k).ntrials = 20;
 %     params(k).order = 11;
@@ -28,6 +29,7 @@ for i=1:length(gammas)
     %% aal-coarse-19-outer-nocer-plus2 envelope
     params(k).stimulus = 'std';
     params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+    params(k).downsample = 4;
     params(k).metrics = {'diag'};%,'info'};
     params(k).ntrials = 20;
     params(k).order = orders(i);

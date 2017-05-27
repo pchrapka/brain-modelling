@@ -36,18 +36,24 @@ for i=1:length(params)
     nsamples = data.nsamples;
     clear data;
     
-    % set default options to warmup
-    run_options = {...
-        'warmup_noise',true,...
-        'warmup_data',true};
+    % TODO replace this
+    pdc_view = pdc_analysis_create_view(...
+                sources_data_file,...
+                'envelope',params(i).envelope,... % TODO need envelope info?
+                'downsample',params(i).downsample);
+    
+    pdc_obj = PDCAnalysis(sources_data_file,pdc_view);
+    pdc_obj.ntrials = params(i).ntrials;
+    pdc_obj.gamma = params(i).gamma;
+    pdc_obj.lambda = params(i).lambda;
+    pdc_obj.order = params(i).order;
     
     if isfield(params(i),'prepend_data')
         switch params(i).prepend_data
             case 'flipdata'
                 % no warmup necessary if lattice_filter_prep_data prepends data
-                run_options = {...
-                    'warmup_noise',false,...
-                    'warmup_data', false};
+                pdc_obj.warmup_noise = false;
+                pdc_obj.warmup_data = false;
         end
     end
     
@@ -87,22 +93,10 @@ for i=1:length(params)
                     idx_end = ceil(nsamples_half*0.95) + nsamples_half;
             end
         end
-        criteria_samples = [idx_start idx_end];
+        pdc_obj.tune_criteria_samples = [idx_start idx_end];
         
-        flag_plot_params = false;
-        tune_lattice_filter_parameters(...
-            tune_file,...
-            outdir,...
-            'plot_gamma',flag_plot_params,...
-            'plot_lambda',flag_plot_params,...
-            'plot_order',true,...
-            'filter','MCMTLOCCD_TWL4',...
-            'ntrials',params(i).ntrials,...
-            'gamma',params(i).gamma,...
-            'lambda',params(i).lambda,...
-            'order',params(i).order,...
-            'run_options',run_options,...
-            'criteria_samples',criteria_samples);
+        pdc_obj.tune_plot_order = true;
+        pdc_obj.tune();
         
     end
     
@@ -113,129 +107,54 @@ for i=1:length(params)
         % loop over metrics
         for j=1:length(params(i).metrics)
             
-            %% compute RC with lattice filter
-            % select lf params
-            params_func = struct2namevalue(params2, 'fields', {'ntrials','order','lambda','gamma'});
-            
-            lf_files = lattice_filter_sources(...
-                sources_filter_file,...
-                'outdir',outdir,...
-                'run_options',run_options,...
-                'tracefields', {'Kf','Kb','Rf','ferror','berrord'},...
-                'verbosity',0,...
-                params_func{:});
-            % added Rf for info criteria
-            % added ferror for bootstrap
-            
+            %% compute pdc
             if isfield(params(i),'prepend_data')
                 switch params(i).prepend_data
                     case 'flipdata'
-                        lf_files = lattice_filter_remove_data(lf_files,[1 nsamples/2]);
+                        pdc_obj.filter_post_remove_samples = [1 nsamples/2];
                 end
             end
             
-            %% compute pdc
-            downsample_by = 4;
-            pdc_params = {...
-                'metric',params(i).metrics{j},...
-                'downsample',downsample_by,...
-                };
-            pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
-            
-            %% view set up
-            % select pdc view params
-%             params_func = struct2namevalue(params2,'fields',{'patch_type','envelope'});
-            
-            % create the ViewPDC obj
-            view_obj = pdc_analysis_create_view(...
-                pdc_files{1},...
-                sources_data_file,...
-                'envelope',params(i).envelope,...
-                'downsample',downsample_by);
+            pdc_obj.downsample = params(i).downsample;
+            pdc_obj.metric = params(i).metrics{j};
+            pdc_obj.pdc();
             
             % add params for viewing
             params_plot_seed{1} = {'threshold',0.001};
             
             %% bootstrap
             if p.Results.flag_bootstrap
-                params_func = struct2namevalue(params2,...
-                    'fields', {'nresamples','alpha','null_mode'});
-                [pdc_sig_file, pdc_resample_files] = pdc_bootstrap(...
-                    lf_files{1},...
-                    sources_data_file,...
-                    'run_options',run_options,...
-                    params_func{:},...
-                    'pdc_params',pdc_params);
-                
-                % add significance threshold data
-                view_obj.pdc_sig_file = pdc_sig_file;
+                pdc_obj.surrogate_nresamples = params2.nresamples;
+                pdc_obj.surrogate_alpha = params2.alpha;
+                pdc_obj.surrogate_null_mode = params2.null_mode;
+                pdc_obj.surrogate();
                 
                 params_plot_seed{2} = {...
                     'threshold_mode','significance',...
                     'tag',params2.null_mode};
                 
-                % bootstrap checks
-                check_bt_data = false;
-                if check_bt_data
-                    %pdc_bootstrap_check(pdc_sig_file, sources_mini_file);
-                    resample_idx = 1;
-                    pdc_bootstrap_check_resample(pdc_sig_file,resample_idx,...
-                        params_func{:},...
-                        'eeg_file',eeg_file,'leadfield_file',leadfield_file);
-                end
-                
-                % plot significance level
-                view_sig_obj = pdc_analysis_create_view(...
-                    pdc_sig_file,...
-                    sources_data_file,...
-                    'envelope',params(i).envelope,...
-                    'downsample',downsample_by);
-                
-                pdc_plot_seed_threshold(view_sig_obj);
+                % plot significance levels
+                pdc_obj.plot_significance_level();
                 
                 % plot pdc for each surrogate data set
                 plot_resample_pdc = false;
                 if plot_resample_pdc
-                    max_files = min(5,length(pdc_resample_files));
-                    for k=1:max_files
-                        view_obj_resample = pdc_analysis_create_view(...
-                            pdc_resample_files{k},...
-                            sources_data_file,...
-                            'envelope',params(i).envelope,...
-                            'downsample',downsample_by);
-                        
-                        pdc_plot_seed_threshold(view_obj_resample);
-                    end
+                    pdc_obj.plot_surrogate_pdc();
                 end
                 
             end
             
             %% plot seed
             if p.Results.flag_plot_seed
-                nchannels = length(view_obj.info.label);
-                directions = {'outgoing','incoming'};
-                for direc=1:length(directions)
-                    for ch=1:nchannels
-                        for idx_param=1:length(params_plot_seed)
-                            params_plot_seed_cur = params_plot_seed{idx_param};
-                            
-                            created = view_obj.plot_seed(ch,...
-                                'direction',directions{direc},...
-                                params_plot_seed_cur{:},...
-                                'vertlines',[0 0.5]);
-                            
-                            if created
-                                view_obj.save_plot('save',true,'engine','matlab');
-                            end
-                            close(gcf);
-                        end
-                    end
+                for idx_param=1:length(params_plot_seed)
+                    params_plot = [params_plot_seed{idx_param}, {'vertlines',[0 0.5]}];
+                    pdc_obj.plot_seed(view_obj,params_plot{:});
                 end
             end
             
             %% plot connectivity
             if p.Results.flag_plot_conn
-                nsamples_real = floor(nsamples/downsample_by);
+                nsamples_real = floor(nsamples/params(i).downsample);
                 idx_start = 0.25*nsamples_real;
                 idx_end = nsamples_real;
                 sample_idx = idx_start:idx_end;
@@ -249,9 +168,9 @@ for i=1:length(params)
                     end
                 end
                 
-                view_obj.plot_connectivity_matrix('samples',sample_idx);
+                pdc_obj.view.plot_connectivity_matrix('samples',sample_idx);
                 
-                view_obj.save_plot('save',true,'engine','matlab');
+                pdc_obj.view.save_plot('save',true,'engine','matlab');
                 close(gcf);
             end
             

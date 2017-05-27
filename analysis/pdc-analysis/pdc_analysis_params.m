@@ -98,6 +98,7 @@ k=1;
 %% aal-coarse-19-outer-nocer-plus2 envelope, 40 trials
 
 % params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+% params(k).downsample = 4;
 % params(k).metrics = {'diag','info'};
 % params(k).ntrials = 40;
 % params(k).order = 3;
@@ -110,6 +111,7 @@ k=1;
 %% aal-coarse-19-outer-plus, 60 trials
 
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+params(k).downsample = 4;
 params(k).metrics = {'diag','info'};
 params(k).ntrials = 60;
 params(k).order = 3;
@@ -122,6 +124,7 @@ k = k+1;
 %% aal-coarse-19-outer-nocer-plus2 envelope, 60 trials
 
 params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+params(k).downsample = 4;
 params(k).metrics = {'diag','info'};
 params(k).ntrials = 60;
 params(k).order = 3;

@@ -135,10 +135,9 @@ for i=1:length(params)
             end
             
             %% compute pdc
-            downsample_by = 4;
             pdc_params = {...
                 'metric',params(i).metrics{j},...
-                'downsample',downsample_by,...
+                'downsample',params(i).downsample,...
                 };
             pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
             
@@ -148,10 +147,10 @@ for i=1:length(params)
             
             % create the ViewPDC obj
             view_obj = pdc_analysis_create_view(...
-                pdc_files{1},...
                 sources_data_file,...
                 'envelope',params(i).envelope,...
-                'downsample',downsample_by);
+                'downsample',params(i).downsample);
+            view_obj.file_pdc = pdc_files{1};
             
             % add params for viewing
             params_plot_seed{1} = {'threshold',0.001};
@@ -160,7 +159,7 @@ for i=1:length(params)
             if p.Results.flag_bootstrap
                 params_func = struct2namevalue(params2,...
                     'fields', {'nresamples','alpha','null_mode'});
-                [pdc_sig_file, pdc_resample_files] = pdc_bootstrap(...
+                [file_pdc_sig, pdc_resample_files] = pdc_bootstrap(...
                     lf_files{1},...
                     sources_data_file,...
                     'run_options',run_options,...
@@ -168,7 +167,7 @@ for i=1:length(params)
                     'pdc_params',pdc_params);
                 
                 % add significance threshold data
-                view_obj.pdc_sig_file = pdc_sig_file;
+                view_obj.file_pdc_sig = file_pdc_sig;
                 
                 params_plot_seed{2} = {...
                     'threshold_mode','significance',...
@@ -177,21 +176,22 @@ for i=1:length(params)
                 % bootstrap checks
                 check_bt_data = false;
                 if check_bt_data
-                    %pdc_bootstrap_check(pdc_sig_file, sources_mini_file);
-                    resample_idx = 1;
-                    pdc_bootstrap_check_resample(pdc_sig_file,resample_idx,...
-                        params_func{:},...
-                        'eeg_file',eeg_file,'leadfield_file',leadfield_file);
+                    %pdc_bootstrap_check(file_pdc_sig, sources_mini_file);
                 end
                 
                 % plot significance level
                 view_sig_obj = pdc_analysis_create_view(...
-                    pdc_sig_file,...
                     sources_data_file,...
                     'envelope',params(i).envelope,...
-                    'downsample',downsample_by);
+                    'downsample',params(i).downsample);
+                view_sig_obj.file_pdc = file_pdc_sig;
                 
-                pdc_plot_seed_threshold(view_sig_obj);
+                params_plot = {...
+                            'threshold_mode','numeric',...
+                            'threshold',0.001,...
+                            'vertlines',[0 0.5],...
+                            };
+                pdc_plot_seed_all(view_sig_obj,params_plot{:});
                 
                 % plot pdc for each surrogate data set
                 plot_resample_pdc = false;
@@ -199,12 +199,17 @@ for i=1:length(params)
                     max_files = min(5,length(pdc_resample_files));
                     for k=1:max_files
                         view_obj_resample = pdc_analysis_create_view(...
-                            pdc_resample_files{k},...
                             sources_data_file,...
                             'envelope',params(i).envelope,...
-                            'downsample',downsample_by);
+                            'downsample',params(i).downsample);
+                        view_obj_resample.file_pdc = pdc_resample_files{k};
                         
-                        pdc_plot_seed_threshold(view_obj_resample);
+                        params_plot = {...
+                            'threshold_mode','numeric',...
+                            'threshold',0.001,...
+                            'vertlines',[0 0.5],...
+                            };
+                        pdc_plot_seed_all(view_obj_resample,params_plot{:});
                     end
                 end
                 
@@ -212,30 +217,17 @@ for i=1:length(params)
             
             %% plot seed
             if p.Results.flag_plot_seed
-                nchannels = length(view_obj.info.label);
-                directions = {'outgoing','incoming'};
-                for direc=1:length(directions)
-                    for ch=1:nchannels
-                        for idx_param=1:length(params_plot_seed)
-                            params_plot_seed_cur = params_plot_seed{idx_param};
-                            
-                            created = view_obj.plot_seed(ch,...
-                                'direction',directions{direc},...
-                                params_plot_seed_cur{:},...
-                                'vertlines',[0 0.5]);
-                            
-                            if created
-                                view_obj.save_plot('save',true,'engine','matlab');
-                            end
-                            close(gcf);
-                        end
-                    end
+                
+                for idx_param=1:length(params_plot_seed)
+                    params_plot = [params_plot_seed{idx_param}, {'vertlines',[0 0.5]}];
+                    pdc_plot_seed_all(view_obj,params_plot{:});
                 end
+                
             end
             
             %% plot connectivity
             if p.Results.flag_plot_conn
-                nsamples_real = floor(nsamples/downsample_by);
+                nsamples_real = floor(nsamples/params(i).downsample);
                 idx_start = 0.25*nsamples_real;
                 idx_end = nsamples_real;
                 sample_idx = idx_start:idx_end;

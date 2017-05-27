@@ -4,25 +4,26 @@ classdef ViewPDC < handle
     
     properties 
         w;
-        pdc_sig_file;
+        file_pdc;
+        file_pdc_sig;
     end
     
     properties (SetAccess = protected)
         pdc;
         pdc_sig;
-        file;
         fs;
         info;
         time;
         
         save_tag; % save tag for each plot type
-        filepath;
-        filename;
         outdir;
+        outdir_type;
     end
     
     properties (Dependent)
         freq_tag; % freq tag for saving
+        filepath;
+        filename;
     end
     
     methods
@@ -43,8 +44,6 @@ classdef ViewPDC < handle
             end
             
             obj.pdc = [];
-            obj.file = file;
-            [obj.filepath,obj.filename,~] =  fileparts(obj.file);
             obj.w = p.Results.w;
             obj.fs = p.Results.fs;
             obj.time = p.Results.time;
@@ -52,8 +51,34 @@ classdef ViewPDC < handle
             
             obj.save_tag = [];
             if isequal(p.Results.outdir,'data')
-                obj.outdir = obj.filepath;
+                obj.outdir_type = 'data';
+            else
+                obj.outdir_type = 'custom';
+                obj.outdir = p.Results.outdir;
             end
+        end
+        
+        function set.file_pdc(obj,value)
+            p = inputParser();
+            addRequired(p,'file_pdc',@ischar);
+            parse(p,value);
+            
+            obj.unload();
+            obj.file_pdc = p.Results.file_pdc;
+        end
+        
+        function value = get.filepath(obj)
+            if isempty(obj.file_pdc)
+                error('file_pdc is empty');
+            end
+            [value,~,~] =  fileparts(obj.file_pdc);
+        end
+        
+        function value = get.filename(obj)
+            if isempty(obj.file_pdc)
+                error('file_pdc is empty');
+            end
+            [~,value,~] =  fileparts(obj.file_pdc);
         end
         
         function set.w(obj,value)
@@ -81,8 +106,8 @@ classdef ViewPDC < handle
             switch property
                 case 'pdc'
                     if isempty(obj.pdc)
-                        print_msg_filename(obj.file,'loading');
-                        data = loadfile(obj.file);
+                        print_msg_filename(obj.file_pdc,'loading');
+                        data = loadfile(obj.file_pdc);
                         obj.pdc = data.pdc;
                         
                         dims = size(obj.pdc);
@@ -94,11 +119,11 @@ classdef ViewPDC < handle
                     end
                 case 'pdc_sig'
                     if isempty(obj.pdc_sig)
-                        if isempty(obj.pdc_sig_file)
-                            error('missing pdc_sig_file');
+                        if isempty(obj.file_pdc_sig)
+                            error('missing file_pdc_sig');
                         end
-                        print_msg_filename(obj.pdc_sig_file,'loading');
-                        data = loadfile(obj.pdc_sig_file);
+                        print_msg_filename(obj.file_pdc_sig,'loading');
+                        data = loadfile(obj.file_pdc_sig);
                         obj.pdc_sig = data.pdc;
                         
                         % pdc sig needs to be same size as pdc
@@ -186,7 +211,7 @@ classdef ViewPDC < handle
             % checks PDC data file timestamp vs the newfile timestamp
             fresh = false;
             if exist(newfile,'file')
-                data_time = get_timestamp(obj.file);
+                data_time = get_timestamp(obj.file_pdc);
                 new_time = get_timestamp(newfile);
                 if data_time > new_time
                     fresh = true;
@@ -208,8 +233,12 @@ classdef ViewPDC < handle
             
             if isempty(value)
                 if isempty(obj.outdir)
-                    outdir = pwd;
-                    warning('no output directory specified\nusing default %s',outdir);
+                    if isequal(obj.outdir_type,'data')
+                        outdir = obj.filepath;
+                    else
+                        outdir = pwd;
+                        warning('no output directory specified\nusing default %s',outdir);
+                    end
                 else
                     outdir = obj.outdir;
                 end

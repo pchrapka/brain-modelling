@@ -3,6 +3,11 @@ classdef PDCAnalysis < handle
     %   Detailed explanation goes here
     
     properties
+        file_data = '';
+        file_pdc = '';
+        file_pdc_sig = '';
+        file_lf = '';
+        
         view;
         % what do i do with plots?
         % configure a few to make it easier?
@@ -21,6 +26,8 @@ classdef PDCAnalysis < handle
         warmup_noise = true;
         warmup_data = true;
         tracefields = {'Kf','Kb','Rf','ferror','berrord'};
+        
+        filter_post_remove_samples = [];
         
         % pdc options
         downsample = 1;
@@ -43,26 +50,166 @@ classdef PDCAnalysis < handle
     end
     
     methods
-        function obj = PDCAnalysis(data_file)
+        function obj = PDCAnalysis(data_file,view)
             % TODO set defaults
             % TODO what about a parameter list of inputs? or just let
             % whoever modify them as required using the properties
             % TODO sanity check data in data_file
+            obj.file_data = data_file;
             % TODO set up output dirs
             
-            %view = ViewPDC(); % TODO create empty object
+            % TODO can i know the pdc output file name?
+            %view = ViewPDC(); % TODO create empty object 
+            obj.view = view;
         end
         
         function pdc(obj)
             % compute pdc
+            
+            % compute RC with lattice filter
+            
+            % TODO replace lattice_filter_sources with content from that
+            % function
+            lf_files = lattice_filter_sources(...
+                obj.file_data,...
+                'outdir',outdir,... % TODO
+                'run_options',{obj.warmup_data,obj.warmup_noise},...
+                'tracefields', obj.tracefields,...
+                'verbosity',0,...
+                'ntrials',obj.ntrials,...
+                'gamma',obj.gamma,...
+                'lambda',obj.lambda,...
+                'order',obj.order);
+            % added Rf for info criteria
+            % added ferror for bootstrap
+            
+            if ~isempty(obj.filter_post_remove_samples)
+                lf_files = lattice_filter_remove_data(lf_files,obj.filter_post_remove_samples);
+            end
+            obj.file_lf = lf_files{1};
+            
+            % compute pdc
+            pdc_params = {...
+                'metric',obj.metric,...
+                'downsample',obj.downsample,...
+                };
+            % TODO replace rc2pdc_dynamic_from_lf_files, i'm only doing one
+            % file
+            pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
+            obj.file_pdc = pdc_files{1};
+            
+            obj.view.file_pdc = obj.file_pdc;
         end
         
         function surrogate(obj)
             % do surrogate analysis
+            % NOTE requireds pdc() to be run first
+            
+            [obj.file_pdc_sig, pdc_resample_files] = pdc_bootstrap(...
+                obj.file_lf,...
+                sources_data_file,... % TODO how do i get this info?
+                'run_options',{obj.warmup_data,obj.warmup_noise},...
+                'null_mode',obj.surrogate_null_mode,...
+                'nresamples',obj.surrogate_nresamples,...
+                'alpha',obj.surrogate_alpha,...
+                'pdc_params',{'metric',obj.metric,'downsample',obj.downsample});
+            
+            % add significance threshold data
+            obj.view.file_pdc_sig = obj.file_pdc_sig;
+
+            % TODO figure out how to do sig plots
+%             params_plot_seed{2} = {...
+%                 'threshold_mode','significance',...
+%                 'tag',obj.surrogate_null_mode};    
+            
+        end
+        
+        function plot_significance_level(obj)
+            % plot significance level
+            
+            obj.view.file_pdc = obj.file_pdc_sig;
+            params = {
+                'threshold_mode','numeric',...
+                'threshold',0.001,...
+                'vertlines',[0 0.5],...
+                };
+            obj.plot_seed(params{:});
+            
+            % switch back to original
+            obj.view.file_pdc = obj.file_pdc;
+        end
+        
+        function plot_surrogate_pdc(obj,varargin)
+            p = inputParser();
+            addParameter(p,'nplots',5,@(x) isnumeric(x) && (x <= obj.surrogate_nresamples));
+            parse(p,varargin{:});
+            
+            % plot pdc for each surrogate data set
+            for k=1:p.Results.nplots
+                
+                % TODO sample resample files
+                obj.view.file_pdc = pdc_resample_files{k};
+                
+                params = {
+                    'threshold_mode','numeric',...
+                    'threshold',0.001,...
+                    'vertlines',[0 0.5],...
+                    };
+                obj.plot_seed(params{:})
+            end
+            
+            % switch back to original
+            obj.view.file_pdc = obj.file_pdc;
         end
         
         function tune(obj)
             % do tuning stuff
+            
+            tune_lattice_filter_parameters(...
+                tune_file,... % is this just the source file?
+                outdir,... % TODO
+                'plot_gamma',obj.tune_plot_gamma,...
+                'plot_lambda',obj.tune_plot_lambda,...
+                'plot_order',obj.tune_plot_order,...
+                'filter',obj.filter_name,...
+                'ntrials',obj.ntrials,...
+                'gamma',obj.gamma,...
+                'lambda',obj.lambda,...
+                'order',obj.order,...
+                'run_options',{obj.warmup_data,obj.warmup_noise},...
+                'criteria_samples',obj.tune_criteria_samples);
+        end
+        
+        function plot_seed(obj,varargin)
+            
+            nchannels = length(obj.view.info.label);
+            
+            directions = {'outgoing','incoming'};
+            for direc=1:length(directions)
+                params_plot = [varargin, {'direction',directions{direc}}];
+                for ch=1:nchannels
+
+                    % get the save tag only
+                    obj.view.plot_seed(ch, params_plot{:},...
+                        'get_save_tag',true);
+                    [outdir, outfile] = obj.view.get_fullsavefile();
+                    
+                    file_name_date = datestr(now, 'yyyy-mm-dd');
+                    if exist(fullfile([outdir '/img'],[file_name_date '-' outfile '.eps']),'file')
+                        fprintf('%s: skipping %s\n',mfilename,outfile);
+                        continue;
+                    end
+                    
+                    % plot for reals
+                    created = obj.view.plot_seed(ch, params_plot{:});
+                    
+                    if created
+                        obj.view.save_plot('save',true,'engine','matlab');
+                    end
+                    close(gcf);
+                end
+            end
+            
         end
     end
     
