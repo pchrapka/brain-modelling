@@ -27,12 +27,10 @@ function run_benchmark_pdc(script_name,varargin)
 %       array of benchmark parameters, including the following fields
 %       filter (object)
 %           filter Object
-%   warmup_noise (logical, default = true)
-%       flag for warming up the filter with noise, this helps with filter
-%       initialization
-%   warmup_data (logical, default = false)
-%       flag for warming up the filter with simulated data, this helps with
-%       filter initialization
+%   warmup (cell array, default = {'noise'})
+%       filter warmup options, specified by cell array and are executed in
+%       that order 
+%       options: data, flipdata, noise
 %   warmup_data_ntrials (integer, default = 1)
 %       selects number of trials to pass through filter for warmup, relevant
 %       only if warmup_data = true
@@ -51,9 +49,8 @@ addParameter(p,'name','benchmark1',@ischar);
 addParameter(p,'data_name','vrc-coupling0-fixed',@ischar);
 addParameter(p,'data_params',{},@iscell);
 addParameter(p,'sim_params',[]);
-addParameter(p,'warmup_noise',true,@islogical);
-addParameter(p,'warmup_data',false,@islogical);
-addParameter(p,'warmup_data_ntrials',1,@isnumeric);
+addParameter(p,'warmup',{'noise'},@iscell);
+addParameter(p,'warmup_data_ntrials',1,@(x) error('deprecated fix this'));
 addParameter(p,'force',false,@islogical);
 addParameter(p,'verbosity',0,@isnumeric);
 addParameter(p,'plot_pdc',true,@islogical);
@@ -167,33 +164,10 @@ parfor k=1:nsim_params
         
         trace = LatticeTrace(sim_param.filter,'fields',{'Kf','Kb'});
         
-        ntime = size(sources,2);
-        
-        % warmup filter with noise
-        if p.Results.warmup_noise
-            noise = gen_noise(nchannels, ntime, ntrials);
-            
-            % run filter on noise
-            warning('off','all');
-            trace.warmup(noise);
-            warning('on','all');
-        end
-        
-        % warmup filter with simulated data
-        if p.Results.warmup_data
-            % use last
-            sim_idx_start = ntrials + 1;
-            sim_idx_end = sim_idx_start + ntrials - 1;
-            
-            % run filter on sim data
-            warning('off','all');
-            trace.warmup(sources(:,:,sim_idx_start:sim_idx_end));
-            warning('on','all');
-        end
-        
         % run the filter on data
         warning('off','all');
         trace.run(sources(:,:,1:ntrials),...
+            'warmup',p.Results.warmup,...
             'verbosity',p.Results.verbosity,...
             'mode','none');
         warning('on','all');

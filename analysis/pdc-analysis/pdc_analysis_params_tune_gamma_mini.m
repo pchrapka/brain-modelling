@@ -89,16 +89,12 @@ end
 criteria_samples = [idx_start idx_end];
 
 % set default options to warmup
-run_options = {...
-    'warmup_noise',true,...
-    'warmup_data',true};
+run_options = {'warmup',{'noise','data'},'verbosity',1};
 
 switch prepend_data
     case 'flipdata'
         % no warmup necessary if lattice_filter_prep_data prepends data
-        run_options = {...
-            'warmup_noise',false,...
-            'warmup_data', false};
+        run_options = {'warmup',{},'verbosity',1};
 end
 
 [~,tunename,~] = fileparts(tune_file);

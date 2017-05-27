@@ -39,8 +39,10 @@ for i=1:length(params)
     % TODO replace this
     pdc_view = pdc_analysis_create_view(...
         sources_data_file,...
-        'envelope',params(i).envelope,... % TODO need envelope info?
+        'envelope',params(i).envelope,... % TODO need envelope info for setting view frequency range
         'downsample',params(i).downsample);
+    % TODO can i make envelope a top level parameter?
+    % TODO add normalize and prepend to LatticeTrace?
             
     % NOTE params not required after this point
     % - envelope
@@ -55,8 +57,7 @@ for i=1:length(params)
         switch params(i).prepend_data
             case 'flipdata'
                 % no warmup necessary if lattice_filter_prep_data prepends data
-                pdc_obj.warmup_noise = false;
-                pdc_obj.warmup_data = false;
+                pdc_obj.warmup = {};
         end
     end
     

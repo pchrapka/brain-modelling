@@ -16,12 +16,10 @@ function outfiles = run_lattice_filter(datain,varargin)
 %       the default directory will be the current working folder.
 %   filters (cell array)
 %       array of filter objects
-%   warmup_noise (logical, default = true)
-%       flag for warming up the filter with noise, this helps with filter
-%       initialization
-%   warmup_data (logical, default = false)
-%       flag for warming up the filter with data, this helps with filter
-%       initialization
+%   warmup (cell array, default = {'noise'})
+%       filter warmup options, specified by cell array and are executed in
+%       that order 
+%       options: data, flipdata, noise
 %   tracefields (cell array, default = {'Kf','Kb'})
 %       fields to save from LatticeTrace object
 %   normalization (string, default = 'none')
@@ -43,8 +41,7 @@ addRequired(p,'datain',@(x) isnumeric(x) || ischar(x));
 addParameter(p,'outdir','lfoutput',@ischar);
 addParameter(p,'basedir','',@ischar);
 addParameter(p,'filters',[]);
-addParameter(p,'warmup_noise',true,@islogical);
-addParameter(p,'warmup_data',false,@islogical);
+addParameter(p,'warmup',{'noise'},@iscell);
 addParameter(p,'force',false,@islogical);
 addParameter(p,'verbosity',0,@isnumeric);
 addParameter(p,'tracefields',{'Kf','Kb'},@iscell);
@@ -119,9 +116,8 @@ large_error_name = cell(nfilters,1);
 % copy fields for parfor, don't want to pass another copy of datain if it's
 % a struct
 options = copyfields(p.Results,[],{...
-    'warmup_noise','warmup_data','force','verbosity','tracefields'});
+    'warmup','force','verbosity','tracefields'});
 
-nchannels = filters{1}.nchannels;
 outfiles = cell(nfilters,1);
 
 parfor k=1:nfilters
@@ -166,62 +162,14 @@ parfor k=1:nfilters
         
         trace = LatticeTrace(filter,'fields',options.tracefields);
         
-        ntime = size(datain,2);
-        
-        % warmup filter with noise
-        if options.warmup_noise
-            fprintf('warming up with noise\n');
-            noise = gen_noise(nchannels, ntime, ntrials);
-            
-            % run filter on noise
-            trace.warmup(noise);
-            
-%             warning('off','all');
-%             try
-%                 trace.warmup(noise);
-%             catch me
-%                 msgText = getReport(me);
-%                 warning('on','all');
-%                 warning(msgText);
-%             end
-%             warning('on','all');
-        end
-        
         idx_start = 1;
         idx_end = idx_start + ntrials - 1;
         
-        % warmup filter with simulated data
-        if options.warmup_data
-            fprintf('warming up with data\n');
-            
-            % warm up filter on some data
-            trace.warmup(flipdim(datain(:,:,idx_start:idx_end),2));
-%             warning('off','all');
-%             %try
-%                 trace.warmup(flipdim(datain(:,:,idx_start:idx_end),2));
-%             catch me
-%                 msgText = getReport(me);
-%                 warning('on','all');
-%                 warning(msgText);
-%             end
-%             warning('on','all');
-        end
-        
         % run the filter on data
         trace.run(datain(:,:,idx_start:idx_end),...
-                'verbosity',options.verbosity,...
-                'mode','none');
-%         warning('off','all');
-%         try
-%             trace.run(datain(:,:,idx_start:idx_end),...
-%                 'verbosity',options.verbosity,...
-%                 'mode','none');
-%         catch me
-%             msgText = getReport(me);
-%             warning('on','all');
-%             warning(msgText);
-%         end
-%         warning('on','all');
+            'warmup',options.warmup,...
+            'verbosity',options.verbosity,...
+            'mode','none');
         
         % copy the filter name
         trace.name = trace.filter.name;

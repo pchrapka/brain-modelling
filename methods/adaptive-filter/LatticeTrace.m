@@ -260,6 +260,8 @@ classdef LatticeTrace < handle
         end
         
         function warmup(obj,noise)
+            % warms up lattice filter with noise/data provided
+            %
             %   Input
             %   -----
             %   noise (matrix)
@@ -270,6 +272,9 @@ classdef LatticeTrace < handle
         end
         
         function run(obj,samples,varargin)
+            % runs lattice filter with data provided and tracks the
+            % specified fields of the filter
+            %
             %   Input
             %   -----
             %   samples (matrix)
@@ -285,6 +290,10 @@ classdef LatticeTrace < handle
             %       LatticeTrace.plot_trace
             %   verbosity (default = 0)
             %       selects chattiness of code, options: 0,1,2
+            %   warmup (cell array, default = {})
+            %       warmup options, specified by cell array and are
+            %       executed in that order
+            %       options: data, flipdata, noise
             
             p = inputParser();
             addRequired(p,'samples');
@@ -292,10 +301,39 @@ classdef LatticeTrace < handle
                 @(x) any(validatestring(x,{'none','plot'})));
             addParameter(p,'verbosity',0,@isnumeric);
             addParameter(p,'plot_options',{},@iscell);
+            options_warmup = {'data','flipdata','noise'};
+            addParameter(p,'warmup',{},@(x) isempty(x) ||...
+                all(cellfun(@(y) any(validatestring(y,options_warmup)),x)));
             parse(p,samples,varargin{:});
             
             % get size
-            nsamples = size(samples,2);
+            [nchannels,nsamples,ntrials] = size(samples);
+            
+            if ~isempty(p.Results.warmup)
+                % warm up filter
+                for i=1:length(p.Results.warmup)
+                    switch p.Results.warmup{i}
+                        case 'data'
+                            if p.Results.verbosity > 0
+                                fprintf('warming up with data\n');
+                            end
+                            obj.warmup(samples);
+                        case 'flipdata'
+                            if p.Results.verbosity > 0
+                                fprintf('warming up with flipped data\n');
+                            end
+                            obj.warmup(flipdim(samples,2));
+                        case 'noise'
+                            if p.Results.verbosity > 0
+                                fprintf('warming up with noise\n');
+                            end
+                            noise = gen_noise(nchannels, nsamples, ntrials);
+                            obj.warmup(noise);
+                        otherwise
+                            error('unknown warmup method %s',p.Results.warmup{i});
+                    end
+                end
+            end
             
             % init the trace
             obj.trace_init(nsamples);

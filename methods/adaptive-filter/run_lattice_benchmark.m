@@ -28,12 +28,9 @@ function outfile = run_lattice_benchmark(varargin)
 %           parameters to configure VARGenerator
 %       label (string)
 %           data label for plots
-%   warmup_noise (logical, default = true)
-%       flag for warming up the filter with noise, this helps with filter
-%       initialization
-%   warmup_data (logical, default = false)
-%       flag for warming up the filter with simulated data, this helps with
-%       filter initialization
+%   warmup (cell array, default = {'noise'})
+%       options for warming up the filter, which are executed in the order
+%       provided, options: noise, data, flipdata
 %   warmup_data_same (logical, default = false)
 %       flag for warming up the filter with the same data as used for
 %       filtering
@@ -71,8 +68,7 @@ addParameter(p,'basedir','',@ischar);
 % options_data_name = {'var-no-coupling'};
 % addParameter(p,'data_name','var-no-coupling',@(x) any(validatestring(x,options_data_name)));
 addParameter(p,'sim_params',[]);
-addParameter(p,'warmup_noise',true,@islogical);
-addParameter(p,'warmup_data',false,@islogical);
+addParameter(p,'warmup',{'noise'},@iscell);
 addParameter(p,'warmup_data_same',false,@islogical);
 addParameter(p,'warmup_data_nsims',1,@isnumeric);
 addParameter(p,'warmup_flipdata',false,@islogical);
@@ -207,6 +203,7 @@ for k=1:nsim_params
             
             % warmup filter with noise
             if p.Results.warmup_noise
+                error('fix warmup sequence');
                 noise = gen_noise(nchannels, ntime, ntrials);
                 
                 % run filter on noise
