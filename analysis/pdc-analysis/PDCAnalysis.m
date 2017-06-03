@@ -21,6 +21,7 @@ classdef PDCAnalysis < handle
         
         ncores = 1;
         
+        % TODO replace some of these with LatticeFilterAnalysis object
         % lattice filter options
         ntrials = 0;
         nchannels = 0;
@@ -37,8 +38,8 @@ classdef PDCAnalysis < handle
         filter_post_remove_samples = [];
         
         % pdc options
-        downsample = 1;
-        metric = 'euc';
+        pdc_downsample = 1;
+        pdc_metric = 'euc';
         
         % tuning options
         tune_plot_gamma = false;
@@ -87,6 +88,11 @@ classdef PDCAnalysis < handle
             filters{1} = filter_func_handle(nchannels,obj.order,obj.ntrials,...
                 'lambda',obj.lambda,'gamma',obj.gamma);
             
+%             lf_obj = LatticeFilter(filters{1});
+%             lf_obj.preprocessing();
+%             lf_obj.run();
+%             lf_obj.postprocessing();
+            
             % filter results are dependent on all input file parameters
             [~,exp_name,~] = fileparts(obj.file_data);
             
@@ -113,8 +119,8 @@ classdef PDCAnalysis < handle
             
             % compute pdc
             pdc_params = {...
-                'metric',obj.metric,...
-                'downsample',obj.downsample,...
+                'metric',obj.pdc_metric,...
+                'downsample',obj.pdc_downsample,...
                 };
             pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
             obj.file_pdc = pdc_files{1};
@@ -135,7 +141,7 @@ classdef PDCAnalysis < handle
                 'null_mode',obj.surrogate_null_mode,...
                 'nresamples',obj.surrogate_nresamples,...
                 'alpha',obj.surrogate_alpha,...
-                'pdc_params',{'metric',obj.metric,'downsample',obj.downsample});
+                'pdc_params',{'metric',obj.pdc_metric,'downsample',obj.pdc_downsample});
             
             % add significance threshold data
             obj.view.file_pdc_sig = obj.file_pdc_sig;

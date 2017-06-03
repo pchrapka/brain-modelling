@@ -15,26 +15,26 @@ for i=1:length(params)
     subject = 3;
     deviant_percent = 10;
     
-    [pipeline,outdirbase] = eeg_processall_andrew(...
+    out = eeg_processall_andrew(...
         params(i).stimulus,subject,deviant_percent,params(i).patch_type);
+    outdirbase = out.outdir;
+    sources_data_file = out.file_sources_info;
+    sources_filter_file = out.file_sources;
     
     % separate following output based on patch model
     outdir = fullfile(outdirbase,params(i).patch_type);
+
+    % TODO get nsamples
+%     data = loadfile(sources_data_file);
+%     nsamples = data.nsamples;
+%     clear data;
     
-    %% prep source data
-    eeg_file = fullfile(outdirbase,'fthelpers.ft_phaselocked.mat');
-    params_func = struct2namevalue(params(i),...
-        'fields', {'normalization','envelope','patch_type','prepend_data'});
-    [sources_data_file,sources_filter_file] = lattice_filter_prep_data(...
-        pipeline,...
-        eeg_file,...
-        'outdir', outdir,...
-        'ntrials_max', 100,...
-        params_func{:});
-    
-    data = loadfile(sources_data_file);
-    nsamples = data.nsamples;
-    clear data;
+    lf_obj = LatticeFilterAnalysis(sources_filter_file);
+    lf_obj.ntrials_max = 100;
+    lf_obj.verbosity = 1;
+    lf_obj.prepend_data = params(i).prepend_data;
+    lf_obj.normalization = params(i).normalization;
+    lf_obj.envelope = params(i).envelope;
     
     % TODO replace this
     pdc_view = pdc_analysis_create_view(...
@@ -47,20 +47,23 @@ for i=1:length(params)
     % NOTE params not required after this point
     % - envelope
     
+    % TODO remove dependence on sources_filter_file, add lf_obj as
+    % input/property
     pdc_obj = PDCAnalysis(sources_filter_file,pdc_view,outdir);
     pdc_obj.ntrials = params(i).ntrials;
     pdc_obj.gamma = params(i).gamma;
     pdc_obj.lambda = params(i).lambda;
     pdc_obj.order = params(i).order;
     pdc_obj.ncores = 12;
-    
-    if isfield(params(i),'prepend_data')
-        switch params(i).prepend_data
-            case 'flipdata'
-                % no warmup necessary if lattice_filter_prep_data prepends data
-                pdc_obj.warmup = {};
-        end
-    end
+
+    % handled in LatticeFilterAnalysis.run()
+%     if isfield(params(i),'prepend_data')
+%         switch params(i).prepend_data
+%             case 'flipdata'
+%                 % no warmup necessary if lattice_filter_prep_data prepends data
+%                 pdc_obj.warmup = {};
+%         end
+%     end
     
     %% tune parameters
     if p.Results.flag_tune
@@ -78,6 +81,7 @@ for i=1:length(params)
                 error('missing start and end for %s',params(i).stimulus);
         end
         
+        % TODO handle in LatticeFilterAnalysis.tune()
         if isfield(params(i),'prepend_data')
             switch params(i).prepend_data
                 case 'flipdata'
@@ -103,6 +107,7 @@ for i=1:length(params)
         for j=1:length(params(i).metrics)
             
             %% pdc analysis
+            % TODO handle in LatticeFilterAnalysis.post()
             if isfield(params(i),'prepend_data')
                 switch params(i).prepend_data
                     case 'flipdata'
@@ -110,8 +115,8 @@ for i=1:length(params)
                 end
             end
             
-            pdc_obj.downsample = params(i).downsample;
-            pdc_obj.metric = params(i).metrics{j};
+            pdc_obj.pdc_downsample = params(i).downsample;
+            pdc_obj.pdc_metric = params(i).metrics{j};
             pdc_obj.pdc();
             
             % add params for viewing

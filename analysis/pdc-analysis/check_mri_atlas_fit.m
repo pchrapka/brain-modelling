@@ -5,8 +5,10 @@ stimulus = 'std';
 subject = 3; 
 deviant_percent = 10;
 patch_type = 'aal-coarse-19';
-[pipeline,outdir] = eeg_processall_andrew(...
+out = eeg_processall_andrew(...
     stimulus,subject,deviant_percent,patch_type);
+pipeline = out.pipeline;
+outdir = out.outdir;
 
 %% get data from pipeline
 lf_file = pipeline.steps{end}.get_dep('ftb.Leadfield').leadfield;

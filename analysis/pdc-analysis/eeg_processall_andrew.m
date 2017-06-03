@@ -1,11 +1,5 @@
-function [pipeline,outdir] = eeg_processall_andrew(stimulus,subject,deviant_percent,patches_type)
+function out = eeg_processall_andrew(stimulus,subject,deviant_percent,patches_type)
 % all eeg processing for Andrew's data, top level function 
-
-% stimulus = 'std';
-% subject = 3; 
-% deviant_percent = 10;
-% patches_type = 'aal';
-% patches_type = 'aal-coarse-13';
 
 %% output dir
 
@@ -31,5 +25,18 @@ lf_file = pipeline.steps{end}.lf.leadfield;
 sources_file = pipeline.steps{end}.sourceanalysis;
 
 eeg_induced(sources_file, eeg_file, lf_file, 'outdir',outdir);
+
+%% prep data for lattice filter
+
+eeg_file = fullfile(outdir,'fthelpers.ft_phaselocked.mat');
+[file_sources_info,file_sources] = eeg_prep_lattice_filter(...
+    sources_file, eeg_file, lf_file, 'outdir', outdir, 'patch_type', patches_type);
+
+%% save outputs
+out = [];
+out.pipeline = pipeline;
+out.outdir = outdir;
+out.file_sources_info = file_sources_info;
+out.file_sources = file_sources;
 
 end

@@ -14,8 +14,10 @@ stimulus = 'std';
 subject = 3;
 deviant_percent = 10;
 
-[pipeline,outdir] = eeg_processall_andrew(...
+out = eeg_processall_andrew(...
     stimulus,subject,deviant_percent,params.patch_type);
+pipeline = out.pipeline;
+outdir = out.outdir;
 
 lf_files = cell(length(params.ntrials),1);
 data_labels = lf_files;

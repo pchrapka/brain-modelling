@@ -21,8 +21,10 @@ deviant_percent = 10;
 
 patch_type = 'aal-coarse-19-outer-nocer-plus2';
 
-[pipeline,outdirbase] = eeg_processall_andrew(...
+out = eeg_processall_andrew(...
     stimulus,subject,deviant_percent,patch_type);
+pipeline = out.pipeline;
+outdir = out.outdir;
 
 eeg_file = fullfile(outdirbase,'fthelpers.ft_phaselocked.mat');
 leadfield_file = pipeline.steps{end}.lf.leadfield;

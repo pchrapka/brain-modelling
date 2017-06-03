@@ -15,8 +15,10 @@ for i=1:length(params)
     subject = 3;
     deviant_percent = 10;
     
-    [pipeline,outdirbase] = eeg_processall_andrew(...
+    out = eeg_processall_andrew(...
         params(i).stimulus,subject,deviant_percent,params(i).patch_type);
+    pipeline = out.pipeline;
+    outdirbase = out.outdir;
     
     % separate following output based on patch model
     outdir = fullfile(outdirbase,params(i).patch_type);
