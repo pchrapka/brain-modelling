@@ -15,27 +15,22 @@ classdef PDCAnalysis < handle
         % what do i do with plots?
         % configure a few to make it easier?
         
+        analysis_lf;
+        
         % data info
         % prepend? flipped data? or do i take care of that in the data
         % phase outside of this class
         
         ncores = 1;
         
-        % TODO replace some of these with LatticeFilterAnalysis object
+        % TODO move the rest to LatticeFilterAnalysis
         % lattice filter options
         ntrials = 0;
-        nchannels = 0;
         filter_func = 'MCMTLOCCD_TWL4';
         gamma = 0;
         lambda = 0;
         order = 0;
-        warmup = {'noise','flipdata'};
-        tracefields = {'Kf','Kb','Rf','ferror','berrord'};
-        % added Rf for info criteria
-        % added ferror for bootstrap
         filter_verbosity = 1;
-        
-        filter_post_remove_samples = [];
         
         % pdc options
         pdc_downsample = 1;
@@ -56,18 +51,20 @@ classdef PDCAnalysis < handle
     end
     
     methods
-        function obj = PDCAnalysis(data_file,view,outdir)
+        function obj = PDCAnalysis(analysis_lf,view,outdir)
             
             p = inputParser();
-            addRequired(p,'data_file',@ischar);
+            addRequired(p,'analysis_lf',@(x) isa(x,'LatticeFilterAnalysis'));
             addRequired(p,'view',@(x) isa(x,'ViewPDC'));
             addRequired(p,'outdir',@ischar);
-            parse(p,data_file,view,outdir);
+            parse(p,analysis_lf,view,outdir);
             
             % TODO what about a parameter list of inputs? or just let
             % whoever modify them as required using the properties
             % TODO sanity check data in data_file?
-            obj.file_data = data_file;
+            %obj.file_data = data_file;
+            % TODO remove dependence on file_data
+            obj.analysis_lf = analysis_lf;
             obj.view = view;
             obj.outdir = outdir;
         end
@@ -75,42 +72,23 @@ classdef PDCAnalysis < handle
         function pdc(obj)
             % compute pdc
             
-            % set lattice options
+            % preprocess data
+            obj.analysis_lf.preprocessing();
             
-            % get nchannels from sources data
-            sources = loadfile(obj.file_data);
-            nchannels = size(sources,1);
-            clear sources;
-            % TODO is there a better way to get the number of channels?
-            % parameter? or read from data?
-            
+            % set up filter
+            % TODO do outside PDCAnalysis??
             filter_func_handle = str2func(obj.filter_func);
-            filters{1} = filter_func_handle(nchannels,obj.order,obj.ntrials,...
+            filters{1} = filter_func_handle(obj.analysis_lf.nchannels,obj.order,obj.ntrials,...
                 'lambda',obj.lambda,'gamma',obj.gamma);
             
-%             lf_obj = LatticeFilter(filters{1});
-%             lf_obj.preprocessing();
-%             lf_obj.run();
-%             lf_obj.postprocessing();
+            obj.analysis_lf.filter = filters{1};
             
-            % filter results are dependent on all input file parameters
-            [~,exp_name,~] = fileparts(obj.file_data);
+            % run and postprocess
+            obj.analysis_lf.run();
+            obj.analysis_lf.postprocessing();
             
-            % compute RC with lattice filter
-            lf_files = run_lattice_filter(...
-                obj.file_data,...
-                'basedir',obj.outdir,...
-                'outdir',exp_name,...
-                'filters', filters,...
-                'warmup',obj.warmup,...
-                'force',false,...
-                'verbosity',obj.filter_verbosity,...
-                'tracefields',obj.tracefields);
-            
-            if ~isempty(obj.filter_post_remove_samples)
-                lf_files = lattice_filter_remove_data(lf_files,obj.filter_post_remove_samples);
-            end
-            obj.file_lf = lf_files{1};
+            % save data file
+            obj.file_lf = obj.analysis_lf.file_data_post{1};
             
             if obj.ncores > 1
                 % set up parfor
@@ -137,7 +115,7 @@ classdef PDCAnalysis < handle
             [obj.file_pdc_sig, obj.files_pdc_resample] = pdc_bootstrap(...
                 obj.file_lf,...
                 sources_data_file,... % TODO how do i get this info?
-                'run_options',{'warmup',obj.warmup},...
+                'run_options',{'warmup',obj.analysis_lf.warmup},...
                 'null_mode',obj.surrogate_null_mode,...
                 'nresamples',obj.surrogate_nresamples,...
                 'alpha',obj.surrogate_alpha,...
@@ -188,6 +166,8 @@ classdef PDCAnalysis < handle
         function tune(obj)
             % tune lattice filter
             
+            % TODO use LatticeFilterAnalysis.tune()
+            
             % copy data file for tuning, since
             % tune_lattice_filter_parameters sets up a directory based on
             % the name
@@ -213,19 +193,17 @@ classdef PDCAnalysis < handle
                 'gamma',obj.gamma,...
                 'lambda',obj.lambda,...
                 'order',obj.order,...
-                'run_options',{'warmup',obj.warmup},...
+                'run_options',{'warmup',obj.analysis_lf.warmup},...
                 'criteria_samples',obj.tune_criteria_samples);
         end
         
         function plot_seed(obj,varargin)
             % pdc seed plots for all channels and both incoming and outgoing
             
-            nchannels = length(obj.view.info.label);
-            
             directions = {'outgoing','incoming'};
             for direc=1:length(directions)
                 params_plot = [varargin, {'direction',directions{direc}}];
-                for ch=1:nchannels
+                for ch=1:obj.analysis_lf.nchannels
 
                     % get the save tag only
                     obj.view.plot_seed(ch, params_plot{:},...

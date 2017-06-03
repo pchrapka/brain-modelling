@@ -2,34 +2,47 @@ function pdc_analysis_variations2(params,varargin)
 
 p = inputParser();
 addRequired(p,'params',@isstruct);
-addParameter(p,'flag_run',true,@islogical);
-addParameter(p,'flag_tune',false,@islogical);
+addParameter(p,'outdir','pdc-analysis',@ischar);
+addParameter(p,'mode','run',@(x) any(validatestring(x,{'run','tune'})));
 addParameter(p,'flag_bootstrap',false,@islogical);
 addParameter(p,'flag_plot_seed',false,@islogical);
 addParameter(p,'flag_plot_conn',false,@islogical);
 parse(p,params,varargin{:});
 
+flag_tune = false;
+flag_run = false;
+
+switch p.Results.mode
+    case 'tune'
+        flag_tune = true;
+    case 'run'
+        flag_run = true;
+    otherwise
+        error('unknown mode %s',p.Results.mode);
+end
+
 
 for i=1:length(params)
     
-    subject = 3;
-    deviant_percent = 10;
-    
-    out = eeg_processall_andrew(...
-        params(i).stimulus,subject,deviant_percent,params(i).patch_type);
-    outdirbase = out.outdir;
-    sources_data_file = out.file_sources_info;
-    sources_filter_file = out.file_sources;
-    
-    % separate following output based on patch model
-    outdir = fullfile(outdirbase,params(i).patch_type);
+%     % TODO move EEG processing outside
+%     subject = 3;
+%     deviant_percent = 10;
+%     
+%     out = eeg_processall_andrew(...
+%         params(i).stimulus,subject,deviant_percent,params(i).patch_type);
+%     outdirbase = out.outdir;
+%     file_sources_info = out.file_sources_info;
+%     file_sources = out.file_sources;
+%     
+%     % separate following output based on patch model
+%     outdir = fullfile(outdirbase,params(i).patch_type);
 
     % TODO get nsamples
-%     data = loadfile(sources_data_file);
-%     nsamples = data.nsamples;
-%     clear data;
+    data = loadfile(file_sources_info);
+    nsamples = data.nsamples;
+    clear data;
     
-    lf_obj = LatticeFilterAnalysis(sources_filter_file);
+    lf_obj = LatticeFilterAnalysis(file_sources);
     lf_obj.ntrials_max = 100;
     lf_obj.verbosity = 1;
     lf_obj.prepend_data = params(i).prepend_data;
@@ -38,36 +51,29 @@ for i=1:length(params)
     
     % TODO replace this
     pdc_view = pdc_analysis_create_view(...
-        sources_data_file,...
-        'envelope',params(i).envelope,... % TODO need envelope info for setting view frequency range
+        file_sources_info,...
         'downsample',params(i).downsample);
-    % TODO can i make envelope a top level parameter?
-    % TODO add normalize and prepend to LatticeTrace?
-            
-    % NOTE params not required after this point
-    % - envelope
     
-    % TODO remove dependence on sources_filter_file, add lf_obj as
-    % input/property
-    pdc_obj = PDCAnalysis(sources_filter_file,pdc_view,outdir);
+    if lf_obj.envelope
+        view_switch(pdc_view,'5');
+        % following views at 0-5 Hz
+    else
+        view_switch(pdc_view,'beta');
+        % following views at 15-25 Hz
+    end
+    
+    pdc_obj = PDCAnalysis(lf_obj,pdc_view,outdir);
     pdc_obj.ntrials = params(i).ntrials;
     pdc_obj.gamma = params(i).gamma;
     pdc_obj.lambda = params(i).lambda;
     pdc_obj.order = params(i).order;
     pdc_obj.ncores = 12;
-
-    % handled in LatticeFilterAnalysis.run()
-%     if isfield(params(i),'prepend_data')
-%         switch params(i).prepend_data
-%             case 'flipdata'
-%                 % no warmup necessary if lattice_filter_prep_data prepends data
-%                 pdc_obj.warmup = {};
-%         end
-%     end
     
     %% tune parameters
-    if p.Results.flag_tune
+    if flag_tune
         
+        % TODO move outside, but into some function for setting PDCAnalysis
+        % parameters based on stimulus
         switch params(i).stimulus
             case 'std'
                 idx_start = floor(nsamples*0.05);
@@ -101,19 +107,12 @@ for i=1:length(params)
         
     end
     
-    if p.Results.flag_run
+    if flag_run
         
         % loop over metrics
         for j=1:length(params(i).metrics)
             
             %% pdc analysis
-            % TODO handle in LatticeFilterAnalysis.post()
-            if isfield(params(i),'prepend_data')
-                switch params(i).prepend_data
-                    case 'flipdata'
-                        pdc_obj.filter_post_remove_samples = [1 nsamples/2];
-                end
-            end
             
             pdc_obj.pdc_downsample = params(i).downsample;
             pdc_obj.pdc_metric = params(i).metrics{j};

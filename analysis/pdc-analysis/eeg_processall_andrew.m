@@ -29,6 +29,7 @@ eeg_induced(sources_file, eeg_file, lf_file, 'outdir',outdir);
 %% prep data for lattice filter
 
 eeg_file = fullfile(outdir,'fthelpers.ft_phaselocked.mat');
+% NOTE eeg_file needed only for fsample
 [file_sources_info,file_sources] = eeg_prep_lattice_filter(...
     sources_file, eeg_file, lf_file, 'outdir', outdir, 'patch_type', patches_type);
 

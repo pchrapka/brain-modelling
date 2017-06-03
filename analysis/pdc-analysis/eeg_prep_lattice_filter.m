@@ -19,7 +19,6 @@ function [file_sources_info,file_sources] = eeg_prep_lattice_filter(file_sourcea
 %   patch_type (string, default = 'aal'
 %       patch model type
 %
-%
 %   Output
 %   ------
 %   file_sources_info (string)
@@ -50,8 +49,6 @@ else
 end
 
 %% get patch data
-file_lf = pipeline.steps{end}.lf.leadfield;
-
 lf = loadfile(file_lf);
 patch_labels = lf.filter_label(lf.inside);
 patch_labels = cellfun(@(x) strrep(x,'_',' '),...
@@ -63,10 +60,11 @@ file_sources = fullfile(outdir,'sources.mat');
 file_sources_info = fullfile(outdir,'sources-info.mat');
 
 %% extract sources from data
-if ~exist(file_sources,'file')
+if ~exist(file_sources,'file') || isfresh(file_sources, file_sourceanalysis)
     
     % load data
     source_analysis = loadfile(file_sourceanalysis);
+    
     % extract data
     data_sources = [];
     data_sources.data = bf_get_sources(source_analysis);
@@ -77,7 +75,7 @@ if ~exist(file_sources,'file')
 end
 
 %% extract source info
-if ~exist(file_sources_info,'file')
+if ~exist(file_sources_info,'file') || isfresh(files_sources_info, file_sourceanalysis)
     if ~exist('data_sources','var')
         data_sources = loadfile(file_sources);
     end
@@ -85,7 +83,7 @@ if ~exist(file_sources_info,'file')
     eeg_data = loadfile(file_eeg);
     
     data = [];
-    data.nsamples = nsamples;
+    data.nsamples = length(data_sources.time);
     data.labels = patch_labels;
     data.centroids = lf.patch_centroid(lf.inside,:);
     data.time = data_sources.time;

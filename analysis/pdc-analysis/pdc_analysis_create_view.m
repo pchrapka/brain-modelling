@@ -1,12 +1,11 @@
-function view_obj = pdc_analysis_create_view(sources_data_file,varargin)
+function view_obj = pdc_analysis_create_view(file_sources_info,varargin)
 
 p = inputParser();
-addRequired(p,'sources_data_file',@ischar);
+addRequired(p,'file_sources_info',@ischar);
 addParameter(p,'downsample',1,@isnumeric);
-addParameter(p,'envelope',false,@islogical);
-parse(p,sources_data_file,varargin{:});
+parse(p,file_sources_info,varargin{:});
 
-data = loadfile(sources_data_file);
+data = loadfile(file_sources_info);
 fsample = data.fsample/p.Results.downsample;
 time = data.time;
 time = downsample(time,p.Results.downsample);
@@ -22,15 +21,5 @@ view_obj = ViewPDC(...
     'time',time,...
     'outdir','data',...
     'w',[0 100]/fsample);
-
-if p.Results.envelope
-    view_switch(view_obj,'5');
-    % following views at 0-5 Hz
-else
-    view_switch(view_obj,'beta');
-    % following views at 15-25 Hz
-end
-
-
 
 end

@@ -80,7 +80,11 @@ if ischar(p.Results.datain)
     % from file
     datain = loadfile(p.Results.datain);
     if ~isnumeric(datain)
-        error('data in .mat file must be a matrix');
+        if isfield(datain,'data')
+            datain = datain.data;
+        else
+            error('data in .mat file must be a matrix or contain a data field with a matrix');
+        end
     end
     data_time = get_timestamp(p.Results.datain);
 else

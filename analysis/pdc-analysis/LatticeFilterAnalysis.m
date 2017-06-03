@@ -1,23 +1,28 @@
 classdef LatticeFilterAnalysis < handle
     
     properties
-        
         prepend_data = 'none';
         normalization = 'eachchannel';
         envelope = false;
         samples = [];
         ntrials_max = 100;
         
-        filter;
+        filters = {};
         warmup = {'noise','flipdata'};
         verbosity = 0;
         
         tracefields = {'Kf','Kb','Rf','ferror','berrord'};
+        % added Rf for info criteria
+        % added ferror for bootstrap
     end
     
     properties (SetAccess = protected)
         file_data = '';
         file_lf = '';
+        
+        nchannels = 0;
+        ntrials = 0;
+        nsamples = 0;
         
         outdir = '';
     end
@@ -111,7 +116,12 @@ classdef LatticeFilterAnalysis < handle
             nfiles = length(obj.file_lf);
             out = cell(nfiles,1);
             for i=1:nfiles
-                out{i} = strrep(obj.file_lf{i},'.mat','-removed.mat');
+                switch obj.prepend_data
+                    case 'flipdata'
+                        out{i} = strrep(obj.file_lf{i},'.mat','-removed.mat');
+                    otherwise
+                        out{i} = obj.file_lf{i};
+                end
             end
         end
         
@@ -139,7 +149,7 @@ classdef LatticeFilterAnalysis < handle
                 obj.file_data_pre,...
                 'basedir',obj.outdir,...
                 'outdir',exp_name,...
-                'filters', obj.filter,...
+                'filters', obj.filters,...
                 'warmup',obj.warmup,...
                 'force',false,...
                 'verbosity',obj.verbosity,...
@@ -155,55 +165,29 @@ classdef LatticeFilterAnalysis < handle
             addParameter(p,'verbosity',0,@isnumeric);
             parse(p,varargin{:});
             
-            % TODO get nchannels? or some other name
-            % should be nested in previous data processing step
-            
-            %sources_data_file = fullfile(outdir, sprintf('%s.mat',data_file_tag));
-            % TODO include data as another variable in source file
-            
-            % get source analysis from pipeline
-            % source_analysis = pipeline.steps{end}.sourceanalysis;
-            % TODO remove dependence on pipeline
-            
-            % TODO save preprocessed data file in object
+            % preprocess data
             if ~exist(obj.file_data_pre,'file') || isfresh(obj.file_data_pre,obj.file_data)
-                
-                % TODO move this outside of this function
-                % create eeg_prep_lattice_filter
-%                 % extract sources from the pipeline
-%                 sources_file = fullfile(obj.outdir,[name '.mat']);
-%                 if exist(sources_file,'file')
-%                     data = loadfile(sources_file);
-%                 else
-%                     % load data
-%                     if ischar(source_analysis)
-%                         source_analysis = loadfile(source_analysis);
-%                     end
-%                     % extract data
-%                     data = bf_get_sources(source_analysis);
-%                     clear source_analysis;
-%                     
-%                     % data should be [channels time trials]
-%                     save_tag(data,'outfile',sources_file);
-%                 end
 
                 data = loadfile(obj.file_data);
-                
-                [nchannels,nsamples,ntrials] = size(data);
-                
-                % check how many trials are available
-                if ntrials < p.Results.ntrials_max
-                    error('only %d trial available',ntrials);
+                if isstruct(data)
+                    data = data.data;
                 end
                 
-                if isempty(p.Results.samples)
-                    sample_idx = 1:size(data,2);
+                [obj.nchannels,obj.nsamples,obj.ntrials] = size(data);
+                
+                % check how many trials are available
+                if obj.ntrials < p.Results.ntrials_max
+                    error('only %d trial available',obj.ntrials);
+                end
+                
+                if isempty(obj.samples)
+                    sample_idx = 1:obj.nsamples;
                 else
-                    sample_idx = p.Results.samples;
+                    sample_idx = obj.samples;
                 end
                 
                 % don't put in more data than required i.e. ntrials + ntrials_warmup
-                data = data(:,sample_idx,1:p.Results.ntrials_max);
+                data = data(:,sample_idx,1:obj.ntrials_max);
                 
                 switch obj.prepend_data
                     case 'flipdata'
@@ -216,8 +200,8 @@ classdef LatticeFilterAnalysis < handle
                 
                 % compute envelope
                 if obj.envelope
-                    for i=1:ntrials
-                        for j=1:nchannels
+                    for i=1:obj.ntrials
+                        for j=1:obj.nchannels
                             temp = abs(hilbert(data(j,:,i)));
                             data(j,:,i) = temp - mean(temp);
                         end
@@ -228,11 +212,11 @@ classdef LatticeFilterAnalysis < handle
                 switch obj.normalization
                     case 'allchannels'
                         warning('this can result in bad boostrapping results');
-                        for i=1:ntrials
+                        for i=1:obj.ntrials
                             data(:,:,i) = normalize(data(:,:,i));
                         end
                     case 'eachchannel'
-                        for i=1:ntrials
+                        for i=1:obj.ntrials
                             data(:,:,i) = normalizev(data(:,:,i));
                         end
                     case 'none'
@@ -243,6 +227,54 @@ classdef LatticeFilterAnalysis < handle
         end
         
         function postprocessing(obj)
+            % postprocessing
+            %
+            %   if prepend_data = 'flipdata'
+            %       removes estimates for prepended data
+            
+            if isempty(obj.file_lf)
+                error('file_lf is empty, execute run() first');
+            end
+            
+            switch obj.prepend_data
+                case 'flipdata'
+                    rm_samples = [1 obj.nsamples];
+                    if ~isempty(obj.samples)
+                        error('does not account for subset of samples');
+                    end
+                otherwise
+                    fprintf('no postprocessing required\n');
+            end
+            
+            nfiles = length(obj.file_lf);
+            out = cell(nfiles,1);
+            for i=1:nfiles
+                out{i} = obj.file_data_post{i};
+                if ~exist(out{i},'file') || isfresh(out{i},obj.file_lf{i})
+                    data = loadfile(obj.file_lf{i});
+                    
+                    fields = fieldnames(data.estimate);
+                    nfields = length(fields);
+                    for j=1:nfields
+                        field = fields{j};
+                        dims = size(data.estimate.(field));
+                        ndims = length(dims);
+                        switch ndims
+                            case 2
+                                data.estimate.(field)(rm_samples(1):rm_samples(2),:) = [];
+                            case 3
+                                data.estimate.(field)(rm_samples(1):rm_samples(2),:,:) = [];
+                            case 4
+                                data.estimate.(field)(rm_samples(1):rm_samples(2),:,:,:) = [];
+                            otherwise
+                                error('unknown dims %d',ndims);
+                        end
+                    end
+                    
+                    % save in a new file
+                    save_parfor(out{i},data);
+                end
+            end
         end
     end
 end
