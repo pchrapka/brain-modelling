@@ -60,7 +60,7 @@ for i=1:length(params)
     
     % set up pdc analysis
     pdc_obj = PDCAnalysis(...
-        lf_obj,'view',pdc_view,'outdir',outdir);
+        lf_obj,'view',pdc_view,'outdir',p.Results.outdir);
     pdc_obj.ncores = 12;
     
     %% tune parameters

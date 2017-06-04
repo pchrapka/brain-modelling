@@ -1,6 +1,7 @@
 classdef LatticeFilterAnalysis < handle
     
     properties
+        % preprocessing options
         prepend_data = 'none';
         normalization = 'eachchannel';
         envelope = false;
@@ -10,11 +11,9 @@ classdef LatticeFilterAnalysis < handle
         filters = {};
         
         % lattice filter options
-        %filter_func = 'MCMTLOCCD_TWL4'; % TODO
-        
+        filter_func = '';
         warmup = {'noise','flipdata'};
         verbosity = 0;
-        
         tracefields = {'Kf','Kb','Rf','ferror','berrord'};
         % added Rf for info criteria
         % added ferror for bootstrap
@@ -47,7 +46,7 @@ classdef LatticeFilterAnalysis < handle
             p = inputParser();
             addRequired(p,'file_data',@ischar);
             addParameter(p,'outdir','lf-analysis',@ischar);
-            parse(p,varargin{:});
+            parse(p,file_data,varargin{:});
             
             obj.file_data = file_data;
             obj.outdir = p.Results.outdir;
@@ -113,13 +112,14 @@ classdef LatticeFilterAnalysis < handle
             
             data_file_tag = sprintf('%s-%s-%s-%s-%s-%s',...
                 name, slug_trials, slug_samples, slug_norm, slug_env, slug_prepend);
-            out = fullfile(obj.outdir, sprintf('%s-for-filter.mat',data_file_tag));
+            out = fullfile(obj.outdir, sprintf('%s.mat',data_file_tag));
             
         end
         
         function out = get.file_data_post(obj)
             if isempty(obj.file_lf)
-                error('empty file_lf');
+                out = '';
+                return
             end
             
             % create post file name based on options
@@ -143,7 +143,7 @@ classdef LatticeFilterAnalysis < handle
             addRequired(p,'order',@(x) isnumeric(x) && isvector(x));
             addParameter(p,'lambda',[],@(x) isnumeric(x) && isvector(x));
             addParameter(p,'gamma',[], @(x) isnumeric(x) && isvector(x));
-            parse(p,nchannels,ntrials,order,lambda,varargin{:});
+            parse(p,nchannels,ntrials,order,varargin{:});
             
             filter_func_handle = str2func(obj.filter_func);
             switch obj.filter_func
@@ -255,7 +255,7 @@ classdef LatticeFilterAnalysis < handle
                 [obj.nchannels,obj.nsamples,obj.ntrials] = size(data);
                 
                 % check how many trials are available
-                if obj.ntrials < p.Results.ntrials_max
+                if obj.ntrials < obj.ntrials_max
                     error('only %d trial available',obj.ntrials);
                 end
                 
@@ -279,7 +279,7 @@ classdef LatticeFilterAnalysis < handle
                 
                 % compute envelope
                 if obj.envelope
-                    for i=1:obj.ntrials
+                    for i=1:obj.ntrials_max
                         for j=1:obj.nchannels
                             temp = abs(hilbert(data(j,:,i)));
                             data(j,:,i) = temp - mean(temp);
@@ -291,11 +291,11 @@ classdef LatticeFilterAnalysis < handle
                 switch obj.normalization
                     case 'allchannels'
                         warning('this can result in bad boostrapping results');
-                        for i=1:obj.ntrials
+                        for i=1:obj.ntrials_max
                             data(:,:,i) = normalize(data(:,:,i));
                         end
                     case 'eachchannel'
-                        for i=1:obj.ntrials
+                        for i=1:obj.ntrials_max
                             data(:,:,i) = normalizev(data(:,:,i));
                         end
                     case 'none'

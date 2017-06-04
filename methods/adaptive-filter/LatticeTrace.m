@@ -25,7 +25,7 @@ classdef LatticeTrace < handle
         fields;
         
         % options
-        warmup;
+        warmup_options;
     end
     
     methods
@@ -275,7 +275,7 @@ classdef LatticeTrace < handle
             end
             
             data = [];
-            data.warmup = obj.warmup;
+            data.warmup = obj.warmup_options;
             data.filter = obj.filter;
             for i=1:length(obj.fields)
                 field = obj.fields{i};
@@ -335,7 +335,7 @@ classdef LatticeTrace < handle
             [nchannels,nsamples,ntrials] = size(samples);
             
             if ~isempty(p.Results.warmup)
-                obj.warmup = p.Results.warmup;
+                obj.warmup_options = p.Results.warmup;
                 % warm up filter
                 for i=1:length(p.Results.warmup)
                     switch p.Results.warmup{i}

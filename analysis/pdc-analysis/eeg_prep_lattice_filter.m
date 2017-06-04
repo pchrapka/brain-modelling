@@ -47,12 +47,6 @@ else
     end
 end
 
-%% get patch data
-lf = loadfile(file_lf);
-patch_labels = lf.filter_label(lf.inside);
-patch_labels = cellfun(@(x) strrep(x,'_',' '),...
-    patch_labels,'UniformOutput',false);
-
 %% set up files
     
 file_sources = fullfile(outdir,'sources.mat');
@@ -74,11 +68,18 @@ if ~exist(file_sources,'file') || isfresh(file_sources, file_sourceanalysis)
 end
 
 %% extract source info
-if ~exist(file_sources_info,'file') || isfresh(files_sources_info, file_sourceanalysis)
+if ~exist(file_sources_info,'file') || isfresh(file_sources_info, file_sourceanalysis)
     if ~exist('data_sources','var')
         data_sources = loadfile(file_sources);
     end
     
+    % get patch data
+    lf = loadfile(file_lf);
+    patch_labels = lf.filter_label(lf.inside);
+    patch_labels = cellfun(@(x) strrep(x,'_',' '),...
+        patch_labels,'UniformOutput',false);
+    
+    % get eeg data
     eeg_data = loadfile(file_eeg);
     
     data = [];

@@ -27,16 +27,15 @@ classdef ViewPDC < handle
     end
     
     methods
-        function obj = ViewPDC(file,varargin)
+        function obj = ViewPDC(varargin)
             
             p = inputParser();
-            addRequired(p,'file',@ischar);
             addParameter(p,'w',[0 0.5],@(x) length(x) == 2 && isnumeric(2));
             addParameter(p,'fs',1,@isnumeric);
             addParameter(p,'info',[],@(x) isa(x,'ChannelInfo'));
             addParameter(p,'time',[],@isnumeric);
             addParameter(p,'outdir','data',@ischar);
-            parse(p,file,varargin{:});
+            parse(p,varargin{:});
             
             if p.Results.w(1) < 0 || p.Results.w(2) > 0.5
                 disp(p.Results.w);
