@@ -140,7 +140,7 @@ for i=1:length(params)
             if p.Results.flag_plot_seed
                 for idx_param=1:length(params_plot_seed)
                     params_plot = [params_plot_seed{idx_param}, {'vertlines',[0 0.5]}];
-                    pdc_obj.plot_seed(view_obj,params_plot{:});
+                    pdc_obj.plot_seed(params_plot{:});
                 end
             end
             

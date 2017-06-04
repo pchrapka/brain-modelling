@@ -23,8 +23,6 @@ classdef PDCAnalysis < handle
         
         ncores = 1;
         
-        % TODO move the rest to LatticeFilterAnalysis
-        
         % pdc options
         pdc_downsample = 1;
         pdc_metric = 'euc';
@@ -74,7 +72,7 @@ classdef PDCAnalysis < handle
                 'metric',obj.pdc_metric,...
                 'downsample',obj.pdc_downsample,...
                 };
-            pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
+            pdc_files = rc2pdc_dynamic_from_lf_files(obj.file_lf,'params',pdc_params);
             obj.file_pdc = pdc_files{1};
             
             obj.view.file_pdc = obj.file_pdc;

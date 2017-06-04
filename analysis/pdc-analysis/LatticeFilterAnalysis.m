@@ -302,6 +302,18 @@ classdef LatticeFilterAnalysis < handle
                 end
                 
                 save_tag(data,'outfile',obj.file_data_pre);
+            
+            else
+                data = loadfile(obj.file_data_pre);
+                
+                [obj.nchannels,obj.nsamples,obj.ntrials] = size(data);
+                
+                switch obj.prepend_data
+                    case 'flipdata'
+                        obj.nsamples = obj.nsamples/2;
+                    otherwise
+                        % do nothing
+                end
             end
         end
         
@@ -323,6 +335,7 @@ classdef LatticeFilterAnalysis < handle
                     end
                 otherwise
                     fprintf('no postprocessing required\n');
+                    return;
             end
             
             nfiles = length(obj.file_lf);
