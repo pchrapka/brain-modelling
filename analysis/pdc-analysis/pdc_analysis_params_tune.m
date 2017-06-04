@@ -3,9 +3,7 @@
 params = [];
 k=1;
 
-%% aal-coarse-19-outer-nocer-plus2, envelope, allchannels
-% params(k).stimulus = 'std';
-% params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+%% envelope, allchannels
 % params(k).downsample = 4;
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -24,8 +22,6 @@ k=1;
 %   gamma 1e-6
 
 % % compare one set
-% params(k).stimulus = 'std';
-% params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).downsample = 4;
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -40,8 +36,6 @@ k=1;
 % params(k).plot_orders = 6;
 % k = k+1;  
 
-% params(k).stimulus = 'std';
-% params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).downsample = 4;
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -55,8 +49,6 @@ k=1;
 
 % best order 12
 % 
-% params(k).stimulus = 'std';
-% params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 % params(k).downsample = 4;
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -70,9 +62,7 @@ k=1;
 % 
 % % best order 11
 
-%% aal-coarse-19-outer-nocer-plus2, envelope, eachchannel
-% params(k).stimulus = 'std';
-% params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
+%% envelope, eachchannel
 % params(k).downsample = 4;
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -123,10 +113,9 @@ k=1;
 % 
 % % best order 11
 
-%% aal-coarse-19-outer-nocer-plus2, envelope, eachchannel, flip data
+%% envelope, eachchannel, flip data
 %% new optimization
 
-params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 params(k).downsample = 4;
 params(k).metrics = {'diag'};
 params(k).ntrials = 20;
@@ -142,13 +131,29 @@ params(k).alpha = 0.05;
 params(k).null_mode = 'estimate_ind_channels';
 k = k+1;
 
-%% tune parameters
-flag_run = false;
-flag_tune = true;
+%% mode
+mode = 'tune';
+flag_plot = false;
 flag_bootstrap = false;
 
+%% set up eeg
+
+stimulus = 'std';
+subject = 3;
+deviant_percent = 10;
+patch_type = 'aal-coarse-19-outer-nocer-plus2';
+
+out = eeg_processall_andrew(...
+    stimulus,subject,deviant_percent,patch_type);
+
+% separate following output based on patch model
+outdir = fullfile(out.outdir,patch_type);
+
 %% run variations
-pdc_analysis_variations(params,...
-    'flag_run',flag_run,...
-    'flag_bootstrap',flag_bootstrap,...
-    'flag_tune',flag_tune);
+pdc_analysis_variations(...
+    params,...
+    'outdir',outdir,...
+    'mode',mode,...
+    'flag_plot_seed',flag_plot,...
+    'flag_plot_conn',flag_plot,...
+    'flag_bootstrap',flag_bootstrap);

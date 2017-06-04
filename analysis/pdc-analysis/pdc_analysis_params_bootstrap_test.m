@@ -7,8 +7,6 @@ params = [];
 
 % g 1e-6, l 0.99, order 13
 
-params(k).stimulus = 'std';
-params(k).patch_type = 'aal-coarse-19-outer-nocer-plus2';
 params(k).downsample = 4;
 params(k).metrics = {'diag'};
 params(k).ntrials = 20;
@@ -23,14 +21,29 @@ params(k).alpha = 0.05;
 params(k).null_mode = 'estimate_ind_channels';
 k = k+1;
 
-%% run analysis
-flag_run = true;
-flag_tune = false;
+%% mode
+mode = 'run';
+flag_plot = false;
 flag_bootstrap = true;
 
+%% set up eeg
+
+stimulus = 'std';
+subject = 3;
+deviant_percent = 10;
+patch_type = 'aal-coarse-19-outer-nocer-plus2';
+
+out = eeg_processall_andrew(...
+    stimulus,subject,deviant_percent,patch_type);
+
+% separate following output based on patch model
+outdir = fullfile(out.outdir,patch_type);
+
 %% run variations
-pdc_analysis_variations(params,...
-    'flag_plot_seed',false,...
-    'flag_run',flag_run,...
-    'flag_tune',flag_tune,...
+pdc_analysis_variations(...
+    params,...
+    'outdir',outdir,...
+    'mode',mode,...
+    'flag_plot_seed',flag_plot,...
+    'flag_plot_conn',flag_plot,...
     'flag_bootstrap',flag_bootstrap);

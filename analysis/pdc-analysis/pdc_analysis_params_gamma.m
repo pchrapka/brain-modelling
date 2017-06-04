@@ -41,8 +41,8 @@ for i=1:length(gammas)
 end
 
 %% mode
-flag_plot = true;
 mode = 'run';
+flag_plot = true;
 flag_bootstrap = false;
 
 %% set up eeg
@@ -54,12 +54,9 @@ patch_type = 'aal-coarse-19-outer-nocer-plus2';
 
 out = eeg_processall_andrew(...
     stimulus,subject,deviant_percent,patch_type);
-outdirbase = out.outdir;
-file_sources_info = out.file_sources_info;
-file_sources = out.file_sources;
 
 % separate following output based on patch model
-outdir = fullfile(outdirbase,patch_type);
+outdir = fullfile(out.outdir,patch_type);
 
 %% run variations
 pdc_analysis_variations(...
