@@ -78,21 +78,21 @@ cd(fullfile(pwd,'external','ARMASA_1_9','ARMASA'));
 ASAaddpath();
 cd(curdir);
 
-% check bayesopt
-if ~exist('bayesoptcont.mexa64','file')
-    % Compile bayesopt
-    fprintf('Compiling bayesopt\n');
-    curdir = pwd;
-    cd(fullfile(pwd,'external','bayesopt','matlab'));
-    try
-        compile_matlab
-    catch
-        fprintf(['Something went wrong. bayesopt did not compile.\n'...
-            'follow compilation instructions here:\n'...
-            'https://rmcantin.bitbucket.io/html/install.html\n']);
-    end
-    cd(curdir);
-end
+% % check bayesopt
+% if ~exist('bayesoptcont.mexa64','file')
+%     % Compile bayesopt
+%     fprintf('Compiling bayesopt\n');
+%     curdir = pwd;
+%     cd(fullfile(pwd,'external','bayesopt','matlab'));
+%     try
+%         compile_matlab
+%     catch
+%         fprintf(['Something went wrong. bayesopt did not compile.\n'...
+%             'follow compilation instructions here:\n'...
+%             'https://rmcantin.bitbucket.io/html/install.html\n']);
+%     end
+%     cd(curdir);
+% end
 
 
 
