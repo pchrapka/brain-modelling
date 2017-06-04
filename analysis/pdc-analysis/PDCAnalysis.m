@@ -24,23 +24,10 @@ classdef PDCAnalysis < handle
         ncores = 1;
         
         % TODO move the rest to LatticeFilterAnalysis
-        % lattice filter options
-        ntrials = 0;
-        filter_func = 'MCMTLOCCD_TWL4';
-        gamma = 0;
-        lambda = 0;
-        order = 0;
-        filter_verbosity = 1;
         
         % pdc options
         pdc_downsample = 1;
         pdc_metric = 'euc';
-        
-        % tuning options
-        tune_plot_gamma = false;
-        tune_plot_lambda = false;
-        tune_plot_order = false;
-        tune_criteria_samples = [];
         
         % surrogate analysis options
         surrogate_null_mode = '';
@@ -51,22 +38,17 @@ classdef PDCAnalysis < handle
     end
     
     methods
-        function obj = PDCAnalysis(analysis_lf,view,outdir)
+        function obj = PDCAnalysis(analysis_lf,varargin)
             
             p = inputParser();
             addRequired(p,'analysis_lf',@(x) isa(x,'LatticeFilterAnalysis'));
-            addRequired(p,'view',@(x) isa(x,'ViewPDC'));
-            addRequired(p,'outdir',@ischar);
-            parse(p,analysis_lf,view,outdir);
-            
-            % TODO what about a parameter list of inputs? or just let
-            % whoever modify them as required using the properties
-            % TODO sanity check data in data_file?
-            %obj.file_data = data_file;
-            % TODO remove dependence on file_data
+            addParameter(p,'view',ViewPDC(),@(x) isa(x,'ViewPDC'));
+            addParameter(p,'outdir','pdc-analysis',@ischar);
+            parse(p,analysis_lf,varargin{:});
+
             obj.analysis_lf = analysis_lf;
-            obj.view = view;
-            obj.outdir = outdir;
+            obj.view = p.Results.view;
+            obj.outdir = p.Results.outdir;
         end
         
         function pdc(obj)
@@ -74,14 +56,6 @@ classdef PDCAnalysis < handle
             
             % preprocess data
             obj.analysis_lf.preprocessing();
-            
-            % set up filter
-            % TODO do outside PDCAnalysis??
-            filter_func_handle = str2func(obj.filter_func);
-            filters{1} = filter_func_handle(obj.analysis_lf.nchannels,obj.order,obj.ntrials,...
-                'lambda',obj.lambda,'gamma',obj.gamma);
-            
-            obj.analysis_lf.filter = filters{1};
             
             % run and postprocess
             obj.analysis_lf.run();
@@ -161,40 +135,6 @@ classdef PDCAnalysis < handle
             
             % switch back to original
             obj.view.file_pdc = obj.file_pdc;
-        end
-        
-        function tune(obj)
-            % tune lattice filter
-            
-            % TODO use LatticeFilterAnalysis.tune()
-            
-            % copy data file for tuning, since
-            % tune_lattice_filter_parameters sets up a directory based on
-            % the name
-            % TODO is this necessary, why not set up a tuning folder
-            % inside?
-            tune_file = strrep(obj.file_data,'.mat','-tuning.mat');
-            if ~exist(tune_file,'file') || isfresh(tune_file,obj.file_data)
-                if exist(tune_file,'file')
-                    delete(tune_file);
-                end
-                copyfile(obj.file_data, tune_file);
-            end
-            
-            % run the tuning function
-            tune_lattice_filter_parameters(...
-                tune_file,... % is this just the source file?
-                obj.outdir,...
-                'plot_gamma',obj.tune_plot_gamma,...
-                'plot_lambda',obj.tune_plot_lambda,...
-                'plot_order',obj.tune_plot_order,...
-                'filter',obj.filter_func,...
-                'ntrials',obj.ntrials,...
-                'gamma',obj.gamma,...
-                'lambda',obj.lambda,...
-                'order',obj.order,...
-                'run_options',{'warmup',obj.analysis_lf.warmup},...
-                'criteria_samples',obj.tune_criteria_samples);
         end
         
         function plot_seed(obj,varargin)

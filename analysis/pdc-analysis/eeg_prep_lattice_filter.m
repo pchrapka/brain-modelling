@@ -83,6 +83,7 @@ if ~exist(file_sources_info,'file') || isfresh(files_sources_info, file_sourcean
     eeg_data = loadfile(file_eeg);
     
     data = [];
+    data.nchannels = size(data_sources.data,1);
     data.nsamples = length(data_sources.time);
     data.labels = patch_labels;
     data.centroids = lf.patch_centroid(lf.inside,:);

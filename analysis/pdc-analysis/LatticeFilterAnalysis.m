@@ -8,12 +8,22 @@ classdef LatticeFilterAnalysis < handle
         ntrials_max = 100;
         
         filters = {};
+        
+        % lattice filter options
+        %filter_func = 'MCMTLOCCD_TWL4'; % TODO
+        
         warmup = {'noise','flipdata'};
         verbosity = 0;
         
         tracefields = {'Kf','Kb','Rf','ferror','berrord'};
         % added Rf for info criteria
         % added ferror for bootstrap
+        
+        % tuning options
+        tune_plot_gamma = false;
+        tune_plot_lambda = false;
+        tune_plot_order = false;
+        tune_criteria_samples = [];
     end
     
     properties (SetAccess = protected)
@@ -79,7 +89,7 @@ classdef LatticeFilterAnalysis < handle
         
         function out = get.file_data_pre(obj)
             
-            % create the name
+            % create post file name based on options
             name = 'lf-data';
             
             if isempty(obj.samples)
@@ -112,7 +122,7 @@ classdef LatticeFilterAnalysis < handle
                 error('empty file_lf');
             end
             
-            % TODO update based on post options
+            % create post file name based on options
             nfiles = length(obj.file_lf);
             out = cell(nfiles,1);
             for i=1:nfiles
@@ -125,13 +135,37 @@ classdef LatticeFilterAnalysis < handle
             end
         end
         
-        function run(obj)
-            % Parameters
-            % verbosity
-            % tracefields
+        function set_filter(obj,nchannels,ntrials,order,varargin)
             
+            p = inputParser();
+            addRequired(p,'nchannels',@(x) isnumeric(x) && isvector(x));
+            addRequired(p,'ntrials',@(x) isnumeric(x) && isvector(x));
+            addRequired(p,'order',@(x) isnumeric(x) && isvector(x));
+            addParameter(p,'lambda',[],@(x) isnumeric(x) && isvector(x));
+            addParameter(p,'gamma',[], @(x) isnumeric(x) && isvector(x));
+            parse(p,nchannels,ntrials,order,lambda,varargin{:});
+            
+            filter_func_handle = str2func(obj.filter_func);
+            switch obj.filter_func
+                case 'MCMTLOCCD_TWL4'
+                    obj.filters{1} = filter_func_handle(nchannels,order,ntrials,...
+                        'lambda',p.Results.lambda,'gamma',p.Results.gamma);
+                otherwise
+                    error('unknown filter func format %s',obj.filter_func);
+            end
+            
+        end
+        
+        function run(obj)
+            % run lattice filter
+            
+            % checks
             if isempty(obj.file_data_pre)
                 error('preprocess data first');
+            end
+            
+            if isempty(obj.filters)
+                error('not filters specified');
             end
             
             if isequal(obj.prepend_data,'flipdata')
@@ -156,7 +190,52 @@ classdef LatticeFilterAnalysis < handle
                 'tracefields',obj.tracefields);
         end
         
-        function tune(obj)
+         function tune(obj,ntrials,order,lambda,varargin)
+            % tune lattice filter
+            
+            p = inputParser();
+            addRequired(p,'ntrials',@(x) isnumeric(x) && isvector(x));
+            addRequired(p,'order',@(x) isnumeric(x) && isvector(x));
+            addParameter(p,'lambda',[],@(x) isnumeric(x) && isvector(x));
+            addParameter(p,'gamma',[], @(x) isnumeric(x) && isvector(x));
+            parse(p,ntrials,order,lambda,varargin{:});
+            
+            % copy data file for tuning, since
+            % tune_lattice_filter_parameters sets up a directory based on
+            % the name
+            % TODO is this necessary, why not set up a tuning folder
+            % inside?
+            tune_file = strrep(obj.file_data,'.mat','-tuning.mat');
+            if ~exist(tune_file,'file') || isfresh(tune_file,obj.file_data)
+                if exist(tune_file,'file')
+                    delete(tune_file);
+                end
+                copyfile(obj.file_data, tune_file);
+            end
+            
+            % adjust criteria_samples
+            switch obj.prepend_data
+                case 'flipdata'
+                    % shift by nsamples
+                    criteria_samples = obj.tune_criteria_samples + obj.nsamples;
+                otherwise
+                    criteria_samples = obj.tune_criteria_samples;
+            end
+            
+            % run the tuning function
+            tune_lattice_filter_parameters(...
+                tune_file,... % is this just the source file?
+                obj.outdir,...
+                'plot_gamma',obj.tune_plot_gamma,...
+                'plot_lambda',obj.tune_plot_lambda,...
+                'plot_order',obj.tune_plot_order,...
+                'filter',obj.filter_func,...
+                'ntrials',p.Results.ntrials,...
+                'gamma',p.Results.gamma,...
+                'lambda',p.Results.lambda,...
+                'order',p.Results.order,...
+                'run_options',{'warmup',obj.warmup},...
+                'criteria_samples',obj.tune_criteria_samples);
         end
         
         function preprocessing(obj,varargin)

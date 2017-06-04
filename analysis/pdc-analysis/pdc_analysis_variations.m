@@ -1,14 +1,17 @@
-function pdc_analysis_variations2(params,varargin)
+function pdc_analysis_variations(file_sources, file_sources_info, params,varargin)
 
 p = inputParser();
+addRequired(p,'file_sources',@ischar);
+addRequired(p,'file_sources_info',@ischar);
 addRequired(p,'params',@isstruct);
 addParameter(p,'outdir','pdc-analysis',@ischar);
 addParameter(p,'mode','run',@(x) any(validatestring(x,{'run','tune'})));
 addParameter(p,'flag_bootstrap',false,@islogical);
 addParameter(p,'flag_plot_seed',false,@islogical);
 addParameter(p,'flag_plot_conn',false,@islogical);
-parse(p,params,varargin{:});
+parse(p,file_sources,file_sources_info,params,varargin{:});
 
+% figure out mode of operation
 flag_tune = false;
 flag_run = false;
 
@@ -24,32 +27,25 @@ end
 
 for i=1:length(params)
     
-%     % TODO move EEG processing outside
-%     subject = 3;
-%     deviant_percent = 10;
-%     
-%     out = eeg_processall_andrew(...
-%         params(i).stimulus,subject,deviant_percent,params(i).patch_type);
-%     outdirbase = out.outdir;
-%     file_sources_info = out.file_sources_info;
-%     file_sources = out.file_sources;
-%     
-%     % separate following output based on patch model
-%     outdir = fullfile(outdirbase,params(i).patch_type);
-
-    % TODO get nsamples
+    % get some data info
     data = loadfile(file_sources_info);
+    nchannels = data.nchannels;
     nsamples = data.nsamples;
     clear data;
     
-    lf_obj = LatticeFilterAnalysis(file_sources);
+    %% set up objects
+    
+    % set up lattice filter analysis
+    lf_obj = LatticeFilterAnalysis(...
+        file_sources,'outdir',p.Results.outdir);
+    lf_obj.filter_func = 'MCMTLOCCD_TWL4';
     lf_obj.ntrials_max = 100;
     lf_obj.verbosity = 1;
     lf_obj.prepend_data = params(i).prepend_data;
     lf_obj.normalization = params(i).normalization;
     lf_obj.envelope = params(i).envelope;
     
-    % TODO replace this
+    % set up view
     pdc_view = pdc_analysis_create_view(...
         file_sources_info,...
         'downsample',params(i).downsample);
@@ -62,11 +58,9 @@ for i=1:length(params)
         % following views at 15-25 Hz
     end
     
-    pdc_obj = PDCAnalysis(lf_obj,pdc_view,outdir);
-    pdc_obj.ntrials = params(i).ntrials;
-    pdc_obj.gamma = params(i).gamma;
-    pdc_obj.lambda = params(i).lambda;
-    pdc_obj.order = params(i).order;
+    % set up pdc analysis
+    pdc_obj = PDCAnalysis(...
+        lf_obj,'view',pdc_view,'outdir',outdir);
     pdc_obj.ncores = 12;
     
     %% tune parameters
@@ -87,27 +81,26 @@ for i=1:length(params)
                 error('missing start and end for %s',params(i).stimulus);
         end
         
-        % TODO handle in LatticeFilterAnalysis.tune()
-        if isfield(params(i),'prepend_data')
-            switch params(i).prepend_data
-                case 'flipdata'
-                    if isequal(params(i).stimulus,'std-prestim1')
-                        error('flipdata is not necessary for std-prestim1');
-                    end
-                    nsamples_half = nsamples/2;
-                    %idx_start = floor(nsamples_half*0.05) + nsamples_half;
-                    idx_start = floor(nsamples_half*0.5) + nsamples_half;
-                    idx_end = ceil(nsamples_half*0.95) + nsamples_half;
-            end
-        end
-        pdc_obj.tune_criteria_samples = [idx_start idx_end];
+        pdc_obj.analysis_lf.tune_criteria_samples = [idx_start idx_end];
+        pdc_obj.analysis_lf.tune_plot_order = true;
         
-        pdc_obj.tune_plot_order = true;
-        pdc_obj.tune();
+        pdc_obj.analysis_lf.tune(...
+            params(i).ntrials,...
+            params(i).order,...
+            'lambda',params(i).lambda,...
+            'gamma',params(i).gamma);
         
     end
     
     if flag_run
+        
+        % set up filter
+        pdc_obj.analysis_lf.set_filter(...
+            nchannels,...
+            params(i).order,...
+            params(i).ntrials,...
+            'lambda',params(i).lambda,...
+            'gamma',params(i).gamma);
         
         % loop over metrics
         for j=1:length(params(i).metrics)
