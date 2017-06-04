@@ -28,7 +28,6 @@ function [file_sources_info,file_sources] = eeg_prep_lattice_filter(file_sourcea
 %       run_lattice_filter
 
 p = inputParser();
-addRequired(p,'pipeline',@(x) isa(x,'ftb.AnalysisBeamformer'));
 addRequired(p,'file_sourceanalysis',@ischar);
 addRequired(p,'file_eeg',@ischar);
 addRequired(p,'file_lf',@ischar);
@@ -39,10 +38,10 @@ parse(p,file_sourceanalysis,file_eeg,file_lf,varargin{:});
 
 %% set up output dir
 if isempty(p.Results.outdir)
-    outdir = pwd;
+    outdir = p.Results.patch_type;
     warning('no output directory specified\nusing default %s',outdir);
 else
-    outdir = p.Results.outdir;
+    outdir = fullfile(p.Results.outdir,p.Results.patch_type);
     if ~exist(outdir,'dir')
         mkdir(outdir);
     end
