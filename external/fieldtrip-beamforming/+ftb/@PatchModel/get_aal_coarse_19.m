@@ -220,7 +220,7 @@ if flag_right
 end
 
 if p.Results.v1
-    name = 'Calcarine';
+    name = 'Calcarine Mid';
     labels = {...
         'Calcarine_L',...
         'Calcarine_R'};
