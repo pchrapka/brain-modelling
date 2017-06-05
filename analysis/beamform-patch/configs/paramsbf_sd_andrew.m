@@ -19,11 +19,11 @@ params_eeg = EEGandrew_stddev_precomputed(data_file, data_name, stimulus);
 
 switch p.Results.patchmodel
     case 'aal'
-        params_bf = BFPatchAAL_andrew(data_name,p.Results.patchoptions);
+        params_bf = BFPatchAAL_andrew(data_name,p.Results.patchoptions{:});
     case 'aal-coarse-13'
-        params_bf = BFPatchAAL13_andrew(data_name,p.Results.patchoptions);
+        params_bf = BFPatchAAL13_andrew(data_name,p.Results.patchoptions{:});
     case 'aal-coarse-19'
-        params_bf = BFPatchAAL19_andrew(data_name,p.Results.patchoptions);
+        params_bf = BFPatchAAL19_andrew(data_name,p.Results.patchoptions{:});
     otherwise
         error('unknown model %s',p.Results.patchmodel);
 end
