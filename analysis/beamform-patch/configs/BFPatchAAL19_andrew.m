@@ -7,11 +7,13 @@ addParameter(p,'flag_add_auditory',false,@islogical);
 addParameter(p,'outer',false,@islogical);
 addParameter(p,'cerebellum',true,@islogical);
 addParameter(p,'hemisphere','both',@ischar);
+addParameter(p,'v1',false,@islogical);
 parse(p,data_name,varargin{:});
 
 patchmodel_params = {...
     'outer',p.Results.outer,...
     'cerebellum',p.Results.cerebellum,...
+    'v1',p.Results.v1,...
     'hemisphere',p.Results.hemisphere};
 
 % set up tags for the patchmodel name
@@ -34,7 +36,13 @@ if isequal(p.Results.hemisphere,'both')
 else
     tag_hemisphere = sprintf('-hemi%s',p.Results.hemisphere);
 end
-patchmodel_name = [base_name tag_outer tag_cerebellum tag_hemisphere];
+
+if p.Results.v1
+    tag_v1 = '-v1';
+else
+    tag_v1 = '';
+end
+patchmodel_name = [base_name tag_outer tag_cerebellum tag_hemisphere tag_v1];
 
 sphere_patch = {};
 if p.Results.flag_add_auditory
