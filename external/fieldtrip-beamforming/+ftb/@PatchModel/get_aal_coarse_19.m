@@ -40,6 +40,8 @@ switch p.Results.hemisphere
         flag_left = false;
     case 'left'
         flag_right = false;
+    case 'both'
+        % do nothing
     otherwise
         error('unknown hemisphere %s',p.Results.hemisphere);
 end
