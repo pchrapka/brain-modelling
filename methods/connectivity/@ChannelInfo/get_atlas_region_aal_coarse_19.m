@@ -31,7 +31,7 @@ switch name
         order = 10;
         
     otherwise
-        warning('%s not assigned\n',name);
+        warning('%s not assigned, using default\n',name);
         order = 11;
 end
 
