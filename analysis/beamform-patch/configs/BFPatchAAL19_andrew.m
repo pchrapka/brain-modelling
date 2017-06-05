@@ -4,16 +4,15 @@ function cfg = BFPatchAAL19_andrew(data_name,varargin)
 p = inputParser();
 addRequired(p,'data_name',@ischar);
 addParameter(p,'flag_add_auditory',false,@islogical);
+addParameter(p,'flag_add_v1',false,@islogical);
 addParameter(p,'outer',false,@islogical);
 addParameter(p,'cerebellum',true,@islogical);
 addParameter(p,'hemisphere','both',@ischar);
-addParameter(p,'v1',false,@islogical);
 parse(p,data_name,varargin{:});
 
 patchmodel_params = {...
     'outer',p.Results.outer,...
     'cerebellum',p.Results.cerebellum,...
-    'v1',p.Results.v1,...
     'hemisphere',p.Results.hemisphere};
 
 % set up tags for the patchmodel name
@@ -37,12 +36,7 @@ else
     tag_hemisphere = sprintf('-hemi%s',p.Results.hemisphere);
 end
 
-if p.Results.v1
-    tag_v1 = '-v1';
-else
-    tag_v1 = '';
-end
-patchmodel_name = [base_name tag_outer tag_cerebellum tag_hemisphere tag_v1];
+patchmodel_name = [base_name tag_outer tag_cerebellum tag_hemisphere];
 
 sphere_patch = {};
 if p.Results.flag_add_auditory
@@ -82,7 +76,23 @@ if p.Results.flag_add_auditory
     sphere_patch{1} = {'Auditory Left',locsmni(1,:),'radius',2};
     sphere_patch{2} = {'Auditory Right',locsmni(2,:),'radius',2};
     
-    patchmodel_name = sprintf('%s-plus2-rad2',patchmodel_name);
+    patchmodel_name = sprintf('%s-audr2',patchmodel_name);
+end
+
+if p.Results.flag_add_v1
+    locsmni = [0 -9 0]; % already in mni and cm
+    %     '12: Calcarine_L'
+    %     '5: no_label_found'
+    %     '3: Calcarine_R'
+    %     '3: Lingual_L'
+    %     '3: Lingual_R'
+    %     '1: Cuneus_L'
+    %     '1: Occipital_Sup_L'
+    %     '1: Occipital_Mid_L'
+    
+    nspheres = length(sphere_patch);
+    sphere_patch{nspheres+1} = {'V1 Mid',locsmni,'radius',2};
+    patchmodel_name = sprintf('%s-v1r2',patchmodel_name);
 end
 
 cfg = [];
