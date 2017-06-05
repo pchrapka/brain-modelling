@@ -27,13 +27,12 @@ switch name
         order = 8;
     case 'Limbic'
         order = 9;
-    case 'Calcarine'
-        order = 10;
     case 'Cerebellum'
-        order = 11;
+        order = 10;
         
     otherwise
-        fprintf('%s not assigned\n',name);
+        warning('%s not assigned\n',name);
+        order = 11;
 end
 
 end
