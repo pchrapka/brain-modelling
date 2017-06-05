@@ -64,7 +64,7 @@ if ~exist(file_sources,'file') || isfresh(file_sources, file_sourceanalysis)
     data_sources.time = source_analysis.time;
     
     % data should be [channels time trials]
-    save_tag(data_sources,'outfile',file_sources);
+    save_tag(data_sources,'outfile',file_sources,'overwrite',true);
 end
 
 %% extract source info

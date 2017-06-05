@@ -135,15 +135,15 @@ classdef LatticeFilterAnalysis < handle
             end
         end
         
-        function set_filter(obj,nchannels,ntrials,order,varargin)
+        function set_filter(obj,nchannels,order,ntrials,varargin)
             
             p = inputParser();
             addRequired(p,'nchannels',@(x) isnumeric(x) && isvector(x));
-            addRequired(p,'ntrials',@(x) isnumeric(x) && isvector(x));
             addRequired(p,'order',@(x) isnumeric(x) && isvector(x));
+            addRequired(p,'ntrials',@(x) isnumeric(x) && isvector(x));
             addParameter(p,'lambda',[],@(x) isnumeric(x) && isvector(x));
             addParameter(p,'gamma',[], @(x) isnumeric(x) && isvector(x));
-            parse(p,nchannels,ntrials,order,varargin{:});
+            parse(p,nchannels,order,ntrials,varargin{:});
             
             filter_func_handle = str2func(obj.filter_func);
             switch obj.filter_func
