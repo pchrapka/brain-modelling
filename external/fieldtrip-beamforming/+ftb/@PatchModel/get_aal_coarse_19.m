@@ -27,7 +27,6 @@ p = inputParser;
 addParameter(p,'outer',false,@islogical);
 addParameter(p,'cerebellum',true,@islogical);
 addParameter(p,'hemisphere','both',@(x) any(validatestring(x,{'left','right','both'})));
-addParameter(p,'v1',false,@islogical);
 addParameter(p,'verbosity',0);
 parse(p,varargin{:});
 
@@ -197,10 +196,8 @@ if flag_left
         'Occipital_Inf_L',...
         'Cuneus_L',...
         'Fusiform_L',...
-        'Lingual_L'};
-    if ~p.Results.v1
-        labels = [labels 'Calcarine_L'];
-    end
+        'Lingual_L',...
+        'Calcarine_L'};
     obj.add_patch(ftb.PatchLabel(name,labels));
 end
 
@@ -212,17 +209,7 @@ if flag_right
         'Occipital_Inf_R',...
         'Cuneus_R',...
         'Fusiform_R',...
-        'Lingual_R'};
-    if ~p.Results.v1
-        labels = [labels 'Calcarine_R'];
-    end
-    obj.add_patch(ftb.PatchLabel(name,labels));
-end
-
-if p.Results.v1
-    name = 'Calcarine Mid';
-    labels = {...
-        'Calcarine_L',...
+        'Lingual_R',...
         'Calcarine_R'};
     obj.add_patch(ftb.PatchLabel(name,labels));
 end
