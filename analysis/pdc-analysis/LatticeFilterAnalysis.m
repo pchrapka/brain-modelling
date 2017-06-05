@@ -205,6 +205,7 @@ classdef LatticeFilterAnalysis < handle
             % the name
             % TODO is this necessary, why not set up a tuning folder
             % inside?
+            error('fix this');
             tune_file = strrep(obj.file_data,'.mat','-tuning.mat');
             if ~exist(tune_file,'file') || isfresh(tune_file,obj.file_data)
                 if exist(tune_file,'file')
@@ -235,7 +236,7 @@ classdef LatticeFilterAnalysis < handle
                 'lambda',p.Results.lambda,...
                 'order',p.Results.order,...
                 'run_options',{'warmup',obj.warmup},...
-                'criteria_samples',obj.tune_criteria_samples);
+                'criteria_samples',criteria_samples);
         end
         
         function preprocessing(obj,varargin)
