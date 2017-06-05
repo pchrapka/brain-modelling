@@ -31,6 +31,7 @@ for i=1:length(gammas)
     params(k).metrics = {'diag'};%,'info'};
     params(k).ntrials = 20;
     params(k).order = orders(i);
+    %params(k).order = 3:14; % for tuning
     params(k).lambda = 0.99;
     params(k).gamma = gammas(i);
     params(k).normalization = 'eachchannel';
@@ -52,10 +53,12 @@ flag_bootstrap = false;
 stimulus = 'std';
 subject = 3;
 deviant_percent = 10;
-patch_type = 'aal-coarse-19-outer-nocer-plus2';
+patch_options = {...
+    'patchmodel','aal-coarse-19',...
+    'patchoptions',{'outer',true,'cerebellum',false,'flag_add_auditory',true}};
 
 out = eeg_processall_andrew(...
-    stimulus,subject,deviant_percent,patch_type);
+    stimulus,subject,deviant_percent,patch_options);
 
 %% run variations
 pdc_analysis_variations(...

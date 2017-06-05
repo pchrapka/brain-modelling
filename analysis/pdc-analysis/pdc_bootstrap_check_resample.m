@@ -5,7 +5,6 @@ addRequired(p,'resample_idx',@isnumeric);
 addParameter(p,'eeg_file','',@ischar);
 addParameter(p,'leadfield_file','',@ischar);
 addParameter(p,'envelope',false,@islogical)
-addParameter(p,'patch_type','',@ischar);
 parse(p,file_pdc_sig,resample_idx,varargin{:});
 
 error('deprecated');
@@ -26,8 +25,7 @@ file_pdc_resample = fullfile(workingdir, resampledir, sprintf('%s-%s.mat',filter
 
 view_obj = pdc_analysis_create_view(... 
     p.Results.eeg_file,...
-    p.Results.leadfield_file,...
-    'patch_type',p.Results.patch_type);
+    p.Results.leadfield_file);
 view_obj.file_pdc = file_pdc_resample;
 
 if p.Results.envelope

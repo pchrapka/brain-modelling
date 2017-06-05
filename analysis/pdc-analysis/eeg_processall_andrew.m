@@ -1,4 +1,4 @@
-function out = eeg_processall_andrew(stimulus,subject,deviant_percent,patches_type)
+function out = eeg_processall_andrew(stimulus,subject,deviant_percent,patch_options)
 % all eeg processing for Andrew's data, top level function 
 
 %% output dir
@@ -15,8 +15,9 @@ eeg_preprocessing_andrew(subject,deviant_percent,stimulus,...
     'outdir',outdir);
 
 %% beamform sources
-pipeline = build_pipeline_beamformer(paramsbf_sd_andrew(...
-    subject,deviant_percent,stimulus,'patches',patches_type)); 
+params_pipe = paramsbf_sd_andrew(...
+    subject,deviant_percent,stimulus,patch_options{:});
+pipeline = build_pipeline_beamformer(params_pipe); 
 pipeline.process();
 
 %% compute induced sources
@@ -31,7 +32,7 @@ eeg_induced(sources_file, eeg_file, lf_file, 'outdir',outdir);
 eeg_file = fullfile(outdir,'fthelpers.ft_phaselocked.mat');
 % NOTE eeg_file needed only for fsample
 [file_sources_info,file_sources] = eeg_prep_lattice_filter(...
-    sources_file, eeg_file, lf_file, 'outdir', outdir, 'patch_type', patches_type);
+    sources_file, eeg_file, lf_file, 'outdir', outdir, 'patch_type', params_pipe.bf.patchmodel_name);
 
 %% save outputs
 out = [];

@@ -2,7 +2,8 @@ function params = paramsbf_sd_andrew(subject_num,deviant_percent,stimulus,vararg
 % params for subject from Andrew's beta study
 
 p = inputParser();
-addParameter(p,'patches','aal',@ischar);
+addParameter(p,'patchmodel','aal',@ischar);
+addParameter(p,'patchoptions',{},@iscell);
 parse(p,varargin{:});
 
 [data_file,data_name,elec_file] = get_data_andrew(subject_num,deviant_percent);
@@ -16,27 +17,15 @@ params_elec = Eandrew_warpgr_cm(elec_file, data_name);
 % params_eeg = EEGandrew_stddev(data_file, data_name, stimulus);
 params_eeg = EEGandrew_stddev_precomputed(data_file, data_name, stimulus);
 
-switch p.Results.patches
+switch p.Results.patchmodel
     case 'aal'
-        params_bf = BFPatchAAL_andrew(data_name);
+        params_bf = BFPatchAAL_andrew(data_name,p.Results.patchoptions);
     case 'aal-coarse-13'
-        params_bf = BFPatchAAL13_andrew(data_name);
+        params_bf = BFPatchAAL13_andrew(data_name,p.Results.patchoptions);
     case 'aal-coarse-19'
-        params_bf = BFPatchAAL19_andrew(data_name);
-    case 'aal-coarse-19-plus2'
-        params_bf = BFPatchAAL19_andrew(data_name,...
-            'flag_add_auditory',true);
-    case 'aal-coarse-19-outer-plus2'
-        params_bf = BFPatchAAL19_andrew(data_name,...
-            'flag_add_auditory',true,...
-            'flag_outer',true);
-    case 'aal-coarse-19-outer-nocer-plus2'
-        params_bf = BFPatchAAL19_andrew(data_name,...
-            'flag_add_auditory',true,...
-            'flag_outer',true,...
-            'flag_nocerebellum',true);
+        params_bf = BFPatchAAL19_andrew(data_name,p.Results.patchoptions);
     otherwise
-        error('add new BeamformerPatch config for %s',p.Results.patches);
+        error('unknown model %s',p.Results.patchmodel);
 end
 
 %% assign configs for analysis

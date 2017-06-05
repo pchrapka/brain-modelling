@@ -4,9 +4,9 @@
 stimulus = 'std';
 subject = 3; 
 deviant_percent = 10;
-patch_type = 'aal-coarse-19';
+patch_options = {'patchmodel','aal-coarse-19','patchoptions',{}};
 out = eeg_processall_andrew(...
-    stimulus,subject,deviant_percent,patch_type);
+    stimulus,subject,deviant_percent,patch_options);
 pipeline = out.pipeline;
 outdir = out.outdir;
 

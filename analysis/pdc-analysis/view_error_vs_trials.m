@@ -1,7 +1,6 @@
 %% view_error_vs_trials
 
 params = [];
-params.patch_type = 'aal-coarse-19-outer-plus2';
 params.ntrials = [2 5 10 20 40 60];
 params.order = 3;
 params.lambda = 0.99;
@@ -13,9 +12,12 @@ params.tracefields = {'Kf','Kb','Rf','ferror','berrord'};
 stimulus = 'std';
 subject = 3;
 deviant_percent = 10;
+patch_options = {...
+    'patchmodel','aal-coarse-19',...
+    'patchoptions',{'outer',true,'cerebellum',true,'flag_add_auditory',true}};
 
 out = eeg_processall_andrew(...
-    stimulus,subject,deviant_percent,params.patch_type);
+    stimulus,subject,deviant_percent,patch_options);
 pipeline = out.pipeline;
 outdir = out.outdir;
 

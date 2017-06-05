@@ -19,14 +19,18 @@ switch name
         order = 4;
     case 'Parietal'
         order = 5;
-    case 'Temporal'
+    case 'Auditory'
         order = 6;
-    case 'Occipital'
+    case 'Temporal'
         order = 7;
-    case 'Limbic'
+    case 'Occipital'
         order = 8;
-    case 'Cerebellum'
+    case 'Limbic'
         order = 9;
+    case 'Calcarine'
+        order = 10;
+    case 'Cerebellum'
+        order = 11;
         
     otherwise
         fprintf('%s not assigned\n',name);

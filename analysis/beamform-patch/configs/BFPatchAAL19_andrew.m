@@ -4,22 +4,37 @@ function cfg = BFPatchAAL19_andrew(data_name,varargin)
 p = inputParser();
 addRequired(p,'data_name',@ischar);
 addParameter(p,'flag_add_auditory',false,@islogical);
-addParameter(p,'flag_outer',false,@islogical);
-addParameter(p,'flag_nocerebellum',false,@islogical);
+addParameter(p,'outer',false,@islogical);
+addParameter(p,'cerebellum',true,@islogical);
+addParameter(p,'hemisphere','both',@ischar);
 parse(p,data_name,varargin{:});
 
-if p.Results.flag_outer && p.Results.flag_nocerebellum
-    patchmodel_params = {'type','outer-nocerebellum'};
-    patchmodel_name = 'aal-coarse-19-outer-nocer';
-elseif p.Results.flag_outer
-    patchmodel_params = {'type','outer'};
-    patchmodel_name = 'aal-coarse-19-outer';
-elseif p.Results.flag_nocerebellum
-    error('cannot specify no cerebellum on its own');
+patchmodel_params = {...
+    'outer',p.Results.outer,...
+    'cerebellum',p.Results.cerebellum,...
+    'hemisphere',p.Results.hemisphere};
+
+% set up tags for the patchmodel name
+base_name = 'aal-coarse-19';
+
+if p.Results.outer
+    tag_outer = '-outer';
 else
-    patchmodel_params = {'type','all'};
-    patchmodel_name = 'aal-coarse-19';
+    tag_outer = '';
 end
+
+if p.Results.cerebellum
+    tag_cerebellum = '';
+else
+    tag_cerebellum = '-nocer';
+end
+
+if isequal(p.Results.hemisphere,'both')
+    tag_hemisphere = '';
+else
+    tag_hemisphere = sprintf('-hemi%s',p.Results.hemisphere);
+end
+patchmodel_name = [base_name tag_outer tag_cerebellum tag_hemisphere];
 
 sphere_patch = {};
 if p.Results.flag_add_auditory
@@ -63,6 +78,7 @@ if p.Results.flag_add_auditory
 end
 
 cfg = [];
+cfg.patchmodel_name = patchmodel_name;
 cfg.PatchModel = {'aal-coarse-19','params',patchmodel_params,'sphere_patch',sphere_patch};
 
 cfg.cov_avg = 'yes';
