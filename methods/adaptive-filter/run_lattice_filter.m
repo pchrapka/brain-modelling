@@ -130,6 +130,12 @@ outfiles = cell(npermutes,1);
 large_error = zeros(npermutes,1);
 large_error_name = cell(npermutes,1);
 
+% rearrange data
+data_filter = cell(npermutes,1);
+for k=1:npermutes
+    data_filter{k} = datain(:,:,idx{k});
+end
+
 %% loop over params
 parfor k=1:npermutes
     
@@ -146,7 +152,7 @@ parfor k=1:npermutes
         trace = LatticeTrace(filter,'fields',options.tracefields);
         
         % run the filter on data
-        trace.run(datain(:,:,idx{k}),...
+        trace.run(data_filter{k},...
             'warmup',options.warmup,...
             'verbosity',options.verbosity,...
             'mode','none');

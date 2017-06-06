@@ -39,7 +39,7 @@ for i=1:length(params)
     lf_obj = LatticeFilterAnalysis(...
         file_sources,'outdir',p.Results.outdir);
     lf_obj.filter_func = 'MCMTLOCCD_TWL4';
-    lf_obj.ntrials_max = 100;
+    lf_obj.ntrials_max = [];
     lf_obj.verbosity = 1;
     
     if isfield(params(i),'prepend_data'),   lf_obj.prepend_data = params(i).prepend_data;   end

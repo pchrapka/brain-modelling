@@ -265,8 +265,12 @@ classdef LatticeFilterAnalysis < handle
                 
                 [obj.nchannels,obj.nsamples,obj.ntrials] = size(data);
                 
+                if isempty(obj.ntrials_max)
+                    obj.ntrials_max = obj.ntrials;
+                end
+                
                 % check how many trials are available
-                if obj.ntrials < obj.ntrials_max
+                if obj.ntrials <= obj.ntrials_max
                     error('only %d trial available',obj.ntrials);
                 end
                 
