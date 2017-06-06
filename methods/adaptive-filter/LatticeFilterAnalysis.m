@@ -17,6 +17,8 @@ classdef LatticeFilterAnalysis < handle
         tracefields = {'Kf','Kb','Rf','ferror','berrord'};
         % added Rf for info criteria
         % added ferror for bootstrap
+        permutations = false;
+        npermutations = 1;
         
         % tuning options
         tune_plot_gamma = false;
@@ -185,9 +187,13 @@ classdef LatticeFilterAnalysis < handle
                 'outdir',exp_name,...
                 'filters', obj.filters,...
                 'warmup',obj.warmup,...
+                'permutations',obj.permutations,...
+                'npermutations',obj.npermutations,...
                 'force',false,...
                 'verbosity',obj.verbosity,...
                 'tracefields',obj.tracefields);
+            
+            
         end
         
          function tune(obj,ntrials,order,lambda,varargin)
@@ -215,6 +221,10 @@ classdef LatticeFilterAnalysis < handle
             end
             
             % adjust criteria_samples
+            if isempty(obj.tune_criteria_samples)
+                obj.tune_criteria_samples = [1 obj.nsamples];
+            end
+            
             switch obj.prepend_data
                 case 'flipdata'
                     % shift by nsamples

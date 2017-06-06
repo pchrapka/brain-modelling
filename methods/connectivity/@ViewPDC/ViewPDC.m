@@ -10,14 +10,19 @@ classdef ViewPDC < handle
     
     properties (SetAccess = protected)
         pdc;
+        pdc_loaded = '';
         pdc_sig;
         fs;
         info;
         time;
+        nchannels;
         
         save_tag; % save tag for each plot type
         outdir;
         outdir_type;
+        
+        file_pdc_mean = '';
+        file_pdc_var = '';
     end
     
     properties (Dependent)
@@ -99,12 +104,18 @@ classdef ViewPDC < handle
         
         function unload(obj)
             obj.pdc = [];
+            obj.pdc_loaded = '';
         end
         
         function load(obj,property)
             switch property
                 case 'pdc'
-                    if isempty(obj.pdc)
+                    if length(obj.file_pdc) > 1
+                        % TODO also need some flag for other functions?
+                        % TODO need a flag for saving
+                        error('multiple pdc files specified');
+                    end
+                    if isempty(obj.pdc) || ~isequal(obj.pdc_loaded,'pdc')
                         print_msg_filename(obj.file_pdc,'loading');
                         data = loadfile(obj.file_pdc);
                         obj.pdc = data.pdc;
@@ -115,6 +126,8 @@ classdef ViewPDC < handle
                             obj.pdc = [];
                             error('requires dynamic pdc data');
                         end
+                        obj.nchannels = size(obj.pdc,2);
+                        obj.pdc_loaded = 'pdc';
                     end
                 case 'pdc_sig'
                     if isempty(obj.pdc_sig)
@@ -131,6 +144,43 @@ classdef ViewPDC < handle
                             obj.pdc_sig = [];
                             error('significant pdc is not the same size as pdc');
                         end
+                    end
+                    
+                case 'pdc_mean'
+                    if isempty(obj.pdc) || ~isequal(obj.pdc_loaded,'mean')
+                        % compute/update mean
+                        obj.mean();
+                        
+                        print_msg_filename(obj.file_pdc_mean,'loading');
+                        data = loadfile(obj.file_pdc_mean);
+                        obj.pdc = data.pdc_mean;
+                        
+                        dims = size(obj.pdc);
+                        ndims = length(dims);
+                        if ndims ~= 4
+                            obj.pdc_mean = [];
+                            error('requires dynamic pdc data');
+                        end
+                        obj.nchannels = size(obj.pdc,2);
+                        obj.pdc_loaded = 'mean';
+                    end
+                case 'pdc_var'
+                    if isempty(obj.pdc)  || ~isequal(obj.pdc_loaded,'var')
+                        % compute/update var
+                        obj.var();
+                        
+                        print_msg_filename(obj.file_pdc_var,'loading');
+                        data = loadfile(obj.file_pdc_var);
+                        obj.pdc = data.pdc_var;
+                        
+                        dims = size(obj.pdc);
+                        ndims = length(dims);
+                        if ndims ~= 4
+                            obj.pdc_var = [];
+                            error('requires dynamic pdc data');
+                        end
+                        obj.nchannels = size(obj.pdc,2);
+                        obj.pdc_loaded = 'var';
                     end
  
                 otherwise
@@ -206,13 +256,103 @@ classdef ViewPDC < handle
     end
     
     methods (Access = protected)
+        function mean(obj)
+            files_pdc = obj.file_pdc;
+            
+            % create file name
+            tag_mean = sprintf('mean%d',length(files_pdc));
+            obj.file_pdc_mean = strrep(files_pdc{1},'.mat',['-' tag_mean '.mat']);
+            
+            nfiles = length(files_pdc);
+            
+            % check freshness of mean file wrt all dependent pdc files
+            fresh = false(nfiles,1);
+            for i=1:nfiles
+                fresh(i) = obj.isfresh(obj.file_pdc_mean,files_pdc{i});
+            end
+            
+            data = [];
+            if ~exist(obj.file_pdc_mean,'file') || any(fresh)
+                data.pdc_mean = [];
+                
+                % sum all pdc files
+                for i=1:nfiles
+                    obj.file_pdc = files_pdc{i};
+                    obj.load('pdc');
+                    if isempty(pdc_mean)
+                        data.pdc_mean = obj.pdc;
+                    else
+                        data.pdc_mean = data.pdc_mean + obj.pdc;
+                    end
+                    obj.unload();
+                end
+                
+                data.pdc_mean = data.pdc_mean/nfiles;
+                save(obj.file_pdc_mean,'data','-v7.3');
+            end
+            
+            obj.file_pdc = files_pdc;
+            
+        end
+        
+        function var(obj)
+            files_pdc = obj.file_pdc;
+            
+            % create file name
+            tag_var = sprintf('var%d',length(files_pdc));
+            obj.file_pdc_var = strrep(files_pdc{1},'.mat',['-' tag_var '.mat']);
+            
+            nfiles = length(files_pdc);
+            
+            % check freshness of mean file wrt all dependent pdc files
+            fresh = false(nfiles,1);
+            for i=1:nfiles
+                fresh(i) = obj.isfresh(obj.file_pdc_var,files_pdc{i});
+            end
+            
+            if ~exist(obj.file_pdc_var,'file') || any(fresh)
+                data = [];
+                % compute mean
+                obj.mean();
+                
+                % load mean
+                obj.load('pdc_mean');
+                pdc_mean = obj.pdc;
+                
+                data.pdc_var = [];
+                for i=1:nfiles
+                    % load each pdc file
+                    obj.file_pdc = files_pdc{i};
+                    obj.load('pdc');
+                    
+                    % sum variance
+                    if isempty(pdc_var)
+                        data.pdc_var = (obj.pdc - pdc_mean).^2;
+                    else
+                        data.pdc_var = data.pdc_var + (obj.pdc - pdc_mean).^2;
+                    end
+                    obj.unload();
+                end
+                data.pdc_var = data.pdc_var/(nfiles-1);
+                
+                save(obj.file_pdc_var,'data','-v7.3');
+            end
+            
+            obj.file_pdc = files_pdc;
+        end
+        
         function fresh = check_pdc_freshness(obj,newfile)
             % checks PDC data file timestamp vs the newfile timestamp
+            fresh = obj.isfresh(newfile,obj.file_pdc);
+        end
+        
+        function fresh = isfresh(newfile,prevfile)
+            % checks if prevfile is fresher than newfile
             fresh = false;
             if exist(newfile,'file')
-                data_time = get_timestamp(obj.file_pdc);
+                prev_time = get_timestamp(prevfile);
                 new_time = get_timestamp(newfile);
-                if data_time > new_time
+                if prev_time > new_time
                     fresh = true;
                 end
             end
@@ -224,7 +364,14 @@ classdef ViewPDC < handle
                 error('save tag not set in plot function');
             end
             
-            outfile = [obj.filename obj.save_tag obj.freq_tag];
+            switch obj.pdc_loaded
+                case 'pdc'
+                    tag_stat = '';
+                otherwise
+                    tag_stat = ['-' obj.pdc_loaded];
+            end
+            
+            outfile = [obj.filename tag_stat obj.save_tag obj.freq_tag];
         end
         
         function outdir = get_outdir(obj,value)
@@ -257,9 +404,8 @@ classdef ViewPDC < handle
             
             if isempty(obj.info)
                 % add generic channel labels if none exist
-                nchannels = size(obj.pdc,2);
-                labels = cell(nchannels,1);
-                for i=1:nchannels
+                labels = cell(obj.nchannels,1);
+                for i=1:obj.nchannels
                     labels{i} = sprintf('%d',i);
                 end
                 obj.info = ChannelInfo(labels);
