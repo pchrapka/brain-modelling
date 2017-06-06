@@ -270,7 +270,7 @@ classdef LatticeFilterAnalysis < handle
                 end
                 
                 % check how many trials are available
-                if obj.ntrials <= obj.ntrials_max
+                if obj.ntrials < obj.ntrials_max
                     error('only %d trial available',obj.ntrials);
                 end
                 
