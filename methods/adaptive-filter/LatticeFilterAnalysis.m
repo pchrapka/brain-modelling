@@ -302,7 +302,7 @@ classdef LatticeFilterAnalysis < handle
                     case 'none'
                 end
                 
-                save_tag(data,'outfile',obj.file_data_pre);
+                save_tag(data,'outfile',obj.file_data_pre,'overwrite',true);
             
             else
                 data = loadfile(obj.file_data_pre);
