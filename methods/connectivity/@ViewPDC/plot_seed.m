@@ -2,12 +2,13 @@ function created = plot_seed(obj,chseed,varargin)
 
 p = inputParser();
 addRequired(p,'chseed',@isnumeric);
+addParameter(p,'stat','none',@(x) validatestring(x,{'none','mean','var'}));
 addParameter(p,'direction','outgoing',...
     @(x) any(validatestring(x,{'outgoing','incoming'})));
 addParameter(p,'vertlines',[],@isvector);
 addParameter(p,'threshold',0.05,@(x) x >= 0 && x <= 1);
 addParameter(p,'threshold_mode','numeric',...
-    @(x) any(validatestring(x,{'numeric','significance','significance_alpha'})));
+    @(x) any(validatestring(x,{'none','numeric','significance','significance_alpha'})));
 addParameter(p,'tag','',@ischar);
 addParameter(p,'get_save_tag',false,@islogical);
 % addParameter(p,'save',false,@islogical);
@@ -15,7 +16,14 @@ addParameter(p,'get_save_tag',false,@islogical);
 parse(p,chseed,varargin{:});
 
 obj.save_tag = [];
-obj.load('pdc');
+switch p.Results.stat
+    case 'none'
+        obj.load('pdc');
+    case 'mean'
+        obj.load('pdc_mean');
+    case 'var'
+        obj.load('pdc_var');
+end
 obj.check_info();
 created = false;
 
@@ -24,14 +32,16 @@ label_seed = obj.info.label{p.Results.chseed};
 %% set up save tag
 tag_threshold = '';
 switch p.Results.threshold_mode
+    case 'none'
+        tag_threshold = '';
     case 'numeric'
-        tag_threshold = sprintf('thresh%0.2f',p.Results.threshold);
+        tag_threshold = sprintf('-thresh%0.2f',p.Results.threshold);
     case 'significance'
         obj.load('pdc_sig');
-        tag_threshold = 'threshsig';
+        tag_threshold = '-threshsig';
     case 'significance_alpha'
         obj.load('pdc_sig');
-        tag_threshold = 'threshsigalpha';
+        tag_threshold = '-threshsigalpha';
         error('fix this mode');
         % NOTE it doesn't make sense using the significance threshold as an
         % alpha layer
@@ -49,7 +59,7 @@ switch p.Results.direction
 end
 if ~isempty(tag_threshold)
     % add threshold tag
-    obj.save_tag = [obj.save_tag '-' tag_threshold];
+    obj.save_tag = [obj.save_tag tag_threshold];
 end
 
 if ~isempty(p.Results.tag)
@@ -99,6 +109,8 @@ for i=1:nchannels
     
     % threshold data
     switch p.Results.threshold_mode
+        case 'none'
+            % do nothing
         case 'numeric'
             % zero out everything that doesn't meet the threshold
             data_temp(data_temp < p.Results.threshold) = 0;

@@ -73,14 +73,15 @@ classdef PDCAnalysis < handle
                 'downsample',obj.pdc_downsample,...
                 };
             pdc_files = rc2pdc_dynamic_from_lf_files(obj.file_lf,'params',pdc_params);
-            obj.file_pdc = pdc_files{1};
+            obj.file_pdc = pdc_files;
             
             obj.view.file_pdc = obj.file_pdc;
         end
         
         function surrogate(obj)
             % do surrogate analysis
-            % NOTE requireds pdc() to be run first
+            % NOTE requireds pdc() to be run first, or does it?, might just
+            % need analysis_lf
             
             % NOTE need prepend, normalization
             % NOTE sources_file if estimate_ind_channels

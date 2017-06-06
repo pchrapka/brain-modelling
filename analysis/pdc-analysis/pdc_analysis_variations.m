@@ -41,9 +41,12 @@ for i=1:length(params)
     lf_obj.filter_func = 'MCMTLOCCD_TWL4';
     lf_obj.ntrials_max = 100;
     lf_obj.verbosity = 1;
-    lf_obj.prepend_data = params(i).prepend_data;
-    lf_obj.normalization = params(i).normalization;
-    lf_obj.envelope = params(i).envelope;
+    
+    if isfield(params(i),'prepend_data'),   lf_obj.prepend_data = params(i).prepend_data;   end
+    if isfield(params(i),'normalization'),  lf_obj.normalization = params(i).normalization; end
+    if isfield(params(i),'envelope'),       lf_obj.envelope = params(i).envelope;           end
+    if isfield(params(i),'permutations'),   lf_obj.permutations = params(i).permutations;   end
+    if isfield(params(i),'npermutations'),  lf_obj.npermutations = params(i).npermutations; end
     
     % set up view
     pdc_view = pdc_analysis_create_view(...
@@ -66,30 +69,31 @@ for i=1:length(params)
     %% tune parameters
     if flag_tune
         
-        % TODO move outside, but into some function for setting PDCAnalysis
-        % parameters based on stimulus
-        switch params(i).stimulus
-            case 'std'
-                idx_start = floor(nsamples*0.05);
-                idx_end = ceil(nsamples*0.95);
-            case 'std-prestim1'
-                nsamples_trial = floor(nsamples/4);
-                nsamples_rest = nsamples - nsamples_trial;
-                idx_start = floor(nsamples_rest*0.05) + nsamples_trial;
-                idx_end = ceil(nsamples_rest*0.95) + nsamples_trial;
-            otherwise
-                error('missing start and end for %s',params(i).stimulus);
+        if isfield(params(i),'tune_criteria_samples')
+            pct = params(i).tune_criteria_samples;
+        else
+            pct = [0.05 0.95];
         end
         
+        if length(pct) ~= 2
+            error('bad length for tune_criteria_samples');
+        end
+        if any(pct <= 0) || any(pct >= 1)
+            error('tune_criteria_samples needs to be in the interval [0 1]');
+        end
+        
+        idx_start = floor(nsamples*pct(1));
+        idx_end = ceil(nsamples*pct(2));
         pdc_obj.analysis_lf.tune_criteria_samples = [idx_start idx_end];
+        
         pdc_obj.analysis_lf.tune_plot_order = true;
         
+        % tune
         pdc_obj.analysis_lf.tune(...
             params(i).ntrials,...
             params(i).order,...
             'lambda',params(i).lambda,...
             'gamma',params(i).gamma);
-        
     end
     
     if flag_run
@@ -138,32 +142,41 @@ for i=1:length(params)
             
             %% plot seed
             if p.Results.flag_plot_seed
-                for idx_param=1:length(params_plot_seed)
-                    params_plot = [params_plot_seed{idx_param}, {'vertlines',[0 0.5]}];
-                    pdc_obj.plot_seed(params_plot{:});
+                if lf_obj.permutations
+                    pdc_obj.plot_seed('threshold_mode','none','stat','mean','vertlines',[0 0.5]);
+                    pdc_obj.plot_seed('threshold_mode','none','stat','var','vertlines',[0 0.5]);
+                else
+                    for idx_param=1:length(params_plot_seed)
+                        params_plot = [params_plot_seed{idx_param}, {'vertlines',[0 0.5]}];
+                        pdc_obj.plot_seed(params_plot{:});
+                    end
                 end
             end
             
             %% plot connectivity
             if p.Results.flag_plot_conn
-                nsamples_real = floor(nsamples/params(i).downsample);
-                idx_start = 0.25*nsamples_real;
-                idx_end = nsamples_real;
-                sample_idx = idx_start:idx_end;
-                
-                if isfield(params(i),'prepend_data')
-                    switch params(i).prepend_data
-                        case 'flipdata'
-                            idx_start = 0.25*nsamples_real/2;
-                            idx_end = nsamples_real/2;
-                            sample_idx = idx_start:idx_end;
+                if lf_obj.permutations
+                    warning('TODO plot connectivity for multiple permutations');
+                else
+                    nsamples_real = floor(nsamples/params(i).downsample);
+                    idx_start = 0.25*nsamples_real;
+                    idx_end = nsamples_real;
+                    sample_idx = idx_start:idx_end;
+                    
+                    if isfield(params(i),'prepend_data')
+                        switch params(i).prepend_data
+                            case 'flipdata'
+                                idx_start = 0.25*nsamples_real/2;
+                                idx_end = nsamples_real/2;
+                                sample_idx = idx_start:idx_end;
+                        end
                     end
+                    
+                    pdc_obj.view.plot_connectivity_matrix('samples',sample_idx);
+                    
+                    pdc_obj.view.save_plot('save',true,'engine','matlab');
+                    close(gcf);
                 end
-                
-                pdc_obj.view.plot_connectivity_matrix('samples',sample_idx);
-                
-                pdc_obj.view.save_plot('save',true,'engine','matlab');
-                close(gcf);
             end
             
             

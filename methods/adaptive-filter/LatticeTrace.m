@@ -265,6 +265,7 @@ classdef LatticeTrace < handle
         function save(obj,varargin)
             % save trace fields and filter information
             p = inputParser();
+            p.KeepUnmatched = true;
             addParameter(p,'filename','',@ischar);
             parse(p,varargin{:});
             
@@ -280,6 +281,13 @@ classdef LatticeTrace < handle
             for i=1:length(obj.fields)
                 field = obj.fields{i};
                 data.estimate.(field) = obj.trace.(field);
+            end
+            
+            % save unmatched
+            ufields = fieldnames(p.Unmatched);
+            for i=1:length(ufields)
+                field = ufields{i};
+                data.(field) = p.Unmatched.(field);
             end
             save(outfile,'data','-v7.3');
         end

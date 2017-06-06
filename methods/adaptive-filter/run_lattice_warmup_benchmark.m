@@ -74,22 +74,7 @@ nsims = p.Results.nsims;
 sim_params = p.Results.sim_params;
 nsim_params = length(sim_params);
 
-if isempty(p.Results.basedir)
-    basedir = pwd;
-else
-    [expdir,~,ext] = fileparts(p.Results.basedir);
-    if isempty(ext)
-        basedir = p.Results.basedir;
-    else
-        basedir = expdir;
-    end
-end
-
-% set up output directory
-outdir = fullfile(basedir,p.Results.outdir);
-if ~exist(outdir,'dir')
-    mkdir(outdir);
-end
+outdir = setup_outdir(p.Results.basedir,p.Results.outdir);
 
 % create script name for save_fig_exp
 [~,name,~] = fileparts(p.Results.outdir);
