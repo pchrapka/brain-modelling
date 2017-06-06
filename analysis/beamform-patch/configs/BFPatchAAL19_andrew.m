@@ -39,6 +39,7 @@ end
 patchmodel_name = [base_name tag_outer tag_cerebellum tag_hemisphere];
 
 sphere_patch = {};
+sphere_idx = 1;
 if p.Results.flag_add_auditory
     % P1 dipoles in Talaraich coordinates
     switch data_name(1:3)
@@ -73,8 +74,30 @@ if p.Results.flag_add_auditory
     locsmni = tal2mni(locs);
     locsmni = locsmni/10; % convert to cm
     
-    sphere_patch{1} = {'Auditory Left',locsmni(1,:),'radius',2};
-    sphere_patch{2} = {'Auditory Right',locsmni(2,:),'radius',2};
+    % add based on hemisphere selection
+    switch p.Results.hemisphere
+        case 'both'
+            flag_left = true;
+            flag_right = true;
+        case 'right'
+            flag_left = false;
+            flag_right = true;
+        case 'left'
+            flag_left = true;
+            flag_right = false;
+        otherwise
+            error('unknown hemi %s',p.Results.hemisphere);
+    end
+    
+    if flag_left
+        sphere_patch{sphere_idx} = {'Auditory Left',locsmni(1,:),'radius',2};
+        sphere_idx = sphere_idx + 1;
+    end
+    
+    if flag_right
+        sphere_patch{sphere_idx} = {'Auditory Right',locsmni(2,:),'radius',2};
+        sphere_idx = sphere_idx + 1;
+    end
     
     patchmodel_name = sprintf('%s-audr2',patchmodel_name);
 end
@@ -90,8 +113,9 @@ if p.Results.flag_add_v1
     %     '1: Occipital_Sup_L'
     %     '1: Occipital_Mid_L'
     
-    nspheres = length(sphere_patch);
-    sphere_patch{nspheres+1} = {'V1 Mid',locsmni,'radius',2};
+    sphere_patch{sphere_idx} = {'V1 Mid',locsmni,'radius',2};
+    sphere_idx = sphere_idx + 1;
+    
     patchmodel_name = sprintf('%s-v1r2',patchmodel_name);
 end
 
