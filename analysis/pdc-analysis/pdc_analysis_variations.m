@@ -41,6 +41,7 @@ for i=1:length(params)
     lf_obj.filter_func = 'MCMTLOCCD_TWL4';
     lf_obj.ntrials_max = [];
     lf_obj.verbosity = 1;
+    lf_obj.ncores = 12;
     
     if isfield(params(i),'prepend_data'),   lf_obj.prepend_data = params(i).prepend_data;   end
     if isfield(params(i),'normalization'),  lf_obj.normalization = params(i).normalization; end
