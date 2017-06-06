@@ -2,7 +2,7 @@ function created = plot_seed(obj,chseed,varargin)
 
 p = inputParser();
 addRequired(p,'chseed',@isnumeric);
-addParameter(p,'stat','none',@(x) validatestring(x,{'none','mean','var'}));
+addParameter(p,'stat','none',@(x) any(validatestring(x,{'none','mean','var'})));
 addParameter(p,'direction','outgoing',...
     @(x) any(validatestring(x,{'outgoing','incoming'})));
 addParameter(p,'vertlines',[],@isvector);

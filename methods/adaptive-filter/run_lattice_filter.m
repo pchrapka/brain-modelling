@@ -138,6 +138,7 @@ end
 
 %% loop over params
 parfor k=1:npermutes
+% for k=1:npermutes
     
     % set up filter slug
     slug_filter = strrep(filter.name,' ','-');

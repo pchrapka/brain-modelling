@@ -6,7 +6,7 @@ classdef LatticeFilterAnalysis < handle
         normalization = 'eachchannel';
         envelope = false;
         samples = [];
-        ntrials_max = 100;
+        ntrials_max = [];
         
         filter = [];
         
@@ -110,7 +110,11 @@ classdef LatticeFilterAnalysis < handle
             
             slug_prepend = sprintf('prepend%s',obj.prepend_data);
             
-            slug_trials = sprintf('trials%d',obj.ntrials_max);
+            if isempty(obj.ntrials_max)
+                slug_trials = 'trialsall';
+            else
+                slug_trials = sprintf('trials%d',obj.ntrials_max);
+            end
             
             data_file_tag = sprintf('%s-%s-%s-%s-%s-%s',...
                 name, slug_trials, slug_samples, slug_norm, slug_env, slug_prepend);
@@ -257,6 +261,8 @@ classdef LatticeFilterAnalysis < handle
             
             % preprocess data
             if ~exist(obj.file_data_pre,'file') || isfresh(obj.file_data_pre,obj.file_data)
+                % NOTE do not change parameters here used to create
+                % file_data_pre file name
 
                 data = loadfile(obj.file_data);
                 if isstruct(data)
@@ -266,11 +272,13 @@ classdef LatticeFilterAnalysis < handle
                 [obj.nchannels,obj.nsamples,obj.ntrials] = size(data);
                 
                 if isempty(obj.ntrials_max)
-                    obj.ntrials_max = obj.ntrials;
+                    ntrials_pre = obj.ntrials;
+                else
+                    ntrials_pre = obj.ntrials_max;
                 end
                 
                 % check how many trials are available
-                if obj.ntrials < obj.ntrials_max
+                if obj.ntrials < ntrials_pre
                     error('only %d trial available',obj.ntrials);
                 end
                 
@@ -281,7 +289,7 @@ classdef LatticeFilterAnalysis < handle
                 end
                 
                 % don't put in more data than required i.e. ntrials + ntrials_warmup
-                data = data(:,sample_idx,1:obj.ntrials_max);
+                data = data(:,sample_idx,1:ntrials_pre);
                 
                 switch obj.prepend_data
                     case 'flipdata'
@@ -294,7 +302,7 @@ classdef LatticeFilterAnalysis < handle
                 
                 % compute envelope
                 if obj.envelope
-                    for i=1:obj.ntrials_max
+                    for i=1:ntrials_pre
                         for j=1:obj.nchannels
                             temp = abs(hilbert(data(j,:,i)));
                             data(j,:,i) = temp - mean(temp);
@@ -306,11 +314,11 @@ classdef LatticeFilterAnalysis < handle
                 switch obj.normalization
                     case 'allchannels'
                         warning('this can result in bad boostrapping results');
-                        for i=1:obj.ntrials_max
+                        for i=1:ntrials_pre
                             data(:,:,i) = normalize(data(:,:,i));
                         end
                     case 'eachchannel'
-                        for i=1:obj.ntrials_max
+                        for i=1:ntrials_pre
                             data(:,:,i) = normalizev(data(:,:,i));
                         end
                     case 'none'

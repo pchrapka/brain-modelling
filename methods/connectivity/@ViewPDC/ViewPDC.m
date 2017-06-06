@@ -64,7 +64,7 @@ classdef ViewPDC < handle
         
         function set.file_pdc(obj,value)
             p = inputParser();
-            addRequired(p,'file_pdc',@ischar);
+            addRequired(p,'file_pdc',@(x) ischar(x) || iscell(x));
             parse(p,value);
             
             obj.unload();

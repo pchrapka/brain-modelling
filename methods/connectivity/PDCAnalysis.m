@@ -60,7 +60,7 @@ classdef PDCAnalysis < handle
             obj.analysis_lf.postprocessing();
             
             % save data file
-            obj.file_lf = obj.analysis_lf.file_data_post{1};
+            obj.file_lf = obj.analysis_lf.file_data_post;
             
             if obj.ncores > 1
                 % set up parfor
