@@ -15,6 +15,9 @@ function outfiles = run_lattice_filter(datain,varargin)
 %       base output directory, can be specified with a directory or an
 %       m-file name, the output directory will be placed in this folder.
 %       the default directory will be the current working folder.
+%
+%   filter options
+%   --------------
 %   filter (filter object)
 %       filter object
 %   warmup (cell array, default = {'noise'})
@@ -25,6 +28,12 @@ function outfiles = run_lattice_filter(datain,varargin)
 %       fields to save from LatticeTrace object
 %   normalization (string, default = 'none')
 %       normalization type, options: allchannels, eachchannel, none
+%
+%   running options
+%   ---------------
+%   cores (integer)
+%       number of cores to setup, if cores == 0 it defaults to the max for
+%       that particular machine
 %   force (logical, default = false)
 %       force recomputation
 %   verbosity (integer, default = 0)
@@ -50,12 +59,13 @@ options_norm = {'allchannels','eachchannel','none'};
 addParameter(p,'normalization','none',@(x) any(validatestring(x,options_norm)));
 addParameter(p,'permutations',false,@islogical);
 addParameter(p,'npermutations',1,@isnumeric);
+addParameter(p,'ncores',1,@isnumeric);
 p.parse(datain,varargin{:});
 
 outdir = setup_outdir(p.Results.basedir,p.Results.outdir);
 
 % set up parfor
-% parfor_setup();
+parfor_setup('cores',p.Results.ncores,'force',true);
 
 %% set up data
 
