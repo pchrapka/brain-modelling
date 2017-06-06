@@ -75,14 +75,22 @@ classdef ViewPDC < handle
             if isempty(obj.file_pdc)
                 error('file_pdc is empty');
             end
-            [value,~,~] =  fileparts(obj.file_pdc);
+            if iscell(obj.file_pdc) && (length(obj.file_pdc) > 1)
+                [value,~,~] = fileparts(obj.file_pdc{1});
+            else
+                [value,~,~] =  fileparts(obj.file_pdc);
+            end
         end
         
         function value = get.filename(obj)
             if isempty(obj.file_pdc)
                 error('file_pdc is empty');
             end
-            [~,value,~] =  fileparts(obj.file_pdc);
+            if iscell(obj.file_pdc) && (length(obj.file_pdc) > 1)
+                [~,value,~] = fileparts(obj.file_pdc{1});
+            else
+                [~,value,~] =  fileparts(obj.file_pdc);
+            end
         end
         
         function set.w(obj,value)
@@ -110,7 +118,7 @@ classdef ViewPDC < handle
         function load(obj,property)
             switch property
                 case 'pdc'
-                    if length(obj.file_pdc) > 1
+                    if iscell(obj.file_pdc) && (length(obj.file_pdc) > 1)
                         % TODO also need some flag for other functions?
                         % TODO need a flag for saving
                         error('multiple pdc files specified');
@@ -268,7 +276,7 @@ classdef ViewPDC < handle
             % check freshness of mean file wrt all dependent pdc files
             fresh = false(nfiles,1);
             for i=1:nfiles
-                fresh(i) = obj.isfresh(obj.file_pdc_mean,files_pdc{i});
+                fresh(i) = ViewPDC.isfresh(obj.file_pdc_mean,files_pdc{i});
             end
             
             data = [];
@@ -279,7 +287,7 @@ classdef ViewPDC < handle
                 for i=1:nfiles
                     obj.file_pdc = files_pdc{i};
                     obj.load('pdc');
-                    if isempty(pdc_mean)
+                    if isempty(data.pdc_mean)
                         data.pdc_mean = obj.pdc;
                     else
                         data.pdc_mean = data.pdc_mean + obj.pdc;
@@ -307,7 +315,7 @@ classdef ViewPDC < handle
             % check freshness of mean file wrt all dependent pdc files
             fresh = false(nfiles,1);
             for i=1:nfiles
-                fresh(i) = obj.isfresh(obj.file_pdc_var,files_pdc{i});
+                fresh(i) = ViewPDC.isfresh(obj.file_pdc_var,files_pdc{i});
             end
             
             if ~exist(obj.file_pdc_var,'file') || any(fresh)
@@ -326,7 +334,7 @@ classdef ViewPDC < handle
                     obj.load('pdc');
                     
                     % sum variance
-                    if isempty(pdc_var)
+                    if isempty(data.pdc_var)
                         data.pdc_var = (obj.pdc - pdc_mean).^2;
                     else
                         data.pdc_var = data.pdc_var + (obj.pdc - pdc_mean).^2;
@@ -343,19 +351,7 @@ classdef ViewPDC < handle
         
         function fresh = check_pdc_freshness(obj,newfile)
             % checks PDC data file timestamp vs the newfile timestamp
-            fresh = obj.isfresh(newfile,obj.file_pdc);
-        end
-        
-        function fresh = isfresh(newfile,prevfile)
-            % checks if prevfile is fresher than newfile
-            fresh = false;
-            if exist(newfile,'file')
-                prev_time = get_timestamp(prevfile);
-                new_time = get_timestamp(newfile);
-                if prev_time > new_time
-                    fresh = true;
-                end
-            end
+            fresh = ViewPDC.isfresh(newfile,obj.file_pdc);
         end
         
         function outfile = get_savefile(obj)
@@ -561,5 +557,20 @@ classdef ViewPDC < handle
             end
         end
     end
+    
+    methods (Static)
+        function fresh = isfresh(newfile,prevfile)
+            % checks if prevfile is fresher than newfile
+            fresh = false;
+            if exist(newfile,'file')
+                prev_time = get_timestamp(prevfile);
+                new_time = get_timestamp(newfile);
+                if prev_time > new_time
+                    fresh = true;
+                end
+            end
+        end
+    end
+    
 end
 
