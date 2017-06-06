@@ -8,7 +8,7 @@ classdef LatticeFilterAnalysis < handle
         samples = [];
         ntrials_max = 100;
         
-        filters = {};
+        filter = [];
         
         % lattice filter options
         filter_func = '';
@@ -150,7 +150,7 @@ classdef LatticeFilterAnalysis < handle
             filter_func_handle = str2func(obj.filter_func);
             switch obj.filter_func
                 case 'MCMTLOCCD_TWL4'
-                    obj.filters{1} = filter_func_handle(nchannels,order,ntrials,...
+                    obj.filter = filter_func_handle(nchannels,order,ntrials,...
                         'lambda',p.Results.lambda,'gamma',p.Results.gamma);
                 otherwise
                     error('unknown filter func format %s',obj.filter_func);
@@ -166,8 +166,8 @@ classdef LatticeFilterAnalysis < handle
                 error('preprocess data first');
             end
             
-            if isempty(obj.filters)
-                error('not filters specified');
+            if isempty(obj.filter)
+                error('no filter specified');
             end
             
             if isequal(obj.prepend_data,'flipdata')
@@ -185,7 +185,7 @@ classdef LatticeFilterAnalysis < handle
                 obj.file_data_pre,...
                 'basedir',obj.outdir,...
                 'outdir',exp_name,...
-                'filters', obj.filters,...
+                'filter', obj.filter,...
                 'warmup',obj.warmup,...
                 'permutations',obj.permutations,...
                 'npermutations',obj.npermutations,...

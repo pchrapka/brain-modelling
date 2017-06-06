@@ -15,8 +15,8 @@ function outfiles = run_lattice_filter(datain,varargin)
 %       base output directory, can be specified with a directory or an
 %       m-file name, the output directory will be placed in this folder.
 %       the default directory will be the current working folder.
-%   filters (cell array)
-%       array of filter objects
+%   filter (filter object)
+%       filter object
 %   warmup (cell array, default = {'noise'})
 %       filter warmup options, specified by cell array and are executed in
 %       that order 
@@ -49,7 +49,7 @@ addParameter(p,'tracefields',{'Kf','Kb'},@iscell);
 options_norm = {'allchannels','eachchannel','none'};
 addParameter(p,'normalization','none',@(x) any(validatestring(x,options_norm)));
 addParameter(p,'permutations',false,@islogical);
-addParmaeter(p,'npermutations',1,@isnumeric);
+addParameter(p,'npermutations',1,@isnumeric);
 p.parse(datain,varargin{:});
 
 outdir = setup_outdir(p.Results.basedir,p.Results.outdir);
@@ -109,7 +109,7 @@ elseif data_dims(3) < ntrials
 end
 
 % set up permutations
-if p.Results.permute
+if p.Results.permutations
     npermutes = p.Results.npermutations;
     idx = cell(npermutes,1);
     idx{1} = 1:ntrials;
