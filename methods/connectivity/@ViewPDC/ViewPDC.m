@@ -4,7 +4,7 @@ classdef ViewPDC < handle
     
     properties 
         w;
-        file_pdc;
+        file_pdc = {};
         file_pdc_sig;
     end
     
@@ -64,7 +64,7 @@ classdef ViewPDC < handle
         
         function set.file_pdc(obj,value)
             p = inputParser();
-            addRequired(p,'file_pdc',@(x) ischar(x) || iscell(x));
+            addRequired(p,'file_pdc',@iscell);
             parse(p,value);
             
             obj.unload();
@@ -75,22 +75,14 @@ classdef ViewPDC < handle
             if isempty(obj.file_pdc)
                 error('file_pdc is empty');
             end
-            if iscell(obj.file_pdc) && (length(obj.file_pdc) > 1)
-                [value,~,~] = fileparts(obj.file_pdc{1});
-            else
-                [value,~,~] =  fileparts(obj.file_pdc);
-            end
+            [value,~,~] = fileparts(obj.file_pdc{1});
         end
         
         function value = get.filename(obj)
             if isempty(obj.file_pdc)
                 error('file_pdc is empty');
             end
-            if iscell(obj.file_pdc) && (length(obj.file_pdc) > 1)
-                [~,value,~] = fileparts(obj.file_pdc{1});
-            else
-                [~,value,~] =  fileparts(obj.file_pdc);
-            end
+            [~,value,~] = fileparts(obj.file_pdc{1});
         end
         
         function set.w(obj,value)
@@ -118,12 +110,12 @@ classdef ViewPDC < handle
         function load(obj,property)
             switch property
                 case 'pdc'
-                    if iscell(obj.file_pdc) && (length(obj.file_pdc) > 1)
+                    if length(obj.file_pdc) > 1
                         error('multiple pdc files specified');
                     end
                     if isempty(obj.pdc) || ~isequal(obj.pdc_loaded,'pdc')
-                        print_msg_filename(obj.file_pdc,'loading');
-                        data = loadfile(obj.file_pdc);
+                        print_msg_filename(obj.file_pdc{1},'loading');
+                        data = loadfile(obj.file_pdc{1});
                         obj.pdc = data.pdc;
                         
                         dims = size(obj.pdc);
@@ -349,7 +341,12 @@ classdef ViewPDC < handle
         
         function fresh = check_pdc_freshness(obj,newfile)
             % checks PDC data file timestamp vs the newfile timestamp
-            fresh = ViewPDC.isfresh(newfile,obj.file_pdc);
+            nfiles = length(obj.file_pdc);
+            result = false(nfiles,1);
+            for i=1:nfiles
+                result(i) = ViewPDC.isfresh(newfile,obj.file_pdc{i});
+            end
+            fresh = any(result);
         end
         
         function outfile = get_savefile(obj)
