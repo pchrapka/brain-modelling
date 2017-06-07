@@ -3,6 +3,7 @@ function created = plot_seed(obj,chseed,varargin)
 p = inputParser();
 addRequired(p,'chseed',@isnumeric);
 addParameter(p,'stat','none',@(x) any(validatestring(x,{'none','mean','var'})));
+addParameter(p,'operation','none',@(x) any(validatestring(x,{'none','sum','mean'})));
 addParameter(p,'direction','outgoing',...
     @(x) any(validatestring(x,{'outgoing','incoming'})));
 addParameter(p,'vertlines',[],@isvector);
@@ -57,6 +58,10 @@ switch p.Results.direction
     case 'incoming'        
         obj.save_tag = sprintf('-seed-in-i%d',p.Results.chseed);
 end
+
+tag_operation = sprintf('-op%s',p.Results.operation);
+obj.save_tag = [obj.save_tag tag_operation];
+
 if ~isempty(tag_threshold)
     % add threshold tag
     obj.save_tag = [obj.save_tag tag_threshold];
@@ -84,8 +89,9 @@ f = w(w_idx)*obj.fs;
 freq_idx = 1:nfreqs;
 freq_idx = freq_idx(w_idx);
 
-data_plot = zeros(nchannels,nsamples);
-data_alpha = zeros(nchannels,nsamples);
+nfreqs_sel = legnth(freq_idx);
+data_plot = zeros(nsamples,nfreqs_sel,nchannels);
+data_alpha = zeros(nsamples,nfreqs_sel,nchannels);
 yticklabel = cell(nchannels,1);
 count = 1;
 for i=1:nchannels
@@ -128,12 +134,16 @@ for i=1:nchannels
     data_sum = sum(data_temp(:));
     if data_sum > 0.01
         % sum over frequencies
-        data_plot(i,:) = sum(data_temp,2);
+        % TODO do sum elsewhere
+        %data_plot(:,:,i) = sum(data_temp,2);
+        data_plot(:,:,i) = data_temp;
         yticklabel{i} = obj.info.label{i};
         
         if isequal(p.Results.threshold_mode,'significance_alpha')
             % plot all data, add significance as alpha layer
-            data_alpha(i,:) = sum(data_alpha_temp,2);
+            % TODO do sum elsewhere
+            %data_alpha(i,:) = sum(data_alpha_temp,2);
+            data_alpha(:,:,i) = data_alpha_temp;
         end
             
     end
@@ -152,12 +162,12 @@ idx_sort = obj.sort_channels();
 idx_sort = idx_sort(:);
 
 % sort the data
-data_plot = data_plot(idx_sort,:);
+data_plot = data_plot(:,:,idx_sort);
 yticklabel = yticklabel(idx_sort,:);
 idx_empty = idx_empty(idx_sort,:);
 
 % remove empty entries
-data_plot(idx_empty,:) = [];
+data_plot(:,:,idx_empty) = [];
 yticklabel(idx_empty,:) = [];
 
 % set up figure
@@ -189,8 +199,29 @@ end
 axes(ax1);
 set(ax1,'FontSize',12);
 
+switch p.Results.operation
+    case 'mean'
+        ytick = 1:length(yticklabel);
+        data_plot = squeeze(mean(data_plot,2));
+    case 'sum'
+        ytick = 1:length(yticklabel);
+        data_plot = squeeze(sum(data_plot,2));
+    case 'none'
+        % do nothing
+        ytick = 1:nfreqs_sel:(length(yticklabel)*nfreqs_sel);
+        ytick = ytick + (nfreqs_sel - 1)/2;
+        data_plot = reshape(data_plot,[nsamples,nfreqs_sel*nchannels]);
+    otherwise
+        error('unknown operation %s',p.Results.operation);
+end
+
 clim = [0 1];
 im = imagesc(data_plot,clim);
+
+% add white lines between channels
+line_x = repmat([1 nsamples],[length(yticklabel) 1]);
+line_y = repmat(ytick(:), [1 2]);
+line(line_x,line_y,'Color','black','LineWidth',1);
 
 % set colormap
 cmap = colormap(hot);
@@ -209,7 +240,6 @@ end
 created = true;
 
 % add left axis with channel labels
-ytick = 1:length(yticklabel);
 set(gca,...
     'YTick', ytick, ...
     'YTickLabel', yticklabel,...

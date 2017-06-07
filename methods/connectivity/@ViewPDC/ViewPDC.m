@@ -119,8 +119,6 @@ classdef ViewPDC < handle
             switch property
                 case 'pdc'
                     if iscell(obj.file_pdc) && (length(obj.file_pdc) > 1)
-                        % TODO also need some flag for other functions?
-                        % TODO need a flag for saving
                         error('multiple pdc files specified');
                     end
                     if isempty(obj.pdc) || ~isequal(obj.pdc_loaded,'pdc')
