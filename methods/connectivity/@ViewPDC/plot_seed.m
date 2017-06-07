@@ -89,7 +89,7 @@ f = w(w_idx)*obj.fs;
 freq_idx = 1:nfreqs;
 freq_idx = freq_idx(w_idx);
 
-nfreqs_sel = legnth(freq_idx);
+nfreqs_sel = length(freq_idx);
 data_plot = zeros(nsamples,nfreqs_sel,nchannels);
 data_alpha = zeros(nsamples,nfreqs_sel,nchannels);
 yticklabel = cell(nchannels,1);
@@ -202,26 +202,30 @@ set(ax1,'FontSize',12);
 switch p.Results.operation
     case 'mean'
         ytick = 1:length(yticklabel);
+        ypos = ytick;
         data_plot = squeeze(mean(data_plot,2));
     case 'sum'
         ytick = 1:length(yticklabel);
+        ypos = ytick;
         data_plot = squeeze(sum(data_plot,2));
     case 'none'
         % do nothing
         ytick = 1:nfreqs_sel:(length(yticklabel)*nfreqs_sel);
+        ypos = ytick - 0.5;
         ytick = ytick + (nfreqs_sel - 1)/2;
-        data_plot = reshape(data_plot,[nsamples,nfreqs_sel*nchannels]);
+        data_plot = reshape(data_plot,[nsamples,nfreqs_sel*length(yticklabel)]);
     otherwise
         error('unknown operation %s',p.Results.operation);
 end
 
 clim = [0 1];
-im = imagesc(data_plot,clim);
+im = imagesc(data_plot',clim);
 
 % add white lines between channels
 line_x = repmat([1 nsamples],[length(yticklabel) 1]);
-line_y = repmat(ytick(:), [1 2]);
-line(line_x,line_y,'Color','black','LineWidth',1);
+line_y = repmat(ypos(:), [1 2]);
+hold on;
+line(line_x',line_y','Color','black','LineWidth',1);
 
 % set colormap
 cmap = colormap(hot);

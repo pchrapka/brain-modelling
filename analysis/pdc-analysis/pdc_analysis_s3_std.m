@@ -4,7 +4,8 @@
 params = [];
 k=1;
 
-hemis = {'both','left','right'};
+% hemis = {'both','left','right'};
+hemis = {'both'};
 
 % gammas = [1e-3 1e-2 1e-1];
 
@@ -41,7 +42,7 @@ for j=1:length(hemis)
         params(k).normalization = 'eachchannel';
         params(k).envelope = true;
         params(k).prepend_data = 'flipdata';
-        params(k).permutations = true;
+        params(k).permutations = false;%true;
         params(k).npermutations = 10;% 20;
         params(k).tune_criteria_samples = [0.05 0.95];
         params(k).nresamples = 100;
