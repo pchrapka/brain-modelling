@@ -120,7 +120,7 @@ nfilters = length(p.Results.filters);
 filters = p.Results.filters;
 
 if nfilters > npermutes
-    idx = cell(nfilters,1);
+    idx = cell(nfilters,npermutes);
     data_filter = cell(nfilters,npermutes);
     for j=1:nfilters
        ntrials = check_filter(filters{j},data_dims);
@@ -136,13 +136,14 @@ if nfilters > npermutes
        end
     end
     
+    out(nfilters,npermutes) = struct('outfile','','large_error_name','','large_error',false);
     parfor j=1:nfilters
         for k=1:npermutes
             out(j,k) = run_lattice_filter_inner(data_filter{j,k},filters{j},options,idx{j,k},k);
         end
     end
 else
-    idx = cell(nfilters,1);
+    idx = cell(nfilters,npermutes);
     data_filter = cell(nfilters,npermutes);
     for j=1:nfilters
        ntrials = check_filter(filters{j},data_dims);
@@ -158,6 +159,7 @@ else
        end
     end
     
+    out(nfilters,npermutes) = struct('outfile','','large_error_name','','large_error',false);
     parfor k=1:npermutes
         for j=1:nfilters
             out(j,k) = run_lattice_filter_inner(data_filter{j,k},filters{j},options,idx{j,k},k);
@@ -167,7 +169,7 @@ end
 outfiles = {out.outfile};
 
 %% Print extra info
-if any(out.large_error > 0)
+if any([out.large_error] > 0)
     fprintf('large errors\n');
     for j=1:nfilters
         for k=1:npermutes

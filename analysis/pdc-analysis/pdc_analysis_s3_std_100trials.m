@@ -8,11 +8,11 @@ hemis = {'both','left','right'};
 % hemis = {'right'};
 
 % % optimized by visual inspection
-% gammas = [1e-5 1e-4 1e-3];
+gammas = [1e-5 1e-4 1e-3];
 % orders = [5 3 3];
 
-gammas = [1e-5];
-orders = [5];
+% gammas = [1e-5];
+% orders = [5];
 
 for j=1:length(hemis)
     params = [];
