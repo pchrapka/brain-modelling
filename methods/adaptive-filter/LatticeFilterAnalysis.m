@@ -38,6 +38,8 @@ classdef LatticeFilterAnalysis < handle
         nsamples = 0;
         
         outdir = '';
+        
+        preprocessed = false;
     end
     
     properties (Dependent)
@@ -168,7 +170,7 @@ classdef LatticeFilterAnalysis < handle
             % run lattice filter
             
             % checks
-            if isempty(obj.file_data_pre)
+            if ~obj.preprocessed
                 error('preprocess data first');
             end
             
@@ -213,19 +215,23 @@ classdef LatticeFilterAnalysis < handle
             addParameter(p,'gamma',[], @(x) isnumeric(x) && isvector(x));
             parse(p,ntrials,order,lambda,varargin{:});
             
+            if ~obj.preprocessed
+                error('preprocess data first');
+            end
+            
             % copy data file for tuning, since
             % tune_lattice_filter_parameters sets up a directory based on
             % the name
             % TODO is this necessary, why not set up a tuning folder
             % inside?
-            error('fix this');
-            tune_file = strrep(obj.file_data,'.mat','-tuning.mat');
-            if ~exist(tune_file,'file') || isfresh(tune_file,obj.file_data)
-                if exist(tune_file,'file')
-                    delete(tune_file);
-                end
-                copyfile(obj.file_data, tune_file);
-            end
+%             error('fix this');
+%             tune_file = strrep(obj.file_data,'.mat','-tuning.mat');
+%             if ~exist(tune_file,'file') || isfresh(tune_file,obj.file_data)
+%                 if exist(tune_file,'file')
+%                     delete(tune_file);
+%                 end
+%                 copyfile(obj.file_data, tune_file);
+%             end
             
             % adjust criteria_samples
             if isempty(obj.tune_criteria_samples)
@@ -241,8 +247,9 @@ classdef LatticeFilterAnalysis < handle
             end
             
             % run the tuning function
+            %tune_file,... % is this just the source file?
             tune_lattice_filter_parameters(...
-                tune_file,... % is this just the source file?
+                obj.file_data_pre,...
                 obj.outdir,...
                 'plot_gamma',obj.tune_plot_gamma,...
                 'plot_lambda',obj.tune_plot_lambda,...
@@ -328,6 +335,7 @@ classdef LatticeFilterAnalysis < handle
                 end
                 
                 save_tag(data,'outfile',obj.file_data_pre,'overwrite',true);
+                obj.preprocessed = true;
             
             else
                 data = loadfile(obj.file_data_pre);
@@ -340,6 +348,7 @@ classdef LatticeFilterAnalysis < handle
                     otherwise
                         % do nothing
                 end
+                obj.preprocessed = true;
             end
         end
         

@@ -291,7 +291,7 @@ classdef ViewPDC < handle
                 
                 % sum all pdc files
                 for i=1:nfiles
-                    obj.file_pdc = files_pdc{i};
+                    obj.file_pdc = files_pdc(i);
                     obj.load('pdc');
                     if isempty(data.pdc_mean)
                         data.pdc_mean = obj.pdc;
@@ -336,7 +336,7 @@ classdef ViewPDC < handle
                 data.pdc_var = [];
                 for i=1:nfiles
                     % load each pdc file
-                    obj.file_pdc = files_pdc{i};
+                    obj.file_pdc = files_pdc(i);
                     obj.load('pdc');
                     
                     % sum variance

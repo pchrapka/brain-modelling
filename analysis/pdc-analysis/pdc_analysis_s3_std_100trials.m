@@ -1,13 +1,11 @@
-%% pdc_analysis_params_gamma
+%% pdc_analysis_s3_std_100trials
 % run pdc analysis variations for a few gammas
 
-% hemis = {'both','left','right'};
-hemis = {'left','right'};
+hemis = {'both','left','right'};
+% hemis = {'left','right'};
 % hemis = {'both'};
 % hemis = {'left'};
 % hemis = {'right'};
-
-% gammas = [1e-3 1e-2 1e-1];
 
 % % optimized by visual inspection
 % gammas = [1e-5 1e-4 1e-3];
@@ -21,35 +19,20 @@ for j=1:length(hemis)
     k=1;
     
     for i=1:length(gammas)
-        %     %% no envelope
-        %     params(k).downsample = 4;
-        %     params(k).nfreqs = 512; % default 128
-        %     params(k).metrics = {'diag','info'};
-        %     params(k).ntrials = 20;
-        %     params(k).order = 11;
-        %     params(k).lambda = 0.99;
-        %     params(k).gamma = gammas(i);
-        %     params(k).normalization = 'eachchannel';
-        %     params(k).envelope = false;
-        %     params(k).prepend_data = 'flipdata';
-        %     params(k).nresamples = 100;
-        %     params(k).alpha = 0.05;
-        %     params(k).null_mode = 'estimate_ind_channels';
-        %     k = k+1;
         
         %% envelope
         params(k).downsample = 4;
         params(k).nfreqs = 512; % default 128
         params(k).metrics = {'diag'};%,'info'};
-        params(k).ntrials = 20;
-        params(k).order = orders(i);
-        %params(k).order = 3:14; % for tuning
+        params(k).ntrials = 100;
+        %params(k).order = orders(i);
+        params(k).order = 3:14; % for tuning
         params(k).lambda = 0.99;
         params(k).gamma = gammas(i);
         params(k).normalization = 'eachchannel';
         params(k).envelope = true;
         params(k).prepend_data = 'flipdata';
-        params(k).permutations = true;
+        params(k).permutations = false;%true;
         params(k).npermutations = 10;% 20;
         params(k).tune_criteria_samples = [0.05 0.95];
         params(k).nresamples = 100;
@@ -59,8 +42,10 @@ for j=1:length(hemis)
     end
     
     %% mode
-    mode = 'run';
-    flag_plot = true;
+    mode = 'tune';
+    flag_plot = false;
+    %mode = 'run;
+    %flag_plot = true;
     flag_bootstrap = false;
     
     %% set up eeg
