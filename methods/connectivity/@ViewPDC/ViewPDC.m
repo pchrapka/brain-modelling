@@ -89,9 +89,9 @@ classdef ViewPDC < handle
         
         function set_freqrange(obj,value,varargin)
             p = inputParser();
-            addRequired(p,'value',@(x) length(x) == 2 && isnumeric(2));
+            addRequired(p,'value',@(x) length(x) == 2 && isnumeric(x));
             addParameter(p,'type','f',@(x) any(validatestring(x,{'f','w'})));
-            parse(p,varargin{:});
+            parse(p,value,varargin{:});
             
             switch p.Results.type
                 case 'f'
