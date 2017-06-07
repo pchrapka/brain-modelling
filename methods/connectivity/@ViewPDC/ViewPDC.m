@@ -268,8 +268,8 @@ classdef ViewPDC < handle
             files_pdc = obj.file_pdc;
             
             % create file name
-            tag_mean = sprintf('mean%d',length(files_pdc));
-            obj.file_pdc_mean = strrep(files_pdc{1},'.mat',['-' tag_mean '.mat']);
+            tag_mean = sprintf('-mean%d',length(files_pdc));
+            obj.file_pdc_mean = strrep(files_pdc{1},'.mat',[tag_mean '.mat']);
             
             nfiles = length(files_pdc);
             
@@ -307,8 +307,8 @@ classdef ViewPDC < handle
             files_pdc = obj.file_pdc;
             
             % create file name
-            tag_var = sprintf('var%d',length(files_pdc));
-            obj.file_pdc_var = strrep(files_pdc{1},'.mat',['-' tag_var '.mat']);
+            tag_var = sprintf('-var%d',length(files_pdc));
+            obj.file_pdc_var = strrep(files_pdc{1},'.mat',[tag_var '.mat']);
             
             nfiles = length(files_pdc);
             
