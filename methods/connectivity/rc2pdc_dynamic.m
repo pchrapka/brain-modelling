@@ -17,6 +17,8 @@ function result = rc2pdc_dynamic(Kf,Kb,Pf,lambda,varargin)
 %   ----------
 %   metric (string, default = 'euc')
 %       metric for PDC
+%   nfreqs (integer, default = 128)
+%       number of frequency bins
 %   specden (logical, default = false)
 %       flag to compute spectral density
 %   coherence (logical, default = false)
@@ -32,6 +34,7 @@ addRequired(p,'lambda',@(x) isnumeric(x) && length(x) == 1);
 addParameter(p,'specden',false,@islogical);
 addParameter(p,'coherence',false,@islogical);
 addParameter(p,'metric','euc',@ischar);
+addParameter(p,'nfreqs',128,@isnumeric);
 addParameter(p,'downsample',0,@(x) x >= 0);
 parse(p,Kf,Kb,Pf,lambda,varargin{:});
 
@@ -45,7 +48,7 @@ if dims(3) ~= dims(4)
 end
 
 options = copyfields(p.Results,[],...
-    {'specden','coherence','metric','lambda'});
+    {'specden','coherence','metric','lambda','nfreqs'});
 
 %% downsample
 if p.Results.downsample > 0
@@ -70,6 +73,7 @@ Kbtemp = squeeze(Kb(1,:,:,:));
 Pftemp = squeeze(Pf(1,:,:));
 result = rc2pdc(Kftemp, Kbtemp, Pftemp,...
         'metric', options.metric,...
+        'nfreqs', options.nfreqs,...
         'specden', options.specden,...
         'coherence', options.coherence,...
         'parfor', true);
@@ -104,6 +108,7 @@ parfor i=1:nsamples
     weight = (1-options.lambda)/(1-options.lambda^i);
     pdc_sample = rc2pdc(Kftemp, Kbtemp, weight*Pftemp,...
         'metric', options.metric,...
+        'nfreqs', options.nfreqs,...
         'specden', options.specden,...
         'coherence', options.coherence,...
         'parfor', false);

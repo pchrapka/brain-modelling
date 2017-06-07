@@ -13,7 +13,7 @@ function c=pdc_parfor(A,pf,varargin)
 %
 %   Parameters
 %   ----------
-%   nFreqs (integer, default = 128)
+%   nfreqs (integer, default = 128)
 %       number of point in [0,fs/2] frequency scale
 %   metric
 %       euc  - Euclidean ==> original PDC
@@ -36,16 +36,16 @@ function c=pdc_parfor(A,pf,varargin)
 
 %Corrected 7/25/2011 to match the frequency range with plotting
 %routine, f = 0 was include in the frequency for loop:
-%                                for ff = 1:nFreqs,
-%                                   f = (ff-1)/(2*nFreqs); %
+%                                for ff = 1:nfreqs,
+%                                   f = (ff-1)/(2*nfreqs); %
 %                                        ^?^^
 
 pmain = inputParser();
 addParameter(pmain,'metric','euc',@(x) any(validatestring(x,{'euc','diag','info'})));
-addParameter(pmain,'nFreqs',128,@isnumeric);
+addParameter(pmain,'nfreqs',128,@isnumeric);
 parse(pmain,varargin{:});
 
-nFreqs = pmain.Results.nFreqs;
+nfreqs = pmain.Results.nfreqs;
 metric = pmain.Results.metric;
 
 % [m,n]=size(x);
@@ -54,10 +54,10 @@ metric = pmain.Results.metric;
 % end;
 % np = length(x);
 [nChannels,n0,p] = size(A);
-Af = A_to_f(A, nFreqs);
+Af = A_to_f(A, nfreqs);
 
 % Variables initialization
-pdc_result = zeros(nChannels,nChannels,nFreqs);
+pdc_result = zeros(nChannels,nChannels,nfreqs);
 % disp('----------------------------------------------------------------------');
 % switch lower(metric)
 %     case {'euc'}
@@ -78,7 +78,7 @@ pdc_result = zeros(nChannels,nChannels,nFreqs);
 switch lower(metric)
     case {'euc'}
         
-        parfor ff = 1:nFreqs,
+        parfor ff = 1:nfreqs,
             
             a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
             a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)
@@ -109,7 +109,7 @@ switch lower(metric)
             pinv_pf = [];
         end
         
-        parfor ff = 1:nFreqs,
+        parfor ff = 1:nfreqs,
             
             a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
             a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)

@@ -3,12 +3,14 @@ classdef ViewPDC < handle
     %   Detailed explanation goes here
     
     properties 
-        w;
         file_pdc = {};
         file_pdc_sig;
     end
     
     properties (SetAccess = protected)
+        w;
+        f;
+        
         pdc;
         pdc_loaded = '';
         pdc_sig;
@@ -85,18 +87,32 @@ classdef ViewPDC < handle
             [~,value,~] = fileparts(obj.file_pdc{1});
         end
         
-        function set.w(obj,value)
+        function set_freqrange(obj,value,varargin)
             p = inputParser();
-            addRequired(p,'w',@(x) length(x) == 2 && isnumeric(2));
-            parse(p,value);
+            addRequired(p,'value',@(x) length(x) == 2 && isnumeric(2));
+            addParameter(p,'type','f',@(x) any(validatestring(x,{'f','w'})));
+            parse(p,varargin{:});
             
-            if p.Results.w(1) < 0 || p.Results.w(2) > 0.5
-                disp(p.Results.w);
-                error('w range too wide, should be between [0 0.5]');
+            switch p.Results.type
+                case 'f'
+                    if value(1) < 0 || value(2) > obj.fs/2
+                        disp(value);
+                        error('f range too wide, should be between [0 fs/2]');
+                    end
+                    obj.f = value;
+                    obj.w = obj.f/obj.fs;
+                case 'w'
+                    if value(1) < 0 || value(2) > 0.5
+                        disp(value);
+                        error('w range too wide, should be between [0 0.5]');
+                    end
+                    obj.w = value;
+                    obj.f = obj.w*obj.fs;
+                otherwise
+                    error('unknown type %s',p.Results.type);
             end
             
-            obj.w = value;
-        end
+        end 
         
         function value = get.freq_tag(obj)
             value = sprintf('-%0.4f-%0.4f',obj.w(1),obj.w(2)); 

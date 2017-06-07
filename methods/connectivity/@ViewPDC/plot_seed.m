@@ -81,10 +81,8 @@ end
     
 w = 0:nfreqs-1;
 w = w/(2*nfreqs);
-
 w_idx = (w >= obj.w(1)) & (w <= obj.w(2));
-% nfreqs_selected = sum(w_idx);
-% threshold = p.Results.threshold_pct*nfreqs_selected;
+
 f = w(w_idx)*obj.fs;
 freq_idx = 1:nfreqs;
 freq_idx = freq_idx(w_idx);
@@ -93,7 +91,6 @@ nfreqs_sel = length(freq_idx);
 data_plot = zeros(nsamples,nfreqs_sel,nchannels);
 data_alpha = zeros(nsamples,nfreqs_sel,nchannels);
 yticklabel = cell(nchannels,1);
-count = 1;
 for i=1:nchannels
     if i == p.Results.chseed
         % skip the diagonals, not informative

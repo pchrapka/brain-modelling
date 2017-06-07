@@ -17,6 +17,8 @@ function result = rc2pdc(Kf,Kb,Pf,varargin)
 %   ----------
 %   metric (string, default = 'euc')
 %       metric for PDC
+%   nfreqs (integer, default = 128)
+%       number of frequency bins
 %   specden (logical, default = false)
 %       flag to compute spectral density
 %   coherence (logical, default = false)
@@ -30,23 +32,24 @@ addParameter(p,'parfor',false,@islogical);
 addParameter(p,'specden',false,@islogical);
 addParameter(p,'coherence',false,@islogical);
 addParameter(p,'metric','euc',@ischar);
+addParameter(p,'nfreqs',128,@isnumeric);
 parse(p,varargin{:})
 
 A2 = rcarrayformat(rc2ar(Kf,Kb),'format',3,'transpose',false);
 
 if p.Results.parfor
     tstart = tic;
-    result = pdc_parfor(A2,Pf,'metric',p.Results.metric);
+    result = pdc_parfor(A2,Pf,'metric',p.Results.metric,'nfreqs',p.Results.nfreqs);
     telapsed = toc(tstart);
 else
     tstart = tic;
-    result = pdc(A2,Pf,'metric',p.Results.metric);
+    result = pdc(A2,Pf,'metric',p.Results.metric,'nfreqs',p.Results.nfreqs);
     telapsed = toc(tstart);
 end
 result.telapsed = telapsed;
 
 if p.Results.specden
-    result.SS = ss_alg(A2, Pf, 128);
+    result.SS = ss_alg(A2, Pf, p.Results.nfreqs);
 else
     result.SS = [];
 end

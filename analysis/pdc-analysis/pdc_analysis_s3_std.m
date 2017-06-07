@@ -18,6 +18,7 @@ for j=1:length(hemis)
     for i=1:length(gammas)
         %     %% no envelope
         %     params(k).downsample = 4;
+        %     params(k).nfreqs = 512; % default 128
         %     params(k).metrics = {'diag','info'};
         %     params(k).ntrials = 20;
         %     params(k).order = 11;
@@ -33,6 +34,7 @@ for j=1:length(hemis)
         
         %% envelope
         params(k).downsample = 4;
+        params(k).nfreqs = 512; % default 128
         params(k).metrics = {'diag'};%,'info'};
         params(k).ntrials = 20;
         params(k).order = orders(i);

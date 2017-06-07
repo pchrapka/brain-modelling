@@ -26,6 +26,7 @@ classdef PDCAnalysis < handle
         % pdc options
         pdc_downsample = 1;
         pdc_metric = 'euc';
+        pdc_nfreqs = 128;
         
         % surrogate analysis options
         surrogate_null_mode = '';
@@ -70,6 +71,7 @@ classdef PDCAnalysis < handle
             % compute pdc
             pdc_params = {...
                 'metric',obj.pdc_metric,...
+                'nfreqs',obj.pdc_nfreqs,...
                 'downsample',obj.pdc_downsample,...
                 };
             pdc_files = rc2pdc_dynamic_from_lf_files(obj.file_lf,'params',pdc_params);
