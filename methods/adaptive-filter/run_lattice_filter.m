@@ -18,8 +18,8 @@ function outfiles = run_lattice_filter(datain,varargin)
 %
 %   filter options
 %   --------------
-%   filter (filter object)
-%       filter object
+%   filters (cell array of filter objects)
+%       cell array of filter objects
 %   warmup (cell array, default = {'noise'})
 %       filter warmup options, specified by cell array and are executed in
 %       that order 
@@ -50,7 +50,7 @@ p = inputParser();
 addRequired(p,'datain',@ischar);
 addParameter(p,'outdir','lfoutput',@ischar);
 addParameter(p,'basedir','',@ischar);
-addParameter(p,'filter',[],@(x) (length(x) == 1) && isobject(x));
+addParameter(p,'filters',{},@iscell);
 addParameter(p,'warmup',{'noise'},@iscell);
 addParameter(p,'force',false,@islogical);
 addParameter(p,'verbosity',0,@isnumeric);
@@ -65,7 +65,9 @@ p.parse(datain,varargin{:});
 outdir = setup_outdir(p.Results.basedir,p.Results.outdir);
 
 % set up parfor
-parfor_setup('cores',p.Results.ncores,'force',true);
+if p.Results.ncores > 1
+    parfor_setup('cores',p.Results.ncores,'force',true);
+end
 
 %% set up data
 
@@ -102,8 +104,124 @@ clear ntrials;
 
 %% set up parfor
 
+% copy fields for parfor
+options = copyfields(p.Results,[],{...
+    'datain','warmup','force','verbosity','tracefields'});
+
+if p.Results.permutations
+    npermutes = p.Results.npermutations;
+else
+    npermutes = 1;
+end
+
+%% loop over params
+options.outdir = outdir;
+nfilters = length(p.Results.filters);
+filters = p.Results.filters;
+
+if nfilters > npermutes
+    idx = cell(nfilters,1);
+    data_filter = cell(nfilters,npermutes);
+    for j=1:nfilters
+       ntrials = check_filter(filters{j},data_dims);
+       if p.Results.permutations
+           idx(j,:) = create_permutations(npermutes,ntrials,data_dims(3));
+       else
+           idx{j,1} = 1:ntrials;
+       end
+       
+       % rearrange data
+       for k=1:npermutes
+           data_filter{j,k} = datain(:,:,idx{j,k});
+       end
+    end
+    
+    parfor j=1:nfilters
+        for k=1:npermutes
+            out(j,k) = run_lattice_filter_inner(data_filter{j,k},filters{j},options,idx{j,k},k);
+        end
+    end
+else
+    idx = cell(nfilters,1);
+    data_filter = cell(nfilters,npermutes);
+    for j=1:nfilters
+       ntrials = check_filter(filters{j},data_dims);
+       if p.Results.permutations
+           idx(j,:) = create_permutations(npermutes,ntrials,data_dims(3));
+       else
+           idx{j,1} = 1:ntrials;
+       end
+       
+       % rearrange data
+       for k=1:npermutes
+           data_filter{j,k} = datain(:,:,idx{j,k});
+       end
+    end
+    
+    parfor k=1:npermutes
+        for j=1:nfilters
+            out(j,k) = run_lattice_filter_inner(data_filter{j,k},filters{j},options,idx{j,k},k);
+        end
+    end
+end
+outfiles = {out.outfile};
+
+%% Print extra info
+if any(out.large_error > 0)
+    fprintf('large errors\n');
+    for j=1:nfilters
+        for k=1:npermutes
+            if out(j,k).large_error > 0
+                fprintf('\tfile: %s\n',out(j,k).large_error_name);
+            end
+        end
+    end
+end
+
+end
+
+function out = run_lattice_filter_inner(data_filter,filter,options,idx,iter)
+% set up filter slug
+slug_filter = strrep(filter.name,' ','-');
+slug_permute = sprintf('-p%d',iter);
+
+outfile = fullfile(options.outdir,[slug_filter slug_permute '.mat']);
+
+out = [];
+out.outfile = outfile;
+out.large_error_name = '';
+out.large_error = false;
+
+if options.force || isfresh(outfile,options.datain) || ~exist(outfile,'file')
+    fprintf('running: %s\n', slug_filter)
+    
+    trace = LatticeTrace(filter,'fields',options.tracefields);
+    
+    % run the filter on data
+    trace.run(data_filter,...
+        'warmup',options.warmup,...
+        'verbosity',options.verbosity,...
+        'mode','none');
+    
+    % copy the filter name
+    trace.name = trace.filter.name;
+    
+    % save data
+    trace.save('filename',outfile,'trial_idx',idx);
+    
+    % check mse from 0
+    data_true_kf = zeros(size(trace.trace.Kf));
+    data_mse = mse_iteration(trace.trace.Kf,data_true_kf);
+    if any(data_mse > 10)
+        out.large_error_name = slug_filter;
+        out.large_error = true;
+    end 
+end
+
+end
+
+function ntrials = check_filter(filter,data_dims)
 % check filter
-filter = p.Results.filter;
 if isprop(filter, 'ntrials')
     ntrials = filter.ntrials;
 else
@@ -117,81 +235,14 @@ elseif data_dims(3) < ntrials
     fprintf('trials\n\trequired: %d\n\thave: %d\n',ntrials,data_dims(3));
     error('trial mismatch between data and filter %s',filter.name);
 end
+end
 
+function idx = create_permutations(npermutes,ntrials,ntrials_available)
 % set up permutations
-if p.Results.permutations
-    npermutes = p.Results.npermutations;
-    idx = cell(npermutes,1);
-    idx{1} = 1:ntrials;
-    for k=2:npermutes
-        idx{k} = randsample(1:data_dims(3),ntrials);
-    end
-else
-    npermutes = 1;
-    idx{1} = 1:ntrials;
-end
-
-% copy fields for parfor
-options = copyfields(p.Results,[],{...
-    'datain','warmup','force','verbosity','tracefields'});
-
-% allocate mem
-outfiles = cell(npermutes,1);
-large_error = zeros(npermutes,1);
-large_error_name = cell(npermutes,1);
-
-% rearrange data
-data_filter = cell(npermutes,1);
-for k=1:npermutes
-    data_filter{k} = datain(:,:,idx{k});
-end
-
-%% loop over params
-parfor k=1:npermutes
-% for k=1:npermutes
-    
-    % set up filter slug
-    slug_filter = strrep(filter.name,' ','-');
-    slug_permute = sprintf('-p%d',k);
-    
-    outfile = fullfile(outdir,[slug_filter slug_permute '.mat']);
-    outfiles{k} = outfile;
-    
-    if options.force || isfresh(outfile,options.datain) || ~exist(outfile,'file')
-        fprintf('running: %s\n', slug_filter)
-        
-        trace = LatticeTrace(filter,'fields',options.tracefields);
-        
-        % run the filter on data
-        trace.run(data_filter{k},...
-            'warmup',options.warmup,...
-            'verbosity',options.verbosity,...
-            'mode','none');
-        
-        % copy the filter name
-        trace.name = trace.filter.name;
-        
-        % save data
-        trace.save('filename',outfile,'trial_idx',idx{k});
-        
-        % check mse from 0
-        data_true_kf = zeros(size(trace.trace.Kf));
-        data_mse = mse_iteration(trace.trace.Kf,data_true_kf);
-        if any(data_mse > 10)
-            large_error_name{k} = slug_filter;
-            large_error(k) = true;
-        end
-    end
-end
-
-%% Print extra info
-if any(large_error > 0)
-    fprintf('large errors\n');
-    for k=1:npermutes
-        if large_error(k) > 0
-            fprintf('\tfile: %s\n',large_error_name{k});
-        end
-    end
+idx = cell(npermutes,1);
+idx{1} = 1:ntrials;
+for k=2:npermutes
+    idx{k} = randsample(1:ntrials_available,ntrials);
 end
 
 end
