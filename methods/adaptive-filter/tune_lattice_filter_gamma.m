@@ -101,7 +101,7 @@ filter_func = str2func(p.Results.filter);
 filter_obj = filter_func(filter_params{:},'gamma',1);
 filter_name = strrep([filter_obj.name '.mat'],' ','-');
 
-pattern_search = strrep(filter_name,'gamma=1.000e+00','gamma=*');
+pattern_search = strrep(filter_name,'gamma1.000e+00','gamma*');
 files = dir(fullfile(outdir,pattern_search));
 data_old = [];
 count = 1;

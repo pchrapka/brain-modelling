@@ -64,7 +64,7 @@ classdef MJOCCD_TWL
             obj.nregressors = obj.order*obj.nchannels^2;
             obj.gamma = p.Results.gamma;
             obj.lambda = p.Results.lambda;
-            obj.name = sprintf('MJOCCD_TWL C%d P%d lambda=%0.2f gamma=%0.2f',...
+            obj.name = sprintf('MJOCCD_TWL C%d P%d lambda%0.2f gamma%0.2f',...
                 obj.nchannels, obj.order, obj.lambda, obj.gamma);
             
             zeroVec = zeros(obj.nregressors,1);

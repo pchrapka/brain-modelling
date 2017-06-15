@@ -31,12 +31,12 @@ for i=1:nfiles
     file_idx = data_crit.file_list(i);
     
     % parse gamma from file name
-    pattern = 'gamma=([\d\.]+e[\d-+]+)';
+    pattern = 'gamma([\d\.]+e[\d-+]+)';
     result = regexp(obj.datafiles{file_idx},pattern,'tokens');
     data_info(i).gamma = str2double(result{1}{1});
     
     % parse lambda from file name
-    pattern = 'lambda=([\d\.]+)-';
+    pattern = 'lambda([\d\.]+)-';
     result = regexp(obj.datafiles{file_idx},pattern,'tokens');
     data_info(i).lambda = str2double(result{1}{1});
 end

@@ -78,7 +78,7 @@ classdef MQRDLSL3
             obj.Kb = zeroMat2;
             obj.Kf = zeroMat2;
             
-            obj.name = sprintf('MQRDLSL3 C%d P%d lambda=%0.2f',...
+            obj.name = sprintf('MQRDLSL3 C%d P%d lambda%0.2f',...
                 channels, order, lambda);
         end
         

@@ -61,7 +61,7 @@ classdef L1_RRLS
             obj.lambda = p.Results.lambda;
             obj.gamma = p.Results.gamma;
             obj.epsilon = p.Results.epsilon;
-            obj.name = sprintf('L1_RRLS C%d P%d lambda=%0.2f gamma=%0.2f eps=%0.2f',...
+            obj.name = sprintf('L1_RRLS C%d P%d lambda%0.2f gamma%0.2f eps=%0.2f',...
                 obj.nchannels, p.Results.order, p.Results.lambda, p.Results.gamma, p.Results.epsilon);
             
             zeroVec = zeros(order,1);

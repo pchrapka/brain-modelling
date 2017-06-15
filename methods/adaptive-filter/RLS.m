@@ -48,7 +48,7 @@ classdef RLS
             obj.order = p.Results.order;
             obj.nchannels = 1;
             obj.lambda = p.Results.lambda;
-            obj.name = sprintf('RLS C%d P%d lambda=%0.2f',...
+            obj.name = sprintf('RLS C%d P%d lambda%0.2f',...
                 obj.nchannels, p.Results.order, p.Results.lambda);
             
             zeroVec = zeros(order,1);

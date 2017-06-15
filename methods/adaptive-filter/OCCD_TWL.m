@@ -34,7 +34,7 @@ classdef OCCD_TWL
             obj.nchannels = 1;
             obj.lambda = lambda;
             obj.beta = beta;
-            obj.name = sprintf('OCCD_TWL C%d P%d beta=%0.2f lambda=%0.2f',...
+            obj.name = sprintf('OCCD_TWL C%d P%d beta=%0.2f lambda%0.2f',...
                 obj.nchannels, order, beta, lambda);
             
             zeroVec = zeros(order,1);

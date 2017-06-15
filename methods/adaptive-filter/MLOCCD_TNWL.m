@@ -85,7 +85,7 @@ classdef MLOCCD_TNWL
             obj.lambda = p.Results.lambda;
             obj.a = p.Results.a;
             obj.lambda_sum = 1;
-            obj.name = sprintf('MLOCCD_TNWL C%d P%d lambda=%0.2f gamma=%0.2f a=%0.2f',...
+            obj.name = sprintf('MLOCCD_TNWL C%d P%d lambda%0.2f gamma%0.2f a=%0.2f',...
                 obj.nchannels, obj.order, obj.lambda, obj.gamma, obj.a);
             
             zeroMat2 = zeros(obj.order+1,obj.nchannels,obj.nchannels);

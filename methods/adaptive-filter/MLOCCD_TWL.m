@@ -64,7 +64,7 @@ classdef MLOCCD_TWL
             obj.nregressors = obj.nchannels;
             obj.gamma = p.Results.gamma;
             obj.lambda = p.Results.lambda;
-            obj.name = sprintf('MLOCCD_TWL C%d P%d lambda=%0.2f gamma=%0.2f',...
+            obj.name = sprintf('MLOCCD_TWL C%d P%d lambda%0.2f gamma%0.2f',...
                 obj.nchannels, obj.order, obj.lambda, obj.gamma);
             
             zeroMat2 = zeros(obj.order+1,obj.nchannels,obj.nchannels);
