@@ -194,7 +194,8 @@ else
     ax1 = gca;
 end
 axes(ax1);
-set(ax1,'FontSize',12);
+font_size = 16;
+set(ax1,'FontSize',font_size);
 
 switch p.Results.operation
     case 'mean'
@@ -244,7 +245,7 @@ created = true;
 set(gca,...
     'YTick', ytick, ...
     'YTickLabel', yticklabel,...
-    'FontSize',12);
+    'FontSize',font_size);
 
 % add time info
 if ~isempty(obj.time)
@@ -281,7 +282,7 @@ end
 
 % add region bar on left side
 if ~isempty(obj.info.region)
-    set(ax2,'FontSize',12);
+    set(ax2,'FontSize',font_size);
     set(ax2,'YLim',get(ax1,'YLim'),'YDir',get(ax1,'YDir'));
     axes(ax2);
     xlim([0 1]);
@@ -338,7 +339,7 @@ if ~isempty(obj.info.region)
         % add text at midpoint of line
         ymid = (y(2)+y(1))/2;
         text(region_offset - width, ymid, regions{region1},...
-            'HorizontalAlignment','Right','FontSize',12);
+            'HorizontalAlignment','Right','FontSize',font_size);
         region1 = region2;
     end
 end

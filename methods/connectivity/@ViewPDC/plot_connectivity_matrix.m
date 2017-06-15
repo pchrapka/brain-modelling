@@ -20,6 +20,8 @@ obj.save_tag = [];
 obj.load('pdc');
 obj.check_info();
 
+font_size = 14;
+
 [nsamples,nchannels,~,nfreqs] = size(obj.pdc);
 
 if isequal(p.Results.samples,'all')
@@ -66,13 +68,13 @@ set(gca,...
     'XTick', xtick,...
     'XTickLabel','',...
     ...'XTickLabel', xticklabel, ...
-    'FontSize',12);
+    'FontSize',font_size);
 ax = axis;
 xl = ax(1:2);
 yl = ax(3:4);
 t = text(xtick,yl(2)*ones(1,length(xtick)),xticklabel);
 set(t,'HorizontalAlignment','right','VerticalAlignment','top', ...
-      'Rotation',90,'FontSize',12);
+      'Rotation',90,'FontSize',font_size);
   
 % Get the Extent of each text object.  This loop is unavoidable.
 ext = [];
@@ -92,7 +94,7 @@ x_mid = xl(1)+abs(diff(xl))/2;
 t_xlabel = text(x_mid,min_ylabel,'From', ...
     'VerticalAlignment','top', ...
     'HorizontalAlignment','center',...
-    'FontSize',12);
+    'FontSize',font_size);
 
 set(t_xlabel,'Units','normalized');
 ext_xlabel = get(t_xlabel,'Extent');
@@ -110,7 +112,7 @@ set(gca,'Position',outpos);
 set(gca,...
     'YTick', ytick,...
     'YTickLabel', yticklabel, ...
-    'FontSize',12);
+    'FontSize',font_size);
 ylabel('To');
 
 obj.save_tag = sprintf('-adjacency-idx%d-%d',min(sample_idx),max(sample_idx));
