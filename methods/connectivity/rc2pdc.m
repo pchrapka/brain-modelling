@@ -26,6 +26,10 @@ function result = rc2pdc(Kf,Kb,Pf,varargin)
 %   parfor (logical, default = false)
 %       use parfor in pdc function, useful if only one pdc is being
 %       computed
+%   informat (string, default = '')
+%       input format of coefs
+%       'or-ch-ch'
+%       'ch-ch-or'
 
 p = inputParser();
 addParameter(p,'parfor',false,@islogical);
@@ -33,9 +37,11 @@ addParameter(p,'specden',false,@islogical);
 addParameter(p,'coherence',false,@islogical);
 addParameter(p,'metric','euc',@ischar);
 addParameter(p,'nfreqs',128,@isnumeric);
+addParameter(p,'informat','',@(x) any(validatestring(x,{'ch-ch-or','or-ch-ch'})));
 parse(p,varargin{:})
 
-A2 = rcarrayformat(rc2ar(Kf,Kb),'format',3,'transpose',false);
+A2 = rcarrayformat(rc2ar(Kf,Kb,'informat',p.Results.informat),...
+    'format',3,'informat',p.Results.informat,'transpose',false);
 
 if p.Results.parfor
     tstart = tic;

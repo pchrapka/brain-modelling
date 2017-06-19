@@ -14,6 +14,11 @@ function out = rcarrayformat(coefs,varargin)
 %       1 => [order,channels,channels]
 %       3 => [channels,channels,order]
 %
+%   informat (string, default = '')
+%       input format of coefs
+%       'or-ch-ch'
+%       'ch-ch-or'
+%
 %   Output
 %   ------
 %   out (matrix)
@@ -22,24 +27,19 @@ function out = rcarrayformat(coefs,varargin)
 p = inputParser();
 addRequired(p,'coefs',@isnumeric);
 addParameter(p,'format',1,@isnumeric);
+addParameter(p,'informat','',@(x) any(validatestring(x,{'ch-ch-or','or-ch-ch'})));
 addParameter(p,'transpose',false,@islogical);
 parse(p,coefs,varargin{:});
 
-% check original format
-dims = size(coefs);
-if length(dims) < 3
-    dims(3) = 1;
-end
-if dims(1) == dims(2)
-    format_orig = 3;
-    norder = dims(3);
-    nchannels = dims(1);
-elseif dims(2) == dims(3)
-    format_orig = 1;
-    norder = dims(1);
-    nchannels = dims(3);
-else
-    error('unknown coefficient format');
+switch p.Results.informat
+    case 'ch-ch-or'
+        format_orig = 3;
+        [nchannels,~,norder] = size(coefs);
+    case 'or-ch-ch'
+        format_orig = 1;
+        [norder,nchannels,~] = size(coefs);
+    otherwise
+        [format_orig,nchannels,norder] = rc_check_format(coefs);
 end
 
 if format_orig == p.Results.format

@@ -25,6 +25,10 @@ function result = rc2pdc_dynamic(Kf,Kb,Pf,lambda,varargin)
 %       flag to compute spectrum
 %   downsample (integer, default = 'none')
 %       downsampling 
+%   informat (string, default = '')
+%       input format of coefs
+%       'or-ch-ch'
+%       'ch-ch-or'
 
 p = inputParser();
 addRequired(p,'Kf',@(x) length(size(x)) == 4);
@@ -36,6 +40,7 @@ addParameter(p,'coherence',false,@islogical);
 addParameter(p,'metric','euc',@ischar);
 addParameter(p,'nfreqs',128,@isnumeric);
 addParameter(p,'downsample',0,@(x) x >= 0);
+addParameter(p,'informat','',@(x) any(validatestring(x,{'ch-ch-or','or-ch-ch'})));
 parse(p,Kf,Kb,Pf,lambda,varargin{:});
 
 if size(Kf) ~= size(Kb)
@@ -48,7 +53,7 @@ if dims(3) ~= dims(4)
 end
 
 options = copyfields(p.Results,[],...
-    {'specden','coherence','metric','lambda','nfreqs'});
+    {'specden','coherence','metric','lambda','nfreqs','informat'});
 
 %% downsample
 if p.Results.downsample > 0
@@ -76,6 +81,7 @@ result = rc2pdc(Kftemp, Kbtemp, Pftemp,...
         'nfreqs', options.nfreqs,...
         'specden', options.specden,...
         'coherence', options.coherence,...
+        'informat',options.informat,...
         'parfor', true);
 result_pdc = zeros([nsamples size(result.pdc)]);
 
@@ -111,6 +117,7 @@ parfor i=1:nsamples
         'nfreqs', options.nfreqs,...
         'specden', options.specden,...
         'coherence', options.coherence,...
+        'informat',options.informat,...
         'parfor', false);
     
     if options.specden
