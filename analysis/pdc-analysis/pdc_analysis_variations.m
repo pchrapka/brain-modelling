@@ -181,16 +181,6 @@ for i=1:length(params)
                     idx_end = nsamples_real;
                     sample_idx = idx_start:idx_end;
                     
-                    if isfield(params(i),'prepend_data')
-                        switch params(i).prepend_data
-                            case 'flipdata'
-                                error('double check this, not correct i think');
-                                idx_start = 0.25*nsamples_real/2;
-                                idx_end = nsamples_real/2;
-                                sample_idx = idx_start:idx_end;
-                        end
-                    end
-                    
                     pdc_obj.view.plot_connectivity_matrix('samples',sample_idx);
                     
                     pdc_obj.view.save_plot('save',true,'engine','matlab');

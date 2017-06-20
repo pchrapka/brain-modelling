@@ -16,6 +16,8 @@ p = inputParser();
 addParameter(p,'samples','all',@(x) isequal(x,'all') || isvector(x));
 parse(p,varargin{:});
 
+debug = false;
+
 obj.save_tag = [];
 obj.load('pdc');
 obj.check_info();
@@ -64,6 +66,13 @@ xticklabel = labels;
 yticklabel = labels;
 xtick = 1:length(xticklabel);
 ytick = 1:length(yticklabel);
+% xlabel('From');
+set(gca,...
+    'YTick', ytick,...
+    'YTickLabel', yticklabel, ...
+    'FontSize',font_size);
+ylabel('To');
+
 set(gca,...
     'XTick', xtick,...
     'XTickLabel','',...
@@ -81,10 +90,16 @@ ext = [];
 %ext_norm = [];
 for i = 1:length(t)
   ext(i,:) = get(t(i),'Extent');
-  %set(t(i),'Units','normalized');
-  %ext_norm(i,:) = get(t(i),'Extent');
-  %set(t(i),'Units','data');
+  if debug
+      xp = [ext(i,1) ext(i,1)+ext(i,3) ext(i,1)+ext(i,3) ext(i,1)];
+      yp = [ext(i,2) ext(i,2)          ext(i,2)-ext(i,4) ext(i,2)-ext(i,4)];
+      p = line(xp,yp);
+      set(p,'clipping','off');
+  end
 end
+scaling = ((font_size - 10)/4)/10+1;
+% ext_orig = ext;
+ext(:,2) = scaling*ext(:,2);
 
 % Determine the lowest point.  The X-label will be
 % placed so that the top is aligned with this point.
@@ -108,12 +123,7 @@ outpos(2) = outpos(2) - ext_xlabel(2)/2;
 outpos(4) = outpos(4) - abs(ext_xlabel(2))/2;
 set(gca,'Position',outpos);
 
-% xlabel('From');
-set(gca,...
-    'YTick', ytick,...
-    'YTickLabel', yticklabel, ...
-    'FontSize',font_size);
-ylabel('To');
+drawnow;
 
 obj.save_tag = sprintf('-adjacency-idx%d-%d',min(sample_idx),max(sample_idx));
 
