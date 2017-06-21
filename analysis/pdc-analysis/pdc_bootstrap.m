@@ -1,15 +1,17 @@
-function [file_pdc_sig, files_pdc] = pdc_bootstrap(lf_file,sources_data_file,varargin)
+function [file_pdc_sig, files_pdc] = pdc_bootstrap(lfanalysis,varargin)
 %PDC_BOOTSTRAP determine PDC significance levels
 %   PDC_BOOTSTRAP(lf_file,...) determine PDC significance level for a
 %   specific process and filter combination
 %
 %   Input
 %   -----
-%   lf_file (string)
-%       lattice filtered data
-%   sources_data_file (string, default = [])
-%       original sources_data_file used to produce lf_file output, see
-%       lattice_filter_prep_data
+%   lfanalysis (LatticeFilterAnalysis Object)
+%       LatticeFilterAnalysis Object
+% %   lf_file (string)
+% %       lattice filtered data
+% %   sources_data_file (string, default = [])
+% %       original sources_data_file used to produce lf_file output, see
+% %       lattice_filter_prep_data
 %
 %   Parameters
 %   ----------
@@ -33,15 +35,15 @@ function [file_pdc_sig, files_pdc] = pdc_bootstrap(lf_file,sources_data_file,var
 %
 
 p = inputParser();
-addRequired(p,'lf_file',@ischar);
-addRequired(p,'sources_data_file',@ischar);
+addRequired(p,'lfanalysis',@(x) isa(x,'LatticeFilterAnalysis'));
 options_null_mode = {'estimate_ind_channels','estimate_all_channels'};
 addParameter(p,'null_mode','estimate_ind_channels',@(x) any(validatestring(x,options_null_mode)));
 addParameter(p,'nresamples',100,@isnumeric);
 addParameter(p,'pdc_params',{},@iscell);
 addParameter(p,'alpha',0.05,@(x) x > 0 && x < 1);
-addParameter(p,'run_options',{},@iscell);
-parse(p,lf_file,sources_data_file,varargin{:});
+parse(p,lfanalysis,varargin{:});
+
+lf_file = lfanalysis.file_data_post;
 
 [outdir,filter_name,~] = fileparts(lf_file);
 workingdirname = sprintf('%s-bootstrap-%s',filter_name,p.Results.null_mode);
@@ -71,11 +73,14 @@ end
 
 threshold_stability = 10;
 
-%% load sources data
+%% get preprocessing info
 
-sources_data = loadfile(p.Results.sources_data_file);
-normalization = sources_data.normalization;
-prepend_data = sources_data.prepend_data;
+% copy options
+options = [];
+options.prepend_data = lfanalysis.prepend_data;
+options.normalization = lfanalysis.normalization;
+options.envelope = lfanalysis.envelope;
+options.warmup = lfanalysis.warmup;
 
 %% create RCs for null distribution 
 datalf = loadfile(lf_file);
@@ -110,11 +115,15 @@ switch p.Results.null_mode
         datalf_nocoupling.Kf = zeros(size(datalf.estimate.Kf));
         datalf_nocoupling.Kb = zeros(size(datalf.estimate.Kb));
         
-        sources_file = sources_data.sources_file;
-        data_sources = loadfile(sources_file);
+        %sources_file = sources_data.sources_file;
+        %data_sources = loadfile(sources_file);
+        
+        % load data
+        data_sources = loadfield(lfanalysis.file_data_pre);
         
         lf_channels = cell(nchannels,1);
-        parfor i=1:nchannels
+        %parfor i=1:nchannels
+        for i=1:nchannels
             workingdir_ch = fullfile(workingdir,'channels-ind');
             channel_dir = sprintf('ch%d',i);
             
@@ -126,31 +135,60 @@ switch p.Results.null_mode
                 save_parfor(file_channel, data_temp);
             end
             
+            % NOTE this needs to be done individually because we're using
+            % the same filter so we need to have different outdirs
+            lfobj = LatticeFilterAnalysis(file_channel,...
+                'outdir',fullfile(workingdir_ch,channel_dir));
+            lfobj.filter_func = 'MCMTLOCCD_TWL4';
+            lfobj.ntrials_max = [];
+            lfobj.ncores = 1;
+            
+            % copy params
+            lfobj.warmup = options.warmup;
+            lfobj.prepend_data = options.prepend_data;
+            lfobj.normalization = options.normalization;
+            lfobj.envelope = options.envelope;
+            lfobj.tracefields = {'Kf','Kb','Rf','ferror'};
+            
+            % spoof preprocessed data, since it's already preprocessed
+            if fresh || ~exist(lfobj.file_data_pre,'file')
+                copyfile(file_channel,lfobj.file_data_pre,'f');
+            end
+            
             % set up lattice filter
-            filter = MCMTLOCCD_TWL4(1, norder, ntrials, filter_opts{:});
+            lfobj.set_filter(1,norder,ntrials,filter_opts{:});
+            
+            % set up lattice filter
+            %filter = MCMTLOCCD_TWL4(1, norder, ntrials, filter_opts{:});
             
             fprintf('%s: filtering channel %d\n',mfilename,i);
+            
+            lfobj.preprocessing();
+            lfobj.run();
+            lfobj.postprocessing();
+            
+            lf_channels{i} = lfobj.file_data_post;
 
             % lattice filter
             % NOTE this needs to be done individually because we're using
             % the same filter so we need to have different outdirs
-            lf_channels(i) = run_lattice_filter(...
-                file_channel,...
-                'basedir',fullfile(workingdir_ch,'fake.m'),...
-                'outdir',channel_dir,...
-                'filters', {filter},...
-                p.Results.run_options{:},...
-                'force',false,...
-                'verbosity',0,...
-                'tracefields',{'Kf','Kb','Rf','ferror'});
+%             lf_channels(i) = run_lattice_filter(...
+%                 file_channel,...
+%                 'basedir',fullfile(workingdir_ch,'fake.m'),...
+%                 'outdir',channel_dir,...
+%                 'filters', {filter},...
+%                 p.Results.run_options{:},...
+%                 'force',false,...
+%                 'verbosity',0,...
+%                 'tracefields',{'Kf','Kb','Rf','ferror'});
             
         end
         
-        switch prepend_data
-            case 'flipdata'
-                % remove prepended data
-                lf_channels = lattice_filter_remove_data(lf_channels,[1 nsamples]);
-        end
+%         switch prepend_data
+%             case 'flipdata'
+%                 % remove prepended data
+%                 lf_channels = lattice_filter_remove_data(lf_channels,[1 nsamples]);
+%         end
             
         for i=1:nchannels
             datalf_ch = loadfile(lf_channels{i});
@@ -189,11 +227,10 @@ end
 
 % copy vars
 nresamples = p.Results.nresamples;
-run_options = p.Results.run_options;
 lf_btstrp = cell(p.Results.nresamples,1);
 
-parfor i=1:nresamples
-%for i=1:nresamples
+% parfor i=1:nresamples
+for i=1:nresamples
     resampledir = sprintf('resample%d',i);
     data_bootstrap_file = fullfile(workingdir, resampledir, sprintf('resample%d.mat',i));
     
@@ -249,7 +286,7 @@ parfor i=1:nresamples
                 end
                 
                 % prepend data
-                switch prepend_data
+                switch options.prepend_data
                     case 'flipdata'
                         if size(data_bs_prepend,2) == nsamples
                             data_bs_prepend = zeros(nchannels,2*nsamples,ntrials);
@@ -266,7 +303,7 @@ parfor i=1:nresamples
                 % data normalization
                 % use same normalization method as in
                 % lattice_filter_sources
-                switch normalization
+                switch options.normalization
                     case 'allchannels'
                         data_bs_prepend(:,:,j) = normalize(data_bs_prepend(:,:,j));
                     case 'eachchannel'
@@ -288,29 +325,60 @@ parfor i=1:nresamples
         fprintf('%s: resample %d already exists\n',mfilename,i);
     end
     
+    % NOTE this needs to be done individually because we're using
+    % the same filter so we need to have different outdirs
+    lfboot = LatticeFilterAnalysis(data_bootstrap_file,...
+        'outdir',fullfile(workingdir,resampledir));
+    lfboot.filter_func = 'MCMTLOCCD_TWL4';
+    lfboot.ntrials_max = [];
+    lfboot.ncores = 1;
+    
+    % copy params
+    lfboot.warmup = options.warmup;
+    lfboot.prepend_data = options.prepend_data;
+    lfboot.normalization = options.normalization;
+    lfboot.envelope = options.envelope;
+    lfboot.tracefields = {'Kf','Kb','Rf'};
+    
+    % spoof preprocessed data, since it's already preprocessed
+    if fresh || ~exist(lfboot.file_data_pre,'file')
+        copyfile(data_bootstrap_file,lfboot.file_data_pre,'f');
+    end
+    
     % set up lattice filter
-    filter = MCMTLOCCD_TWL4(nchannels, norder, ntrials, filter_opts{:});
+    lfboot.set_filter(nchannels,norder,ntrials,filter_opts{:});
     
     fprintf('%s: filtering resample %d\n',mfilename,i);
-    % lattice filter
-    lf_btstrp(i) = run_lattice_filter(...
-        data_bootstrap_file,...
-        'basedir',fullfile(workingdir,'fake.m'),...
-        'outdir',resampledir,...
-        'filters', {filter},...
-        run_options{:},...
-        'force',false,...
-        'verbosity',0,...
-        'tracefields',{'Kf','Kb','Rf'});
+    
+    lfboot.preprocessing();
+    lfboot.run();
+    lfboot.postprocessing();
+    
+    lf_btstrp{i} = lfboot.file_data_post;
+    
+%     % set up lattice filter
+%     filter = MCMTLOCCD_TWL4(nchannels, norder, ntrials, filter_opts{:});
+%     
+%     fprintf('%s: filtering resample %d\n',mfilename,i);
+%     % lattice filter
+%     lf_btstrp(i) = run_lattice_filter(...
+%         data_bootstrap_file,...
+%         'basedir',fullfile(workingdir,'fake.m'),...
+%         'outdir',resampledir,...
+%         'filters', {filter},...
+%         run_options{:},...
+%         'force',false,...
+%         'verbosity',0,...
+%         'tracefields',{'Kf','Kb','Rf'});
     
 end
 
 %% remove extra data
 
-switch prepend_data
-    case 'flipdata'
-        lf_btstrp = lattice_filter_remove_data(lf_btstrp,[1 nsamples]);
-end
+% switch prepend_data
+%     case 'flipdata'
+%         lf_btstrp = lattice_filter_remove_data(lf_btstrp,[1 nsamples]);
+% end
 
 %% compute pdc
 % compute pdc for all files
