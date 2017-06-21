@@ -28,7 +28,7 @@ p = inputParser();
 addRequired(p,'Kf',@(x) length(size(x)) <= 3);
 addRequired(p,'Kb',@(x) length(size(x)) <= 3);
 addParameter(p,'informat','',@(x) any(validatestring(x,{'ch-ch-or','or-ch-ch'})));
-parse(p,Kf,Kb);
+parse(p,Kf,Kb,varargin{:});
 
 informat = p.Results.informat;
 switch informat
