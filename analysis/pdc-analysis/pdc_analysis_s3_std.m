@@ -22,7 +22,7 @@ j = j+1;
 i = 1;
 paramsmini(j,i).hemi = 'left';
 paramsmini(j,i).gamma = 1e-5;
-% paramsmini(j,i).order = 5;
+paramsmini(j,i).order = 5;
 i = i+1;
 
 % paramsmini(j,i).hemi = 'left';
@@ -36,10 +36,10 @@ paramsmini(j,i).gamma = 1e-4;
 paramsmini(j,i).order = 7; %14?
 i = i+1;
 
-paramsmini(j,i).hemi = 'left';
-paramsmini(j,i).gamma = 1e-4;
-paramsmini(j,i).order = 14;
-i = i+1;
+% paramsmini(j,i).hemi = 'left';
+% paramsmini(j,i).gamma = 1e-4;
+% paramsmini(j,i).order = 14;
+% i = i+1;
 
 paramsmini(j,i).hemi = 'left';
 paramsmini(j,i).gamma = 1e-3;
