@@ -43,7 +43,10 @@ addParameter(p,'pdc_params',{},@iscell);
 addParameter(p,'alpha',0.05,@(x) x > 0 && x < 1);
 parse(p,lfanalysis,varargin{:});
 
-lf_file = lfanalysis.file_data_post;
+if length(lfanalysis.file_data_post) > 1
+    error('too many output files in LatticeFilterAnalysis');
+end
+lf_file = lfanalysis.file_data_post{1};
 
 [outdir,filter_name,~] = fileparts(lf_file);
 workingdirname = sprintf('%s-bootstrap-%s',filter_name,p.Results.null_mode);
@@ -119,17 +122,18 @@ switch p.Results.null_mode
         %data_sources = loadfile(sources_file);
         
         % load data
-        data_sources = loadfield(lfanalysis.file_data_pre);
+        data_file_pre = lfanalysis.file_data_pre;
+        data_sources = loadfile(data_file_pre);
         
         lf_channels = cell(nchannels,1);
-        %parfor i=1:nchannels
-        for i=1:nchannels
+        parfor i=1:nchannels
+        %for i=1:nchannels
             workingdir_ch = fullfile(workingdir,'channels-ind');
             channel_dir = sprintf('ch%d',i);
             
             % create data file
             file_channel = fullfile(workingdir_ch,channel_dir,[channel_dir '.mat']);
-            fresh = isfresh(file_channel, sources_file);
+            fresh = isfresh(file_channel, data_file_pre);
             if fresh || ~exist(file_channel,'file')
                 data_temp = data_sources(i,:,:);
                 save_parfor(file_channel, data_temp);
@@ -167,28 +171,9 @@ switch p.Results.null_mode
             lfobj.run();
             lfobj.postprocessing();
             
-            lf_channels{i} = lfobj.file_data_post;
-
-            % lattice filter
-            % NOTE this needs to be done individually because we're using
-            % the same filter so we need to have different outdirs
-%             lf_channels(i) = run_lattice_filter(...
-%                 file_channel,...
-%                 'basedir',fullfile(workingdir_ch,'fake.m'),...
-%                 'outdir',channel_dir,...
-%                 'filters', {filter},...
-%                 p.Results.run_options{:},...
-%                 'force',false,...
-%                 'verbosity',0,...
-%                 'tracefields',{'Kf','Kb','Rf','ferror'});
+            lf_channels{i} = lfobj.file_data_post{1};
             
         end
-        
-%         switch prepend_data
-%             case 'flipdata'
-%                 % remove prepended data
-%                 lf_channels = lattice_filter_remove_data(lf_channels,[1 nsamples]);
-%         end
             
         for i=1:nchannels
             datalf_ch = loadfile(lf_channels{i});
@@ -229,8 +214,8 @@ end
 nresamples = p.Results.nresamples;
 lf_btstrp = cell(p.Results.nresamples,1);
 
-% parfor i=1:nresamples
-for i=1:nresamples
+parfor i=1:nresamples
+% for i=1:nresamples
     resampledir = sprintf('resample%d',i);
     data_bootstrap_file = fullfile(workingdir, resampledir, sprintf('resample%d.mat',i));
     
@@ -325,8 +310,6 @@ for i=1:nresamples
         fprintf('%s: resample %d already exists\n',mfilename,i);
     end
     
-    % NOTE this needs to be done individually because we're using
-    % the same filter so we need to have different outdirs
     lfboot = LatticeFilterAnalysis(data_bootstrap_file,...
         'outdir',fullfile(workingdir,resampledir));
     lfboot.filter_func = 'MCMTLOCCD_TWL4';
@@ -354,31 +337,9 @@ for i=1:nresamples
     lfboot.run();
     lfboot.postprocessing();
     
-    lf_btstrp{i} = lfboot.file_data_post;
-    
-%     % set up lattice filter
-%     filter = MCMTLOCCD_TWL4(nchannels, norder, ntrials, filter_opts{:});
-%     
-%     fprintf('%s: filtering resample %d\n',mfilename,i);
-%     % lattice filter
-%     lf_btstrp(i) = run_lattice_filter(...
-%         data_bootstrap_file,...
-%         'basedir',fullfile(workingdir,'fake.m'),...
-%         'outdir',resampledir,...
-%         'filters', {filter},...
-%         run_options{:},...
-%         'force',false,...
-%         'verbosity',0,...
-%         'tracefields',{'Kf','Kb','Rf'});
+    lf_btstrp{i} = lfboot.file_data_post{1};
     
 end
-
-%% remove extra data
-
-% switch prepend_data
-%     case 'flipdata'
-%         lf_btstrp = lattice_filter_remove_data(lf_btstrp,[1 nsamples]);
-% end
 
 %% compute pdc
 % compute pdc for all files
