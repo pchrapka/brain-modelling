@@ -106,7 +106,7 @@ classdef PDCAnalysis < handle
         function plot_significance_level(obj)
             % plot significance level
             
-            obj.view.file_pdc = obj.file_pdc_sig;
+            obj.view.file_pdc = {obj.file_pdc_sig};
             params = {
                 'threshold_mode','numeric',...
                 'threshold',0.001,...
