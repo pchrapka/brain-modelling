@@ -25,6 +25,7 @@ classdef ViewPDC < handle
         
         file_pdc_mean = '';
         file_pdc_var = '';
+        file_idx = 1;
     end
     
     properties (Dependent)
@@ -123,15 +124,25 @@ classdef ViewPDC < handle
             obj.pdc_loaded = '';
         end
         
-        function load(obj,property)
+        function load(obj,property,varargin)
+            p = inputParser();
+            addParameter(p,'file_idx',[],@(x) isnumeric(x) && (x > 0) && (x <= length(obj.file_pdc)));
+            parse(p,varargin{:});
+            
+            if ~isempty(p.Results.file_idx)
+                % only update if something was specified
+                if obj.file_idx ~= p.Results.file_idx
+                    % unload the data if it's changed
+                    obj.unload();
+                end
+                obj.file_idx = p.Results.file_idx;
+            end
+
             switch property
                 case 'pdc'
-                    if length(obj.file_pdc) > 1
-                        error('multiple pdc files specified');
-                    end
                     if isempty(obj.pdc) || ~isequal(obj.pdc_loaded,'pdc')
-                        print_msg_filename(obj.file_pdc{1},'loading');
-                        data = loadfile(obj.file_pdc{1});
+                        print_msg_filename(obj.file_pdc{obj.file_idx},'loading');
+                        data = loadfile(obj.file_pdc{obj.file_idx});
                         obj.pdc = data.pdc;
                         
                         dims = size(obj.pdc);

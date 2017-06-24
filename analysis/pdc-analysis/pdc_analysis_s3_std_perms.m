@@ -1,72 +1,14 @@
-%% pdc_analysis_s3_std
-% run pdc analysis variations for a few gammas
+%% pdc_analysis_s3_std_perms
+% run pdc analysis variations for a specific set of params with 20
+% permutations
 
 paramsmini = [];
 j = 1;
-i = 1;
-paramsmini(j).hemi = 'both';
-paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 3;
-i = i+1;
-
-paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 4;
-i = i+1;
-
-paramsmini(j).params(i).gamma = 1e-3;
-paramsmini(j).params(i).order = 5;
-j = j+1;
-
 i = 1;
 paramsmini(j).hemi = 'left';
 paramsmini(j).params(i).gamma = 1e-5;
 paramsmini(j).params(i).order = 5;
 i = i+1;
-
-% paramsmini(j).params(i).gamma = 1e-4;
-% % paramsmini(j).params(i).order = 7; %14?
-% paramsmini(j).params(i).order = 5;
-% i = i+1;
-
-paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 7; %14?
-i = i+1;
-
-% paramsmini(j).params(i).gamma = 1e-4;
-% paramsmini(j).params(i).order = 14;
-% i = i+1;
-
-paramsmini(j).params(i).gamma = 1e-3;
-paramsmini(j).params(i).order = 5;
-j = j+1;
-
-i = 1;
-paramsmini(j).hemi = 'right';
-paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 3;
-i = i+1;
-
-paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 5;
-i = i+1;
-
-paramsmini(j).params(i).gamma = 1e-3;
-paramsmini(j).params(i).order = 6;
-
-% hemis = {'both','left','right'};
-% hemis = {'left','right'};
-% hemis = {'both'};
-% hemis = {'left'};
-% hemis = {'right'};
-
-% gammas = [1e-3 1e-2 1e-1];
-
-% % optimized by visual inspection
-% gammas = [1e-5 1e-4 1e-3];
-% orders = [5 3 3];
-
-% gammas = [1e-5];
-% orders = [5];
 
 nhemis = length(paramsmini);
 for j=1:nhemis
@@ -88,8 +30,8 @@ for j=1:nhemis
         params(k).normalization = 'eachchannel';
         params(k).envelope = true;
         params(k).prepend_data = 'flipdata';
-        params(k).permutations = false;%true;
-        params(k).npermutations = 10;% 20;
+        params(k).permutations = true;
+        params(k).npermutations = 20;
         params(k).tune_criteria_samples = [0.05 0.95];
         params(k).nresamples = 100;
         params(k).alpha = 0.05;

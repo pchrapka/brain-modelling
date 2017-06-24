@@ -50,6 +50,10 @@ for i=1:length(params)
     if isfield(params(i),'permutations'),   lf_obj.permutations = params(i).permutations;   end
     if isfield(params(i),'npermutations'),  lf_obj.npermutations = params(i).npermutations; end
     
+    if ~lf_obj.permutations
+        lf_obj.npermutations = 1;
+    end
+    
     % set up view
     pdc_view = pdc_analysis_create_view(...
         file_sources_info,...
@@ -144,20 +148,24 @@ for i=1:length(params)
                 
             end
             
-            %% plot seed
-            if p.Results.flag_plot_seed
-                if lf_obj.permutations
-                    pdc_obj.plot_seed(...
-                        'operation','none',...
-                        'threshold_mode','none',...
-                        'stat','mean',...
-                        'vertlines',[0 0.5]);
-                    pdc_obj.plot_seed(...
-                        'operation','none',...
-                        'threshold_mode','none',...
-                        'stat','var',...
-                        'vertlines',[0 0.5]);
-                else
+            % loop over permutations
+            for k=1:lf_obj.npermutations
+                % switch loaded data
+                pdc_obj.view.load('pdc','file_idx',k);
+                
+                %% plot seed
+                if p.Results.flag_plot_seed
+                    %pdc_obj.plot_seed(...
+                    %    'operation','none',...
+                    %    'threshold_mode','none',...
+                    %    'stat','mean',...
+                    %    'vertlines',[0 0.5]);
+                    %pdc_obj.plot_seed(...
+                    %    'operation','none',...
+                    %    'threshold_mode','none',...
+                    %    'stat','var',...
+                    %    'vertlines',[0 0.5]);
+                    
                     for idx_param=1:length(params_plot_seed)
                         params_plot = params_plot_seed{idx_param};
                         pdc_obj.plot_seed(...
@@ -169,13 +177,9 @@ for i=1:length(params)
                         %    'operation','sum');
                     end
                 end
-            end
-            
-            %% plot connectivity
-            if p.Results.flag_plot_conn
-                if lf_obj.permutations
-                    warning('TODO plot connectivity for multiple permutations');
-                else
+                
+                %% plot connectivity
+                if p.Results.flag_plot_conn
                     nsamples_real = floor(nsamples/params(i).downsample);
                     idx_start = 0.25*nsamples_real;
                     idx_end = nsamples_real;
@@ -186,10 +190,11 @@ for i=1:length(params)
                     pdc_obj.view.save_plot('save',true,'engine','matlab');
                     close(gcf);
                 end
+                
             end
-            
-            
         end
+        
+        
     end
 end
 
