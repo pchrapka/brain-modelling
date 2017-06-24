@@ -67,7 +67,9 @@ switch subject
     case 6
         cfg_pp.channel = {'EEG','-D32','-C10'};
     otherwise
-        error([mfilename ':badchannels'],'check bad channels');
+        error([mfilename ':badchannels'],['check bad channels\n\n'...
+            'in this function change interactive = true,\n'...
+            'set break points in the interactive sections and rerun script']);
 end
 cfg_pp.bpfilter = 'yes';
 cfg_pp.bpfreq = [1 60];
@@ -172,7 +174,9 @@ switch subject
     case 6
         cfg_pp.channel = {'EEG','-D32','-C10'};
     otherwise
-        error([mfilename ':badchannels'],'check bad channels');
+        error([mfilename ':badchannels'],['check bad channels\n\n'...
+            'in this function change interactive = true,\n'...
+            'set break points in the interactive sections and rerun script']);
 end
 cfg_pp.bpfilter = 'yes';
 cfg_pp.bpfreq = [15 25];

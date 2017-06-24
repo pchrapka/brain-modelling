@@ -1,39 +1,19 @@
-%% pdc_analysis_s3_std
+%% pdc_analysis_s5_std_100trials
 % run pdc analysis variations for a few gammas
+
+flag_tune = true;
 
 paramsmini = [];
 j = 1;
-i = 1;
-paramsmini(j).hemi = 'both';
-paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 3;
-i = i+1;
-
-paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 4;
-i = i+1;
-
-paramsmini(j).params(i).gamma = 1e-3;
-paramsmini(j).params(i).order = 5;
-j = j+1;
-
 i = 1;
 paramsmini(j).hemi = 'left';
 paramsmini(j).params(i).gamma = 1e-5;
 paramsmini(j).params(i).order = 5;
 i = i+1;
 
-% paramsmini(j).params(i).gamma = 1e-4;
-% paramsmini(j).params(i).order = 5;
-% i = i+1;
-
 paramsmini(j).params(i).gamma = 1e-4;
 paramsmini(j).params(i).order = 7;
 i = i+1;
-
-% paramsmini(j).params(i).gamma = 1e-4;
-% paramsmini(j).params(i).order = 14;
-% i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-3;
 paramsmini(j).params(i).order = 5;
@@ -64,9 +44,12 @@ for j=1:nhemis
         params(k).downsample = 4;
         params(k).nfreqs = 512; % default 128
         params(k).metrics = {'diag'};%,'info'};
-        params(k).ntrials = 20;
-        params(k).order = paramsmini(j).params(i).order;
-        %params(k).order = 3:14; % for tuning
+        params(k).ntrials = 100;
+        if flag_tune
+            params(k).order = 3:14; % for tuning
+        else
+            params(k).order = paramsmini(j).params(i).order;
+        end
         params(k).lambda = 0.99;
         params(k).gamma = paramsmini(j).params(i).gamma;
         params(k).normalization = 'eachchannel';
@@ -91,7 +74,7 @@ for j=1:nhemis
     %% set up eeg
     
     stimulus = 'std';
-    subject = 3;
+    subject = 5;
     deviant_percent = 10;
     patch_options = {...
         'patchmodel','aal-coarse-19',...

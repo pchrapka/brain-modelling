@@ -65,6 +65,10 @@ if p.Results.flag_add_auditory
             %         '3: Caudate_R'
             %         '1: Pallidum_R'
             %         '1: Heschl_R'
+        case 's05'
+            loc_l = [-48.361679  -18.617739   +8.452695];
+            loc_r = [+48.361679  -18.617739   +8.452695];
+            
         otherwise
             warning([mfilename ':dipoles'],'using default P1 dipoles');
             loc_l = [ -45.0, -3.2, 16.2];

@@ -78,14 +78,14 @@ classdef ViewPDC < handle
             if isempty(obj.file_pdc)
                 error('file_pdc is empty');
             end
-            [value,~,~] = fileparts(obj.file_pdc{1});
+            [value,~,~] = fileparts(obj.file_pdc{obj.file_idx});
         end
         
         function value = get.filename(obj)
             if isempty(obj.file_pdc)
                 error('file_pdc is empty');
             end
-            [~,value,~] = fileparts(obj.file_pdc{1});
+            [~,value,~] = fileparts(obj.file_pdc{obj.file_idx});
         end
         
         function set_freqrange(obj,value,varargin)
