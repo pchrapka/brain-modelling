@@ -14,7 +14,7 @@ nhemis = length(paramsmini);
 for j=1:nhemis
     params = [];
     k=1;
-    ngamma = length(paramsmini(j).params);
+    ngammas = length(paramsmini(j).params);
     
     for i=1:ngammas
         

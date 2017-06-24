@@ -4,69 +4,51 @@
 paramsmini = [];
 j = 1;
 i = 1;
-paramsmini(j,i).hemi = 'both';
-paramsmini(j,i).gamma = 1e-5;
-paramsmini(j,i).order = 3;
+paramsmini(j).hemi = 'both';
+paramsmini(j).params(i).gamma = 1e-5;
+paramsmini(j).params(i).order = 3;
 i = i+1;
 
-paramsmini(j,i).hemi = 'both';
-paramsmini(j,i).gamma = 1e-4;
-paramsmini(j,i).order = 5;
+paramsmini(j).params(i).gamma = 1e-4;
+paramsmini(j).params(i).order = 5;
 i = i+1;
 
-paramsmini(j,i).hemi = 'both';
-paramsmini(j,i).gamma = 1e-3;
-paramsmini(j,i).order = 5;
+paramsmini(j).params(i).gamma = 1e-3;
+paramsmini(j).params(i).order = 5;
 j = j+1;
 
 i = 1;
-paramsmini(j,i).hemi = 'left';
-paramsmini(j,i).gamma = 1e-5;
-paramsmini(j,i).order = 5;
+paramsmini(j).hemi = 'left';
+paramsmini(j).params(i).gamma = 1e-5;
+paramsmini(j).params(i).order = 5;
 i = i+1;
 
-paramsmini(j,i).hemi = 'left';
-paramsmini(j,i).gamma = 1e-4;
-paramsmini(j,i).order = 7;
+paramsmini(j).params(i).gamma = 1e-4;
+paramsmini(j).params(i).order = 7;
 i = i+1;
 
-paramsmini(j,i).hemi = 'left';
-paramsmini(j,i).gamma = 1e-3;
-paramsmini(j,i).order = 5;
+paramsmini(j).params(i).gamma = 1e-3;
+paramsmini(j).params(i).order = 5;
 j = j+1;
 
 i = 1;
-paramsmini(j,i).hemi = 'right';
-paramsmini(j,i).gamma = 1e-5;
-paramsmini(j,i).order = 3;
+paramsmini(j).hemi = 'right';
+paramsmini(j).params(i).gamma = 1e-5;
+paramsmini(j).params(i).order = 3;
 i = i+1;
 
-paramsmini(j,i).hemi = 'right';
-paramsmini(j,i).gamma = 1e-4;
-paramsmini(j,i).order = 7;
+paramsmini(j).params(i).gamma = 1e-4;
+paramsmini(j).params(i).order = 7;
 i = i+1;
 
-paramsmini(j,i).hemi = 'right';
-paramsmini(j,i).gamma = 1e-3;
-paramsmini(j,i).order = 5;
+paramsmini(j).params(i).gamma = 1e-3;
+paramsmini(j).params(i).order = 5;
 
-% hemis = {'both','left','right'};
-% hemis = {'left','right'};
-% hemis = {'both'};
-% hemis = {'left'};
-% hemis = {'right'};
-
-% % optimized by visual inspection
-% gammas = [1e-5 1e-4 1e-3];
-% orders = [5 3 3];
-
-% gammas = [1e-5];
-% orders = [5];
-
-[nhemis,ngammas] = size(paramsmini);
+nhemis = length(paramsmini);
 for j=1:nhemis
     params = [];
     k=1;
+    ngammas = length(paramsmini(j).params);
     
     for i=1:ngammas
         
@@ -75,10 +57,13 @@ for j=1:nhemis
         params(k).nfreqs = 512; % default 128
         params(k).metrics = {'diag'};%,'info'};
         params(k).ntrials = 100;
-        params(k).order = paramsmini(j,i).order;
-        %params(k).order = 3:14; % for tuning
+        if flag_tune
+            params(k).order = 3:14; % for tuning
+        else
+            params(k).order = paramsmini(j).params(i).order;
+        end
         params(k).lambda = 0.99;
-        params(k).gamma = paramsmini(j,i).gamma;
+        params(k).gamma = paramsmini(j).params(i).gamma;
         params(k).normalization = 'eachchannel';
         params(k).envelope = true;
         params(k).prepend_data = 'flipdata';
@@ -92,11 +77,14 @@ for j=1:nhemis
     end
     
     %% mode
-    %mode = 'tune';
-    %flag_plot = false;
-    mode = 'run';
-    flag_plot = true;
-    flag_bootstrap = false;
+    if flag_tune
+        mode = 'tune';
+        flag_plot = false;
+    else
+        mode = 'run';
+        flag_plot = true;
+        flag_bootstrap = false;
+    end
     
     %% set up eeg
     
@@ -108,7 +96,7 @@ for j=1:nhemis
         'patchoptions',{...
             'outer',true,...
             'cerebellum',false,...
-            'hemisphere',paramsmini(j,i).hemi,...
+            'hemisphere',paramsmini(j).hemi,...
             'flag_add_v1',true,...
             'flag_add_auditory',true...
             }...
