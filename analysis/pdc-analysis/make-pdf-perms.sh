@@ -27,6 +27,8 @@ DATA=(
     "2017-06-24-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p9-removed-pdc-dynamic-diag-f512-ds4-seed-*-opnone-thresh0.00-0.0000-0.0098"
 
     "2017-06-24-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p10-removed-pdc-dynamic-diag-f512-ds4-seed-*-opnone-thresh0.00-0.0000-0.0098"
+
+    "2017-06-24-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-*-removed-pdc-dynamic-diag-f512-ds4-adjacency-idx192-768-0.0000-0.0098"
 )
 
 DIR="output/std-s03-10/aal-coarse-19-outer-nocer-hemileft-audr2-v1r2/lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata"

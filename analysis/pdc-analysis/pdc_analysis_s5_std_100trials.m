@@ -36,7 +36,7 @@ nhemis = length(paramsmini);
 for j=1:nhemis
     params = [];
     k=1;
-    ngamma = length(paramsmini(j).params);
+    ngammas = length(paramsmini(j).params);
     
     for i=1:ngammas
         
@@ -65,11 +65,14 @@ for j=1:nhemis
     end
     
     %% mode
-    %mode = 'tune';
-    %flag_plot = false;
-    mode = 'run';
-    flag_plot = true;
-    flag_bootstrap = false;
+    if flag_tune
+        mode = 'tune';
+        flag_plot = false;
+    else
+        mode = 'run';
+        flag_plot = true;
+        flag_bootstrap = false;
+    end
     
     %% set up eeg
     
