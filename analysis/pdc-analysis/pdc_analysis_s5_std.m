@@ -79,11 +79,14 @@ for j=1:nhemis
     end
     
     %% mode
-    %mode = 'tune';
-    %flag_plot = false;
-    mode = 'run';
-    flag_plot = true;
-    flag_bootstrap = false;
+    if flag_tune
+        mode = 'tune';
+        flag_plot = false;
+    else
+        mode = 'run';
+        flag_plot = true;
+        flag_bootstrap = false;
+    end
     
     %% set up eeg
     
