@@ -1,70 +1,19 @@
 %% pdc_analysis_s3_std_bootstrap
-% run pdc analysis variations for a few gammas
+% run pdc analysis and surrogate analysis for a set of parameters
 
 paramsmini = [];
 j = 1;
 i = 1;
-% paramsmini(j,i).hemi = 'both';
-% paramsmini(j,i).gamma = 1e-5;
-% paramsmini(j,i).order = 3;
-% i = i+1;
-% 
-% paramsmini(j,i).hemi = 'both';
-% paramsmini(j,i).gamma = 1e-4;
-% paramsmini(j,i).order = 4;
-% i = i+1;
-% 
-% paramsmini(j,i).hemi = 'both';
-% paramsmini(j,i).gamma = 1e-3;
-% paramsmini(j,i).order = 5;
-% j = j+1;
-
-i = 1;
-paramsmini(j,i).hemi = 'left';
-paramsmini(j,i).gamma = 1e-5;
-paramsmini(j,i).order = 5;
+paramsmini(j).hemi = 'left';
+paramsmini(j).params(i).gamma = 1e-5;
+paramsmini(j).params(i).order = 5;
 i = i+1;
 
-% % paramsmini(j,i).hemi = 'left';
-% % paramsmini(j,i).gamma = 1e-4;
-% % % paramsmini(j,i).order = 7; %14?
-% % paramsmini(j,i).order = 5;
-% % i = i+1;
-% 
-% paramsmini(j,i).hemi = 'left';
-% paramsmini(j,i).gamma = 1e-4;
-% paramsmini(j,i).order = 7; %14?
-% i = i+1;
-% 
-% % paramsmini(j,i).hemi = 'left';
-% % paramsmini(j,i).gamma = 1e-4;
-% % paramsmini(j,i).order = 14;
-% % i = i+1;
-% 
-% paramsmini(j,i).hemi = 'left';
-% paramsmini(j,i).gamma = 1e-3;
-% paramsmini(j,i).order = 5;
-% j = j+1;
-
-% i = 1;
-% paramsmini(j,i).hemi = 'right';
-% paramsmini(j,i).gamma = 1e-5;
-% paramsmini(j,i).order = 3;
-% i = i+1;
-% 
-% paramsmini(j,i).hemi = 'right';
-% paramsmini(j,i).gamma = 1e-4;
-% paramsmini(j,i).order = 5;
-% i = i+1;
-% 
-% paramsmini(j,i).hemi = 'right';
-% paramsmini(j,i).gamma = 1e-3;
-% paramsmini(j,i).order = 6;
-
-[nhemis,ngammas] = size(paramsmini);
+nhemis = length(paramsmini);
 for j=1:nhemis
-    params = [];
+    params = [];    
     k=1;
+    ngamma = length(paramsmini(j).params);
     
     for i=1:ngammas
         
@@ -73,10 +22,10 @@ for j=1:nhemis
         params(k).nfreqs = 512; % default 128
         params(k).metrics = {'diag'};%,'info'};
         params(k).ntrials = 20;
-        params(k).order = paramsmini(j,i).order;
+        params(k).order = paramsmini(j).params(i).order;
         %params(k).order = 3:14; % for tuning
         params(k).lambda = 0.99;
-        params(k).gamma = paramsmini(j,i).gamma;
+        params(k).gamma = paramsmini(j).params(i).gamma;
         params(k).normalization = 'eachchannel';
         params(k).envelope = true;
         params(k).prepend_data = 'flipdata';
@@ -106,7 +55,7 @@ for j=1:nhemis
         'patchoptions',{...
             'outer',true,...
             'cerebellum',false,...
-            'hemisphere',paramsmini(j,i).hemi,...
+            'hemisphere',paramsmini(j).hemi,...
             'flag_add_v1',true,...
             'flag_add_auditory',true...
             }...
