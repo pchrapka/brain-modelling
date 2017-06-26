@@ -64,12 +64,15 @@ cfg_pp.demean = 'no';       % filter should handle this
 switch subject
     case 3
         cfg_pp.channel = {'EEG'};
+    case 5
+        cfg_pp.channel = {'EEG','-A21'};
     case 6
         cfg_pp.channel = {'EEG','-D32','-C10'};
     otherwise
         error([mfilename ':badchannels'],['check bad channels\n\n'...
             'in this function change interactive = true,\n'...
-            'set break points in the interactive sections and rerun script']);
+            'set break points in the interactive sections and rerun script.\n'...
+            'then remove channels as appropriate.\n']);
 end
 cfg_pp.bpfilter = 'yes';
 cfg_pp.bpfreq = [1 60];
@@ -102,7 +105,8 @@ switch stimulus
         cfg_dt.trialmid.prestim = 0.5; % in seconds
         cfg_dt.trialmid.poststim = 1; % in seconds
         
-        threshold = 60;
+        %threshold = 60;
+        threshold = 70;
     case 'std-prestim1'
         cfg_dt.trialfun= 'fthelpers.ft_trialfun_triplet';
         cfg_dt.trialmid.eventtype = 'STATUS';
@@ -171,12 +175,15 @@ cfg_pp.demean = 'no';       % filter should handle this
 switch subject
     case 3
         cfg_pp.channel = {'EEG'};
+    case 5
+        cfg_pp.channel = {'EEG','-A21'};
     case 6
         cfg_pp.channel = {'EEG','-D32','-C10'};
     otherwise
         error([mfilename ':badchannels'],['check bad channels\n\n'...
             'in this function change interactive = true,\n'...
-            'set break points in the interactive sections and rerun script']);
+            'set break points in the interactive sections and rerun script.\n'...
+            'then remove channels as appropriate.\n']);
 end
 cfg_pp.bpfilter = 'yes';
 cfg_pp.bpfreq = [15 25];
