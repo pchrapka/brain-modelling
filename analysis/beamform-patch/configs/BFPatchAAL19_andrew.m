@@ -137,10 +137,12 @@ cfg.ft_sourceanalysis.lcmv.lambda = '1%';
 switch data_name(1:3)
     case 's03'
         % all good
+    case 's05'
+        cfg.ft_sourceanalysis.channel = {'EEG','-A21'};
     case 's06'
         cfg.ft_sourceanalysis.channel = {'EEG','-D32','-C10'};
     otherwise
-        warning('update bad EEG channels for ft_sourceanalysis in %s',mfilename);
+        error('update bad EEG channels for ft_sourceanalysis in %s',mfilename);
 end
 
 cfg.name = sprintf('%s-%s-%s',...

@@ -12,7 +12,8 @@ parse(p,varargin{:});
 MRIicbm152();
 HMicbm152_dipoli_cm();
 % BFPatchAAL();
-params_elec = Eandrew_warpgr_cm(elec_file, data_name);
+% params_elec = Eandrew_warpgr_cm(elec_file, data_name);
+params_elec = Eandrew_cm(elec_file, data_name);
 
 % params_eeg = EEGandrew_stddev(data_file, data_name, stimulus);
 params_eeg = EEGandrew_stddev_precomputed(data_file, data_name, stimulus);

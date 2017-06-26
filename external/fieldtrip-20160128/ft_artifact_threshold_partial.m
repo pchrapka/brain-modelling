@@ -167,16 +167,16 @@ for trlop = 1:numtrl
       bad_chan = datcond_count >= ceil(artfctdef.minacceptprct*nsamples_sec);
       if any(bad_chan)
           fprintf('threshold artifact scanning: trial %d from %d, section %d exceeds min or max threshold\n', trlop, numtrl, sec);
+          trlbad(1,1) = cfg.trl(trlop,1)+idx(1)-1;
+          trlbad(1,2) = cfg.trl(trlop,1)+idx(2);
+          artifact(end+1,:) = trlbad;
           bad_section = true;
-          break;
       end
       
       idx = idx + nsamples_sec;
   end
   
-  if bad_section
-      artifact(end+1,1:2) = cfg.trl(trlop,1:2);
-  else
+  if ~bad_section
       fprintf('threshold artifact scanning: trial %d from %d is ok\n', trlop, numtrl);
   end
 end

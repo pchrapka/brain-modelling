@@ -88,12 +88,15 @@ if interactive
     clear data;
 end
 
-%% ft_definetrial
+%% ft_definetrial for artifact rejection
 cfg_dt = [];
 cfg_dt.dataset = dataset;
 % use default function
 switch stimulus
     case 'std'
+        % NOTE ft_reject_artifact operates on sample indices so if multiple
+        % trials are grouped into a trial, it will reject a trial if a
+        % portion of another trial has an artifact, because of the overlap
         cfg_dt.trialfun= 'fthelpers.ft_trialfun_triplet';
         cfg_dt.trialmid.eventtype = 'STATUS';
         cfg_dt.trialmid.eventvalue = 1; % standard
@@ -101,9 +104,15 @@ switch stimulus
         cfg_dt.trialpre.eventvalue = 1; % standard
         cfg_dt.trialpost.eventtype = 'STATUS';
         cfg_dt.trialpost.eventvalue = 1; % standard
-        
+
         cfg_dt.trialmid.prestim = 0.5; % in seconds
         cfg_dt.trialmid.poststim = 1; % in seconds
+
+%         cfg_dt.trialdef.eventtype = 'STATUS';   
+%         cfg_dt.trialdef.eventvalue = {1}; % standard
+%         
+%         cfg_dt.trialmid.prestim = 0.1; % in seconds
+%         cfg_dt.trialmid.poststim = 0.5; % in seconds
         
         threshold = 60;
         nsections = 3;
@@ -115,9 +124,15 @@ switch stimulus
         cfg_dt.trialpre.eventvalue = 1; % standard
         cfg_dt.trialpost.eventtype = 'STATUS';
         cfg_dt.trialpost.eventvalue = 1; % standard
-        
+
         cfg_dt.trialmid.prestim = 1; % in seconds
         cfg_dt.trialmid.poststim = 1; % in seconds
+
+%         cfg_dt.trialdef.eventtype = 'STATUS';   
+%         cfg_dt.trialdef.eventvalue = {1}; % standard
+%         
+%         cfg_dt.trialmid.prestim = 0.1; % in seconds
+%         cfg_dt.trialmid.poststim = 0.5; % in seconds
         
         threshold = 70;
         nsections = 4;
