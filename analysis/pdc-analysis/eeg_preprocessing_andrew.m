@@ -103,6 +103,7 @@ switch stimulus
         cfg_dt.trialmid.poststim = 1; % in seconds
         
         threshold = 60;
+        nsections = 3;
     case 'std-prestim1'
         cfg_dt.trialfun= 'fthelpers.ft_trialfun_triplet';
         cfg_dt.trialmid.eventtype = 'STATUS';
@@ -116,6 +117,7 @@ switch stimulus
         cfg_dt.trialmid.poststim = 1; % in seconds
         
         threshold = 70;
+        nsections = 4;
     case 'odd'
         cfg_dt.trialdef.eventtype = 'STATUS';
         cfg_dt.trialdef.eventvalue = {2}; % deviant
@@ -123,6 +125,7 @@ switch stimulus
         cfg_dt.trialdef.poststim = 1; % in seconds
         
         threshold = 60;
+        nsections = 3;
     otherwise
         error('missing stimulus %s',stimulus);
 end
@@ -144,6 +147,20 @@ file_art_pp2 = fthelpers.run_ft_function('ft_preprocessing',cfg_pp,params{:},'da
 
 
 %% ft_artifact_threshold
+% % reject trials that exceed 140 uV
+% data_dt = loadfile(file_art_dt);
+% cfg_at = [];
+% cfg_at.trl = data_dt.trl;
+% clear data_dt
+% cfg_at.continuous = 'no';
+% cfg_at.artfctdef.threshold.bpfilter = 'no';
+% cfg_at.artfctdef.threshold.min = -1*threshold;
+% cfg_at.artfctdef.threshold.max = threshold;
+% 
+% file_art_at = fthelpers.run_ft_function('ft_artifact_threshold',cfg_at,'datain',file_art_pp2,params{:},'tag','art');
+% clear cfg_at
+
+%% ft_artifact_threshold_partial
 % reject trials that exceed 140 uV
 data_dt = loadfile(file_art_dt);
 cfg_at = [];
@@ -153,8 +170,10 @@ cfg_at.continuous = 'no';
 cfg_at.artfctdef.threshold.bpfilter = 'no';
 cfg_at.artfctdef.threshold.min = -1*threshold;
 cfg_at.artfctdef.threshold.max = threshold;
+cfg_at.artfctdef.threshold.minacceptprct = 0.1;
+cfg_at.artfctdef.threshold.nsections = nsections;
 
-file_art_at = fthelpers.run_ft_function('ft_artifact_threshold',cfg_at,'datain',file_art_pp2,params{:},'tag','art');
+file_art_at = fthelpers.run_ft_function('ft_artifact_threshold_partial',cfg_at,'datain',file_art_pp2,params{:},'tag','art');
 clear cfg_at
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
