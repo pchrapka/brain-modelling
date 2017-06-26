@@ -85,6 +85,10 @@ if isfield(artfctdef, 'cutoff') && ~isfield(artfctdef, 'range')
   artfctdef       = rmfield(artfctdef, 'cutoff');
 end
 
+if isfield(artfctdef,'range')
+    error('range is not supported');
+end
+
 % set default preprocessing parameters if necessary
 if ~isfield(artfctdef, 'channel'),   artfctdef.channel   = 'all';    end
 if ~isfield(artfctdef, 'bpfilter'),  artfctdef.bpfilter  = 'yes';    end
@@ -92,7 +96,7 @@ if ~isfield(artfctdef, 'bpfreq'),    artfctdef.bpfreq    = [0.3 30]; end
 if ~isfield(artfctdef, 'bpfiltord'), artfctdef.bpfiltord = 4;        end
 
 % set the default artifact detection parameters
-if ~isfield(artfctdef, 'range'),    artfctdef.range = inf;           end
+%if ~isfield(artfctdef, 'range'),    artfctdef.range = inf;           end
 if ~isfield(artfctdef, 'min'),      artfctdef.min =  -inf;           end
 if ~isfield(artfctdef, 'max'),      artfctdef.max =   inf;           end
 if ~isfield(artfctdef, 'minacceptprct'),artfctdef.minacceptprct =   0.5; end
@@ -153,10 +157,6 @@ for trlop = 1:numtrl
       if ~isempty(artfctdef.max)
           % get samples that exceed max threshold
           datmax = datsec > artfctdef.max;
-      end
-      
-      if ~isempty(artfctdef.range)
-          error('range is not supported');
       end
       
       % decide if artifact
