@@ -1,7 +1,7 @@
 %% pdc_analysis_s5_std
 % run pdc analysis variations for a few gammas
 
-flag_tune = true;
+flag_tune = false;
 
 paramsmini = [];
 j = 1;
@@ -12,7 +12,7 @@ paramsmini(j).params(i).order = 3;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 4;
+paramsmini(j).params(i).order = 3;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-3;
@@ -26,7 +26,7 @@ paramsmini(j).params(i).order = 5;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 7;
+paramsmini(j).params(i).order = 10;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-3;
@@ -40,11 +40,11 @@ paramsmini(j).params(i).order = 3;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 5;
+paramsmini(j).params(i).order = 3;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-3;
-paramsmini(j).params(i).order = 6;
+paramsmini(j).params(i).order = 5;
 
 nhemis = length(paramsmini);
 for j=1:nhemis
@@ -82,6 +82,7 @@ for j=1:nhemis
     if flag_tune
         mode = 'tune';
         flag_plot = false;
+        flag_bootstrap = false;
     else
         mode = 'run';
         flag_plot = true;
