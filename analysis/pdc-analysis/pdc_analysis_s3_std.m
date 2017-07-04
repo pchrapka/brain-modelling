@@ -1,7 +1,7 @@
 %% pdc_analysis_s3_std
 % run pdc analysis variations for a few gammas
 
-flag_tune = false;
+flag_tune = true;
 
 paramsmini = [];
 j = 1;
@@ -90,6 +90,7 @@ for j=1:nhemis
     if flag_tune
         mode = 'tune';
         flag_plot = false;
+        flag_bootstrap = false;
     else
         mode = 'run';
         flag_plot = true;
