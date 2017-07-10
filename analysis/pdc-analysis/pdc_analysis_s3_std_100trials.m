@@ -1,7 +1,7 @@
 %% pdc_analysis_s3_std_100trials
 % run pdc analysis variations for a few gammas
 
-flag_tune = false;
+flag_tune = true;
 
 paramsmini = [];
 j = 1;
