@@ -1,14 +1,14 @@
 %% pdc_analysis_s3_std
 % run pdc analysis variations for a few gammas
 
-flag_tune = true;
+flag_tune = false;
 
 paramsmini = [];
 j = 1;
 i = 1;
 paramsmini(j).hemi = 'both';
 paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 3;
+paramsmini(j).params(i).order = 4;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-4;
@@ -22,7 +22,7 @@ j = j+1;
 i = 1;
 paramsmini(j).hemi = 'left';
 paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 5;
+paramsmini(j).params(i).order = 4;
 i = i+1;
 
 % paramsmini(j).params(i).gamma = 1e-4;
@@ -30,7 +30,7 @@ i = i+1;
 % i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 7;
+paramsmini(j).params(i).order = 5;
 i = i+1;
 
 % paramsmini(j).params(i).gamma = 1e-4;
@@ -44,7 +44,7 @@ j = j+1;
 i = 1;
 paramsmini(j).hemi = 'right';
 paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 3;
+paramsmini(j).params(i).order = 5;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-4;
@@ -52,7 +52,7 @@ paramsmini(j).params(i).order = 5;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-3;
-paramsmini(j).params(i).order = 6;
+paramsmini(j).params(i).order = 8;
 
 nhemis = length(paramsmini);
 for j=1:nhemis
@@ -77,7 +77,7 @@ for j=1:nhemis
         params(k).normalization = 'eachchannel';
         params(k).envelope = true;
         params(k).prepend_data = 'flipdata';
-        params(k).permutations = false;%true;
+        params(k).permutations = true;
         params(k).npermutations = 10;% 20;
         params(k).tune_criteria_samples = [0.05 0.95];
         params(k).nresamples = 100;
