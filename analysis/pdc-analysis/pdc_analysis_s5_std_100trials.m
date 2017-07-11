@@ -68,6 +68,7 @@ for j=1:nhemis
     if flag_tune
         mode = 'tune';
         flag_plot = false;
+        flag_bootstrap = false;
     else
         mode = 'run';
         flag_plot = true;
