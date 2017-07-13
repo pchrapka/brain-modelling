@@ -61,7 +61,7 @@ for i=1:length(params)
         'downsample',params(i).downsample);
     
     if lf_obj.envelope
-        view_switch(pdc_view,'5');
+        view_switch(pdc_view,'10');
         % following views at 0-5 Hz
     else
         view_switch(pdc_view,'beta');
@@ -163,6 +163,14 @@ for i=1:length(params)
                     %    'stat','mean',...
                     %    'vertlines',[0 0.5]);
                     
+                    if lf_obj.envelope
+                        view_switch(pdc_view,'10');
+                        % following views at 0-10 Hz
+                    else
+                        view_switch(pdc_view,'beta');
+                        % following views at 15-25 Hz
+                    end
+                    
                     for idx_param=1:length(params_plot_seed)
                         params_plot = params_plot_seed{idx_param};
                         pdc_obj.plot_seed(...
@@ -177,6 +185,13 @@ for i=1:length(params)
                 
                 %% plot connectivity
                 if p.Results.flag_plot_conn
+                    if lf_obj.envelope
+                        view_switch(pdc_view,'5');
+                        % following views at 0-5 Hz
+                    else
+                        view_switch(pdc_view,'beta');
+                        % following views at 15-25 Hz
+                    end
                     nsamples_real = floor(nsamples/params(i).downsample);
                     idx_start = 0.25*nsamples_real;
                     idx_end = nsamples_real;
@@ -192,6 +207,13 @@ for i=1:length(params)
             
             %% plot seed variance
             if p.Results.flag_plot_seed_var
+                if lf_obj.envelope
+                    view_switch(pdc_view,'10');
+                    % following views at 0-5 Hz
+                else
+                    view_switch(pdc_view,'beta');
+                    % following views at 15-25 Hz
+                end
                 % switch loaded data
                 pdc_obj.view.load('pdc','file_idx',1);
                 pdc_obj.plot_seed(...

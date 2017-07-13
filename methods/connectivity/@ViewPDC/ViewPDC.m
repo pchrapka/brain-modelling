@@ -146,7 +146,7 @@ classdef ViewPDC < handle
                         print_msg_filename(obj.file_pdc{obj.file_idx},'loading');
                         data = loadfile(obj.file_pdc{obj.file_idx});
                         obj.pdc = data.pdc;
-                        obj.pdf_nfreqs = data.nfreqs;
+                        obj.pdc_nfreqs = data.nfreqs;
                         
                         dims = size(obj.pdc);
                         ndims = length(dims);

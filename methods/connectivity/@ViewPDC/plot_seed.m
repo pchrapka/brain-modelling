@@ -7,6 +7,7 @@ addParameter(p,'operation','none',@(x) any(validatestring(x,{'none','sum','mean'
 addParameter(p,'direction','outgoing',...
     @(x) any(validatestring(x,{'outgoing','incoming'})));
 addParameter(p,'vertlines',[],@isvector);
+addParameter(p,'flag_regions',false,@islogical);
 addParameter(p,'threshold',0.05,@(x) x >= 0 && x <= 1);
 addParameter(p,'threshold_mode','numeric',...
     @(x) any(validatestring(x,{'none','numeric','significance','significance_alpha'})));
@@ -183,7 +184,7 @@ else
     figure('Position', screen_size);
 end
 
-if ~isempty(obj.info.region)
+if p.Results.flag_regions && ~isempty(obj.info.region)
     ax2 = gca;
     set(ax2,'Visible','off');
     ax1_pos = get(ax2,'Position');
@@ -282,7 +283,7 @@ switch p.Results.direction
 end
 
 % add region bar on left side
-if ~isempty(obj.info.region)
+if p.Results.flag_regions && ~isempty(obj.info.region)
     set(ax2,'FontSize',font_size);
     set(ax2,'YLim',get(ax1,'YLim'),'YDir',get(ax1,'YDir'));
     axes(ax2);
