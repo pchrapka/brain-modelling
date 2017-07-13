@@ -1,9 +1,10 @@
 %% paper_plot_surrogate_hist
 
-dir_data = fullfile('home-old','chrapkpk','Documents','projects',...
+dir_root = fullfile('/home.old','chrapkpk','Documents','projects','brain-modelling',...
     'analysis','pdc-analysis','output','std-s03-10-old',...
-    'aal-coarse-19-outer-nocer-hemileft-audr2-v1r2',...
-    'lf-dta-trialsall-samplesall-normeachchannel-envyes-prependflipdata',...
+    'aal-coarse-19-outer-nocer-hemileft-audr2-v1r2');
+dir_data = fullfile(dir_root,...
+    'lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata',...
     'MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-bootstrap-estimate_ind_channels',...
     'bootstrap-by-samples','pdc-dynamic-diag-f512-ds4');
 file_data = 'sample257-n100.mat'; % use time = 0
@@ -11,40 +12,87 @@ file_data = 'sample257-n100.mat'; % use time = 0
 file_name = fullfile(dir_data,file_data);
 
 data = loadfile(file_name);
-[nresample,nchannels,~,nfreq] = size(data);
+[nresample,nchannels,~,nfreqs] = size(data);
 
-bins = 1:19;
-bins = bins/20;
+dir_root2 = strrep(dir_root,'home.old','home-new');
+file_info = fullfile(dir_root2,'sources-info.mat');
+info = loadfile(file_info);
 
-figure;
-for row=1:nchannels
-    for col=1:nchannels
-        plot_idx = (row-1)*nchannels + col;
-        subaxis(nchannels, nchannels, plot_idx,...
-            'Spacing', 0, 'SpacingVert', 0, 'Padding', 0, 'Margin', 0.1);
-        hist(squeeze(data(:,row,col,:)),bins);
+%% sort channels
+patch_info = ChannelInfo(info.labels);
+patch_type = 'aal-coarse-19';
+patch_info.populate(patch_type);
+
+[~,idx_sorted] = sort(patch_info.region_order);
+labels = info.labels(idx_sorted);
+data = data(:,idx_sorted,idx_sorted,:);
+
+%% select freqs
+
+f = (0:nfreqs-1)/(2*nfreqs);
+f = f*info.fsample;
+idx_freq = f <= 5;
+% idx_freq(1) = false;
+data = data(:,:,:,idx_freq);
+
+%%
+nbins = 20;
+bins = 1:nbins-1;
+bins = bins/nbins;
+
+figure('Color','white');
+font_size = 14;
+for row_idx=1:nchannels+2
+    for col_idx=1:nchannels+1
+        plot_idx = (row_idx-1)*(nchannels+1) + col_idx;
+        subaxis(nchannels+2, nchannels+1, plot_idx,...
+            'Spacing', 0.02, 'SpacingVert', 0.02, 'Padding', 0, 'Margin', 0.1);
+        set(gca,'FontSize',font_size);
+        col = col_idx - 1;
+        row = row_idx;
         
-        if col == 1 && row == 1
-            title(sprintf('freq normalized (0-0.5) %0.4f',(f-1)/nfreq*0.5));
+        if (col_idx == 1) || (row_idx > nchannels)
+            axis('off')
+%             if row_idx == nchannels+1
+%                 scale = 0.9;
+%                 pos = get(gca, 'Position');
+%                 pos(2) = pos(2)-scale*pos(4);
+%                 %pos(4) = (1-scale)*pos(4);
+%                 pos(4) = 4*pos(4);
+%                 set(gca, 'Position', pos)
+%             end
+            continue;
+        end
+        
+        if row ~= col
+            data_temp = squeeze(data(:,row,col,:));
+            hist(data_temp(:),bins);
+        else
+            set(gca,'Color','white');
         end
         
         if col==1
-            ylabel(sprintf('ch %d',row));
+            ylabel(labels{row},'Rotation',0,'HorizontalAlignment','Right');
         end
         
         if row==nchannels
-            xlabel(sprintf('ch %d',col));
+            xlabel(labels{col},'Rotation',90,'HorizontalAlignment','Right');
         end
         
-        if col ~= 1
-            set(gca,'YTick',[]);
-            set(gca,'YTickLabel',[]);
-        end
+        %if col ~= 1
+        set(gca,'YTick',[]);
+        set(gca,'YTickLabel',[]);
+        %end
         
-        if row ~= nchannels
+        if row < nchannels
             set(gca,'XTick',[]);
             set(gca,'XTickLabel',[]);
         end
         
     end
 end
+
+%% save
+outdir = fullfile('output');
+outfile = ['surrogate-hist-' strrep(file_data,'.mat','')];
+save_fig2('path',outdir,'tag', outfile,'engine','matlab');
