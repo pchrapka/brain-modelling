@@ -7,7 +7,6 @@ paramsmini = [];
 j = 1;
 i = 1;
 % paramsmini(j).hemi = 'both';
-% paramsmini(j).flag_plot_var = false;
 % paramsmini(j).params(i).gamma = 1e-5;
 % paramsmini(j).params(i).order = 4;
 % i = i+1;
@@ -22,7 +21,6 @@ i = 1;
 
 i = 1;
 paramsmini(j).hemi = 'left';
-paramsmini(j).flag_plot_var = true;
 paramsmini(j).params(i).gamma = 1e-5;
 paramsmini(j).params(i).order = 4;
 i = i+1;
@@ -37,7 +35,6 @@ j = j+1;
 
 i = 1;
 paramsmini(j).hemi = 'right';
-paramsmini(j).flag_plot_var = false;
 paramsmini(j).params(i).gamma = 1e-5;
 paramsmini(j).params(i).order = 5;
 i = i+1;
@@ -122,7 +119,6 @@ for j=1:nhemis
         'outdir',out.outdir_sources,...
         'mode',mode,...
         'flag_plot_seed',flag_plot,...
-        'flag_plot_seed_var',paramsmini(j).flag_plot_var,...
         'flag_plot_conn',flag_plot,...
         'flag_bootstrap',flag_bootstrap);
 end
