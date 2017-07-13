@@ -38,6 +38,10 @@ images(k).file = fullfile('output','img','2017-07-13-conn-rauschecker-scott-adja
 images(k).file_out = 'rauschecker-scott-conn-summary.eps';
 k = k+1;
 
+images(k).file = fullfile('output','img','2017-07-13-surrogate-hist-sample257-n100.eps');
+images(k).file_out = 'surrogate-hist-sample257.eps';
+k = k+1;
+
 
 for i=1:length(images)
     outfile = fullfile(outdir,images(i).file_out);
