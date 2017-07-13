@@ -6,7 +6,7 @@ addParameter(p,'downsample',1,@isnumeric);
 parse(p,file_sources_info,varargin{:});
 
 data = loadfile(file_sources_info);
-fsample = data.fsample/p.Results.downsample;
+fsample = data.fsample;
 time = data.time;
 time = downsample(time,p.Results.downsample);
 

@@ -19,6 +19,10 @@ function result = rc2pdc(Kf,Kb,Pf,varargin)
 %       metric for PDC
 %   nfreqs (integer, default = 128)
 %       number of frequency bins
+%   nfreqscompute (integer, default = 128)
+%       number of frequency points to actually compute, starts at the first
+%       index, for example if nfreqscompute = 16, it computes the pdc for
+%       the frequencies corresponding to the indices 1:16
 %   specden (logical, default = false)
 %       flag to compute spectral density
 %   coherence (logical, default = false)
@@ -37,6 +41,7 @@ addParameter(p,'specden',false,@islogical);
 addParameter(p,'coherence',false,@islogical);
 addParameter(p,'metric','euc',@ischar);
 addParameter(p,'nfreqs',128,@isnumeric);
+addParameter(p,'nfreqscompute',128,@isnumeric);
 addParameter(p,'informat','',@(x) any(validatestring(x,{'ch-ch-or','or-ch-ch'})));
 parse(p,varargin{:})
 
@@ -45,11 +50,13 @@ A2 = rcarrayformat(rc2ar(Kf,Kb,'informat',p.Results.informat),...
 
 if p.Results.parfor
     tstart = tic;
-    result = pdc_parfor(A2,Pf,'metric',p.Results.metric,'nfreqs',p.Results.nfreqs);
+    result = pdc_parfor(A2,Pf,'metric',p.Results.metric,...
+        'nfreqs',p.Results.nfreqs,'nfreqscompute',p.Results.nfreqs);
     telapsed = toc(tstart);
 else
     tstart = tic;
-    result = pdc(A2,Pf,'metric',p.Results.metric,'nfreqs',p.Results.nfreqs);
+    result = pdc(A2,Pf,'metric',p.Results.metric,...
+        'nfreqs',p.Results.nfreqs,'nfreqscompute',p.Results.nfreqs);
     telapsed = toc(tstart);
 end
 result.telapsed = telapsed;

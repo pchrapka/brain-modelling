@@ -11,7 +11,8 @@ classdef ViewPDC < handle
         w;
         f;
         
-        pdc;
+        pdc = [];
+        pdc_nfreqs = [];
         pdc_loaded = '';
         pdc_sig;
         fs;
@@ -121,6 +122,7 @@ classdef ViewPDC < handle
         
         function unload(obj)
             obj.pdc = [];
+            obj.pdc_nfreqs = [];
             obj.pdc_loaded = '';
         end
         
@@ -144,6 +146,7 @@ classdef ViewPDC < handle
                         print_msg_filename(obj.file_pdc{obj.file_idx},'loading');
                         data = loadfile(obj.file_pdc{obj.file_idx});
                         obj.pdc = data.pdc;
+                        obj.pdf_nfreqs = data.nfreqs;
                         
                         dims = size(obj.pdc);
                         ndims = length(dims);
@@ -178,6 +181,7 @@ classdef ViewPDC < handle
                         print_msg_filename(obj.file_pdc_mean,'loading');
                         data = loadfile(obj.file_pdc_mean);
                         obj.pdc = data.pdc_mean;
+                        obj.pdc_nfreqs = data.nfreqs;
                         
                         dims = size(obj.pdc);
                         ndims = length(dims);
@@ -196,6 +200,7 @@ classdef ViewPDC < handle
                         print_msg_filename(obj.file_pdc_var,'loading');
                         data = loadfile(obj.file_pdc_var);
                         obj.pdc = data.pdc_var;
+                        obj.pdc_nfreqs = data.nfreqs;
                         
                         dims = size(obj.pdc);
                         ndims = length(dims);
@@ -312,6 +317,7 @@ classdef ViewPDC < handle
                 end
                 
                 data.pdc_mean = data.pdc_mean/nfiles;
+                data.nfreqs = obj.pdc_nfreqs;
                 save(obj.file_pdc_mean,'data','-v7.3');
             end
             
@@ -358,6 +364,7 @@ classdef ViewPDC < handle
                     obj.unload();
                 end
                 data.pdc_var = data.pdc_var/(nfiles-1);
+                data.nfreqs = obj.pdc_nfreqs;
                 
                 save(obj.file_pdc_var,'data','-v7.3');
             end

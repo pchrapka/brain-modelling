@@ -64,7 +64,10 @@ for j=1:nhemis
         
         %% envelope
         params(k).downsample = 4;
-        params(k).nfreqs = 512; % default 128
+        params(k).nfreqs = 1024*2;
+        % fs = 2048, fs/2 = 1024 -> 1Hz bins
+        params(k).nfreqscompute = 20*2+1; 
+        % want 0-5Hz, 5*2+1, 
         params(k).metrics = {'diag'};%,'info'};
         params(k).ntrials = 20;
         if flag_tune
@@ -77,7 +80,7 @@ for j=1:nhemis
         params(k).normalization = 'eachchannel';
         params(k).envelope = true;
         params(k).prepend_data = 'flipdata';
-        params(k).permutations = true;
+        params(k).permutations = false;
         params(k).npermutations = 10;% 20;
         params(k).tune_criteria_samples = [0.05 0.95];
         params(k).nresamples = 100;

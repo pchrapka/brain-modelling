@@ -4,7 +4,7 @@ switch name
     case 'beta'
         view_obj.set_freqrange([15 25],'type','f');
     case '5'
-        view_obj.set_freqrange([0.01 5],'type','f')
+        view_obj.set_freqrange([0 5],'type','f')
     case '100'
         view_obj.set_freqrange([0.01 100],'type','f')
     otherwise

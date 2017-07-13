@@ -37,7 +37,8 @@ obj.check_info();
 
 debug = false;
 
-[nsamples,nchannels,~,nfreqs] = size(obj.pdc);
+[nsamples,nchannels,~,~] = size(obj.pdc);
+nfreqs = obj.pdc_nfreqs;
 
 % max durection in units of samples
 if p.Results.maxdur == 0

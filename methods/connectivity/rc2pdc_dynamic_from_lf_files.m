@@ -29,6 +29,7 @@ p2 = inputParser();
 p2.KeepUnmatched = true;
 addParameter(p2,'metric','euc',@ischar);
 addParameter(p2,'nfreqs',128,@isnumeric);
+addParameter(p2,'nfreqscompute',128,@isnumeric);
 addParameter(p2,'downsample',0,@(x) x >= 0);
 parse(p2,p.Results.params{:});
 
@@ -42,8 +43,8 @@ for i=1:length(files)
     [data_path,name,~] = fileparts(files{i});
     
     % create pdc output file name
-    outfile_pdc = fullfile(data_path,sprintf('%s-pdc-dynamic-%s-f%d-ds%d.mat',...
-        name,p2.Results.metric,p2.Results.nfreqs,p2.Results.downsample));
+    outfile_pdc = fullfile(data_path,sprintf('%s-pdc-dynamic-%s-f%d-%d-ds%d.mat',...
+        name,p2.Results.metric,p2.Results.nfreqs,p2.Results.nfreqscompute,p2.Results.downsample));
     
     % check pdc freshness
     fresh = isfresh(outfile_pdc,files{i});

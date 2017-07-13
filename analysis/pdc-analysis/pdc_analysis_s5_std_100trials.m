@@ -42,7 +42,10 @@ for j=1:nhemis
         
         %% envelope
         params(k).downsample = 4;
-        params(k).nfreqs = 512; % default 128
+        params(k).nfreqs = 1024*2;
+        % fs = 2048, fs/2 = 1024 -> 1Hz bins
+        params(k).nfreqscompute = 20*2+1; 
+        % want 0-5Hz, 5*2+1,
         params(k).metrics = {'diag'};%,'info'};
         params(k).ntrials = 100;
         if flag_tune

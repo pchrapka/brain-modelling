@@ -16,7 +16,8 @@ obj.check_info();
 
 font_size = 14;
 
-[nsamples,nchannels,~,nfreqs] = size(obj.pdc);
+[nsamples,nchannels,~,~] = size(obj.pdc);
+nfreqs = obj.pdc_nfreqs;
 
 if isequal(p.Results.samples,'all')
     sample_idx = 1:nsamples;

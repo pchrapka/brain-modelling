@@ -19,6 +19,10 @@ function result = rc2pdc_dynamic(Kf,Kb,Pf,lambda,varargin)
 %       metric for PDC
 %   nfreqs (integer, default = 128)
 %       number of frequency bins
+%   nfreqscompute (integer, default = 128)
+%       number of frequency points to actually compute, starts at the first
+%       index, for example if nfreqscompute = 16, it computes the pdc for
+%       the frequencies corresponding to the indices 1:16
 %   specden (logical, default = false)
 %       flag to compute spectral density
 %   coherence (logical, default = false)
@@ -39,6 +43,7 @@ addParameter(p,'specden',false,@islogical);
 addParameter(p,'coherence',false,@islogical);
 addParameter(p,'metric','euc',@ischar);
 addParameter(p,'nfreqs',128,@isnumeric);
+addParameter(p,'nfreqscompute',128,@isnumeric);
 addParameter(p,'downsample',0,@(x) x >= 0);
 addParameter(p,'informat','',@(x) any(validatestring(x,{'ch-ch-or','or-ch-ch'})));
 parse(p,Kf,Kb,Pf,lambda,varargin{:});
@@ -53,7 +58,7 @@ if dims(3) ~= dims(4)
 end
 
 options = copyfields(p.Results,[],...
-    {'specden','coherence','metric','lambda','nfreqs','informat'});
+    {'specden','coherence','metric','lambda','nfreqs','nfreqscompute','informat'});
 
 %% downsample
 if p.Results.downsample > 0
@@ -79,6 +84,7 @@ Pftemp = squeeze(Pf(1,:,:));
 result = rc2pdc(Kftemp, Kbtemp, Pftemp,...
         'metric', options.metric,...
         'nfreqs', options.nfreqs,...
+        'nfreqscompute', options.nfreqscompute,...
         'specden', options.specden,...
         'coherence', options.coherence,...
         'informat',options.informat,...
@@ -115,6 +121,7 @@ parfor i=1:nsamples
     pdc_sample = rc2pdc(Kftemp, Kbtemp, weight*Pftemp,...
         'metric', options.metric,...
         'nfreqs', options.nfreqs,...
+        'nfreqscompute', options.nfreqscompute,...
         'specden', options.specden,...
         'coherence', options.coherence,...
         'informat',options.informat,...
@@ -135,6 +142,8 @@ progbar.stop();
 
 % save results
 result = [];
+result.nfreqs = options.nfreqs;
+result.nfreqscompute = options.nfreqscompute;
 result.pdc = result_pdc;
 if options.specden
     result.SS = result_SS;

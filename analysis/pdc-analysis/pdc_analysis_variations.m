@@ -122,6 +122,7 @@ for i=1:length(params)
             pdc_obj.pdc_downsample = params(i).downsample;
             pdc_obj.pdc_metric = params(i).metrics{j};
             pdc_obj.pdc_nfreqs = params(i).nfreqs;
+            pdc_obj.pdc_nfreqscompute = params(i).nfreqscompute;
             pdc_obj.pdc();
             
             % add params for viewing

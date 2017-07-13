@@ -15,6 +15,10 @@ function c=pdc_parfor(A,pf,varargin)
 %   ----------
 %   nfreqs (integer, default = 128)
 %       number of point in [0,fs/2] frequency scale
+%   nfreqscompute (integer, default = 128)
+%       number of frequency points to actually compute, starts at the first
+%       index, for example if nfreqscompute = 16, it computes the pdc for
+%       the frequencies corresponding to the indices 1:16
 %   metric
 %       euc  - Euclidean ==> original PDC
 %       diag - diagonal ==> gPDC (generalized )
@@ -43,10 +47,16 @@ function c=pdc_parfor(A,pf,varargin)
 pmain = inputParser();
 addParameter(pmain,'metric','euc',@(x) any(validatestring(x,{'euc','diag','info'})));
 addParameter(pmain,'nfreqs',128,@isnumeric);
+addParameter(pmain,'nfreqscompute',128,@isnumeric);
 parse(pmain,varargin{:});
 
 nfreqs = pmain.Results.nfreqs;
 metric = pmain.Results.metric;
+
+if pmain.Results.nfreqscompute > nfreqs
+    error('nfreqscompute exceeds nfreqs');
+end
+freq_idx = 1:pmain.Results.nfreqscompute;
 
 % [m,n]=size(x);
 % if m > n,
@@ -78,7 +88,7 @@ pdc_result = zeros(nChannels,nChannels,nfreqs);
 switch lower(metric)
     case {'euc'}
         
-        parfor ff = 1:nfreqs,
+        parfor ff = freq_idx
             
             a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
             a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)
@@ -109,7 +119,7 @@ switch lower(metric)
             pinv_pf = [];
         end
         
-        parfor ff = 1:nfreqs,
+        parfor ff = freq_idx
             
             a = Af(ff,:,:); a=a(:);    %Equivalent to a = vec(Af[ff, :, :])
             a = [real(a); imag(a)];    %a = cat(a.real, a.imag, 0)

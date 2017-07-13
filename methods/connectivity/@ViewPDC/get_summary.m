@@ -52,8 +52,8 @@ if fresh || ~exist(outfile_pdc,'file')
     fprintf('summarizing data\n');
     
     dims = size(obj.pdc);
-    [~,nchannels,~,nfreqs] = size(obj.pdc);
-   
+    [~,nchannels,~,~] = size(obj.pdc);
+    nfreqs = obj.pdc_nfreqs;
     
     w = 0:nfreqs-1;
     w = w/(2*nfreqs);

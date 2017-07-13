@@ -77,7 +77,8 @@ if p.Results.get_save_tag
 end
 
 %% plot
-[nsamples,nchannels,~,nfreqs] = size(obj.pdc);
+[nsamples,nchannels,~,~] = size(obj.pdc);
+nfreqs = obj.pdc_nfreqs;
     
 w = 0:nfreqs-1;
 w = w/(2*nfreqs);

@@ -20,11 +20,17 @@ for j=1:nhemis
         
         %% envelope
         params(k).downsample = 4;
-        params(k).nfreqs = 512; % default 128
+        params(k).nfreqs = 1024*2;
+        % fs = 2048, fs/2 = 1024 -> 1Hz bins
+        params(k).nfreqscompute = 20*2+1; 
+        % want 0-5Hz, 5*2+1, 
         params(k).metrics = {'diag'};%,'info'};
         params(k).ntrials = 20;
-        params(k).order = paramsmini(j).params(i).order;
-        %params(k).order = 3:14; % for tuning
+        if flag_tune
+            params(k).order = 3:14; % for tuning
+        else
+            params(k).order = paramsmini(j).params(i).order;
+        end
         params(k).lambda = 0.99;
         params(k).gamma = paramsmini(j).params(i).gamma;
         params(k).normalization = 'eachchannel';
@@ -40,11 +46,15 @@ for j=1:nhemis
     end
     
     %% mode
-    %mode = 'tune';
-    %flag_plot = false;
-    mode = 'run';
-    flag_plot = true;
-    flag_bootstrap = false;
+    if flag_tune
+        mode = 'tune';
+        flag_plot = false;
+        flag_bootstrap = false;
+    else
+        mode = 'run';
+        flag_plot = true;
+        flag_bootstrap = false;
+    end
     
     %% set up eeg
     

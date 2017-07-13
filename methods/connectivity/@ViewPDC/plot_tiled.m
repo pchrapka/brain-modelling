@@ -4,7 +4,8 @@ obj.save_tag = [];
 obj.load('pdc');
 obj.check_info();
 
-[~,nchannels,~,nfreqs]=size(obj.pdc);
+[~,nchannels,~,~]=size(obj.pdc);
+nfreqs = obj.pdc_nfreqs;
     
 w = 0:nfreqs-1;
 w = w/(2*nfreqs);
