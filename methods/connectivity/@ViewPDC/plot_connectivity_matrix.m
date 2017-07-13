@@ -50,6 +50,11 @@ for i=1:nchannels
     conn_mat(i,i) = 0;
 end
 
+% sort by hemisphere, region, angle
+idx_sort = obj.sort_channels();
+idx_sort = idx_sort(:);
+conn_mat = conn_mat(idx_sort,idx_sort);
+
 % plot
 imagesc(conn_mat);
 colorbar();
