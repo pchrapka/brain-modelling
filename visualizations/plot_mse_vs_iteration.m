@@ -51,11 +51,12 @@ else
 end
 
 nplots = ndata/2;
-if nplots <= 4
-    cc = [0 0 0;% black
+if nplots <= 5
+    cc = [1 0 0;% red
         0 0 1; % blue
         0 1 0; % green
         1 0 1; % magenta
+        1 0.5 0; % orange
         ];
 else
     cc = jet(nplots);

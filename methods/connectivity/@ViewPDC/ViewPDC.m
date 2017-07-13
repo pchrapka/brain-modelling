@@ -148,8 +148,7 @@ classdef ViewPDC < handle
                         dims = size(obj.pdc);
                         ndims = length(dims);
                         if ndims ~= 4
-                            obj.pdc = [];
-                            error('requires dynamic pdc data');
+                            warning('pdc data is not dynamic');
                         end
                         obj.nchannels = size(obj.pdc,2);
                         obj.pdc_loaded = 'pdc';

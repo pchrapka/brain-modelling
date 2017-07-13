@@ -11,8 +11,9 @@ time = data.time;
 time = downsample(time,p.Results.downsample);
 
 %%  set up ViewPDC object
-patch_info = ChannelInfo(data.labels,...
-    'coord', data.centroids);
+% patch_info = ChannelInfo(data.labels,...
+%     'coord', data.centroids);
+patch_info = ChannelInfo(data.labels);
 patch_info.populate(data.patch_type);
 
 view_obj = ViewPDC(...

@@ -34,6 +34,10 @@ images(k).file = fullfile('output','std-s03-10','aal-coarse-19-outer-nocer-hemir
 images(k).file_out = 'hemiright-adjacency-summary.eps';
 k = k+1;
 
+images(k).file = fullfile('output','img','2017-07-13-conn-rauschecker-scott-adjacency-idx1-1-0.0000-0.5000.eps');
+images(k).file_out = 'rauschecker-scott-conn-summary.eps';
+k = k+1;
+
 
 for i=1:length(images)
     outfile = fullfile(outdir,images(i).file_out);

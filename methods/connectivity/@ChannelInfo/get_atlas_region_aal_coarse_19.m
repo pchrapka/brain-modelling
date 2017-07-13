@@ -4,6 +4,10 @@ order = [];
 
 pattern = '([\w\s]+)\s(Left|Right|Mid)\>';
 result = regexp(label,pattern,'tokens');
+if isempty(result)
+    pattern = '([\w\s]+)';
+    result = regexp(label,pattern,'tokens');
+end
 
 name = result{1}{1};
 

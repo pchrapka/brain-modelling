@@ -1,18 +1,10 @@
 function plot_connectivity_matrix(obj,varargin)
 %   Parameters
 %   ----------
-%   outdir (string)
-%       output directory for summary data
-%       by default uses output directory set in ViewPDC.outdir, can be
-%       overriden here with:
-%       1. 'data' - same directory where data is located
-%       2. any regular path
-%   save (logical, default = false)
-%       flag to save summary to data file
+%   samples (vector, default = all)
+%       sample index to use
 
 p = inputParser();
-% addParameter(p,'save',false,@islogical);
-% addParameter(p,'outdir','',@ischar);
 addParameter(p,'samples','all',@(x) isequal(x,'all') || isvector(x));
 parse(p,varargin{:});
 
