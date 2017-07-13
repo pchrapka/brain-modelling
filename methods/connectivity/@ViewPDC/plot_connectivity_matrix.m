@@ -60,8 +60,8 @@ imagesc(conn_mat);
 colorbar();
 
 % set labels
-xticklabel = labels;
-yticklabel = labels;
+xticklabel = labels(idx_sort);
+yticklabel = labels(idx_sort);
 xtick = 1:length(xticklabel);
 ytick = 1:length(yticklabel);
 % xlabel('From');
