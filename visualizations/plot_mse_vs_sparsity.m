@@ -71,7 +71,7 @@ nsims = length(data_series(i).estimate{1});
 
 nplots = nseries;
 if nplots <= 4
-    cc = [0 0 0;% black
+    cc = [1 0 0;% red
         0 0 1; % blue
         0 1 0; % green
         1 0 1; % magenta

@@ -122,6 +122,7 @@ for i=1:length(var_params)
     sim_params(k).gen_config_params = var_params(i).gen_config_params;
     sim_params(k).label = sprintf('%0.2f %s',var_params(i).sparsity,sim_params(k).filter.name);
     sim_params(k).label2 = strrep(sim_params(k).filter.name,'MQRDLSL3','MQRDLSL');
+    sim_params(k).label2 = strrep(sim_params(k).label2,'lambda','lambda=');
     sim_params(k).sparsity = var_params(i).sparsity;
     k = k+1;
     
@@ -130,6 +131,7 @@ for i=1:length(var_params)
     sim_params(k).gen_config_params = var_params(i).gen_config_params;
     sim_params(k).label = sprintf('%0.2f %s',var_params(i).sparsity,sim_params(k).filter.name);
     sim_params(k).label2 = strrep(sim_params(k).filter.name,'MCMTQRDLSL1','MCMTQRDLSL');
+    sim_params(k).label2 = strrep(sim_params(k).label2,'lambda','lambda=');
     sim_params(k).sparsity = var_params(i).sparsity;
     k = k+1;
     
@@ -142,6 +144,8 @@ for i=1:length(var_params)
     sim_params(k).gen_config_params = var_params(i).gen_config_params;
     sim_params(k).label = sprintf('%0.2f %s',var_params(i).sparsity,sim_params(k).filter.name);
     sim_params(k).label2 = strrep(sim_params(k).filter.name,'MCMTLOCCD_TWL4','MCMTLOCCD-TWL');
+    sim_params(k).label2 = strrep(sim_params(k).label2,'lambda','lambda=');
+    sim_params(k).label2 = strrep(sim_params(k).label2,'gamma','gamma=');
     sim_params(k).sparsity = var_params(i).sparsity;
     k = k+1;
     
@@ -202,7 +206,7 @@ plot_mse_vs_sparsity(...
     'samples',[idx_start idx_end],...
     'normalized',false,...
     'mode','loglog');
-xlabel('Non-Zero Coefficients (%)');
+xlabel('Fraction of Non-Zero Cross-Channel Reflection Coefficients');
 set(gca,'fontsize',14)
 
 % save

@@ -31,18 +31,6 @@ function outfile = run_lattice_benchmark(varargin)
 %   warmup (cell array, default = {'noise'})
 %       options for warming up the filter, which are executed in the order
 %       provided, options: noise, data, flipdata
-%   warmup_data_same (logical, default = false)
-%       flag for warming up the filter with the same data as used for
-%       filtering
-%   warmup_flipdata (logical, default = false)
-%       flag for flipping data, it passes the data through the filter
-%       backwards
-%   warmup_flipstate (logical, default = false)
-%       flag for flip state of lattice filter when switching from backward
-%       to forward
-%   warmup_data_nsims (integer, default = 1)
-%       selects number of sims to pass through filter for warmup, relevant
-%       only if warmup_data = true
 %   nsims (integer)
 %       number of simulations to average
 %   force (logical, default = false)
@@ -69,10 +57,6 @@ addParameter(p,'basedir','',@ischar);
 % addParameter(p,'data_name','var-no-coupling',@(x) any(validatestring(x,options_data_name)));
 addParameter(p,'sim_params',[]);
 addParameter(p,'warmup',{'noise'},@iscell);
-addParameter(p,'warmup_data_same',false,@islogical);
-addParameter(p,'warmup_data_nsims',1,@isnumeric);
-addParameter(p,'warmup_flipdata',false,@islogical);
-addParameter(p,'warmup_flipstate',false,@islogical);
 addParameter(p,'normalized',false,@islogical);
 addParameter(p,'nsims',1,@isnumeric);
 addParameter(p,'force',false,@islogical);
@@ -131,11 +115,6 @@ for k=1:nsim_params
     else
         ntrials = 1;
     end
-    if p.Results.warmup_data
-        nsims_generate = nsims + p.Results.warmup_data_nsims;
-    else
-        nsims_generate = nsims;
-    end
     
     % load data
     nchannels = sim_param.filter.nchannels;
@@ -143,7 +122,7 @@ for k=1:nsim_params
     if isfield(sim_param,'gen_config_params') && ~var_gen.hasprocess
         var_gen.configure(sim_param.gen_config_params{:});
     end
-    data_var = var_gen.generate('ntrials',nsims_generate*ntrials);
+    data_var = var_gen.generate('ntrials',nsims*ntrials);
     % get the data time stamp
     data_time = get_timestamp(var_gen.get_file());
     
@@ -165,7 +144,7 @@ for k=1:nsim_params
     
     outfile_temp = cell(nsims,1);
     parfor j=1:nsims
-    %for j=1:nsims
+%     for j=1:nsims
         fresh = false;
         
         slug_data_filt = sprintf('%s-s%d-%s',slug_data,j,slug_filter);
@@ -186,61 +165,13 @@ for k=1:nsim_params
             
             ntime = size(sources,2);
             
-            % warmup filter with noise
-            if p.Results.warmup_noise
-                error('fix warmup sequence');
-                noise = gen_noise(nchannels, ntime, ntrials);
-                
-                % run filter on noise
-                warning('off','all');
-                trace.warmup(noise);
-                warning('on','all');
-            end
-            
-            if p.Results.warmup_data_same
-                % use same data as real filtering
-                sim_idx_start = (j-1)*ntrials + 1;
-                sim_idx_end = sim_idx_start + ntrials - 1;
-            else
-                % use last
-                sim_idx_start = (nsims-1)*ntrials + 1;
-                sim_idx_end = sim_idx_start + ntrials - 1;
-            end
-                
-            % warmup filter with simulated data
-            if p.Results.warmup_data
-                % run filter on sim data
-                warning('off','all');
-                if p.Results.warmup_flipdata
-                    trace.warmup(flipdim(sources(:,:,sim_idx_start:sim_idx_end),2));
-                else
-                    trace.warmup(sources(:,:,sim_idx_start:sim_idx_end));
-                end
-                warning('on','all');
-            end
-            
-            % flip state from forwards to backwards
-            if p.Results.warmup_flipstate
-                trace.flipstate();
-            end
-            
-            % calculate indices to select simulation instances from data
             sim_idx_start = (j-1)*ntrials + 1;
             sim_idx_end = sim_idx_start + ntrials - 1;
             
-            % run the filter on data
-            warning('off','all');
-            if p.Results.warmup_flipdata
-                % start with second sample
-                trace.run(circshift(sources(:,:,sim_idx_start:sim_idx_end),[0 -1 0]),...
-                    'verbosity',p.Results.verbosity,...
-                    'mode','none');
-            else
-                trace.run(sources(:,:,sim_idx_start:sim_idx_end),...
-                    'verbosity',p.Results.verbosity,...
-                    'mode','none');
-            end
-            warning('on','all');
+            trace.run(sources(:,:,sim_idx_start:sim_idx_end),...
+                'warmup',p.Results.warmup,...
+                'verbosity',p.Results.verbosity,...
+                'mode','none');
             
             trace.name = trace.filter.name;
             
@@ -257,6 +188,11 @@ for k=1:nsim_params
             % load data
             data = loadfile(outfile_temp{j});
             estimate{j} = data.estimate;
+            if ~isfield(data,'truth')
+                % NOTE for backwards compatibility
+                data.truth = data_true_kf;
+                save_parfor(outfile_temp{j},data);
+            end
             kf_true_sims{j} = data.truth;
         end
         

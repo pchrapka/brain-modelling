@@ -60,32 +60,41 @@ end
 k=1;
 sim_params = [];
 
+sim_params(k).filter = NuttallStrand(nchannels,norder);
+sim_params(k).gen_params = gen_params;
+sim_params(k).gen_config_params = gen_config_params;
+sim_params(k).label = strrep(sim_params(k).filter.name,'NuttallStrand','Nuttall-Strand');
+k = k+1;
+
 sim_params(k).filter = MQRDLSL3(nchannels,norder,lambda);
 sim_params(k).gen_params = gen_params;
 sim_params(k).gen_config_params = gen_config_params;
 sim_params(k).label = strrep(sim_params(k).filter.name,'MQRDLSL3','MQRDLSL');
+sim_params(k).label = strrep(sim_params(k).label,'lambda','lambda=');
 k = k+1;
 
 sim_params(k).filter = MCMTQRDLSL1(nchannels,norder,ntrials,lambda);
 sim_params(k).gen_params = gen_params;
 sim_params(k).gen_config_params = gen_config_params;
 sim_params(k).label = strrep(sim_params(k).filter.name,'MCMTQRDLSL1','MCMTQRDLSL');
-k = k+1;
-
-% sigma = sqrt(0.1);
-% gamma = sqrt(2*sigma^2*nsamples*log(nchannels));
-
-sim_params(k).filter = MCMTLOCCD_TWL4(nchannels,norder,ntrials,'lambda',lambda,'gamma',gamma);
-sim_params(k).gen_params = gen_params;
-sim_params(k).gen_config_params = gen_config_params;
-sim_params(k).label = strrep(sim_params(k).filter.name,'MCMTLOCCD_TWL4','MCMTLOCCD-TWL');
+sim_params(k).label = strrep(sim_params(k).label,'lambda','lambda=');
 k = k+1;
 
 % NOTE gamma was not explicitly tuned for this one
 sim_params(k).filter = MCMTLOCCD_TWL4(nchannels,norder,ntrials,'lambda',0.90,'gamma',gamma);
 sim_params(k).gen_params = gen_params;
 sim_params(k).gen_config_params = gen_config_params;
-sim_params(k).label = strrep(sim_params(k).filter.name,'MCMTLOCCD_TWL4','MCMTLOCCD-TWL');
+sim_params(k).label = strrep(sim_params(k).filter.name,'MCMTLOCCD_TWL4','ASET');
+sim_params(k).label = strrep(sim_params(k).label,'lambda','lambda=');
+sim_params(k).label = strrep(sim_params(k).label,'gamma','gamma=');
+k = k+1;
+
+sim_params(k).filter = MCMTLOCCD_TWL4(nchannels,norder,ntrials,'lambda',lambda,'gamma',gamma);
+sim_params(k).gen_params = gen_params;
+sim_params(k).gen_config_params = gen_config_params;
+sim_params(k).label = strrep(sim_params(k).filter.name,'MCMTLOCCD_TWL4','ASET');
+sim_params(k).label = strrep(sim_params(k).label,'lambda','lambda=');
+sim_params(k).label = strrep(sim_params(k).label,'gamma','gamma=');
 k = k+1;
 
 %% run
@@ -108,6 +117,7 @@ ylabel('Reflection Coefficient MSE');
 xlim([1 1000]);
 xlabel('Sample');
 set(gca,'fontsize',16)
+set(gcf,'Position',[1 1 1000 700]);
 
 save_fig2('path',fullfile(file_path,'output',outdir,data_name),...
     'tag','benchmark-paper',...
