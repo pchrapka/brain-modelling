@@ -67,7 +67,7 @@ freq_idx = 1:pmain.Results.nfreqscompute;
 Af = A_to_f(A, nfreqs);
 
 % Variables initialization
-pdc_result = zeros(nChannels,nChannels,nfreqs);
+pdc_result = zeros(nChannels,nChannels,pmain.Results.nfreqscompute);
 % disp('----------------------------------------------------------------------');
 % switch lower(metric)
 %     case {'euc'}
