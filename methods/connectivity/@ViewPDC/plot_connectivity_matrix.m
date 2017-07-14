@@ -47,7 +47,7 @@ dims = size(conn_mat);
 % conn_mat1(conn_mat1 < threshold) = 0;
 conn_mat = sum(conn_mat,4); % sum over freqs
 conn_mat = squeeze(sum(conn_mat,1)); % sum over samples
-conn_mat = conn_mat/(dims(1) + dims(4)); % take average
+conn_mat = conn_mat/(dims(1)*dims(4)); % take average
 for i=1:nchannels
     conn_mat(i,i) = 0;
 end
