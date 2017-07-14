@@ -113,7 +113,7 @@ out_files = run_lattice_benchmark(...
     'plot_avg_nmse', false);
 
 ylim([10^(-2) 10^(-0.9)]);
-ylabel('Reflection Coefficient MSE');
+ylabel('Average Reflection Coefficient MSE');
 xlim([1 1000]);
 xlabel('Sample');
 set(gca,'fontsize',16)
