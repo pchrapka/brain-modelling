@@ -436,13 +436,33 @@ classdef ViewPDC < handle
             end
         end
         
-        function idx = sort_channels(obj)
+        function idx = sort_channels(obj,varargin)
             % sort by hemisphere, region, angle
+            
+            p = inputParser();
+            addParameter(p,'type',{'coord','region','hemisphere'},@iscell);
+            parse(p,varargin{:});
+            
+            flag_coord = false;
+            flag_region = false;
+            flag_hemi = false;
+            for i=1:length(p.Results.type)
+                switch p.Results.type{i}
+                    case 'coord'
+                        flag_coord = true;
+                    case 'region'
+                        flag_region = true;
+                    case 'hemisphere'
+                        flag_hemi = true;
+                    otherwise
+                        error('unknown type %s',p.Results.type{i});
+                end
+            end
             
             sort_method = [];
             group_data = [];
             
-            if ~isempty(obj.info.coord)
+            if flag_coord && ~isempty(obj.info.coord)
                 % sort coordinates according to angle around origin
                 angles = atan2(obj.info.coord(:,2),obj.info.coord(:,1));
                 
@@ -450,14 +470,14 @@ classdef ViewPDC < handle
                 group_data = angles(:);
             end
             
-            if ~isempty(obj.info.region_order)
+            if flag_region && ~isempty(obj.info.region_order)
                 % add region order sort info
                 group_data = [group_data obj.info.region_order(:)];
                 ncol = size(group_data,2);
                 sort_method = [ncol sort_method];
             end
             
-            if ~isempty(obj.info.hemisphere_order)
+            if flag_hemi && ~isempty(obj.info.hemisphere_order)
                 % add hemisphere order sort info
                 group_data = [group_data obj.info.hemisphere_order(:)];
                 ncol = size(group_data,2);
@@ -471,7 +491,7 @@ classdef ViewPDC < handle
                 [~,idx] = sortrows(group_data,sort_method);
             end
             
-            if ~isempty(obj.info.hemisphere)
+            if flag_hemi && ~isempty(obj.info.hemisphere)
                 % NOTE assumes hemisphere label is Left or Right
                 % flip left side so that front is at the top
                 idx_left = cellfun(@(x) ~isempty(x),...

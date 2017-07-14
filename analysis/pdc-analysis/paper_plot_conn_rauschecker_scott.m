@@ -26,6 +26,7 @@ connections = {...
 
 data = [];
 data.pdc = zeros(1,nchannels,nchannels,1);
+data.nfreqs = 1;
 for i=1:length(connections)
     % convert connections to indices
     pair = connections{i};

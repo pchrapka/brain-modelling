@@ -51,7 +51,7 @@ for i=1:nchannels
 end
 
 % sort by hemisphere, region, angle
-idx_sort = obj.sort_channels();
+idx_sort = obj.sort_channels('type',{'region'});
 idx_sort = idx_sort(:);
 conn_mat = conn_mat(idx_sort,idx_sort);
 
