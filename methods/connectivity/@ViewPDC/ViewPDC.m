@@ -306,8 +306,7 @@ classdef ViewPDC < handle
                 
                 % sum all pdc files
                 for i=1:nfiles
-                    obj.file_pdc = files_pdc(i);
-                    obj.load('pdc');
+                    obj.load('pdc','file_idx',i);
                     if isempty(data.pdc_mean)
                         data.pdc_mean = obj.pdc;
                     else
@@ -320,8 +319,6 @@ classdef ViewPDC < handle
                 data.nfreqs = obj.pdc_nfreqs;
                 save(obj.file_pdc_mean,'data','-v7.3');
             end
-            
-            obj.file_pdc = files_pdc;
             
         end
         
@@ -352,8 +349,7 @@ classdef ViewPDC < handle
                 data.pdc_var = [];
                 for i=1:nfiles
                     % load each pdc file
-                    obj.file_pdc = files_pdc(i);
-                    obj.load('pdc');
+                    obj.load('pdc','file_idx',i);
                     
                     % sum variance
                     if isempty(data.pdc_var)
@@ -368,8 +364,6 @@ classdef ViewPDC < handle
                 
                 save(obj.file_pdc_var,'data','-v7.3');
             end
-            
-            obj.file_pdc = files_pdc;
         end
         
         function fresh = check_pdc_freshness(obj,newfile)
