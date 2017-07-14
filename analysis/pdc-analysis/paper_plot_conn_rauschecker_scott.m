@@ -55,9 +55,9 @@ view_obj.file_pdc = {file_pdc};
 %%
 
 view_obj.plot_connectivity_matrix();
-cmap = colormap('hot');
+cmap = colormap('gray');
 cmap = flipdim(cmap,1);
 colormap(cmap);
-colorbar('hide');
+% colorbar('hide');
 
 view_obj.save_plot('save',true,'engine','matlab');

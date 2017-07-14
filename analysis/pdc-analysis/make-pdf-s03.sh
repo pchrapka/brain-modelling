@@ -9,13 +9,13 @@
 DATA=(
     # LEFT 
     "output/std-s03-10/aal-coarse-19-outer-nocer-hemileft-audr2-v1r2/lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata"
-    "2017-07-13-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-03-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-*-opnone-thresh0.00-0.0000-0.0049"
+    "2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-03-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-*-opnone-thresh0.00-0.0000-0.0049"
 
     "output/std-s03-10/aal-coarse-19-outer-nocer-hemileft-audr2-v1r2/lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata"
-    "2017-07-13-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-*-opnone-thresh0.00-0.0000-0.0049"
+    "2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-*-opnone-thresh0.00-0.0000-0.0049"
     
     "output/std-s03-10/aal-coarse-19-outer-nocer-hemileft-audr2-v1r2/lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata"
-    "2017-07-13-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-*-opnone-thresh0.00-0.0000-0.0049"
+    "2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-*-opnone-thresh0.00-0.0000-0.0049"
 
     # significant
     #"output/std-s03-10/aal-coarse-19-outer-nocer-hemileft-audr2-v1r2/lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata"
@@ -23,13 +23,13 @@ DATA=(
 
     # RIGHT
     "output/std-s03-10/aal-coarse-19-outer-nocer-hemiright-audr2-v1r2/lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata"
-    "2017-07-13-MCMTLOCCD_TWL4-T20-C7-P8-lambda0.9900-gamma1.000e-03-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-*-opnone-thresh0.00-0.0000-0.0049"
+    "2017-07-14-MCMTLOCCD_TWL4-T20-C7-P8-lambda0.9900-gamma1.000e-03-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-*-opnone-thresh0.00-0.0000-0.0049"
 
     "output/std-s03-10/aal-coarse-19-outer-nocer-hemiright-audr2-v1r2/lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata"
-    "2017-07-13-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-*-opnone-thresh0.00-0.0000-0.0049"
+    "2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-*-opnone-thresh0.00-0.0000-0.0049"
     
     "output/std-s03-10/aal-coarse-19-outer-nocer-hemiright-audr2-v1r2/lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata"
-    "2017-07-13-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-*-opnone-thresh0.00-0.0000-0.0049"
+    "2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-*-opnone-thresh0.00-0.0000-0.0049"
     )
 
 index=0
