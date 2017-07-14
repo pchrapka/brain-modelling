@@ -9,6 +9,7 @@ addParameter(p,'mode','run',@(x) any(validatestring(x,{'run','tune'})));
 addParameter(p,'flag_bootstrap',false,@islogical);
 addParameter(p,'flag_plot_seed',false,@islogical);
 addParameter(p,'flag_plot_seed_var',false,@islogical);
+addParameter(p,'flag_plot_seed_std',false,@islogical);
 addParameter(p,'flag_plot_conn',false,@islogical);
 parse(p,file_sources,file_sources_info,params,varargin{:});
 
@@ -215,11 +216,26 @@ for i=1:length(params)
                     % following views at 15-25 Hz
                 end
                 % switch loaded data
-                pdc_obj.view.load('pdc','file_idx',1);
                 pdc_obj.plot_seed(...
                     'operation','none',...
                     'threshold_mode','none',...
                     'stat','var',...
+                    'vertlines',[0 0.5]);
+            end
+            
+            if p.Results.flag_plot_seed_std
+                if lf_obj.envelope
+                    view_switch(pdc_view,'10');
+                    % following views at 0-5 Hz
+                else
+                    view_switch(pdc_view,'beta');
+                    % following views at 15-25 Hz
+                end
+                % switch loaded data
+                pdc_obj.plot_seed(...
+                    'operation','none',...
+                    'threshold_mode','none',...
+                    'stat','std',...
                     'vertlines',[0 0.5]);
             end
         end

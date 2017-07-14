@@ -4,6 +4,9 @@ cmd = 'find . -type f -name ''*pdc-dynamic-diag-f2048*.mat''';
 result2 = regexp(result,'\n','split');
 
 for i=1:length(result2)
+    if isempty(result2{i})
+        continue;
+    end
     fprintf('loading file %d\n',i);
     data = loadfile(result2{i});
     data.pdc(:,:,:,42:end) = [];

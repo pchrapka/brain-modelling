@@ -26,6 +26,7 @@ classdef ViewPDC < handle
         
         file_pdc_mean = '';
         file_pdc_var = '';
+        file_pdc_std = '';
         file_idx = 1;
     end
     
@@ -211,6 +212,26 @@ classdef ViewPDC < handle
                         obj.nchannels = size(obj.pdc,2);
                         obj.pdc_loaded = 'var';
                     end
+                    
+                case 'pdc_std'
+                    if isempty(obj.pdc)  || ~isequal(obj.pdc_loaded,'std')
+                        % compute/update std
+                        obj.std();
+                        
+                        print_msg_filename(obj.file_pdc_std,'loading');
+                        data = loadfile(obj.file_pdc_std);
+                        obj.pdc = data.pdc_std;
+                        obj.pdc_nfreqs = data.nfreqs;
+                        
+                        dims = size(obj.pdc);
+                        ndims = length(dims);
+                        if ndims ~= 4
+                            obj.pdc_var = [];
+                            error('requires dynamic pdc data');
+                        end
+                        obj.nchannels = size(obj.pdc,2);
+                        obj.pdc_loaded = 'std';
+                    end
  
                 otherwise
                     error('unknown property %s',property);
@@ -287,12 +308,11 @@ classdef ViewPDC < handle
     methods (Access = protected)
         function mean(obj)
             files_pdc = obj.file_pdc;
+            nfiles = length(files_pdc);
             
             % create file name
-            tag_mean = sprintf('-mean%d',length(files_pdc));
+            tag_mean = sprintf('-mean%d',nfiles);
             obj.file_pdc_mean = strrep(files_pdc{1},'.mat',[tag_mean '.mat']);
-            
-            nfiles = length(files_pdc);
             
             % check freshness of mean file wrt all dependent pdc files
             fresh = false(nfiles,1);
@@ -307,6 +327,7 @@ classdef ViewPDC < handle
                 % sum all pdc files
                 for i=1:nfiles
                     obj.load('pdc','file_idx',i);
+                    data.nfreqs = obj.pdc_nfreqs;
                     if isempty(data.pdc_mean)
                         data.pdc_mean = obj.pdc;
                     else
@@ -316,20 +337,44 @@ classdef ViewPDC < handle
                 end
                 
                 data.pdc_mean = data.pdc_mean/nfiles;
-                data.nfreqs = obj.pdc_nfreqs;
                 save(obj.file_pdc_mean,'data','-v7.3');
             end
             
         end
         
+        function std(obj)
+            nfiles = length(obj.file_pdc);
+            % create file name
+            tag_std = sprintf('-std%d',nfiles);
+            obj.file_pdc_std = strrep(obj.file_pdc{1},'.mat',[tag_std '.mat']);
+            
+            % check freshness of std file wrt all dependent pdc files
+            fresh = false(nfiles,1);
+            for i=1:nfiles
+                fresh(i) = ViewPDC.isfresh(obj.file_pdc_std,obj.file_pdc{i});
+            end
+            
+            if ~exist(obj.file_pdc_std,'file') || any(fresh)
+                obj.var();
+                
+                % load var
+                obj.load('pdc_var')
+                
+                data = [];
+                % take sqrt of variance
+                data.pdc_std = sqrt(obj.pdc);
+                data.nfreqs = obj.pdc_nfreqs;
+                save(obj.file_pdc_std,'data','-v7.3');
+            end
+        end
+        
         function var(obj)
             files_pdc = obj.file_pdc;
+            nfiles = length(files_pdc);
             
             % create file name
-            tag_var = sprintf('-var%d',length(files_pdc));
+            tag_var = sprintf('-var%d',nfiles);
             obj.file_pdc_var = strrep(files_pdc{1},'.mat',[tag_var '.mat']);
-            
-            nfiles = length(files_pdc);
             
             % check freshness of mean file wrt all dependent pdc files
             fresh = false(nfiles,1);
@@ -350,6 +395,7 @@ classdef ViewPDC < handle
                 for i=1:nfiles
                     % load each pdc file
                     obj.load('pdc','file_idx',i);
+                    data.nfreqs = obj.pdc_nfreqs;
                     
                     % sum variance
                     if isempty(data.pdc_var)
@@ -360,7 +406,6 @@ classdef ViewPDC < handle
                     obj.unload();
                 end
                 data.pdc_var = data.pdc_var/(nfiles-1);
-                data.nfreqs = obj.pdc_nfreqs;
                 
                 save(obj.file_pdc_var,'data','-v7.3');
             end

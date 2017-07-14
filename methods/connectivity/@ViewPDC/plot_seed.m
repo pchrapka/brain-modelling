@@ -2,7 +2,7 @@ function created = plot_seed(obj,chseed,varargin)
 
 p = inputParser();
 addRequired(p,'chseed',@isnumeric);
-addParameter(p,'stat','none',@(x) any(validatestring(x,{'none','mean','var'})));
+addParameter(p,'stat','none',@(x) any(validatestring(x,{'none','mean','var','std'})));
 addParameter(p,'operation','none',@(x) any(validatestring(x,{'none','sum','mean'})));
 addParameter(p,'direction','outgoing',...
     @(x) any(validatestring(x,{'outgoing','incoming'})));
@@ -25,6 +25,8 @@ switch p.Results.stat
         obj.load('pdc_mean');
     case 'var'
         obj.load('pdc_var');
+    case 'std'
+        obj.load('pdc_std');
 end
 obj.check_info();
 created = false;
