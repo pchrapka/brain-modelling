@@ -259,6 +259,6 @@ for k=2:npermutes
 end
 
 % restore old seed
-rnd(s);
+rng(s);
 
 end
