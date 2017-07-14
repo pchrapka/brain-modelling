@@ -240,11 +240,25 @@ end
 end
 
 function idx = create_permutations(npermutes,ntrials,ntrials_available)
+
+% save rng seed
+s = rng;
+ % set common seed for all permutations
+rng(1e5);
+
 % set up permutations
 idx = cell(npermutes,1);
 idx{1} = 1:ntrials;
 for k=2:npermutes
-    idx{k} = randsample(1:ntrials_available,ntrials);
+    if k==3
+        warning('hack');
+        idx{k} = [4 88 145 40 39 72 187 131 176 151 96 76 106 30 156 153 158 44 174 179];
+    else
+        idx{k} = randsample(1:ntrials_available,ntrials);
+    end
 end
+
+% restore old seed
+rnd(s);
 
 end
