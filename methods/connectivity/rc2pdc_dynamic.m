@@ -43,7 +43,7 @@ addParameter(p,'specden',false,@islogical);
 addParameter(p,'coherence',false,@islogical);
 addParameter(p,'metric','euc',@ischar);
 addParameter(p,'nfreqs',128,@isnumeric);
-addParameter(p,'nfreqscompute',128,@isnumeric);
+addParameter(p,'nfreqscompute',[],@isnumeric);
 addParameter(p,'downsample',0,@(x) x >= 0);
 addParameter(p,'informat','',@(x) any(validatestring(x,{'ch-ch-or','or-ch-ch'})));
 parse(p,Kf,Kb,Pf,lambda,varargin{:});

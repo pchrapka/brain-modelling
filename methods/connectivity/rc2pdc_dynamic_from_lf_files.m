@@ -29,7 +29,7 @@ p2 = inputParser();
 p2.KeepUnmatched = true;
 addParameter(p2,'metric','euc',@ischar);
 addParameter(p2,'nfreqs',128,@isnumeric);
-addParameter(p2,'nfreqscompute',128,@isnumeric);
+addParameter(p2,'nfreqscompute',[],@isnumeric);
 addParameter(p2,'downsample',0,@(x) x >= 0);
 parse(p2,p.Results.params{:});
 

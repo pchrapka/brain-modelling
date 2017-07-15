@@ -47,16 +47,21 @@ function c=pdc(A,pf,varargin)
 pmain = inputParser();
 addParameter(pmain,'metric','euc',@(x) any(validatestring(x,{'euc','diag','info'})));
 addParameter(pmain,'nfreqs',128,@isnumeric);
-addParameter(pmain,'nfreqscompute',128,@isnumeric);
+addParameter(pmain,'nfreqscompute',[],@isnumeric);
 parse(pmain,varargin{:});
 
 nfreqs = pmain.Results.nfreqs;
 metric = pmain.Results.metric;
 
-if pmain.Results.nfreqscompute > nfreqs
-    error('nfreqscompute exceeds nfreqs');
+nfreqscompute = pmain.Results.nfreqscompute;
+if isempty(nfreqscompute)
+    nfreqscompute = nfreqs;
+else
+    if nfreqscompute > nfreqs
+        error('nfreqscompute exceeds nfreqs');
+    end
 end
-freq_idx = 1:pmain.Results.nfreqscompute;
+freq_idx = 1:nfreqscompute;
 
 % [m,n]=size(x);
 % if m > n,
@@ -67,7 +72,7 @@ freq_idx = 1:pmain.Results.nfreqscompute;
 Af = A_to_f(A, nfreqs);
 
 % Variables initialization
-pdc_result = zeros(nChannels,nChannels,pmain.Results.nfreqscompute);
+pdc_result = zeros(nChannels,nChannels,nfreqscompute);
 % disp('----------------------------------------------------------------------');
 % switch lower(metric)
 %     case {'euc'}
