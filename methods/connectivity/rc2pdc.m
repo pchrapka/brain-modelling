@@ -51,12 +51,12 @@ A2 = rcarrayformat(rc2ar(Kf,Kb,'informat',p.Results.informat),...
 if p.Results.parfor
     tstart = tic;
     result = pdc_parfor(A2,Pf,'metric',p.Results.metric,...
-        'nfreqs',p.Results.nfreqs,'nfreqscompute',p.Results.nfreqs);
+        'nfreqs',p.Results.nfreqs,'nfreqscompute',p.Results.nfreqscompute);
     telapsed = toc(tstart);
 else
     tstart = tic;
     result = pdc(A2,Pf,'metric',p.Results.metric,...
-        'nfreqs',p.Results.nfreqs,'nfreqscompute',p.Results.nfreqs);
+        'nfreqs',p.Results.nfreqs,'nfreqscompute',p.Results.nfreqscompute);
     telapsed = toc(tstart);
 end
 result.telapsed = telapsed;
