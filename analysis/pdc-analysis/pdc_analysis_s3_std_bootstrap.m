@@ -26,7 +26,6 @@ for j=1:nhemis
         params(k).metrics = {'diag'};%,'info'};
         params(k).ntrials = 20;
         params(k).order = paramsmini(j).params(i).order;
-        %params(k).order = 3:14; % for tuning
         params(k).lambda = 0.99;
         params(k).gamma = paramsmini(j).params(i).gamma;
         params(k).normalization = 'eachchannel';
@@ -42,8 +41,6 @@ for j=1:nhemis
     end
     
     %% mode
-    %mode = 'tune';
-    %flag_plot = false;
     mode = 'run';
     flag_plot = true;
     flag_bootstrap = true;
