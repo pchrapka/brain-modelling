@@ -18,10 +18,23 @@ k = k+1;
 
 images(k).file = fullfile('output','std-s03-10','aal-coarse-19-outer-nocer-hemileft-audr2-v1r2',...
     'lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata','img',...
+    '2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-std-seed-in-i6-opnone-0.0000-0.0049.eps');
+images(k).file_out = 'hemileft-to-auditory-left-std-paper.eps';
+k = k+1;
+
+images(k).file = fullfile('output','std-s03-10','aal-coarse-19-outer-nocer-hemileft-audr2-v1r2',...
+    'lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata','img',...
     '2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-thresh0.00-0.0000-0.0049.eps');
     %'2017-06-22-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f512-ds4-seed-in-i1-opnone-threshsig-estimate_ind_channels-0.0000-0.0098.eps');
     %'2017-06-20-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f512-ds4-seed-in-i1-opnone-thresh0.00-0.0000-0.0098.eps');
 images(k).file_out = 'hemileft-to-temporal-left-paper.eps';
+k = k+1;
+
+
+images(k).file = fullfile('output','std-s03-10','aal-coarse-19-outer-nocer-hemileft-audr2-v1r2',...
+    'lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata','img',...
+    '2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-thresh0.00-0.0000-0.0049.eps');
+images(k).file_out = 'hemileft-to-motor-left-paper.eps';
 k = k+1;
 
 images(k).file = fullfile('output','std-s03-10','aal-coarse-19-outer-nocer-hemileft-audr2-v1r2',...
