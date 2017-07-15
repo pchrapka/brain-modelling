@@ -250,12 +250,7 @@ rng(1e5);
 idx = cell(npermutes,1);
 idx{1} = 1:ntrials;
 for k=2:npermutes
-    if k==3
-        warning('hack');
-        idx{k} = [4 88 145 40 39 72 187 131 176 151 96 76 106 30 156 153 158 44 174 179];
-    else
-        idx{k} = randsample(1:ntrials_available,ntrials);
-    end
+    idx{k} = randsample(1:ntrials_available,ntrials);
 end
 
 % restore old seed
