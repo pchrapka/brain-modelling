@@ -9,6 +9,11 @@ for i=1:length(result2)
     end
     fprintf('loading file %d\n',i);
     data = loadfile(result2{i});
-    data.pdc(:,:,:,42:end) = [];
-    save_parfor(result2{i}, data);
+    if size(data.pdc,4) >= 42
+        fprintf('\tfixing\n');
+        data.pdc(:,:,:,42:end) = [];
+        save_parfor(result2{i}, data);
+    else
+        fprintf('\tok\n');
+    end
 end
