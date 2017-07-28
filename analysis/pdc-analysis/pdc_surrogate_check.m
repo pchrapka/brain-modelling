@@ -1,4 +1,4 @@
-function pdc_bootstrap_check(file_pdc_sig,file_trials)
+function pdc_surrogate_check(file_pdc_sig,file_trials)
 
 [workingdir,~,~] = fileparts(file_pdc_sig);
 
@@ -10,9 +10,9 @@ figure('Position',[1 1 1500 600]);
 for i=1:nresamples
     % get resampled data
     resampledir = sprintf('resample%d',i);
-    data_bootstrap_file = fullfile(workingdir, resampledir, sprintf('resample%d.mat',i));
+    data_surrogate_file = fullfile(workingdir, resampledir, sprintf('resample%d.mat',i));
     
-    data_bs = loadfile(data_bootstrap_file); 
+    data_bs = loadfile(data_surrogate_file); 
     ntrials = size(data_bs,3);
     
     for j=1:ntrials

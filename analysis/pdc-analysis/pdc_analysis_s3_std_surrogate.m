@@ -1,4 +1,4 @@
-%% pdc_analysis_s3_std_bootstrap
+%% pdc_analysis_s3_std_surrogate
 % run pdc analysis and surrogate analysis for a set of parameters
 
 paramsmini = [];
@@ -7,6 +7,7 @@ i = 1;
 paramsmini(j).hemi = 'left';
 paramsmini(j).params(i).gamma = 1e-5;
 paramsmini(j).params(i).order = 5;
+paramsmini(j).params(i).permutation_idx = 3;
 i = i+1;
 
 nhemis = length(paramsmini);
@@ -33,6 +34,9 @@ for j=1:nhemis
         params(k).prepend_data = 'flipdata';
         params(k).permutations = false;%true;
         params(k).npermutations = 10;% 20;
+        if isfield(paramsmini(j).params(i),'permutation_idx')
+            params(k).permutation_idx = paramsmini(j).params(i).permutation_idx;
+        end
         params(k).tune_criteria_samples = [0.05 0.95];
         params(k).nresamples = 100;
         params(k).alpha = 0.05;
@@ -43,7 +47,7 @@ for j=1:nhemis
     %% mode
     mode = 'run';
     flag_plot = true;
-    flag_bootstrap = true;
+    flag_surrogate = true;
     
     %% set up eeg
     
@@ -73,5 +77,5 @@ for j=1:nhemis
         'mode',mode,...
         'flag_plot_seed',flag_plot,...
         'flag_plot_conn',flag_plot,...
-        'flag_bootstrap',flag_bootstrap);
+        'flag_surrogate',flag_surrogate);
 end

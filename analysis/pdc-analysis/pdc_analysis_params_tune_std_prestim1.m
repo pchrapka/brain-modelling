@@ -27,7 +27,7 @@ end
 %% mode
 mode = 'tune';
 flag_plot = false;
-flag_bootstrap = false;
+flag_surrogate = false;
 
 %% set up eeg
 
@@ -50,4 +50,4 @@ pdc_analysis_variations(...
     'mode',mode,...
     'flag_plot_seed',flag_plot,...
     'flag_plot_conn',flag_plot,...
-    'flag_bootstrap',flag_bootstrap);
+    'flag_surrogate',flag_surrogate);

@@ -1,6 +1,6 @@
-function [file_pdc_sig, files_pdc] = pdc_bootstrap(lfanalysis,varargin)
-%PDC_BOOTSTRAP determine PDC significance levels
-%   PDC_BOOTSTRAP(lf_file,...) determine PDC significance level for a
+function [file_pdc_sig, files_pdc] = pdc_surrogate(lfanalysis,varargin)
+%PDC_SURROGATE determine PDC significance levels
+%   PDC_SURROGATE(lf_file,...) determine PDC significance level for a
 %   specific process and filter combination
 %
 %   Input
@@ -16,7 +16,7 @@ function [file_pdc_sig, files_pdc] = pdc_bootstrap(lfanalysis,varargin)
 %   Parameters
 %   ----------
 %   nresamples (integer, default = 100)
-%       number of bootstrap resampling steps
+%       number of surrogate resampling steps
 %   alpha (float, default = 0.05)
 %       significance level
 %
@@ -33,6 +33,9 @@ function [file_pdc_sig, files_pdc] = pdc_bootstrap(lfanalysis,varargin)
 %       estimate_all_channels
 %           uses the reflection coefficients from the filter
 %
+%   permutation_idx (integer, default = 1)
+%       selects permutation from lfanalysis object on which to operate
+%
 
 p = inputParser();
 addRequired(p,'lfanalysis',@(x) isa(x,'LatticeFilterAnalysis'));
@@ -41,15 +44,17 @@ addParameter(p,'null_mode','estimate_ind_channels',@(x) any(validatestring(x,opt
 addParameter(p,'nresamples',100,@isnumeric);
 addParameter(p,'pdc_params',{},@iscell);
 addParameter(p,'alpha',0.05,@(x) x > 0 && x < 1);
+addParameter(p,'permutation_idx',1,@(x) isnumeric(x) && (length(x) == 1));
 parse(p,lfanalysis,varargin{:});
 
+file_idx = p.Results.permutation_idx;
 if length(lfanalysis.file_data_post) > 1
-    error('too many output files in LatticeFilterAnalysis');
+    fprintf('running surrogate on permutation %d\n',file_idx);
 end
-lf_file = lfanalysis.file_data_post{1};
+lf_file = lfanalysis.file_data_post{file_idx};
 
 [outdir,filter_name,~] = fileparts(lf_file);
-workingdirname = sprintf('%s-bootstrap-%s',filter_name,p.Results.null_mode);
+workingdirname = sprintf('%s-surrogate-%s',filter_name,p.Results.null_mode);
 workingdir = fullfile(outdir,workingdirname);
 
 % get the data folder
@@ -62,16 +67,16 @@ switch comp_name
         % do nothing
 end
 
-bootstrap_file = fullfile(workingdir,'bootstrap.txt');
-fresh = isfresh(bootstrap_file, lf_file);
+surrogate_file = fullfile(workingdir,'surrogate.txt');
+fresh = isfresh(surrogate_file, lf_file);
 if fresh
-    % if lattice filter file is new, redo all bootstrap work
+    % if lattice filter file is new, redo all surrogate work
     if exist(workingdir,'dir')
         rmdir(workingdir,'s');
     end
 else
     temp = 'time marker';
-    save_parfor(bootstrap_file,temp);
+    save_parfor(surrogate_file,temp);
 end
 
 threshold_stability = 10;
@@ -189,7 +194,7 @@ end
 process = VTVRC(nchannels,norder,nsamples);
 process.coefs_set(datalf_nocoupling.Kf,datalf_nocoupling.Kb);
 
-%% bootstrap data and lattice filter
+%% surrogate data and lattice filter
 resf = datalf.estimate.ferror(:,:,:,norder); % samples channels trials order
 % use the middle part to avoid edge effects
 nsamples_ends = ceil(0.05*nsamples);
@@ -217,15 +222,15 @@ lf_btstrp = cell(p.Results.nresamples,1);
 parfor i=1:nresamples
 % for i=1:nresamples
     resampledir = sprintf('resample%d',i);
-    data_bootstrap_file = fullfile(workingdir, resampledir, sprintf('resample%d.mat',i));
+    data_surrogate_file = fullfile(workingdir, resampledir, sprintf('resample%d.mat',i));
     
     % check lf freshness
-    %fresh = isfresh(data_bootstrap_file, lf_file);
+    %fresh = isfresh(data_surrogate_file, lf_file);
     % freshness is taking too on network data
     
-    if ~exist(data_bootstrap_file,'file')
-        % use all trials to generate one bootstrapped data set
-        data_bootstrap = zeros(nchannels,nsamples,ntrials);
+    if ~exist(data_surrogate_file,'file')
+        % use all trials to generate one surrogateped data set
+        data_surrogate = zeros(nchannels,nsamples,ntrials);
         data_bs_prepend = zeros(nchannels,nsamples,ntrials);
         for j=1:ntrials
             stable = false;
@@ -244,25 +249,25 @@ parfor i=1:nresamples
                 % generate data
                 % NOTE it should already be normalized since we're using
                 % the power from the filtered process
-                [data_bootstrap(:,:,j),~,~] = process.simulate(nsamples,...
+                [data_surrogate(:,:,j),~,~] = process.simulate(nsamples,...
                     'type_noise','input','noise_input',res');
                 
                 % check stability
                 check_data = false;
                 if check_data
                     hold off;
-                    plot(data_bootstrap(:,:,j)');
+                    plot(data_surrogate(:,:,j)');
                     
                     prompt = 'hit any key to continue';
                     resp = input(prompt,'s');
                 end
                 
                 % mean correct
-                data_bootstrap(:,:,j) = data_bootstrap(:,:,j) ...
-                    - repmat(mean(data_bootstrap(:,:,j),2),[1 nsamples]);
+                data_surrogate(:,:,j) = data_surrogate(:,:,j) ...
+                    - repmat(mean(data_surrogate(:,:,j),2),[1 nsamples]);
                 
-                %plot(data_bootstrap(:,:,j)');
-                data_max = max(max(abs(data_bootstrap(:,:,j))));
+                %plot(data_surrogate(:,:,j)');
+                data_max = max(max(abs(data_surrogate(:,:,j))));
                 if data_max > threshold_stability
                     fprintf('%s: resample %d, trial %d: not stable\n',mfilename,i,j);
                 else
@@ -277,10 +282,10 @@ parfor i=1:nresamples
                             data_bs_prepend = zeros(nchannels,2*nsamples,ntrials);
                         end
                         data_bs_prepend(:,:,j) = cat(2,...
-                            flipdim(data_bootstrap(:,:,j),2),data_bootstrap(:,:,j));
+                            flipdim(data_surrogate(:,:,j),2),data_surrogate(:,:,j));
                     case 'none'
                         % do nothing
-                        data_bs_prepend(:,:,j) = data_bootstrap(:,:,j);
+                        data_bs_prepend(:,:,j) = data_surrogate(:,:,j);
                     otherwise
                         error('unknown prepend mode');
                 end
@@ -304,13 +309,13 @@ parfor i=1:nresamples
         % filtered, but i would then need to check the freshness of the
         % filter file and i don't have access to that here
         % hopefully the generated file isn't too big...
-        save_parfor(data_bootstrap_file, data_bs_prepend);
-        %clear data_bootstrap;
+        save_parfor(data_surrogate_file, data_bs_prepend);
+        %clear data_surrogate;
     else
         fprintf('%s: resample %d already exists\n',mfilename,i);
     end
     
-    lfboot = LatticeFilterAnalysis(data_bootstrap_file,...
+    lfboot = LatticeFilterAnalysis(data_surrogate_file,...
         'outdir',fullfile(workingdir,resampledir));
     lfboot.filter_func = 'MCMTLOCCD_TWL4';
     lfboot.ntrials_max = [];
@@ -325,7 +330,7 @@ parfor i=1:nresamples
     
     % spoof preprocessed data, since it's already preprocessed
     if fresh || ~exist(lfboot.file_data_pre,'file')
-        copyfile(data_bootstrap_file,lfboot.file_data_pre,'f');
+        copyfile(data_surrogate_file,lfboot.file_data_pre,'f');
     end
     
     % set up lattice filter
@@ -411,7 +416,7 @@ if ~exist(file_pdc_sig,'file')
         fprintf('%s: computing percentile for sample %d/%d\n',...
             mfilename,j,nsamples_data);
         
-        outfile = fullfile(workingdir, 'bootstrap-by-samples', pdc_tag,...
+        outfile = fullfile(workingdir, 'surrogate-by-samples', pdc_tag,...
             sprintf('sample%d-n%d.mat',j,nresamples));
         %fresh = cellfun(@(x) isfresh(outfile, x), pdc_file_sampleT(j,:), 'UniformOutput', true);
         if ~exist(outfile,'file')

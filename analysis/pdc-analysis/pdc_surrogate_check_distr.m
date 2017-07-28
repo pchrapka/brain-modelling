@@ -1,4 +1,4 @@
-function pdc_bootstrap_check_distr(file_pdc_sig, sample_idx, varargin)
+function pdc_surrogate_check_distr(file_pdc_sig, sample_idx, varargin)
 p = inputParser();
 addRequired(p,'file_pdc_sig',@ischar);
 addRequired(p,'resample_idx',@isnumeric);
@@ -11,7 +11,7 @@ addParameter(p,'w_range',[],@(x) (length(x) == 2) && isnumeric(x));
 parse(p,file_pdc_sig,sample_idx,varargin{:});
 
 [workingdir,sig_filename,~] = fileparts(file_pdc_sig);
-% filter_name = strrep(workingdir,'-bootstrap','');
+% filter_name = strrep(workingdir,'-surrogate','');
 
 % get tag between [pdc-dynamic-...-ds\d]-sig
 pattern = '.*(pdc-dynamic-.*)-sig';
@@ -27,7 +27,7 @@ result = regexp(sig_filename,pattern,'tokens');
 alpha = str2double(result{1}{1});
 
 file_sample_name = sprintf('sample%d-n%d.mat',sample_idx,nresample);
-file_sample = fullfile(workingdir,'bootstrap-by-samples',pdc_tag,file_sample_name);
+file_sample = fullfile(workingdir,'surrogate-by-samples',pdc_tag,file_sample_name);
 
 data = loadfile(file_sample);
 [~,nchannels,~,nfreq] = size(data);

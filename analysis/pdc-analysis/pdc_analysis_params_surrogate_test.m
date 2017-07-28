@@ -1,4 +1,4 @@
-%% pdc_analysis_params_bootstrap_test
+%% pdc_analysis_params_surrogate_test
 
 k = 1;
 params = [];
@@ -24,7 +24,7 @@ k = k+1;
 %% mode
 mode = 'run';
 flag_plot = false;
-flag_bootstrap = true;
+flag_surrogate = true;
 
 %% set up eeg
 
@@ -47,4 +47,4 @@ pdc_analysis_variations(...
     'mode',mode,...
     'flag_plot_seed',flag_plot,...
     'flag_plot_conn',flag_plot,...
-    'flag_bootstrap',flag_bootstrap);
+    'flag_surrogate',flag_surrogate);

@@ -6,7 +6,7 @@ addRequired(p,'file_sources_info',@ischar);
 addRequired(p,'params',@isstruct);
 addParameter(p,'outdir','pdc-analysis',@ischar);
 addParameter(p,'mode','run',@(x) any(validatestring(x,{'run','tune'})));
-addParameter(p,'flag_bootstrap',false,@islogical);
+addParameter(p,'flag_surrogate',false,@islogical);
 addParameter(p,'flag_plot_seed',false,@islogical);
 addParameter(p,'flag_plot_seed_var',false,@islogical);
 addParameter(p,'flag_plot_seed_std',false,@islogical);
@@ -130,11 +130,15 @@ for i=1:length(params)
             params_plot_seed{1} = {'threshold',0.001};
             
             %% surrogate analysis
-            if p.Results.flag_bootstrap
+            if p.Results.flag_surrogate
                 pdc_obj.surrogate_nresamples = params(i).nresamples;
                 pdc_obj.surrogate_alpha = params(i).alpha;
                 pdc_obj.surrogate_null_mode = params(i).null_mode;
-                pdc_obj.surrogate();
+                params_surrogate = {};
+                if isfield(params(i),'permutation_idx')
+                    params_surrogate = {'permutation_idx',params(i).permutation_idx};
+                end
+                pdc_obj.surrogate(params_surrogate{:});
                 
                 params_plot_seed{2} = {...
                     'threshold_mode','significance',...

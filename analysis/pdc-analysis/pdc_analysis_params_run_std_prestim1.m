@@ -52,7 +52,7 @@ k = k+1;
 % flag_run = false;
 % flag_tune = true;
 mode = 'tune';
-flag_bootstrap = false;
+flag_surrogate = false;
 
 %% set up eeg
 
@@ -73,4 +73,4 @@ pdc_analysis_variations(...
     params,...
     'outdir',out.outdir_sources,...
     'mode',mode,...
-    'flag_bootstrap',flag_bootstrap);
+    'flag_surrogate',flag_surrogate);

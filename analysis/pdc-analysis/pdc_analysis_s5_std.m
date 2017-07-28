@@ -85,11 +85,11 @@ for j=1:nhemis
     if flag_tune
         mode = 'tune';
         flag_plot = false;
-        flag_bootstrap = false;
+        flag_surrogate = false;
     else
         mode = 'run';
         flag_plot = true;
-        flag_bootstrap = false;
+        flag_surrogate = false;
     end
     
     %% set up eeg
@@ -120,5 +120,5 @@ for j=1:nhemis
         'mode',mode,...
         'flag_plot_seed',flag_plot,...
         'flag_plot_conn',flag_plot,...
-        'flag_bootstrap',flag_bootstrap);
+        'flag_surrogate',flag_surrogate);
 end

@@ -2,4 +2,4 @@
 % high level script to run multiple analysis scripts
 
 pdc_analysis_params_trials
-% pdc_analysis_params_bootstrap
+% pdc_analysis_params_surrogate

@@ -1,4 +1,4 @@
-%% test_bootstrap
+%% test_surrogate
 
 % lf_file = '/home-new/chrapkpk/Documents/projects/brain-modelling/analysis/pdc-analysis/output/std-s03-10/aal-coarse-19-outer-nocer-plus2/lf-sources-ch12-trials100-samplesall-normallchannels-envno/MCMTLOCCD_TWL4-T60-C12-P3-lambda=0.9900-gamma=1.000e-03.mat';
 
@@ -84,9 +84,9 @@ pdc_params = {...
     };
 pdc_files = rc2pdc_dynamic_from_lf_files(lf_files,'params',pdc_params);
 
-%% pdc_bootstrap
+%% pdc_surrogate
 
-file_pdc_sig = pdc_bootstrap(lf_files{1},...
+file_pdc_sig = pdc_surrogate(lf_files{1},...
     'null_mode','estimate_ind_channels',...
     'data_file',file_data,...
     'nresamples',10,'alpha',0.05,'pdc_params',pdc_params);

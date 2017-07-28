@@ -1,11 +1,11 @@
-%% pdc_analysis_params_bootstrap
+%% pdc_analysis_params_surrogate
 
 params = [];
 k=1;
 
 %% aal-coarse-19-outer-nocer-plus2 envelope
 
-% NOTE gamma parameter not stable in bootstrapping step
+% NOTE gamma parameter not stable in surrogateping step
 % params(k).downsample = 4;
 % params(k).metrics = {'diag'};
 % params(k).ntrials = 20;
@@ -96,7 +96,7 @@ k = k+1;
 %% mode
 mode = 'run';
 flag_plot = true;
-flag_bootstrap = true;
+flag_surrogate = true;
 
 %% set up eeg
 
@@ -119,4 +119,4 @@ pdc_analysis_variations(...
     'mode',mode,...
     'flag_plot_seed',flag_plot,...
     'flag_plot_conn',flag_plot,...
-    'flag_bootstrap',flag_bootstrap);
+    'flag_surrogate',flag_surrogate);

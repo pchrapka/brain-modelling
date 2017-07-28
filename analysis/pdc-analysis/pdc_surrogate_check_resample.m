@@ -1,4 +1,4 @@
-function pdc_bootstrap_check_resample(file_pdc_sig,resample_idx,varargin)
+function pdc_surrogate_check_resample(file_pdc_sig,resample_idx,varargin)
 p = inputParser();
 addRequired(p,'file_pdc_sig',@ischar);
 addRequired(p,'resample_idx',@isnumeric);
@@ -11,7 +11,7 @@ error('deprecated');
 
 [workingdir,sig_filename,~] = fileparts(file_pdc_sig);
 [~,filter_name,~] = fileparts([workingdir '.mat']);
-pattern = '(.*)-bootstrap.*';
+pattern = '(.*)-surrogate.*';
 result = regexp(filter_name,pattern,'tokens');
 filter_name = result{1}{1};
 
