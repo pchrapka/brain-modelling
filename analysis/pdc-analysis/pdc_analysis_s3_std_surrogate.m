@@ -32,8 +32,8 @@ for j=1:nhemis
         params(k).normalization = 'eachchannel';
         params(k).envelope = true;
         params(k).prepend_data = 'flipdata';
-        params(k).permutations = false;%true;
-        params(k).npermutations = 10;% 20;
+        params(k).permutations = true;
+        params(k).npermutations = 3;
         if isfield(paramsmini(j).params(i),'permutation_idx')
             params(k).permutation_idx = paramsmini(j).params(i).permutation_idx;
         end
