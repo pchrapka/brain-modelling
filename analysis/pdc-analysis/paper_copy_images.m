@@ -69,7 +69,8 @@ k = k+1;
 
 %% surrogate histogram
 images(k).file = fullfile('output','img','2017-07-13-surrogate-hist-sample257-n100.eps');
-images(k).file_out = 'surrogate-hist-sample257.eps';
+images(k).file_out = 'surrogate-hist-sample257-row2-col4.eps';
+% images(k).file_out = 'surrogate-hist-sample257.eps';
 k = k+1;
 
 
