@@ -351,6 +351,8 @@ end
 % already takes care of freshness and existence
 files_pdc = rc2pdc_dynamic_from_lf_files(lf_btstrp,'params',p.Results.pdc_params);
 
+pdc_params = struct(p.Results.pdc_params{:});
+
 % get pdc size
 result = loadfile(files_pdc{1});
 pdc_dims = size(result.pdc);
@@ -389,6 +391,7 @@ parfor i=1:nresamples
             end
             
             result_new = [];
+            result_new = copyfields(pdc_params,result_new,{'nfreqs','nfreqscompute'});
             result_new.pdc = squeeze(result.pdc(j,:,:,:));
             save_parfor(pdc_file_sample{i,j}, result_new);
         end
@@ -443,6 +446,7 @@ if ~exist(file_pdc_sig,'file')
     
     % save pdc significance levels
     temp = [];
+    temp = copyfields(pdc_params,temp,{'nfreqs','nfreqscompute'});
     temp.pdc = pdc_sig;
     save_parfor(file_pdc_sig,temp);
 end
