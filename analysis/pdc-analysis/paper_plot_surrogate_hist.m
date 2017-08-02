@@ -18,6 +18,9 @@ dir_root2 = strrep(dir_root,'home.old','home-new');
 file_info = fullfile(dir_root2,'sources-info.mat');
 info = loadfile(file_info);
 
+% plot_type = 'tiled';
+plot_type = 'single';
+
 %% sort channels
 patch_info = ChannelInfo(info.labels);
 patch_type = 'aal-coarse-19';
@@ -42,57 +45,76 @@ bins = bins/nbins;
 
 figure('Color','white');
 font_size = 14;
-for row_idx=1:nchannels+2
-    for col_idx=1:nchannels+1
-        plot_idx = (row_idx-1)*(nchannels+1) + col_idx;
-        subaxis(nchannels+2, nchannels+1, plot_idx,...
-            'Spacing', 0.02, 'SpacingVert', 0.02, 'Padding', 0, 'Margin', 0.1);
+
+switch plot_type
+    case 'single'
+        row = 2;
+        col = 4;
         set(gca,'FontSize',font_size);
-        col = col_idx - 1;
-        row = row_idx;
+        data_temp = squeeze(data(:,row,col,:));
+        hist(data_temp(:),bins);
+        ylabel(labels{row});%,'Rotation',0,'HorizontalAlignment','Right');
+        xlabel(labels{col});%,'Rotation',90,'HorizontalAlignment','Right');
         
-        if (col_idx == 1) || (row_idx > nchannels)
-            axis('off')
-%             if row_idx == nchannels+1
-%                 scale = 0.9;
-%                 pos = get(gca, 'Position');
-%                 pos(2) = pos(2)-scale*pos(4);
-%                 %pos(4) = (1-scale)*pos(4);
-%                 pos(4) = 4*pos(4);
-%                 set(gca, 'Position', pos)
-%             end
-            continue;
+        outfile = ['surrogate-hist-' strrep(file_data,'.mat','')...
+            sprintf('-row%d-col%d',row,col)];
+        
+    case 'tiled'
+        for row_idx=1:nchannels+2
+            for col_idx=1:nchannels+1
+                plot_idx = (row_idx-1)*(nchannels+1) + col_idx;
+                subaxis(nchannels+2, nchannels+1, plot_idx,...
+                    'Spacing', 0.02, 'SpacingVert', 0.02, 'Padding', 0, 'Margin', 0.1);
+                set(gca,'FontSize',font_size);
+                col = col_idx - 1;
+                row = row_idx;
+                
+                if (col_idx == 1) || (row_idx > nchannels)
+                    axis('off')
+                    %             if row_idx == nchannels+1
+                    %                 scale = 0.9;
+                    %                 pos = get(gca, 'Position');
+                    %                 pos(2) = pos(2)-scale*pos(4);
+                    %                 %pos(4) = (1-scale)*pos(4);
+                    %                 pos(4) = 4*pos(4);
+                    %                 set(gca, 'Position', pos)
+                    %             end
+                    continue;
+                end
+                
+                if row ~= col
+                    data_temp = squeeze(data(:,row,col,:));
+                    hist(data_temp(:),bins);
+                else
+                    set(gca,'Color','white');
+                end
+                
+                if col==1
+                    ylabel(labels{row},'Rotation',0,'HorizontalAlignment','Right');
+                end
+                
+                if row==nchannels
+                    xlabel(labels{col},'Rotation',90,'HorizontalAlignment','Right');
+                end
+                
+                %if col ~= 1
+                set(gca,'YTick',[]);
+                set(gca,'YTickLabel',[]);
+                %end
+                
+                if row < nchannels
+                    set(gca,'XTick',[]);
+                    set(gca,'XTickLabel',[]);
+                end
+                
+            end
         end
         
-        if row ~= col
-            data_temp = squeeze(data(:,row,col,:));
-            hist(data_temp(:),bins);
-        else
-            set(gca,'Color','white');
-        end
-        
-        if col==1
-            ylabel(labels{row},'Rotation',0,'HorizontalAlignment','Right');
-        end
-        
-        if row==nchannels
-            xlabel(labels{col},'Rotation',90,'HorizontalAlignment','Right');
-        end
-        
-        %if col ~= 1
-        set(gca,'YTick',[]);
-        set(gca,'YTickLabel',[]);
-        %end
-        
-        if row < nchannels
-            set(gca,'XTick',[]);
-            set(gca,'XTickLabel',[]);
-        end
-        
-    end
+        outfile = ['surrogate-hist-' strrep(file_data,'.mat','')];
+    otherwise
+        error('unknown plot_type %s',plot_type);
 end
 
 %% save
 outdir = fullfile('output');
-outfile = ['surrogate-hist-' strrep(file_data,'.mat','')];
 save_fig2('path',outdir,'tag', outfile,'engine','matlab');
