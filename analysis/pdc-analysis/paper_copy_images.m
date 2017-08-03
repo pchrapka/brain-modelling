@@ -23,26 +23,32 @@ images(k).file = fullfile('output','std-s03-10','aal-coarse-19-outer-nocer-hemil
 images(k).file_out = 'hemileft-to-temporal-left-paper.eps';
 k = k+1;
 
+images(k).file = fullfile('output','std-s03-10','aal-coarse-19-outer-nocer-hemileft-audr2-v1r2',...
+    'lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata','img',...
+    '2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-thresh0.00-0.0000-0.0049.eps');
+images(k).file_out = 'hemileft-to-motor-left-paper.eps';
+k = k+1;
+
 %% gPDC surrogate
 images(k).file = fullfile('output','std-s03-10','aal-coarse-19-outer-nocer-hemileft-audr2-v1r2',...
     'lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata','img',...
     '2017-08-02-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i6-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
     %'2017-06-22-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f512-ds4-seed-in-i5-opnone-threshsig-estimate_ind_channels-0.0000-0.0098.eps');
-images(k).file_out = 'hemileft-to-auditory-left-paper-surrogate.eps';
+images(k).file_out = 'hemileft-to-auditory-left-surrogate-paper.eps';
 k = k+1;
 
 images(k).file = fullfile('output','std-s03-10','aal-coarse-19-outer-nocer-hemileft-audr2-v1r2',...
     'lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata','img',...
     '2017-08-02-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
     %'2017-06-22-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f512-ds4-seed-in-i1-opnone-threshsig-estimate_ind_channels-0.0000-0.0098.eps');
-images(k).file_out = 'hemileft-to-temporal-left-paper-surrogate.eps';
+images(k).file_out = 'hemileft-to-temporal-left-surrogate-paper.eps';
 k = k+1;
 
 
 images(k).file = fullfile('output','std-s03-10','aal-coarse-19-outer-nocer-hemileft-audr2-v1r2',...
     'lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata','img',...
-    '2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-thresh0.00-0.0000-0.0049.eps');
-images(k).file_out = 'hemileft-to-motor-left-paper.eps';
+    '2017-08-02-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
+images(k).file_out = 'hemileft-to-motor-left-surrogate-paper.eps';
 k = k+1;
 
 %% gPDC standard deviation
@@ -79,9 +85,14 @@ images(k).file_out = 'rauschecker-scott-conn-summary.eps';
 k = k+1;
 
 %% surrogate histogram
-images(k).file = fullfile('output','img','2017-07-13-surrogate-hist-sample257-n100.eps');
-images(k).file_out = 'surrogate-hist-sample257-row2-col4.eps';
+% images(k).file = fullfile('output','img',...
+%     '2017-07-13-surrogate-hist-sample257-n100.eps');
 % images(k).file_out = 'surrogate-hist-sample257.eps';
+% k = k+1;
+
+images(k).file = fullfile('output','img',...
+    '2017-08-03-surrogate-hist-sample257-n100-row2-col4.eps');
+images(k).file_out = 'surrogate-hist-sample257-row2-col4.eps';
 k = k+1;
 
 
