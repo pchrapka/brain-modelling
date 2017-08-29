@@ -1,12 +1,12 @@
 %% paper_plot_surrogate_hist
 
 dir_root = fullfile('/home.old','chrapkpk','Documents','projects','brain-modelling',...
-    'analysis','pdc-analysis','output','std-s03-10-old',...
+    'analysis','pdc-analysis','output','std-s03-10',...
     'aal-coarse-19-outer-nocer-hemileft-audr2-v1r2');
 dir_data = fullfile(dir_root,...
     'lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata',...
-    'MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-surrogate-estimate_ind_channels',...
-    'surrogate-by-samples','pdc-dynamic-diag-f512-ds4');
+    'MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-surrogate-estimate_ind_channels',...
+    'surrogate-by-samples','pdc-dynamic-diag-f2048-41-ds4');
 file_data = 'sample257-n100.mat'; % use time = 0
 
 file_name = fullfile(dir_data,file_data);
@@ -39,7 +39,8 @@ idx_freq = f <= 5;
 data = data(:,:,:,idx_freq);
 
 %%
-nbins = 20;
+% nbins = 20;
+nbins = 500;
 bins = 1:nbins-1;
 bins = bins/nbins;
 
@@ -53,8 +54,9 @@ switch plot_type
         set(gca,'FontSize',font_size);
         data_temp = squeeze(data(:,row,col,:));
         hist(data_temp(:),bins);
-        ylabel(labels{row});%,'Rotation',0,'HorizontalAlignment','Right');
-        xlabel(labels{col});%,'Rotation',90,'HorizontalAlignment','Right');
+        title(sprintf('%s to %s',labels{col}, labels{row}));
+        ylabel('Number of gPDC values');
+        xlabel('gPDC value');
         
         outfile = ['surrogate-hist-' strrep(file_data,'.mat','')...
             sprintf('-row%d-col%d',row,col)];

@@ -157,11 +157,12 @@ for i=1:length(params)
             
             % loop over permutations
             for k=1:lf_obj.npermutations
-                % switch loaded data
-                pdc_obj.view.load('pdc','file_idx',k);
                 
                 %% plot seed
                 if p.Results.flag_plot_seed
+                    % switch loaded data
+                    pdc_obj.view.load('pdc','file_idx',k);
+                
                     %pdc_obj.plot_seed(...
                     %    'operation','none',...
                     %    'threshold_mode','none',...
@@ -190,6 +191,9 @@ for i=1:length(params)
                 
                 %% plot connectivity
                 if p.Results.flag_plot_conn
+                    % switch loaded data
+                    pdc_obj.view.load('pdc','file_idx',k);
+                    
                     if lf_obj.envelope
                         view_switch(pdc_view,'5');
                         % following views at 0-5 Hz
