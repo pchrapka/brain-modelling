@@ -1,6 +1,6 @@
 %% paper_copy_images
 
-outdir = fullfile('output','paper');
+outdir = fullfile('publications','paper');
 if ~exist(outdir,'dir')
     mkdir(outdir);
 end
