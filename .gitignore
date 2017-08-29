@@ -11,6 +11,8 @@
 experiments/exp13-lsl-error-vs-size/img/**
 
 **/output
+!analysis/**/*.png
+!analysis/**/*.eps
 **/auto
 **/.ipynb_checkpoints
 **/progressbar*.txt
