@@ -1,19 +1,17 @@
-%% pdc_analysis_s3_std_surrogate
+%% pdc_analysis_s3_std_100trials_surrogate
 % run pdc analysis and surrogate analysis for a set of parameters
 
 paramsmini = [];
 j = 1;
 i = 1;
 paramsmini(j).hemi = 'left';
-paramsmini(j).params(i).gamma = 1e-5;
+paramsmini(j).params(i).gamma = 1e-6;
 paramsmini(j).params(i).order = 5;
-paramsmini(j).params(i).permutation_idx = 3;
-% NOTE i specifically wanted the 3rd permutation
 i = i+1;
 
 nhemis = length(paramsmini);
 for j=1:nhemis
-    params = [];    
+    params = [];
     k=1;
     ngammas = length(paramsmini(j).params);
     
@@ -26,22 +24,19 @@ for j=1:nhemis
         params(k).nfreqscompute = 20*2+1; 
         % want 0-5Hz, 5*2+1, 
         params(k).metrics = {'diag'};%,'info'};
-        params(k).ntrials = 20;
+        params(k).ntrials = 100;
         params(k).order = paramsmini(j).params(i).order;
         params(k).lambda = 0.99;
         params(k).gamma = paramsmini(j).params(i).gamma;
         params(k).normalization = 'eachchannel';
         params(k).envelope = true;
         params(k).prepend_data = 'flipdata';
-        params(k).permutations = true;
-        params(k).npermutations = 3;
-        if isfield(paramsmini(j).params(i),'permutation_idx')
-            params(k).permutation_idx = paramsmini(j).params(i).permutation_idx;
-        end
+        params(k).permutations = false;%true;
+        params(k).npermutations = 10;% 20;
         params(k).tune_criteria_samples = [0.05 0.95];
         params(k).nresamples = 100;
         params(k).alpha = 0.05;
-        params(k).null_mode = 'estimate_ind_channels';
+        params(k).null_mode = 'estimate_stationary_ns';
         k = k+1;
     end
     
