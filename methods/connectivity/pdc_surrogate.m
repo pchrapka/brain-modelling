@@ -57,15 +57,16 @@ lf_file = lfanalysis.file_data_post{file_idx};
 workingdirname = sprintf('%s-surrogate-%s',filter_name,p.Results.null_mode);
 workingdir = fullfile(outdir,workingdirname);
 
-% get the data folder
-comp_name = get_compname();
-switch comp_name
-    case {'blade16.ece.mcmaster.ca', sprintf('blade16.ece.mcmaster.ca\n')}
-        workingdir = strrep(workingdir,'home/','home.old/');
-        workingdir = strrep(workingdir,'home-new/','home.old/');
-    otherwise
-        % do nothing
-end
+% NOTE chooses hard drive for surrogate analysis
+% % get the data folder
+% comp_name = get_compname();
+% switch comp_name
+%     case {'blade16.ece.mcmaster.ca', sprintf('blade16.ece.mcmaster.ca\n')}
+%         workingdir = strrep(workingdir,'home/','home.old/');
+%         workingdir = strrep(workingdir,'home-new/','home.old/');
+%     otherwise
+%         % do nothing
+% end
 
 surrogate_file = fullfile(workingdir,'surrogate.txt');
 fresh = isfresh(surrogate_file, lf_file);
