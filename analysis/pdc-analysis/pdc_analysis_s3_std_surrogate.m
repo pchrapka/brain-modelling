@@ -41,7 +41,8 @@ for j=1:nhemis
         params(k).tune_criteria_samples = [0.05 0.95];
         params(k).nresamples = 100;
         params(k).alpha = 0.05;
-        params(k).null_mode = 'estimate_ind_channels';
+        %params(k).null_mode = 'estimate_ind_channels';
+        params(k).null_mode = 'estimate_stationary_ns';
         k = k+1;
     end
     

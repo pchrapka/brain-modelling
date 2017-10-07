@@ -44,7 +44,7 @@ classdef NuttallStrandMT
             addRequired(p,'order', @(x) isnumeric(x) && isscalar(x));
             addRequired(p,'ntrials', @(x) isnumeric(x) && isscalar(x));
             addParameter(p,'nsamples',[],@(x) isnumeric(x) && isscalar(x));
-            p.parse(channels,order,varargin{:});
+            p.parse(channels,order,ntrials,varargin{:});
             
             obj.order = order;
             obj.nchannels = channels;
@@ -56,11 +56,11 @@ classdef NuttallStrandMT
             obj.Kf = zeroMat;
             
             if isempty(obj.nsamples)
-                obj.name = sprintf('NuttallStrandMT C%d P%d',...
-                    channels, order);
+                obj.name = sprintf('NuttallStrandMT T%d C%d P%d',...
+                    ntrials, channels, order);
             else
-                obj.name = sprintf('NuttallStrandMT C%d P%d N%d',...
-                    channels, order, obj.nsamples);
+                obj.name = sprintf('NuttallStrandMT T%d C%d P%d N%d',...
+                    ntrials, channels, order, obj.nsamples);
             end
         end 
         
@@ -89,7 +89,8 @@ classdef NuttallStrandMT
             addParameter(inputs,'verbosity',0,@(x) any(find(params_verbosity == x)));
             parse(inputs,varargin{:});
             
-            if ~isequal(size(x), [obj.nchannels obj.ntrials])
+            dims = size(x);
+            if ~isequal(dims(1:2), [obj.nchannels obj.ntrials])
                 error([mfilename ':update_batch'],...
                     'samples do not match filter size:\n  channels: %d\n  trials: %d',...
                     obj.nchannels, obj.ntrials);

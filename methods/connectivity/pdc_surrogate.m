@@ -188,6 +188,7 @@ switch p.Results.null_mode
             lf_channels{i} = lfobj.file_data_post{1};
             
         end
+        clear data_sources
             
         for i=1:nchannels
             datalf_ch = loadfile(lf_channels{i});
@@ -202,37 +203,59 @@ switch p.Results.null_mode
         
         lfobj = LatticeFilterAnalysis(lfanalysis.file_data_pre,...
             'outdir',workingdir);
-        lfobj.filter_func = 'NuttallStrand';
+        lfobj.filter_func = 'NuttallStrandMT';
         lfobj.ntrials_max = [];
         lfobj.ncores = 1;
         
-        error('step through this code to check parameters');
-        % NOTES
-        % - warmup probably not required
-        % - fields may be different?
+        % create data file
+        file_ns = fullfile(workingdir,'data-ns.mat');
+        fresh = isfresh(file_ns, lfanalysis.file_data_pre);
+        if fresh || ~exist(file_ns,'file')
+            data_sources = loadfile(lfanalysis.file_data_pre);
+            switch lfanalysis.prepend_data
+                case 'flipdata'
+                    data_sources(:,1:nsamples,:) = [];
+                otherwise
+                    error('unknown prepend_data mode: %s',lfanalysis.prepend_data);
+            end
+            if lfanalysis.envelope
+                % remove 5% from the end
+                idx_end = ceil(0.95*nsamples);
+                data_sources(:,idx_end:end,:) =[];
+            end
+            % select only required trials
+            data_sources = data_sources(:,:,1:ntrials);
+            save_parfor(file_ns, data_sources);
+            clear data_sources;
+        end
         
+        % set appropriate params for NuttallStrand
+        lfobj.warmup = {};
+        lfobj.prepend_data = 'none';
         % copy params
-        lfobj.warmup = options.warmup;
-        lfobj.prepend_data = options.prepend_data;
         lfobj.normalization = options.normalization;
         lfobj.envelope = options.envelope;
-        lfobj.tracefields = {'Kf','Kb','Rf','ferror'};
+        lfobj.tracefields = {'Kf','Kb'};
         
         % spoof preprocessed data, since it's already preprocessed
         if fresh || ~exist(lfobj.file_data_pre,'file')
-            copyfile(file_channel,lfobj.file_data_pre,'f');
+            copyfile(file_ns,lfobj.file_data_pre,'f');
         end
         
         % set up lattice filter
-        lfobj.set_filter(1,norder,ntrials);%,filter_opts{:});
-        % TODO no filter opts right?
+        lfobj.set_filter(nchannels,norder,ntrials);
         
         lfobj.preprocessing();
         lfobj.run();
         lfobj.postprocessing();
         
-        datalf_null = loadfile(lfobj.file_data_post{1});
-        error('check if datalf_null has Kf and Kb fields');
+        din = loadfile(lfobj.file_data_post{1});
+        datalf_null = [];
+        datalf_null.Kf = repmat(din.estimate.Kf(1,:,:,:),[nsamples 1 1 1]);
+        datalf_null.Kb = repmat(din.estimate.Kb(1,:,:,:),[nsamples 1 1 1]);
+        clear din;
+        
+        error('TODO add ferror to Nuttall Strand');
         
     otherwise
         error('unknown null_mode %s',p.Results.null_mode);

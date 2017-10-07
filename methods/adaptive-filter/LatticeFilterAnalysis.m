@@ -160,6 +160,13 @@ classdef LatticeFilterAnalysis < handle
                 case 'MCMTLOCCD_TWL4'
                     obj.filter = filter_func_handle(nchannels,order,ntrials,...
                         'lambda',p.Results.lambda,'gamma',p.Results.gamma);
+                case 'NuttallStrand'
+                    if ntrials > 1
+                        error('NuttallStrand operates on 1 trial');
+                    end
+                    obj.filter = filter_func_handle(nchannels,order);
+                case 'NuttallStrandMT'
+                    obj.filter = filter_func_handle(nchannels,order,ntrials);
                 otherwise
                     error('unknown filter func format %s',obj.filter_func);
             end
