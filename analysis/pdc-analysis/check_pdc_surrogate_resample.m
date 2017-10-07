@@ -1,4 +1,4 @@
-function pdc_surrogate_check_resample(file_pdc_sig,resample_idx,varargin)
+function check_pdc_surrogate_resample(file_pdc_sig,resample_idx,varargin)
 p = inputParser();
 addRequired(p,'file_pdc_sig',@ischar);
 addRequired(p,'resample_idx',@isnumeric);

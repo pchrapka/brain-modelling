@@ -1,4 +1,4 @@
-function pdc_surrogate_check_distr(file_pdc_sig, sample_idx, varargin)
+function check_pdc_surrogate_distr(file_pdc_sig, sample_idx, varargin)
 p = inputParser();
 addRequired(p,'file_pdc_sig',@ischar);
 addRequired(p,'resample_idx',@isnumeric);

@@ -1,53 +1,49 @@
-% check_pdc_surrogate
+function check_pdc_surrogate(file_pdc_sig,file_trials)
 
-flag_test = false;
-if flag_test
-    file_pdc_sig = fullfile('/home/phil/projects/brain-modelling/analysis/pdc-analysis',...
-        'output/vrc-cp-ch2-coupling2-rnd-c12-v3',...
-        'MCMTLOCCD_TWL4-T5-C12-P3-lambda=0.9900-gamma=1.000e+00-surrogate',...
-        'pdc-dynamic-diag-ds4-sig-n10-alpha0.05.mat');
-else
-    file_pdc_sig = fullfile('/home/chrapkpk/Documents/projects/brain-modelling',...
-        'analysis/pdc-analysis/output/std-s03-10/aal-coarse-19-outer-nocer-plus2',...
-        'lf-sources-ch12-trials100-samplesall-normallchannels-envyes',...
-        'MCMTLOCCD_TWL4-T20-C12-P3-lambda=0.9900-gamma=1.000e-03-surrogate',...
-        'pdc-dynamic-diag-ds4-sig-n100-alpha0.05.mat');
+[workingdir,~,~] = fileparts(file_pdc_sig);
+
+% get original trial data
+data_trials = loadfile(file_trials); 
+nresamples = 5;
+
+figure('Position',[1 1 1500 600]);
+for i=1:nresamples
+    % get resampled data
+    resampledir = sprintf('resample%d',i);
+    data_surrogate_file = fullfile(workingdir, resampledir, sprintf('resample%d.mat',i));
+    
+    data_bs = loadfile(data_surrogate_file); 
+    ntrials = size(data_bs,3);
+    
+    for j=1:ntrials
+        hold off;
+        % plot original 
+        subplot(2,2,1);
+        plot(data_trials(:,:,j)');
+        ylabel('real');
+        title(sprintf('trial %d',j));
+        
+        subplot(2,2,2);
+        plot(data_bs(:,:,j)');
+        ylabel(resampledir);
+        
+        subplot(2,2,3);
+        [pxx,f] = pwelch(data_trials(1,:,j),[],[],[],2048);
+        plot(f,pxx);
+        xlim([0 100]);
+        ylabel('channel 1 psd');
+        
+        subplot(2,2,4);
+        [pxx,f] = pwelch(data_bs(1,:,j),[],[],[],2048/4);
+        plot(f,pxx);
+        xlim([0 100]);
+        
+        prompt = 'hit any key to continue, q to quit';
+        resp = input(prompt,'s');
+        if isequal(lower(resp),'q')
+            break;
+        end
+    end
+
+
 end
-
-%% check pdc resampled data set
-stimulus = 'std';
-subject = 3;
-deviant_percent = 10;
-
-patch_options = {...
-    'patchmodel','aal-coarse-19',...
-    'patchoptions',{'outer',true,'cerebellum',false,'flag_add_auditory',true}};
-out = eeg_processall_andrew(...
-    stimulus,subject,deviant_percent,patch_options);
-pipeline = out.pipeline;
-outdir = out.outdir;
-
-eeg_file = fullfile(outdirbase,'fthelpers.ft_phaselocked.mat');
-leadfield_file = pipeline.steps{end}.lf.leadfield;
-
-envelope = true;
-resample_idx = 1;
-
-% NOTE old code
-warning('old code');
-pdc_surrogate_check_resample(file_pdc_sig,resample_idx,...
-    'envelope',envelope,...
-    'eeg_file',eeg_file,'leadfield_file',leadfield_file);
-
-%%  check pdc distribution
-if flag_test
-    sample_idx = 40;
-    w_range = [0.2 0.3];
-else
-    sample_idx = 500;
-    downsample_by = 4;
-    fsample = 2048/downsample_by;
-    w_range = [0 10/fsample];
-end
-
-pdc_surrogate_check_distr(file_pdc_sig,sample_idx,'mode','all','w_range',w_range);

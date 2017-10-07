@@ -101,9 +101,9 @@ switch p.Results.null_mode
         % null distribution - no coupling
         % set off diagonal elements to zero
         
-        datalf_nocoupling = [];
-        datalf_nocoupling.Kf = datalf.estimate.Kf;
-        datalf_nocoupling.Kb = datalf.estimate.Kb;
+        datalf_null = [];
+        datalf_null.Kf = datalf.estimate.Kf;
+        datalf_null.Kb = datalf.estimate.Kb;
         % order channels channels
         for i=1:nchannels
             for j=1:nchannels
@@ -111,17 +111,20 @@ switch p.Results.null_mode
                     % do nothing
                 else
                     % remove couplings
-                    datalf_nocoupling.Kf(:,:,i,j) = 0;
-                    datalf_nocoupling.Kb(:,:,i,j) = 0;
+                    datalf_null.Kf(:,:,i,j) = 0;
+                    datalf_null.Kb(:,:,i,j) = 0;
                 end
             end
         end
         
     case 'estimate_ind_channels'
+        % null distribution - no coupling
+        % estimate each channel separately, keeps spectral content but not
+        % coupling between channels
         
-        datalf_nocoupling = [];
-        datalf_nocoupling.Kf = zeros(size(datalf.estimate.Kf));
-        datalf_nocoupling.Kb = zeros(size(datalf.estimate.Kb));
+        datalf_null = [];
+        datalf_null.Kf = zeros(size(datalf.estimate.Kf));
+        datalf_null.Kb = zeros(size(datalf.estimate.Kb));
         
         %sources_file = sources_data.sources_file;
         %data_sources = loadfile(sources_file);
@@ -182,9 +185,48 @@ switch p.Results.null_mode
             
         for i=1:nchannels
             datalf_ch = loadfile(lf_channels{i});
-            datalf_nocoupling.Kf(:,:,i,i) = datalf_ch.estimate.Kf;
-            datalf_nocoupling.Kb(:,:,i,i) = datalf_ch.estimate.Kb;
+            datalf_null.Kf(:,:,i,i) = datalf_ch.estimate.Kf;
+            datalf_null.Kb(:,:,i,i) = datalf_ch.estimate.Kb;
         end
+        
+    case 'estimate_stationary_ns'
+        % null distribution - stationary coefficients
+        % estimate each channel separately, keeps spectral content but not
+        % coupling between channels
+        
+        lfobj = LatticeFilterAnalysis(lfanalysis.file_data_pre,...
+            'outdir',workingdir);
+        lfobj.filter_func = 'NuttallStrand';
+        lfobj.ntrials_max = [];
+        lfobj.ncores = 1;
+        
+        error('step through this code to check parameters');
+        % NOTES
+        % - warmup probably not required
+        % - fields may be different?
+        
+        % copy params
+        lfobj.warmup = options.warmup;
+        lfobj.prepend_data = options.prepend_data;
+        lfobj.normalization = options.normalization;
+        lfobj.envelope = options.envelope;
+        lfobj.tracefields = {'Kf','Kb','Rf','ferror'};
+        
+        % spoof preprocessed data, since it's already preprocessed
+        if fresh || ~exist(lfobj.file_data_pre,'file')
+            copyfile(file_channel,lfobj.file_data_pre,'f');
+        end
+        
+        % set up lattice filter
+        lfobj.set_filter(1,norder,ntrials);%,filter_opts{:});
+        % TODO no filter opts right?
+        
+        lfobj.preprocessing();
+        lfobj.run();
+        lfobj.postprocessing();
+        
+        datalf_null = loadfile(lfobj.file_data_post{1});
+        error('check if datalf_null has Kf and Kb fields');
         
     otherwise
         error('unknown null_mode %s',p.Results.null_mode);
@@ -192,7 +234,7 @@ end
 
 % create TV RC class
 process = VTVRC(nchannels,norder,nsamples);
-process.coefs_set(datalf_nocoupling.Kf,datalf_nocoupling.Kb);
+process.coefs_set(datalf_null.Kf,datalf_null.Kb);
 
 %% surrogate data and lattice filter
 resf = datalf.estimate.ferror(:,:,:,norder); % samples channels trials order
