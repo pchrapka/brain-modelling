@@ -31,7 +31,12 @@ function [file_pdc_sig, files_pdc] = pdc_surrogate(lfanalysis,varargin)
 %           uses the same filter to estimate channels independently,
 %           requires the original data file
 %       estimate_all_channels
-%           uses the reflection coefficients from the filter
+%           uses the reflection coefficients from the filter, and sets the
+%           couplings to 0
+%       estimate_stationary_ns
+%           uses a stationary estimate of the reflection coefficients, so
+%           the null distribution is stationary activity, anything outside
+%           would be nonstationary
 %
 %   permutation_idx (integer, default = 1)
 %       selects permutation from lfanalysis object on which to operate
@@ -39,7 +44,7 @@ function [file_pdc_sig, files_pdc] = pdc_surrogate(lfanalysis,varargin)
 
 p = inputParser();
 addRequired(p,'lfanalysis',@(x) isa(x,'LatticeFilterAnalysis'));
-options_null_mode = {'estimate_ind_channels','estimate_all_channels'};
+options_null_mode = {'estimate_ind_channels','estimate_all_channels','estimate_stationary_ns'};
 addParameter(p,'null_mode','estimate_ind_channels',@(x) any(validatestring(x,options_null_mode)));
 addParameter(p,'nresamples',100,@isnumeric);
 addParameter(p,'pdc_params',{},@iscell);
