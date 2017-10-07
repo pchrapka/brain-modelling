@@ -136,7 +136,7 @@ classdef MCMTLOCCD_TWL4
             %   -----
             %   y (vector)
             %       new measurements at current iteration, the vector has
-            %       the size [channels 1]
+            %       the size [channels trials]
             %
             %   Parameters
             %   ----------

@@ -31,7 +31,7 @@ function [ARF,RCF,RCB,PE] = nuttall_strand(Y, Pmax)
 import tsa.*
 
 % Inititialization
-[N,M] = size(Y);
+[N,M,T] = size(Y); % [samples, channels,trials]
 
 if nargin<2, 
         Pmax=max([N,M])-1;
@@ -41,7 +41,14 @@ if iscell(Y)
         Pmax = min(max(N ,M ),Pmax);
         C    = Y;
 end;
-[C(:,1:M),n] = covm(Y,'M');
+if T > 1
+    Ytemp = permute(Y,[2 1 3]);
+    Ytemp = reshape(Ytemp,[M, N*T]);
+    [C(:,1:M),n] = covm(Ytemp','M');
+    clear Ytemp
+else
+    [C(:,1:M),n] = covm(Y,'M');
+end
 PE(:,1:M)  = C(:,1:M)./n;
 
 
@@ -62,14 +69,22 @@ b = Y;
 
 %the recursive algorithm
 for i = 1:Pmax,
-    v = f(2:end,:);
-    w = b(1:end-1,:);
+    v = f(2:end,:,:);
+    w = b(1:end-1,:,:);
     
     %% normalized, unbiased
-    Rvv = covm(v); %Pfhat
-    Rww = covm(w); %Pbhat
-    Rvw = covm(v,w); %Pfbhat
-    Rwv = covm(w,v); % = Rvw', written out for symmetry
+    Rvv = zero(M);
+    Rww = zero(M);
+    Rvw = zero(M);
+    Rwv = zero(M);
+    for t = 1:T
+        vt = squeeze(v(:,:,t));
+        wt = squeeze(w(:,:,t));
+        Rvv = Rvv + covm(vt); %Pfhat
+        Rww = Rww + covm(wt); %Pbhat
+        Rvw = Rvw + covm(vt,wt); %Pfbhat
+        Rwv = Rwv + covm(wt,vt); % = Rvw', written out for symmetry
+    end
     delta = lyap(Rvv*inv(P(:,:,i)),inv(Pb(:,:,i))*Rww,-2*Rvw);
     
     TsqrtS = chol( P(:,:,i))'; %square root M defined by: M=Tsqrt(M)*Tsqrt(M)'
@@ -81,8 +96,14 @@ for i = 1:Pmax,
     Kb(:,:,i+1)= -TsqrtSb*pc(:,:,i+1)'*inv(TsqrtS);
     
     %filtering the reflection coefficient out:
-    f = (v'+ K(:,:,i+1)*w')';
-    b = (w'+Kb(:,:,i+1)*v')';
+    f = zeros(size(vt));
+    b = zeros(size(vt));
+    for t = 1:T
+        vt = squeeze(v(:,:,t));
+        wt = squeeze(w(:,:,t));
+        f(:,:,t) = (vt'+ K(:,:,i+1)*wt')';
+        b(:,:,t) = (wt'+Kb(:,:,i+1)*vt')';
+    end
     
     %The new R and Rb:
     %residual matrices
