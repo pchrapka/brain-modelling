@@ -73,10 +73,10 @@ for i = 1:Pmax,
     w = b(1:end-1,:,:);
     
     %% normalized, unbiased
-    Rvv = zero(M);
-    Rww = zero(M);
-    Rvw = zero(M);
-    Rwv = zero(M);
+    Rvv = zeros(M);
+    Rww = zeros(M);
+    Rvw = zeros(M);
+    Rwv = zeros(M);
     for t = 1:T
         vt = squeeze(v(:,:,t));
         wt = squeeze(w(:,:,t));
