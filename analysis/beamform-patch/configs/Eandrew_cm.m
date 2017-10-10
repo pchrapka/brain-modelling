@@ -28,6 +28,8 @@ switch data_name(1:3)
         params.ft_channelselection = [params.ft_channelselection {'-A21'}];
     case 's06'
         params.ft_channelselection = [params.ft_channelselection {'-D32','-C10'}];
+    case 's13'
+        params.ft_channelselection = [params.ft_channelselection {'-D10','-D11','-Status'}];
     otherwise
         error('update bad EEG channels for ft_channelselection in %s',mfilename);
 end
