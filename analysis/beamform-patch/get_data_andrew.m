@@ -29,7 +29,7 @@ function [data_file,data_name,elec_file] = get_data_andrew(subject_num,deviant_p
 %       electrode file with modified electrode names to be uniform in case
 
 p = inputParser();
-addRequired(p,'subject_num',@(x) x >= 1 && x <= 10);
+addRequired(p,'subject_num',@(x) x >= 1 && x <= 13);
 addRequired(p,'deviant_percent',@(y) any(arrayfun(@(x) isequal(x,y), [10 20])) );
 parse(p,subject_num,deviant_percent);
 

@@ -68,6 +68,8 @@ switch subject
         cfg_pp.channel = {'EEG','-A21'};
     case 6
         cfg_pp.channel = {'EEG','-D32','-C10'};
+    case 13
+        cfg_pp.channel = {'EEG','-D10','-D11','-Status'};
     otherwise
         error([mfilename ':badchannels'],['check bad channels\n\n'...
             'in this function change interactive = true,\n'...
@@ -212,6 +214,8 @@ switch subject
         cfg_pp.channel = {'EEG','-A21'};
     case 6
         cfg_pp.channel = {'EEG','-D32','-C10'};
+    case  13
+        cfg_pp.channel = {'EEG','-D10','-D11','-Status'};
     otherwise
         error([mfilename ':badchannels'],['check bad channels\n\n'...
             'in this function change interactive = true,\n'...
