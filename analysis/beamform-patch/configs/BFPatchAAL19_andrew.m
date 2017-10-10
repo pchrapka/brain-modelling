@@ -69,6 +69,10 @@ if p.Results.flag_add_auditory
             loc_l = [-48.361679  -18.617739   +8.452695];
             loc_r = [+48.361679  -18.617739   +8.452695];
             
+        case 's13'
+            loc_l = [-57.7563   7.8814   12.7713];
+            loc_r = [-57.7563   7.8814   12.7713];
+            
         otherwise
             warning([mfilename ':dipoles'],'using default P1 dipoles');
             loc_l = [ -45.0, -3.2, 16.2];
@@ -141,6 +145,8 @@ switch data_name(1:3)
         cfg.ft_sourceanalysis.channel = {'EEG','-A21'};
     case 's06'
         cfg.ft_sourceanalysis.channel = {'EEG','-D32','-C10'};
+    case 's13'
+        cfg.ft_sourceanalysis.channel = {'EEG','-D10','-D11','-Status'};
     otherwise
         error('update bad EEG channels for ft_sourceanalysis in %s',mfilename);
 end
