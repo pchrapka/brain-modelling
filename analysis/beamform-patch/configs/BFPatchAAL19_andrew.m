@@ -2,7 +2,7 @@ function cfg = BFPatchAAL19_andrew(meta_data,varargin)
 % BFPatchAAL
 
 p = inputParser();
-addRequired(p,'meta_data',@isstruct);
+addRequired(p,'meta_data',@(x) isa(x,'DataBeta'));
 addParameter(p,'flag_add_auditory',false,@islogical);
 addParameter(p,'flag_add_v1',false,@islogical);
 addParameter(p,'outer',false,@islogical);
@@ -43,8 +43,8 @@ sphere_idx = 1;
 if p.Results.flag_add_auditory
     % P1 dipoles in Talaraich coordinates
     meta_data.load_dipoles();
-    loc_l = obj.dipole_left;
-    loc_r = obj.dipole_right;
+    loc_l = meta_data.dipole_left;
+    loc_r = meta_data.dipole_right;
 
     locs = [loc_l; loc_r];
     locsmni = tal2mni(locs);
