@@ -33,7 +33,7 @@ parse(p,params_subject,pipedir);
 
 %% set up output folder
 
-if isempty(p.pipedir)
+if isempty(p.Results.pipedir)
     % use folder common to all experiments to avoid recomputation
     pipedir = fullfile(pwd,'output','ftb');
     fprintf('using default pipeline output directory:\n\t%s\n',pipedir);
