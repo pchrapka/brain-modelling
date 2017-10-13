@@ -13,7 +13,7 @@ classdef Test_ft_trialfun_triplet < matlab.unittest.TestCase
         function setup(testCase)
             
             % subject specific info
-            [data_file,~,~] = get_data_andrew(3,10);
+            [data_file,~,~] = get_data_beta(3,10);
             
             testCase.dataset = data_file;
 

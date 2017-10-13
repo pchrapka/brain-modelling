@@ -5,7 +5,7 @@ stimulus = 'std';
 subject = 3; 
 deviant_percent = 10;
 patch_options = {'patchmodel','aal-coarse-19','patchoptions',{}};
-out = eeg_processall_andrew(...
+out = eeg_processall_beta(...
     stimulus,subject,deviant_percent,patch_options);
 pipeline = out.pipeline;
 outdir = out.outdir;

@@ -22,7 +22,7 @@ else
 end
 
 %% data file
-[data_file,data_name,elec_file] = get_data_andrew(subject_num,deviant_percent);
+[data_file,data_name,elec_file] = get_data_beta(subject_num,deviant_percent);
 
 dataset = data_file;
 dataset_name = [stimulus '-' data_name];

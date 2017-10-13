@@ -1,6 +1,6 @@
-%% andrew_elec_align
+%% beta_elec_align
 
-pipeline = build_pipeline_beamformerpatch(paramsbf_sd_andrew(4,10,'std'));
+pipeline = build_pipeline_beamformerpatch(paramsbf_sd_beta(4,10,'std'));
 
 step_final = pipeline.steps{end};
 

@@ -1,7 +1,7 @@
-function [data_file,data_name,elec_file] = get_data_andrew(subject_num,deviant_percent)
-%GET_DATA_ANDREW function to retrieve data paths for Andrew's data
+function [data_file,data_name,elec_file] = get_data_beta(subject_num,deviant_percent)
+%GET_DATA_BETA function to retrieve data paths for Andrew's data
 %   [data_file, data_name, elec_file] =
-%       GET_DATA_ANDREW(subject_num,deviant_percent) 
+%       GET_DATA_BETA(subject_num,deviant_percent) 
 %   function to retrieve data paths for Andrew's data
 %
 %   Input
@@ -33,21 +33,9 @@ addRequired(p,'subject_num',@(x) x >= 1 && x <= 13);
 addRequired(p,'deviant_percent',@(y) any(arrayfun(@(x) isequal(x,y), [10 20])) );
 parse(p,subject_num,deviant_percent);
 
-% get the data folder
-comp_name = get_compname();
-switch comp_name
-    case {'blade16.ece.mcmaster.ca', sprintf('blade16.ece.mcmaster.ca\n')}
-        rootdir = get_root_dir(comp_name);
-    otherwise
-        rootdir = '/media/phil/p.eanut';
-end
+data_params = data_beta_config();
+data_dir = data_params.data_dir;
 
-% set up outputs
-data_dir = fullfile(rootdir,'projects','data-andrew-beta');
-if ~exist(data_dir,'dir')
-    error([mfilename ':MissingData'],...
-        'cannot find data-andrew-beta');
-end
 data_file = fullfile(data_dir,sprintf('exp%02d_%d.bdf',subject_num,deviant_percent));
 elec_file = fullfile(data_dir,sprintf('exp%02d_mod.sfp',subject_num));
 

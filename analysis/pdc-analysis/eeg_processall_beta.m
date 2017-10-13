@@ -1,9 +1,9 @@
-function out = eeg_processall_andrew(stimulus,subject,deviant_percent,patch_options)
+function out = eeg_processall_beta(stimulus,subject,deviant_percent,patch_options)
 % all eeg processing for Andrew's data, top level function 
 
 %% output dir
 
-[data_file,data_name,~] = get_data_andrew(subject,deviant_percent);
+[data_file,data_name,~] = get_data_beta(subject,deviant_percent);
 
 % dataset = data_file;
 data_name2 = sprintf('%s-%s',stimulus,data_name);
@@ -11,13 +11,13 @@ analysis_dir = fullfile(get_project_dir(),'analysis','pdc-analysis');
 outdir = fullfile(analysis_dir,'output',data_name2);
 
 %% preprocess data for beamforming
-eeg_preprocessing_andrew(subject,deviant_percent,stimulus,...
+eeg_preprocessing_beta(subject,deviant_percent,stimulus,...
     'outdir',outdir);
 
 %% beamform sources
-params_subject = paramsbf_sd_andrew(...
+params_subject = paramsbf_sd_beta(...
     subject,deviant_percent,stimulus,patch_options{:});
-pipedir = get_data_andrew_pipedir();
+pipedir = get_data_beta_pipedir();
 pipeline = build_pipeline_beamformerpatch(params_subject,pipedir); 
 pipeline.process();
 

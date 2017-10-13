@@ -1,4 +1,4 @@
-function params = paramsbf_sd_andrew(subject_num,deviant_percent,stimulus,varargin)
+function params = paramsbf_sd_beta(subject_num,deviant_percent,stimulus,varargin)
 % params for subject from Andrew's beta study
 
 p = inputParser();
@@ -6,7 +6,7 @@ addParameter(p,'patchmodel','aal',@ischar);
 addParameter(p,'patchoptions',{},@iscell);
 parse(p,varargin{:});
 
-[data_file,data_name,elec_file] = get_data_andrew(subject_num,deviant_percent);
+[data_file,data_name,elec_file] = get_data_beta(subject_num,deviant_percent);
 
 %% create data specific configs
 MRIicbm152();

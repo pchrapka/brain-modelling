@@ -1,6 +1,6 @@
-%% andrew_eeg_setup
+%% beta_eeg_setup
 
-[data_file,~,~] = get_data_andrew(4,10);
+[data_file,~,~] = get_data_beta(4,10);
 
 %% Check header and events
 cfg = [];
@@ -17,7 +17,7 @@ cfg = ft_definetrial(cfg);
 
 %% check single trial stuff
 
-pipeline = build_pipeline_beamformerpatch(paramsbf_sd_andrew(6,10,'std'));
+pipeline = build_pipeline_beamformerpatch(paramsbf_sd_beta(6,10,'std'));
 
 eeg_obj = pipeline.steps{end}.get_dep('ftb.EEG');
 

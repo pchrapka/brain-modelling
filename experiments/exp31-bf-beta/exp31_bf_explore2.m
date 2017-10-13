@@ -23,7 +23,7 @@ else
 end
 
 %%
-[~,data_name,~] = get_data_andrew(subject,deviant_percent);
+[~,data_name,~] = get_data_beta(subject,deviant_percent);
 
 data_name2 = sprintf('%s-%s',stimulus,data_name);
 outdir = fullfile(script_dir,'output',data_name2);
@@ -38,8 +38,8 @@ params = {...
 %% beamforming
 
 pipeline = build_pipeline_beamformerpatch(...
-    paramsbf_sd_andrew(subject,deviant_percent,stimulus,patch_options{:}),...
-    get_data_andrew_pipedir()); 
+    paramsbf_sd_beta(subject,deviant_percent,stimulus,patch_options{:}),...
+    get_data_beta_pipedir()); 
 pipeline.process();
 
 %%

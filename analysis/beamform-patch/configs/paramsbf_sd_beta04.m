@@ -1,9 +1,9 @@
-function params = paramsbf_sd_andrew04(stimulus)
+function params = paramsbf_sd_beta04(stimulus)
 % params for subject 04
 
 subject_num = 4;
 deviant_percent = 10;
-[data_file,data_name,elec_file] = get_data_andrew(subject_num,deviant_percent);
+[data_file,data_name,elec_file] = get_data_beta(subject_num,deviant_percent);
 
 %% create data specific configs
 MRIicbm152();

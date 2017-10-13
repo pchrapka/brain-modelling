@@ -1,18 +1,39 @@
 function pipeline = build_pipeline_beamformerpatch(params_subject,pipedir)
-%BUILD_PIPELINE_BEAMFORMERPATCH builds pipeline for ftb.BeamformerPatch
+%BUILD_PIPELINE_BEAMFORMERPATCH builds a pipeline for ftb.BeamformerPatch
+%   BUILD_PIPELINE_BEAMFORMERPATCH(params_subject, pipedir) builds an
+%   ftb.AnalysisBeamformer pipeline for ftb.BeamformerPatch
 %
-%   params_subject (string)
-%       parameter file for subject data and beamformer configuration
+%   Input
+%   -----
+%   params_subject (string/struct)
+%       parameter file or struct for subject data and beamformer configuration
+%
+%       this pipeline requires the following fields:
+%           mri     containing options for ftb.MRI
+%           hm      containing options for ftb.Headmodel
+%           elec    containing options for ftb.Electrodes
+%           lf      containing options for ftb.Leadfield
+%           eeg     containing options for ftb.EEG
+%           bf      containing options for ftb.BeamformerPatch
+%
+%       see paramsbf_sd_beta() for examples
+%
+%   pipedir (string, default=pwd/output/ftb)
+%       output directory for pipeline
+%
+%   Output
+%   ------
+%   pipeline (ftb.AnalysisBeamformer object)
+%       return an ftb.AnalysisBeamformer object
 
 p = inputParser();
-p.StructExpand = false;
 addRequired(p,'params_subject',@(x) ischar(x) || isstruct(x));
 addOptional(p,'pipedir','',@ischar);
 parse(p,params_subject,pipedir);
 
 %% set up output folder
 
-if isempty(pipedir)
+if isempty(p.pipedir)
     % use folder common to all experiments to avoid recomputation
     pipedir = fullfile(pwd,'output','ftb');
     fprintf('using default pipeline output directory:\n\t%s\n',pipedir);
@@ -74,8 +95,11 @@ for i=1:length(param_list)
     field = param_list(i).field;
     
     if isfield(params_sd,field)
+        % generate the pipeline step name
         step_name = get_analysis_step_name(params_sd.(field),param_list(i).prefix);
+        % generate the constructor function
         ftb_handle = str2func(['ftb.' param_list(i).class]);
+        % call the constructor for the current step
         step = ftb_handle(params_sd.(field),step_name);
         
         % add step
@@ -86,6 +110,8 @@ for i=1:length(param_list)
 
 end
 
+% NOTE code below is (mostly) identical to the loop above
+%
 % %% set up MRI
 % step_name = get_analysis_step_name(params_sd.mri,'MRI');
 % m = ftb.MRI(params_sd.mri,step_name);

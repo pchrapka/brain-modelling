@@ -1,6 +1,6 @@
-function eeg_preprocessing_andrew(subject, deviant_percent, stimulus, varargin)
-%EEG_PREPROCESSING_ANDREW preprocesses EEG data according to Andrew's method
-%   EEG_PREPROCESSING_ANDREW(subject, deviant_percent, stimulus) preprocesses EEG
+function eeg_preprocessing_beta(subject, deviant_percent, stimulus, varargin)
+%EEG_PREPROCESSING_BETA preprocesses EEG data according to Andrew's method
+%   EEG_PREPROCESSING_BETA(subject, deviant_percent, stimulus) preprocesses EEG
 %   data according to Andrew's method
 %
 %   Input
@@ -47,7 +47,7 @@ params = {...
 
 %% get data
 
-[dataset,~,~] = get_data_andrew(subject,deviant_percent);
+[dataset,~,~] = get_data_beta(subject,deviant_percent);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% de-artifact
