@@ -81,7 +81,7 @@ end
 
 %% ft_definetrial for artifact rejection
 cfg_dt = [];
-cfg_dt.dataset = dataset;
+cfg_dt.dataset = params_data.data_file;
 % use default function
 switch stimulus
     case 'std'
@@ -192,7 +192,7 @@ clear cfg_at
 
 cfg_pp = [];
 %cfg_pp.method = 'trial';
-cfg_pp.dataset = dataset;   % needs dataset field in this case
+cfg_pp.dataset = params_data.data_file;   % needs dataset field in this case
 cfg_pp.continuous = 'yes';
 cfg_pp.detrend = 'no';
 cfg_pp.demean = 'no';       % filter should handle this
@@ -207,7 +207,7 @@ file_pp = fthelpers.run_ft_function('ft_preprocessing',cfg_pp,params{:});
 
 %% ft_definetrial
 cfg_dt = [];
-cfg_dt.dataset = dataset;
+cfg_dt.dataset = params_data.data_file;
 % use default function
 switch stimulus
     case 'std'
