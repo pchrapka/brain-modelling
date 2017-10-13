@@ -47,7 +47,8 @@ params = {...
 
 %% get data
 
-[dataset,~,~] = get_data_beta(subject,deviant_percent);
+params_data = get_data_beta(subject,deviant_percent);
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% de-artifact
@@ -56,7 +57,7 @@ params = {...
 
 cfg_pp = [];
 %cfg_pp.method = 'trial';
-cfg_pp.dataset = dataset;   % needs dataset field in this case
+cfg_pp.dataset = params_data.data_file;   % needs dataset field in this case
 cfg_pp.continuous = 'yes';
 cfg_pp.detrend = 'no';
 cfg_pp.demean = 'no';       % filter should handle this

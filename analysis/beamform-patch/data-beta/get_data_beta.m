@@ -1,4 +1,4 @@
-function [data_file,data_name,elec_file] = get_data_beta(subject_num,deviant_percent)
+function out = get_data_beta(subject_num,deviant_percent)
 %GET_DATA_BETA function to retrieve data paths for Andrew's data
 %   [data_file, data_name, elec_file] =
 %       GET_DATA_BETA(subject_num,deviant_percent) 
@@ -20,6 +20,9 @@ function [data_file,data_name,elec_file] = get_data_beta(subject_num,deviant_per
 %
 %   Output
 %   ------
+%   out (struct)
+%       output struct with the following fields
+%
 %   data_file (string)
 %       absolute data file path
 %   data_name (string)
@@ -27,6 +30,10 @@ function [data_file,data_name,elec_file] = get_data_beta(subject_num,deviant_per
 %       percent], ex. s03-10
 %   elec_file (string)
 %       electrode file with modified electrode names to be uniform in case
+%   elecbad_file (string)
+%       file with bad electrode names
+%   elecbad_channels (cell array)
+%       cell array of bad channels
 
 p = inputParser();
 addRequired(p,'subject_num',@(x) x >= 1 && x <= 13);
@@ -38,6 +45,7 @@ data_dir = data_params.data_dir;
 
 data_file = fullfile(data_dir,sprintf('exp%02d_%d.bdf',subject_num,deviant_percent));
 elec_file = fullfile(data_dir,sprintf('exp%02d_mod.sfp',subject_num));
+elecbad_file = strrep(data_file,'bdf','bad');
 
 if ~exist(elec_file,'file')
     % remove the hyphen in the electrode file to match the eeg header
@@ -65,5 +73,25 @@ if ~exist(elec_file,'file')
 end
 
 data_name = sprintf('s%02d-%d',subject_num,deviant_percent);
+
+if exist(elecbad_file,'file')
+    fid = fopen(elecbad_file);
+    elecbad_channels = textscan(fid,'%s');
+    fclose(fid);
+    
+    % remove the first one
+    elecbad_channels(1) = [];
+    % remove hyphens
+    elecbad_channels = cellfun(@(x) strrep(x,'-',''), elecbad_channels,'UniformOutput',false);
+else
+    error('missing bad electrode file:\n\t%s\nfor: %s\n',elecbad_file,data_file);
+end
+
+out = [];
+out.data_file = data_file;
+out.data_name = data_name;
+out.elec_file = elec_file;
+out.elecbad_file = elecbad_file;
+out.elecbad_channels = elecbad_channels;
 
 end

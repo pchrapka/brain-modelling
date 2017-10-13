@@ -9,7 +9,7 @@ patch_options = {...
     'patchmodel',patch_model,...
     'patchoptions',{}};
 
-[~,data_name,~] = get_data_beta(subject,deviant_percent);
+params_data = get_data_beta(subject,deviant_percent);
 
 pipeline = build_pipeline_beamformerpatch(...
     paramsbf_sd_beta(subject,deviant_percent,stimulus,patch_options{:}),...
@@ -32,7 +32,7 @@ lambda = 0.99;
 
 verbosity = 0;
 
-name = sprintf('lf-bf-ch%d-%s-%s',nchannels,data_name,stimulus);
+name = sprintf('lf-bf-ch%d-%s-%s',nchannels,params_data.data_name,stimulus);
 
 %% set up benchmark params
 gammas = linspace(1,30,10);

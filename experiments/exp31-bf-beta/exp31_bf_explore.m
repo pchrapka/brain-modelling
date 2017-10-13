@@ -10,7 +10,7 @@ patch_options = {...
 %     'patchmodel','aal-coarse-13',...
 %     'patchoptions',{}};
 
-[~,data_name,~] = get_data_beta(subject,deviant_percent);
+params_data = get_data_beta(subject,deviant_percent);
 
 pipeline = build_pipeline_beamformerpatch(...
     paramsbf_sd_beta(subject,deviant_percent,stimulus,patch_options{:}),...
@@ -19,7 +19,7 @@ pipeline.process();
 
 %%
 
-data_name2 = sprintf('%s-%s',stimulus,data_name);
+data_name2 = sprintf('%s-%s',stimulus,params_data.data_name);
 eeg = loadfile(fullfile('output',data_name2,'ft_rejectartifact.mat');
 
 %%

@@ -3,10 +3,10 @@ function out = eeg_processall_beta(stimulus,subject,deviant_percent,patch_option
 
 %% output dir
 
-[data_file,data_name,~] = get_data_beta(subject,deviant_percent);
+params_data = get_data_beta(subject,deviant_percent);
 
 % dataset = data_file;
-data_name2 = sprintf('%s-%s',stimulus,data_name);
+data_name2 = sprintf('%s-%s',stimulus,params_data.data_name);
 analysis_dir = fullfile(get_project_dir(),'analysis','pdc-analysis');
 outdir = fullfile(analysis_dir,'output',data_name2);
 

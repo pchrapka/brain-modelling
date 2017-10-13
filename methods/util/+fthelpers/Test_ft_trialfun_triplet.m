@@ -13,9 +13,9 @@ classdef Test_ft_trialfun_triplet < matlab.unittest.TestCase
         function setup(testCase)
             
             % subject specific info
-            [data_file,~,~] = get_data_beta(3,10);
+            params_data = get_data_beta(3,10);
             
-            testCase.dataset = data_file;
+            testCase.dataset = params_data.data_file;
 
             % error free config
             testCase.config = [];

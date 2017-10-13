@@ -23,9 +23,9 @@ else
 end
 
 %%
-[~,data_name,~] = get_data_beta(subject,deviant_percent);
+params_data = get_data_beta(subject,deviant_percent);
 
-data_name2 = sprintf('%s-%s',stimulus,data_name);
+data_name2 = sprintf('%s-%s',stimulus,params_data.data_name);
 outdir = fullfile(script_dir,'output',data_name2);
 
 params = {...

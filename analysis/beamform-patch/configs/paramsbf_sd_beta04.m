@@ -3,14 +3,14 @@ function params = paramsbf_sd_beta04(stimulus)
 
 subject_num = 4;
 deviant_percent = 10;
-[data_file,data_name,elec_file] = get_data_beta(subject_num,deviant_percent);
+params_data = get_data_beta(subject_num,deviant_percent);
 
 %% create data specific configs
 MRIicbm152();
 HMicbm152_dipoli_cm();
-params_elec = Eandrew_warpgr_cm(elec_file);
+params_elec = Eandrew_warpgr_cm(params_data.elec_file);
 
-params_eeg = EEGandrew_stddev(data_file, data_name, stimulus);
+params_eeg = EEGandrew_stddev(params_data.data_file, params_data.data_name, stimulus);
 
 %% assign configs for analysis
 params = [];

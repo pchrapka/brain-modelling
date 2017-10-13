@@ -23,10 +23,10 @@ end
 outdir = fullfile(script_dir,'output');
 
 %% data file
-[data_file,data_name,elec_file] = get_data_beta(subject_num,deviant_percent);
+params_data = get_data_beta(subject_num,deviant_percent);
 
-dataset = data_file;
-dataset_name = [stimulus '-' data_name(1:3)];
+dataset = params_data.data_file;
+dataset_name = [stimulus '-' params_data.data_name(1:3)];
 
 %% ft_preprocessing
 

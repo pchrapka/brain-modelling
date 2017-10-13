@@ -22,10 +22,10 @@ else
 end
 
 %% data file
-[data_file,data_name,elec_file] = get_data_beta(subject_num,deviant_percent);
+params_data = get_data_beta(subject_num,deviant_percent);
 
-dataset = data_file;
-dataset_name = [stimulus '-' data_name];
+dataset = params_data.data_file;
+dataset_name = [stimulus '-' params_data.data_name];
 
 outdir = fullfile(script_dir,'output',dataset_name);
 
