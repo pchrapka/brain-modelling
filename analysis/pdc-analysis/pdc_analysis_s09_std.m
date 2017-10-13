@@ -1,4 +1,4 @@
-%% pdc_analysis_s13_std
+%% pdc_analysis_s09_std
 % run pdc analysis variations for a few gammas
 
 flag_tune = true;
@@ -22,29 +22,29 @@ i = 1;
 i = 1;
 paramsmini(j).hemi = 'left';
 paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 7;
+paramsmini(j).params(i).order = 0;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 13;
+paramsmini(j).params(i).order = 0;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-3;
-paramsmini(j).params(i).order = 5;
+paramsmini(j).params(i).order = 0;
 j = j+1;
 
 i = 1;
 paramsmini(j).hemi = 'right';
 paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 5;
+paramsmini(j).params(i).order = 0;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 9;
+paramsmini(j).params(i).order = 0;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-3;
-paramsmini(j).params(i).order = 5;
+paramsmini(j).params(i).order = 0;
 
 nhemis = length(paramsmini);
 for j=1:nhemis
@@ -95,7 +95,7 @@ for j=1:nhemis
     %% set up eeg
     
     stimulus = 'std';
-    subject = 13;
+    subject = 9;
     deviant_percent = 10;
     patch_options = {...
         'patchmodel','aal-coarse-19',...
