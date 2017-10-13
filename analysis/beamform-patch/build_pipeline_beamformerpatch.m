@@ -1,13 +1,22 @@
-function pipeline = build_pipeline_beamformerpatch(params_subject)
+function pipeline = build_pipeline_beamformerpatch(params_subject,pipedir)
 %BUILD_PIPELINE_BEAMFORMERPATCH builds pipeline for ftb.BeamformerPatch
 %
 %   params_subject (string)
 %       parameter file for subject data and beamformer configuration
 
+p = inputParser();
+p.StructExpand = false;
+addRequired(p,'params_subject',@(x) ischar(x) || isstruct(x));
+addOptional(p,'pipedir','',@ischar);
+parse(p,params_subject,pipedir);
+
 %% set up output folder
 
-% use folder common to all experiments to avoid recomputation
-pipedir = get_data_andrew_pipeline();
+if isempty(pipedir)
+    % use folder common to all experiments to avoid recomputation
+    pipedir = fullfile(pwd,'output','ftb');
+    fprintf('using default pipeline output directory:\n\t%s\n',pipedir);
+end
 
 % %% set up parallel pool
 % parfor_setup();

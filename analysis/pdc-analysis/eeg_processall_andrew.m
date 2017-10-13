@@ -15,9 +15,10 @@ eeg_preprocessing_andrew(subject,deviant_percent,stimulus,...
     'outdir',outdir);
 
 %% beamform sources
-params_pipe = paramsbf_sd_andrew(...
+params_subject = paramsbf_sd_andrew(...
     subject,deviant_percent,stimulus,patch_options{:});
-pipeline = build_pipeline_beamformerpatch(params_pipe); 
+pipedir = get_data_andrew_pipedir();
+pipeline = build_pipeline_beamformerpatch(params_subject,pipedir); 
 pipeline.process();
 
 %% compute induced sources
@@ -32,7 +33,7 @@ eeg_induced(sources_file, eeg_file, lf_file, 'outdir',outdir);
 eeg_file = fullfile(outdir,'fthelpers.ft_phaselocked.mat');
 % NOTE eeg_file needed only for fsample
 [file_sources_info,file_sources] = eeg_prep_lattice_filter(...
-    sources_file, eeg_file, lf_file, 'outdir', outdir, 'patch_type', params_pipe.bf.patchmodel_name);
+    sources_file, eeg_file, lf_file, 'outdir', outdir, 'patch_type', params_subject.bf.patchmodel_name);
 
 %% save outputs
 out = [];

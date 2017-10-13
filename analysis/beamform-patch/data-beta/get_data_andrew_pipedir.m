@@ -1,4 +1,4 @@
-function pipedir = get_data_andrew_pipeline()
+function pipedir = get_data_andrew_pipedir()
 
 % get the data folder
 [data_file,~,~] = get_data_andrew(6,10);
