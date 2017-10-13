@@ -1,7 +1,7 @@
 %% run_bf_patch_andrew
 
 %% standard trials
-pipeline = build_pipeline_beamformer(paramsbf_sd_andrew(6,10,'std')); 
+pipeline = build_pipeline_beamformerpatch(paramsbf_sd_andrew(6,10,'std')); 
 pipeline.process();
 
 %% visual checks
@@ -21,5 +21,5 @@ if do_plots
 end
 
 %% deviant trials
-% pipeline = build_pipeline_beamformer(paramsbf_sd_andrew(6,10,'odd'));
+% pipeline = build_pipeline_beamformerpatch(paramsbf_sd_andrew(6,10,'odd'));
 % pipeline.process();

@@ -114,6 +114,8 @@ addpath(fullfile(pwd,'analysis','lattice-svm','params'));
 addpath(fullfile(pwd,'analysis','beamform-patch'));
 addpath(fullfile(pwd,'analysis','beamform-patch','tests'));
 addpath(fullfile(pwd,'analysis','beamform-patch','configs'));
+addpath(fullfile(pwd,'analysis','beamform-patch','data-beta'));
+addpath(fullfile(pwd,'analysis','beamform-patch','data-coma'));
 addpath(fullfile(pwd,'visualizations'));
 
 %% archived functions

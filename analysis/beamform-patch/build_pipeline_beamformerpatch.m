@@ -1,5 +1,5 @@
-function pipeline = build_pipeline_beamformer(params_subject)
-%BUILD_PIPELINE_BEAMFORMER builds beamformer pipeline
+function pipeline = build_pipeline_beamformerpatch(params_subject)
+%BUILD_PIPELINE_BEAMFORMERPATCH builds pipeline for ftb.BeamformerPatch
 %
 %   params_subject (string)
 %       parameter file for subject data and beamformer configuration

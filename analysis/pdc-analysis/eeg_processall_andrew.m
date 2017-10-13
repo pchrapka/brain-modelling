@@ -17,7 +17,7 @@ eeg_preprocessing_andrew(subject,deviant_percent,stimulus,...
 %% beamform sources
 params_pipe = paramsbf_sd_andrew(...
     subject,deviant_percent,stimulus,patch_options{:});
-pipeline = build_pipeline_beamformer(params_pipe); 
+pipeline = build_pipeline_beamformerpatch(params_pipe); 
 pipeline.process();
 
 %% compute induced sources

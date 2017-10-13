@@ -17,7 +17,7 @@ cfg = ft_definetrial(cfg);
 
 %% check single trial stuff
 
-pipeline = build_pipeline_beamformer(paramsbf_sd_andrew(6,10,'std'));
+pipeline = build_pipeline_beamformerpatch(paramsbf_sd_andrew(6,10,'std'));
 
 eeg_obj = pipeline.steps{end}.get_dep('ftb.EEG');
 
