@@ -1,15 +1,10 @@
-function params = Eandrew_cm(elec_file, data_name)
+function params = Eandrew_cm(meta_data)
 % Eandrew_cm
 
-p = inputParser;
-addRequired(p,'elec_file',@ischar);
-addRequired(p,'data_name',@ischar);
-parse(p,elec_file,data_name);
-
 params = [];
-params.name = [strrep('andrew_cm','_','-') '-' data_name(1:3)];
+params.name = [strrep('andrew_cm','_','-') '-' meta_data.data_name(1:3)];
 % Processing options
-params.elec_orig = elec_file;
+params.elec_orig = meta_data.elec_file;
 params.units = 'cm';
 params.fiducials = {...
     'NAS','NZ',...
@@ -21,21 +16,14 @@ params.ft_electroderealign.casesensitive = 'no';
 
 % remove unnecessary channels from later processing
 params.ft_channelselection = {'all','-NZ','-LPA','-RPA','-CMS'};
-switch data_name(1:3)
-    case 's03'
-        % all good
-    case 's05'
-        params.ft_channelselection = [params.ft_channelselection {'-A21'}];
-    case 's06'
-        params.ft_channelselection = [params.ft_channelselection {'-D32','-C10'}];
-    case 's13'
-        params.ft_channelselection = [params.ft_channelselection {'-D10','-D11','-Status'}];
-    otherwise
-        error('update bad EEG channels for ft_channelselection in %s',mfilename);
-end
+
+meta_data.load_bad_channels();
+% add minus signs in front of each channel
+badchannel_list = cellfun(@(x) ['-' x], meta_data.elecbad_channels, 'UniformOutput',false);
+params.ft_channelselection = [params.ft_channelselection, badchannel_list(:)'];
 
 % save config
-config_file = [strrep(mfilename,'_','-') '-' data_name(1:3) '.mat'];
+config_file = [strrep(mfilename,'_','-') '-' meta_data.data_name(1:3) '.mat'];
 
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 save(fullfile(srcdir, config_file),'params');
