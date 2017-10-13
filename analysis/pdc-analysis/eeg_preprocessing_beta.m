@@ -47,8 +47,10 @@ params = {...
 
 %% get data
 
-params_data = get_data_beta(subject,deviant_percent);
-
+params_data = DataBeta(subject,deviant_percent);
+params_data.load_bad_channels();
+% add minus signs in front of each channel
+badchannel_list = cellfun(@(x) ['-' x], params_data.elecbad_channels, 'UniformOutput',false);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% de-artifact
@@ -62,21 +64,7 @@ cfg_pp.continuous = 'yes';
 cfg_pp.detrend = 'no';
 cfg_pp.demean = 'no';       % filter should handle this
 % cfg_pp.baselinewindow = [-0.1 0];
-switch subject
-    case 3
-        cfg_pp.channel = {'EEG'};
-    case 5
-        cfg_pp.channel = {'EEG','-A21'};
-    case 6
-        cfg_pp.channel = {'EEG','-D32','-C10'};
-    case 13
-        cfg_pp.channel = {'EEG','-D10','-D11','-Status'};
-    otherwise
-        error([mfilename ':badchannels'],['check bad channels\n\n'...
-            'in this function change interactive = true,\n'...
-            'set break points in the interactive sections and rerun script.\n'...
-            'then remove channels as appropriate.\n']);
-end
+cfg_pp.channel = ['EEG', badchannel_list(:)'];
 cfg_pp.bpfilter = 'yes';
 cfg_pp.bpfreq = [1 60];
 cfg_pp.bpfilttype = 'but';
@@ -208,21 +196,7 @@ cfg_pp.dataset = dataset;   % needs dataset field in this case
 cfg_pp.continuous = 'yes';
 cfg_pp.detrend = 'no';
 cfg_pp.demean = 'no';       % filter should handle this
-switch subject
-    case 3
-        cfg_pp.channel = {'EEG'};
-    case 5
-        cfg_pp.channel = {'EEG','-A21'};
-    case 6
-        cfg_pp.channel = {'EEG','-D32','-C10'};
-    case  13
-        cfg_pp.channel = {'EEG','-D10','-D11','-Status'};
-    otherwise
-        error([mfilename ':badchannels'],['check bad channels\n\n'...
-            'in this function change interactive = true,\n'...
-            'set break points in the interactive sections and rerun script.\n'...
-            'then remove channels as appropriate.\n']);
-end
+cfg_pp.channel = ['EEG', badchannel_list(:)'];
 cfg_pp.bpfilter = 'yes';
 cfg_pp.bpfreq = [15 25];
 cfg_pp.bpfilttype = 'but';

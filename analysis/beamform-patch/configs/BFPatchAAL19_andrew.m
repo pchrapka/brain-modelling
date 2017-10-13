@@ -1,14 +1,14 @@
-function cfg = BFPatchAAL19_andrew(data_name,varargin)
+function cfg = BFPatchAAL19_andrew(meta_data,varargin)
 % BFPatchAAL
 
 p = inputParser();
-addRequired(p,'data_name',@ischar);
+addRequired(p,'meta_data',@isstruct);
 addParameter(p,'flag_add_auditory',false,@islogical);
 addParameter(p,'flag_add_v1',false,@islogical);
 addParameter(p,'outer',false,@islogical);
 addParameter(p,'cerebellum',true,@islogical);
 addParameter(p,'hemisphere','both',@ischar);
-parse(p,data_name,varargin{:});
+parse(p,meta_data,varargin{:});
 
 patchmodel_params = {...
     'outer',p.Results.outer,...
@@ -42,42 +42,10 @@ sphere_patch = {};
 sphere_idx = 1;
 if p.Results.flag_add_auditory
     % P1 dipoles in Talaraich coordinates
-    switch data_name(1:3)
-        case 's03'
-            loc_l = [-34.357361   -8.505583   +9.360396];
-            %         '12: no_label_found'
-            %         '5: Insula_L'
-            %         '3: Putamen_L'
-            %         '3: Thalamus_L'
-            %         '2: Rolandic_Oper_L'
-            %         '2: Caudate_L'
-            %         '2: Heschl_L'
-            %         '1: Precentral_L'
-            %         '1: Pallidum_L'
-            %         '1: Temporal_Sup_L'
-            
-            loc_r = [+34.357361   -8.505583   +9.360396];
-            %         '9: no_label_found'
-            %         '6: Insula_R'
-            %         '5: Putamen_R'
-            %         '4: Thalamus_R'
-            %         '3: Rolandic_Oper_R'
-            %         '3: Caudate_R'
-            %         '1: Pallidum_R'
-            %         '1: Heschl_R'
-        case 's05'
-            loc_l = [-48.361679  -18.617739   +8.452695];
-            loc_r = [+48.361679  -18.617739   +8.452695];
-            
-        case 's13'
-            loc_l = [-57.7563   7.8814   12.7713];
-            loc_r = [-57.7563   7.8814   12.7713];
-            
-        otherwise
-            warning([mfilename ':dipoles'],'using default P1 dipoles');
-            loc_l = [ -45.0, -3.2, 16.2];
-            loc_r = [ 45.0, -3.2, 16.2];
-    end
+    meta_data.load_dipoles();
+    loc_l = obj.dipole_left;
+    loc_r = obj.dipole_right;
+
     locs = [loc_l; loc_r];
     locsmni = tal2mni(locs);
     locsmni = locsmni/10; % convert to cm
@@ -138,23 +106,17 @@ cfg.ft_sourceanalysis.rawtrial = 'yes';
 cfg.ft_sourceanalysis.method = 'lcmv';
 cfg.ft_sourceanalysis.lcmv.keepmom = 'yes';
 cfg.ft_sourceanalysis.lcmv.lambda = '1%';
-switch data_name(1:3)
-    case 's03'
-        % all good
-    case 's05'
-        cfg.ft_sourceanalysis.channel = {'EEG','-A21'};
-    case 's06'
-        cfg.ft_sourceanalysis.channel = {'EEG','-D32','-C10'};
-    case 's13'
-        cfg.ft_sourceanalysis.channel = {'EEG','-D10','-D11','-Status'};
-    otherwise
-        error('update bad EEG channels for ft_sourceanalysis in %s',mfilename);
-end
+
+meta_data.load_bad_channels();
+% add minus signs in front of each channel
+badchannel_list = cellfun(@(x) ['-' x], meta_data.elecbad_channels, 'UniformOutput',false);
+% add bad channels
+cfg.ft_sourceanalysis.channel = ['EEG', badchannel_list(:)'];
 
 cfg.name = sprintf('%s-%s-%s',...
     patchmodel_name,...
     cfg.ft_sourceanalysis.method,...
-    data_name(1:3));
+    meta_data.data_name(1:3));
 
 [srcdir,~,~] = fileparts(mfilename('fullpath'));
 save(fullfile(srcdir, [strrep(mfilename,'_','-') '.mat']),'cfg');

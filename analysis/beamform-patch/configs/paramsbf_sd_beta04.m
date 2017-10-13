@@ -3,7 +3,7 @@ function params = paramsbf_sd_beta04(stimulus)
 
 subject_num = 4;
 deviant_percent = 10;
-params_data = get_data_beta(subject_num,deviant_percent);
+params_data = DataBeta(subject_num,deviant_percent);
 
 %% create data specific configs
 MRIicbm152();

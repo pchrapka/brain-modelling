@@ -23,7 +23,7 @@ else
 end
 
 %%
-params_data = get_data_beta(subject,deviant_percent);
+params_data = DataBeta(subject,deviant_percent);
 
 data_name2 = sprintf('%s-%s',stimulus,params_data.data_name);
 outdir = fullfile(script_dir,'output',data_name2);

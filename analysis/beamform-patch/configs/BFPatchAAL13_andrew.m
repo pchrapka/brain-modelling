@@ -1,4 +1,4 @@
-function cfg = BFPatchAAL13_andrew(data_name)
+function cfg = BFPatchAAL13_andrew(meta_data)
 % BFPatchAAL
 
 cfg = [];
@@ -11,12 +11,12 @@ cfg.ft_sourceanalysis.rawtrial = 'yes';
 cfg.ft_sourceanalysis.method = 'lcmv';
 cfg.ft_sourceanalysis.lcmv.keepmom = 'yes';
 cfg.ft_sourceanalysis.lcmv.lambda = '1%';
-switch data_name(1:3)
-    case 's06'
-        cfg.ft_sourceanalysis.channel = {'EEG','-D32','-C10'};
-    otherwise
-        warning('update bad EEG channels for ft_sourceanalysis in %s',mfilename);
-end
+
+meta_data.load_bad_channels();
+% add minus signs in front of each channel
+badchannel_list = cellfun(@(x) ['-' x], meta_data.elecbad_channels, 'UniformOutput',false);
+% add bad channels
+cfg.ft_sourceanalysis.channel = ['EEG', badchannel_list(:)'];
 
 cfg.name = sprintf('%s-%s',...
     cfg.PatchModel{1},...

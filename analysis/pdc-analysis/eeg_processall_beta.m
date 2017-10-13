@@ -3,7 +3,7 @@ function out = eeg_processall_beta(stimulus,subject,deviant_percent,patch_option
 
 %% output dir
 
-params_data = get_data_beta(subject,deviant_percent);
+params_data = DataBeta(subject,deviant_percent);
 
 % dataset = data_file;
 data_name2 = sprintf('%s-%s',stimulus,params_data.data_name);

@@ -1,6 +1,6 @@
 %% beta_eeg_setup
 
-params_data = get_data_beta(4,10);
+params_data = DataBeta(4,10);
 
 %% Check header and events
 cfg = [];

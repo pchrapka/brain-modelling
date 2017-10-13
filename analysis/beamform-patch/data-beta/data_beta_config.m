@@ -7,7 +7,7 @@ switch comp_name
     case {'blade16.ece.mcmaster.ca', sprintf('blade16.ece.mcmaster.ca\n')}
         rootdir = get_root_dir(comp_name);
         data_dir = fullfile(rootdir,'projects','data-andrew-beta');
-    case {'Valentina'}
+    case {sprintf('Valentina\n')}
         rootdir = '/media/phil/p.eanut';
         data_dir = fullfile(rootdir,'projects','data-andrew-beta');
     otherwise
