@@ -134,7 +134,7 @@ classdef BeamformerPatch < ftb.Beamformer
                     timelock.cov = repmat(data, [ntrials 1 1]);
                     
                     % save
-                    save(obj.eeg.timelock, 'timelock');
+                    save(obj.eeg.timelock, 'timelock','-v7.3');
                     
                 else
                     fprintf('%s: skipping modified timelock, already exists\n',...

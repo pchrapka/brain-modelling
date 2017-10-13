@@ -253,6 +253,11 @@ classdef LatticeFilterAnalysis < handle
                     criteria_samples = obj.tune_criteria_samples;
             end
             
+            if obj.ncores > 1
+                % set up parfor
+                parfor_setup('cores',obj.ncores,'force',true);
+            end
+            
             % run the tuning function
             %tune_file,... % is this just the source file?
             tune_lattice_filter_parameters(...
