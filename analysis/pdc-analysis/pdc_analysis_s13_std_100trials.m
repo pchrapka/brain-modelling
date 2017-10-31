@@ -1,7 +1,7 @@
 %% pdc_analysis_s13_std_100trials
 % run pdc analysis variations for a few gammas
 
-flag_tune = true;
+flag_tune = false;
 
 paramsmini = [];
 j = 1;
@@ -22,11 +22,11 @@ i = 1;
 i = 1;
 paramsmini(j).hemi = 'left';
 paramsmini(j).params(i).gamma = 1e-6;
-paramsmini(j).params(i).order = 9;
+paramsmini(j).params(i).order = 7;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 10;
+paramsmini(j).params(i).order = 7;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-4;
@@ -40,11 +40,11 @@ j = j+1;
 i = 1;
 paramsmini(j).hemi = 'right';
 paramsmini(j).params(i).gamma = 1e-6;
-paramsmini(j).params(i).order = 9;
+paramsmini(j).params(i).order = 5;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 9;
+paramsmini(j).params(i).order = 5;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-4;

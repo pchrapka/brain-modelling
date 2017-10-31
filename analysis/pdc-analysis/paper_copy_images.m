@@ -111,6 +111,44 @@ images(k).file = fullfile('output','std-s03-10','aal-coarse-19-outer-nocer-hemir
 images(k).file_out = 'hemiright-adjacency-summary-h100.eps';
 k = k+1;
 
+%% connectivity matrices H=100, other subjects
+
+% image_type = 'png';
+image_type = 'eps'; % ideal for publication, however problem viewing on ubuntu when generated with R2015b
+subject = [];
+j=1;
+subject(j).subject = 's05';
+subject(j).date = '2017-07-17';
+subject(j).order_left = '5';
+subject(j).order_right = '5';
+j = j+1;
+
+subject(j).subject = 's09';
+subject(j).date = '2017-10-31';
+subject(j).order_left = '8';
+subject(j).order_right = '7';
+j = j+1;
+
+subject(j).subject = 's13';
+subject(j).date = '2017-10-31';
+subject(j).order_left = '7';
+subject(j).order_right = '5';
+j = j+1;
+
+for j=1:length(subject)
+    images(k).file = fullfile('output',['std-' subject(j).subject '-10'],'aal-coarse-19-outer-nocer-hemileft-audr2-v1r2',...
+        'lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata','img',...
+        [subject(j).date '-MCMTLOCCD_TWL4-T100-C7-P' subject(j).order_left '-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.' image_type]);
+    images(k).file_out = ['hemileft-adjacency-summary-h100-' subject(j).subject '.' image_type];
+    k = k+1;
+    
+    images(k).file = fullfile('output',['std-' subject(j).subject '-10'],'aal-coarse-19-outer-nocer-hemiright-audr2-v1r2',...
+        'lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata','img',...
+        [subject(j).date '-MCMTLOCCD_TWL4-T100-C7-P' subject(j).order_right '-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.' image_type]);
+    images(k).file_out = ['hemiright-adjacency-summary-h100-' subject(j).subject '.' image_type];
+    k = k+1;
+end
+
 %% rauschecker model
 images(k).file = fullfile('output','img','2017-07-14-conn-rauschecker-scott-adjacency-idx1-1-0.0000-0.5000.eps');
 images(k).file_out = 'rauschecker-scott-conn-summary.eps';
@@ -128,6 +166,7 @@ images(k).file_out = 'surrogate-hist-sample257-row2-col4.eps';
 k = k+1;
 
 
+%% copy images
 for i=1:length(images)
     outfile = fullfile(outdir,images(i).file_out);
     [success,message,messageid] = copyfile(images(i).file,outfile);
