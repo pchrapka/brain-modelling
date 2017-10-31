@@ -10,8 +10,8 @@
 % pdc_analysis_s3_std_surrogate
 % pdc_analysis_s3_std_100trials_perms
 
-pdc_analysis_s09_std
+% pdc_analysis_s09_std
 pdc_analysis_s09_std_100trials
 
-pdc_analysis_s13_std
+% pdc_analysis_s13_std
 pdc_analysis_s13_std_100trials
