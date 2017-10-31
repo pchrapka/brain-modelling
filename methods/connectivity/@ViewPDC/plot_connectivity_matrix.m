@@ -58,6 +58,7 @@ idx_sort = idx_sort(:);
 conn_mat = conn_mat(idx_sort,idx_sort);
 
 % plot
+colormap('jet');
 imagesc(conn_mat);
 colorbar();
 
