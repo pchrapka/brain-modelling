@@ -1,58 +1,50 @@
-%% pdc_analysis_s3_std_100trials
+%% pdc_analysis_s3_std_noenv
 % run pdc analysis variations for a few gammas
 
-flag_tune = false;
+flag_tune = true;
 
 paramsmini = [];
 j = 1;
 i = 1;
 % paramsmini(j).hemi = 'both';
 % paramsmini(j).params(i).gamma = 1e-5;
-% paramsmini(j).params(i).order = 3;
+% paramsmini(j).params(i).order = 0;
 % i = i+1;
 % 
 % paramsmini(j).params(i).gamma = 1e-4;
-% paramsmini(j).params(i).order = 5;
+% paramsmini(j).params(i).order = 0;
 % i = i+1;
 % 
 % paramsmini(j).params(i).gamma = 1e-3;
-% paramsmini(j).params(i).order = 5;
+% paramsmini(j).params(i).order = 0;
 % j = j+1;
 
 i = 1;
 paramsmini(j).hemi = 'left';
-% paramsmini(j).params(i).gamma = 1e-6;
-% paramsmini(j).params(i).order = 5;
-% i = i+1;
-
 paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 5;
+paramsmini(j).params(i).order = 0;
 i = i+1;
 
-% paramsmini(j).params(i).gamma = 1e-4;
-% paramsmini(j).params(i).order = 7;
-% i = i+1;
+paramsmini(j).params(i).gamma = 1e-4;
+paramsmini(j).params(i).order = 0;
+i = i+1;
 
-% paramsmini(j).params(i).gamma = 1e-3;
-% paramsmini(j).params(i).order = 5;
+paramsmini(j).params(i).gamma = 1e-3;
+paramsmini(j).params(i).order = 0;
 j = j+1;
 
 % i = 1;
 % paramsmini(j).hemi = 'right';
-% paramsmini(j).params(i).gamma = 1e-6;
-% paramsmini(j).params(i).order = 4;
-% i = i+1;
-% 
 % paramsmini(j).params(i).gamma = 1e-5;
-% paramsmini(j).params(i).order = 5;
+% paramsmini(j).params(i).order = 0;
 % i = i+1;
 % 
 % paramsmini(j).params(i).gamma = 1e-4;
-% paramsmini(j).params(i).order = 13;
+% paramsmini(j).params(i).order = 0;
 % i = i+1;
-
+% 
 % paramsmini(j).params(i).gamma = 1e-3;
-% paramsmini(j).params(i).order = 5;
+% paramsmini(j).params(i).order = 0;
 
 nhemis = length(paramsmini);
 for j=1:nhemis
@@ -64,12 +56,12 @@ for j=1:nhemis
         
         %% envelope
         params(k).downsample = 4;
-        params(k).nfreqs = 1024*2;
+        params(k).nfreqs = 1024*2; % 0.5Hz bins
         % fs = 2048, fs/2 = 1024 -> 1Hz bins
-        params(k).nfreqscompute = 20*2+1; 
+        params(k).nfreqscompute = 40*2+1; % 40Hz + 0Hz
         % want 0-5Hz, 5*2+1, 
         params(k).metrics = {'diag'};%,'info'};
-        params(k).ntrials = 100;
+        params(k).ntrials = 20;
         if flag_tune
             params(k).order = 3:14; % for tuning
         else
@@ -78,9 +70,9 @@ for j=1:nhemis
         params(k).lambda = 0.99;
         params(k).gamma = paramsmini(j).params(i).gamma;
         params(k).normalization = 'eachchannel';
-        params(k).envelope = true;
+        params(k).envelope = false;
         params(k).prepend_data = 'flipdata';
-        params(k).permutations = false;%true;
+        params(k).permutations = false;
         params(k).npermutations = 10;% 20;
         params(k).tune_criteria_samples = [0.05 0.95];
         params(k).nresamples = 100;

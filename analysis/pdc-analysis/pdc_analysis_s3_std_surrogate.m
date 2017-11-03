@@ -6,9 +6,18 @@ j = 1;
 i = 1;
 paramsmini(j).hemi = 'left';
 paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 5;
+paramsmini(j).params(i).order = 4;
 paramsmini(j).params(i).permutation_idx = 3;
 % NOTE i specifically wanted the 3rd permutation
+paramsmini(j).params(i).null_mode = 'estimate_stationary_ns';
+i = i+1;
+
+paramsmini(j).hemi = 'left';
+paramsmini(j).params(i).gamma = 1e-5;
+paramsmini(j).params(i).order = 4;
+paramsmini(j).params(i).permutation_idx = 3;
+% NOTE i specifically wanted the 3rd permutation
+paramsmini(j).params(i).null_mode = 'estimate_ind_channels';
 i = i+1;
 
 nhemis = length(paramsmini);
@@ -41,8 +50,7 @@ for j=1:nhemis
         params(k).tune_criteria_samples = [0.05 0.95];
         params(k).nresamples = 100;
         params(k).alpha = 0.05;
-        %params(k).null_mode = 'estimate_ind_channels';
-        params(k).null_mode = 'estimate_stationary_ns';
+        params(k).null_mode = paramsmini(j).params(i).null_mode;
         k = k+1;
     end
     
