@@ -214,6 +214,7 @@ switch p.Results.null_mode
             data_sources = loadfile(lfanalysis.file_data_pre);
             switch lfanalysis.prepend_data
                 case 'flipdata'
+                    % remove prepended data
                     data_sources(:,1:nsamples,:) = [];
                 otherwise
                     error('unknown prepend_data mode: %s',lfanalysis.prepend_data);
@@ -223,19 +224,21 @@ switch p.Results.null_mode
                 idx_end = ceil(0.95*nsamples);
                 data_sources(:,idx_end:end,:) =[];
             end
-            % select only required trials
-            data_sources = data_sources(:,:,1:ntrials);
+            % REMOVE - handled in run lattice filter
+%             % select only required trials
+%             data_sources = data_sources(:,:,1:ntrials);
             save_parfor(file_ns, data_sources);
             clear data_sources;
         end
         
-        % set appropriate params for NuttallStrand
+        % set appropriate params for NuttallStrandMT
         lfobj.warmup = {};
         lfobj.prepend_data = 'none';
         % copy params
         lfobj.normalization = options.normalization;
         lfobj.envelope = options.envelope;
-        lfobj.tracefields = {'Kf','Kb'};
+        lfobj.tracefields = {'Kf','Kb','Rf'};
+        % NOTE do i need ferror?
         
         % spoof preprocessed data, since it's already preprocessed
         if fresh || ~exist(lfobj.file_data_pre,'file')
@@ -250,12 +253,11 @@ switch p.Results.null_mode
         lfobj.postprocessing();
         
         din = loadfile(lfobj.file_data_post{1});
+        % repeat reflection coefficients for all samples
         datalf_null = [];
         datalf_null.Kf = repmat(din.estimate.Kf(1,:,:,:),[nsamples 1 1 1]);
         datalf_null.Kb = repmat(din.estimate.Kb(1,:,:,:),[nsamples 1 1 1]);
         clear din;
-        
-        error('TODO add ferror to Nuttall Strand');
         
     otherwise
         error('unknown null_mode %s',p.Results.null_mode);
@@ -266,25 +268,31 @@ process = VTVRC(nchannels,norder,nsamples);
 process.coefs_set(datalf_null.Kf,datalf_null.Kb);
 
 %% surrogate data and lattice filter
-resf = datalf.estimate.ferror(:,:,:,norder); % samples channels trials order
-% use the middle part to avoid edge effects
-nsamples_ends = ceil(0.05*nsamples);
-resf((end-nsamples_ends+1):end,:,:) = [];
-resf(1:nsamples_ends*2,:,:) = [];
-
-rc_gen_noise = true;
-% generate white noise instead of using model residual
-if rc_gen_noise
-    res_sigma = squeeze(var(resf)); % [channels trials]
+res_sigma_mat = [];
+if isfield(datalf.estimate,'ferror')
+    resf = datalf.estimate.ferror(:,:,:,norder); % samples channels trials order
+    % use the middle part to avoid edge effects
+    nsamples_ends = ceil(0.05*nsamples);
+    resf((end-nsamples_ends+1):end,:,:) = [];
+    resf(1:nsamples_ends*2,:,:) = [];
     
-    % add dummy vars for parfor
-    resf = [];
-    nsamples_effective = [];
+    rc_gen_noise = true;
+    % generate white noise instead of using model residual
+    if rc_gen_noise
+        res_sigma = squeeze(var(resf)); % [channels trials]
+        
+        % add dummy vars for parfor
+        resf = [];
+        nsamples_effective = [];
+    else
+        res_sigma = [];
+        nsamples_effective = size(resf,1);
+    end
+    % resb = datalf.estimate.berrord(:,:,:,norder);
 else
-    res_sigma = [];
-    nsamples_effective = size(resf,1);
+    rc_gen_noise = true;
+    res_sigma_mat = squeeze(datalf.estimate.Rf(norder+1,:,:));
 end
-% resb = datalf.estimate.berrord(:,:,:,norder);
 
 % copy vars
 nresamples = p.Results.nresamples;
@@ -309,7 +317,11 @@ parfor i=1:nresamples
                 if rc_gen_noise
                     % generate noise
                     mu = zeros(nchannels,1);
-                    Sigma = diag(res_sigma(:,j));
+                    if isempty(res_sigma_mat)
+                        Sigma = diag(res_sigma(:,j));
+                    else
+                        Sigma = res_sigma_mat;
+                    end
                     res = mvnrnd(mu, Sigma, nsamples);
                 else
                     % resample residual

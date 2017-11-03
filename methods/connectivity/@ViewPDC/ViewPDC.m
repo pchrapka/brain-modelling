@@ -4,7 +4,7 @@ classdef ViewPDC < handle
     
     properties 
         file_pdc = {};
-        file_pdc_sig;
+        file_pdc_sig = {};
     end
     
     properties (SetAccess = protected)
@@ -14,7 +14,8 @@ classdef ViewPDC < handle
         pdc = [];
         pdc_nfreqs = [];
         pdc_loaded = '';
-        pdc_sig;
+        pdc_sig = [];
+        pdc_sig_loaded = '';
         fs;
         info;
         time;
@@ -125,6 +126,9 @@ classdef ViewPDC < handle
             obj.pdc = [];
             obj.pdc_nfreqs = [];
             obj.pdc_loaded = '';
+            
+            obj.pdc_sig = [];
+            obj.pdc_sig_loaded = '';
         end
         
         function load(obj,property,varargin)
@@ -158,12 +162,15 @@ classdef ViewPDC < handle
                         obj.pdc_loaded = 'pdc';
                     end
                 case 'pdc_sig'
-                    if isempty(obj.pdc_sig)
+                    if isempty(obj.pdc_sig) || ~isequal(obj.pdc_sig_loaded,'sig')
                         if isempty(obj.file_pdc_sig)
                             error('missing file_pdc_sig');
                         end
-                        print_msg_filename(obj.file_pdc_sig,'loading');
-                        data = loadfile(obj.file_pdc_sig);
+                        if isempty(obj.file_pdc_sig{obj.file_idx})
+                            error('missing file_pdc_sig for file %d', obj.file_idx);
+                        end
+                        print_msg_filename(obj.file_pdc_sig{obj.file_idx},'loading');
+                        data = loadfile(obj.file_pdc_sig{obj.file_idx});
                         obj.pdc_sig = data.pdc;
                         
                         % pdc sig needs to be same size as pdc
@@ -172,6 +179,7 @@ classdef ViewPDC < handle
                             obj.pdc_sig = [];
                             error('significant pdc is not the same size as pdc');
                         end
+                        obj.pdc_sig_loaded = 'sig';
                     end
                     
                 case 'pdc_mean'

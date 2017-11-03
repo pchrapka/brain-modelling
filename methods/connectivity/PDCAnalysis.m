@@ -109,19 +109,32 @@ classdef PDCAnalysis < handle
                     {'permutation_idx', p.Results.permutation_idx}];
             end
             
-            [obj.file_pdc_sig, obj.files_pdc_resample] = pdc_surrogate(...
+            [temp_file_pdc_sig, temp_files_pdc_resample] = pdc_surrogate(...
                 obj.analysis_lf,...
                 surrogate_params{:});
             
             % add significance threshold data
+            if ~isempty(p.Results.permutation_idx)
+                idx = p.Results.permutation_idx;
+            else
+                idx = 1;
+            end
+            obj.file_pdc_sig{idx,1} = temp_file_pdc_sig;
+            obj.files_pdc_resample(idx,:) = temp_files_pdc_resample;
             obj.view.file_pdc_sig = obj.file_pdc_sig;
             
         end
         
-        function plot_significance_level(obj)
+        function plot_significance_level(obj,varargin)
             % plot significance level
             
-            obj.view.file_pdc = {obj.file_pdc_sig};
+            p = inputParser();
+            addParameter(p,'permutation_idx',1,@(x) isnumeric(x) && (length(x) == 1));
+            parse(p,varargin{:});
+            
+            obj.view.unload();
+            obj.view.file_pdc = obj.file_pdc_sig;
+            obj.view.load('pdc','file_idx',p.Results.permutation_idx);
             params = {
                 'threshold_mode','numeric',...
                 'threshold',0.001,...
@@ -135,13 +148,17 @@ classdef PDCAnalysis < handle
         
         function plot_surrogate_pdc(obj,varargin)
             p = inputParser();
+            addParameter(p,'permutation_idx',1,@(x) isnumeric(x) && (length(x) == 1));
             addParameter(p,'nplots',5,@(x) isnumeric(x) && (x <= obj.surrogate_nresamples));
             parse(p,varargin{:});
+            
+            obj.view.unload();
             
             % plot pdc for each surrogate data set
             for k=1:p.Results.nplots
                 
-                obj.view.file_pdc = obj.files_pdc_resample{k};
+                obj.view.file_pdc = obj.files_pdc_resample(:,k);
+                obj.view.load('pdc','file_idx',p.Results.permutation_idx);
                 
                 params = {
                     'threshold_mode','numeric',...

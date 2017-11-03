@@ -43,7 +43,7 @@ for i=1:length(params)
     lf_obj.filter_func = 'MCMTLOCCD_TWL4';
     lf_obj.ntrials_max = [];
     lf_obj.verbosity = 1;
-    lf_obj.ncores = 12;
+    lf_obj.ncores = 2;
     
     % copy parameters
     if isfield(params(i),'prepend_data'),   lf_obj.prepend_data = params(i).prepend_data;   end
@@ -72,7 +72,7 @@ for i=1:length(params)
     % set up pdc analysis
     pdc_obj = PDCAnalysis(...
         lf_obj,'view',pdc_view,'outdir',p.Results.outdir);
-    pdc_obj.ncores = 12;
+    pdc_obj.ncores = 2;
     
     %% tune parameters
     if flag_tune
@@ -127,7 +127,10 @@ for i=1:length(params)
             pdc_obj.pdc();
             
             % add params for viewing
-            params_plot_seed{1} = {'threshold',0.001};
+            params_plot_seed = cell(lf_obj.npermutations,1);
+            for k=1:lf_obj.npermutations
+                params_plot_seed{k,1} = {'threshold',0.001};
+            end
             
             %% surrogate analysis
             if p.Results.flag_surrogate
@@ -135,24 +138,28 @@ for i=1:length(params)
                 pdc_obj.surrogate_alpha = params(i).alpha;
                 pdc_obj.surrogate_null_mode = params(i).null_mode;
                 params_surrogate = {};
+                % set some parameters based on permutation
                 if isfield(params(i),'permutation_idx')
                     params_surrogate = {'permutation_idx',params(i).permutation_idx};
+                    params_plot_seed{params(i).permutation_idx,2} = {...
+                        'threshold_mode','significance',...
+                        'tag',params(i).null_mode};
+                else
+                    % only doing 1st permutation for surrogate
+                    params_plot_seed{1,2} = {...
+                        'threshold_mode','significance',...
+                        'tag',params(i).null_mode};
                 end
                 pdc_obj.surrogate(params_surrogate{:});
                 
-                params_plot_seed{2} = {...
-                    'threshold_mode','significance',...
-                    'tag',params(i).null_mode};
-                
                 % plot significance levels
-                pdc_obj.plot_significance_level();
+                pdc_obj.plot_significance_level(params_surrogate{:});
                 
                 % plot pdc for each surrogate data set
                 plot_resample_pdc = false;
                 if plot_resample_pdc
-                    pdc_obj.plot_surrogate_pdc();
+                    pdc_obj.plot_surrogate_pdc(params_surrogate{:});
                 end
-                
             end
             
             % loop over permutations
@@ -177,8 +184,12 @@ for i=1:length(params)
                         % following views at 15-25 Hz
                     end
                     
-                    for idx_param=1:length(params_plot_seed)
-                        params_plot = params_plot_seed{idx_param};
+                    for idx_param=1:size(params_plot_seed,2)
+                        params_plot = params_plot_seed{k,idx_param};
+                        if isempty(params_plot)
+                            continue;
+                        end
+                        
                         pdc_obj.plot_seed(...
                             params_plot{:},...
                             'operation','none',...
