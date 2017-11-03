@@ -5,6 +5,9 @@ classdef NuttallStrandMT
         Kb;
         Kf;
         
+        % forward error covariance
+        Rf;
+        
         % filter order
         order;
         
@@ -54,6 +57,7 @@ classdef NuttallStrandMT
             zeroMat = zeros(obj.order, obj.nchannels, obj.nchannels);
             obj.Kb = zeroMat;
             obj.Kf = zeroMat;
+            obj.Rf = zeros(obj.order+1, obj.nchannels, obj.nchannels);
             
             if isempty(obj.nsamples)
                 obj.name = sprintf('NuttallStrandMT T%d C%d P%d',...
@@ -102,12 +106,16 @@ classdef NuttallStrandMT
             end
             
             % compute parcor coefficients using Nuttall Strand method
-            [~,rcf,rcb,~] = nuttall_strand(permute(x,[3,1,2]),obj.order);
+            [~,rcf,rcb,rc_error] = nuttall_strand(permute(x,[3,1,2]),obj.order);
             
             % save the rc coefficient, drop the first one            
             obj.Kf = rcarrayformat(reshape(rcf,[obj.nchannels obj.nchannels obj.order]),'format',1);
             obj.Kb = rcarrayformat(reshape(rcb,[obj.nchannels obj.nchannels obj.order]),'format',1);
-            
+            obj.Rf = rcarrayformat(reshape(rc_error,[obj.nchannels obj.nchannels obj.order+1]),'format',1);
+%             % take transpose for each order
+%             obj.Kf = permute(obj.Kf,[1 3 2]);
+%             obj.Kb = permute(obj.Kb,[1 3 2]);
+%             obj.Rf = permute(obj.Rf,[1 3 2]);
         end
     end
 end

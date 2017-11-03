@@ -66,6 +66,12 @@ sim_params(k).gen_config_params = gen_config_params;
 sim_params(k).label = strrep(sim_params(k).filter.name,'NuttallStrand','Nuttall-Strand');
 k = k+1;
 
+% sim_params(k).filter = NuttallStrandMT(nchannels,norder,ntrials);
+% sim_params(k).gen_params = gen_params;
+% sim_params(k).gen_config_params = gen_config_params;
+% sim_params(k).label = strrep(sim_params(k).filter.name,'NuttallStrandMT','Nuttall-Strand MT');
+% k = k+1;
+
 sim_params(k).filter = MQRDLSL3(nchannels,norder,lambda);
 sim_params(k).gen_params = gen_params;
 sim_params(k).gen_config_params = gen_config_params;
@@ -112,7 +118,7 @@ out_files = run_lattice_benchmark(...
     'plot_avg_mse', true,...
     'plot_avg_nmse', false);
 
-ylim([10^(-2) 10^(-0.9)]);
+ylim([10^(-2) 10^(-0.5)]);
 ylabel('Average Reflection Coefficient MSE');
 xlim([1 1000]);
 xlabel('Sample');

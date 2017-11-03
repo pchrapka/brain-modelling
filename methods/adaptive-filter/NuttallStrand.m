@@ -106,6 +106,9 @@ classdef NuttallStrand
             % save the rc coefficient, drop the first one            
             obj.Kf = rcarrayformat(reshape(rcf,[obj.nchannels obj.nchannels obj.order]),'format',1);
             obj.Kb = rcarrayformat(reshape(rcb,[obj.nchannels obj.nchannels obj.order]),'format',1);
+%             % take transpose for each order
+%             obj.Kf = permute(obj.Kf,[1 3 2]);
+%             obj.Kb = permute(obj.Kb,[1 3 2]);
             
         end
     end

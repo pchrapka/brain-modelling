@@ -352,8 +352,8 @@ classdef VRC < VARProcess
                 
                 % calculate forward and backward error at each stage
                 for p=obj.P+1:-1:2
-                    ferror(:,p-1) = ferror(:,p) + squeeze(obj.Kb(p-1,:,:))'*berrord(:,p-1);
-                    berror(:,p) = berrord(:,p-1) - squeeze(obj.Kf(p-1,:,:))'*ferror(:,p-1);
+                    ferror(:,p-1) = ferror(:,p) + squeeze(obj.Kb(p-1,:,:))*berrord(:,p-1);
+                    berror(:,p) = berrord(:,p-1) - squeeze(obj.Kf(p-1,:,:))*ferror(:,p-1);
                     % Structure is from Haykin, p.179, sign convention is from
                     % Lewis1990
                 end
