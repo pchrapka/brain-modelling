@@ -7,7 +7,13 @@ params_data = DataBeta(subject,deviant_percent);
 
 % dataset = data_file;
 data_name2 = sprintf('%s-%s',stimulus,params_data.data_name);
-analysis_dir = fullfile(get_project_dir(),'analysis','pdc-analysis');
+comp_name = get_compname();
+switch comp_name
+    case {sprintf('Valentina\n')}
+        analysis_dir = params_data.data_dir;
+    otherwise
+        analysis_dir = fullfile(get_project_dir(),'analysis','pdc-analysis');
+end
 outdir = fullfile(analysis_dir,'output',data_name2);
 
 %% preprocess data for beamforming

@@ -16,7 +16,10 @@ HMicbm152_dipoli_cm();
 params_elec = Eandrew_cm(meta_data);
 
 % params_eeg = EEGandrew_stddev(data_file, data_name, stimulus);
-params_eeg = EEGandrew_stddev_precomputed(meta_data.data_file, meta_data.data_name, stimulus);
+
+% TODO get rid of computer specific code in the following function
+% use a parameter here instead
+params_eeg = EEGandrew_stddev_precomputed(meta_data, stimulus);
 
 switch p.Results.patchmodel
     case 'aal'

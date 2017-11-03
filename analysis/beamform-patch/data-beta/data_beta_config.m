@@ -18,7 +18,7 @@ end
 % set up outputs
 if ~exist(data_dir,'dir')
     error([mfilename ':MissingData'],...
-        'cannot find %s',data_dir);
+        'cannot find the data dir: %s',data_dir);
 end
 
 params.data_dir = data_dir;
