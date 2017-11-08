@@ -61,6 +61,7 @@ conn_mat = conn_mat(idx_sort,idx_sort);
 colormap('jet');
 imagesc(conn_mat);
 colorbar();
+axis square;
 
 % set labels
 xticklabel = labels(idx_sort);
@@ -83,24 +84,39 @@ ax = axis;
 xl = ax(1:2);
 yl = ax(3:4);
 t = text(xtick,yl(2)*ones(1,length(xtick)),xticklabel);
-set(t,'HorizontalAlignment','right','VerticalAlignment','top', ...
+set(t,'HorizontalAlignment','right','VerticalAlignment','middle', ...
       'Rotation',90,'FontSize',font_size);
   
 % Get the Extent of each text object.  This loop is unavoidable.
 ext = [];
 %ext_norm = [];
 for i = 1:length(t)
-  ext(i,:) = get(t(i),'Extent');
-  if debug
-      xp = [ext(i,1) ext(i,1)+ext(i,3) ext(i,1)+ext(i,3) ext(i,1)];
-      yp = [ext(i,2) ext(i,2)          ext(i,2)-ext(i,4) ext(i,2)-ext(i,4)];
-      p = line(xp,yp);
-      set(p,'clipping','off');
-  end
+    set(t(i),'Units','normalized');
+    ext(i,:) = get(t(i),'Extent');
 end
-scaling = ((font_size - 10)/4)/10+1;
-% ext_orig = ext;
-ext(:,2) = scaling*ext(:,2);
+
+max_ylabel = max(ext(:,4));
+
+outpos = get(gca,'Position');
+% outpos_orig = outpos;
+outpos(2) = outpos(2) + max_ylabel;
+margin = 1 - outpos(4);
+outpos(4) = 1 - margin - max_ylabel; %outpos(4) - max_ylabel/2;
+set(gca,'Position',outpos);
+
+% Get the Extent of each text object.  This loop is unavoidable.
+ext = [];
+%ext_norm = [];
+for i = 1:length(t)
+    set(t(i),'Units','data');
+    ext(i,:) = get(t(i),'Extent');
+    if debug
+        xp = [ext(i,1) ext(i,1)+ext(i,3) ext(i,1)+ext(i,3) ext(i,1)];
+        yp = [ext(i,2) ext(i,2)          ext(i,2)-ext(i,4) ext(i,2)-ext(i,4)];
+        rect = line(xp,yp);
+        set(rect,'clipping','off');
+    end
+end
 
 % Determine the lowest point.  The X-label will be
 % placed so that the top is aligned with this point.
@@ -110,19 +126,8 @@ x_mid = xl(1)+abs(diff(xl))/2;
 t_xlabel = text(x_mid,min_ylabel,'From', ...
     'VerticalAlignment','top', ...
     'HorizontalAlignment','center',...
+    ...'Units','normalized',...
     'FontSize',font_size);
-
-set(t_xlabel,'Units','normalized');
-ext_xlabel = get(t_xlabel,'Extent');
-
-% outpos = get(gca,'OuterPosition');
-% outpos(2) = outpos(2) - ext_xlabel(2);
-% outpos(4) = outpos(4) - abs(ext_xlabel(2));
-% set(gca,'OuterPosition',outpos);
-outpos = get(gca,'Position');
-outpos(2) = outpos(2) - ext_xlabel(2)/2;
-outpos(4) = outpos(4) - abs(ext_xlabel(2))/2;
-set(gca,'Position',outpos);
 
 drawnow;
 
