@@ -25,12 +25,12 @@ paramsmini(j).params(i).gamma = 1e-5;
 paramsmini(j).params(i).order = 4;
 i = i+1;
 
-paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 5;
-i = i+1;
-
-paramsmini(j).params(i).gamma = 1e-3;
-paramsmini(j).params(i).order = 5;
+% paramsmini(j).params(i).gamma = 1e-4;
+% paramsmini(j).params(i).order = 5;
+% i = i+1;
+% 
+% paramsmini(j).params(i).gamma = 1e-3;
+% paramsmini(j).params(i).order = 5;
 j = j+1;
 
 i = 1;
@@ -39,12 +39,12 @@ paramsmini(j).params(i).gamma = 1e-5;
 paramsmini(j).params(i).order = 5;
 i = i+1;
 
-paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 5;
-i = i+1;
-
-paramsmini(j).params(i).gamma = 1e-3;
-paramsmini(j).params(i).order = 8;
+% paramsmini(j).params(i).gamma = 1e-4;
+% paramsmini(j).params(i).order = 5;
+% i = i+1;
+% 
+% paramsmini(j).params(i).gamma = 1e-3;
+% paramsmini(j).params(i).order = 8;
 
 nhemis = length(paramsmini);
 for j=1:nhemis

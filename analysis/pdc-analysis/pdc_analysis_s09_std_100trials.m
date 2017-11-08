@@ -21,17 +21,17 @@ i = 1;
 
 i = 1;
 paramsmini(j).hemi = 'left';
-paramsmini(j).params(i).gamma = 1e-6;
-paramsmini(j).params(i).order = 5;
-i = i+1;
+% paramsmini(j).params(i).gamma = 1e-6;
+% paramsmini(j).params(i).order = 5;
+% i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-5;
 paramsmini(j).params(i).order = 8;
 i = i+1;
 
-paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 14;
-i = i+1;
+% paramsmini(j).params(i).gamma = 1e-4;
+% paramsmini(j).params(i).order = 14;
+% i = i+1;
 % 
 % paramsmini(j).params(i).gamma = 1e-3;
 % paramsmini(j).params(i).order = 0;
@@ -39,17 +39,17 @@ j = j+1;
 
 i = 1;
 paramsmini(j).hemi = 'right';
-paramsmini(j).params(i).gamma = 1e-6;
-paramsmini(j).params(i).order = 5;
-i = i+1;
+% paramsmini(j).params(i).gamma = 1e-6;
+% paramsmini(j).params(i).order = 5;
+% i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-5;
 paramsmini(j).params(i).order = 7;
 i = i+1;
 
-paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 13;
-i = i+1;
+% paramsmini(j).params(i).gamma = 1e-4;
+% paramsmini(j).params(i).order = 13;
+% i = i+1;
 % 
 % paramsmini(j).params(i).gamma = 1e-3;
 % paramsmini(j).params(i).order = 0;

@@ -6,27 +6,9 @@ flag_tune = false;
 paramsmini = [];
 j = 1;
 i = 1;
-paramsmini(j).hemi = 'both';
-paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 3;
-i = i+1;
-
-paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 5;
-i = i+1;
-
-paramsmini(j).params(i).gamma = 1e-3;
-paramsmini(j).params(i).order = 5;
-j = j+1;
-
-% i = 1;
-% paramsmini(j).hemi = 'left';
-% paramsmini(j).params(i).gamma = 1e-6;
-% paramsmini(j).params(i).order = 5;
-% i = i+1;
-% 
+% paramsmini(j).hemi = 'both';
 % paramsmini(j).params(i).gamma = 1e-5;
-% paramsmini(j).params(i).order = 5;
+% paramsmini(j).params(i).order = 3;
 % i = i+1;
 % 
 % paramsmini(j).params(i).gamma = 1e-4;
@@ -37,15 +19,33 @@ j = j+1;
 % paramsmini(j).params(i).order = 5;
 % j = j+1;
 
-% i = 1;
-% paramsmini(j).hemi = 'right';
+i = 1;
+paramsmini(j).hemi = 'left';
+% paramsmini(j).params(i).gamma = 1e-6;
+% paramsmini(j).params(i).order = 5;
+% i = i+1;
+
+paramsmini(j).params(i).gamma = 1e-5;
+paramsmini(j).params(i).order = 5;
+i = i+1;
+
+% paramsmini(j).params(i).gamma = 1e-4;
+% paramsmini(j).params(i).order = 5;
+% i = i+1;
+% 
+% paramsmini(j).params(i).gamma = 1e-3;
+% paramsmini(j).params(i).order = 5;
+j = j+1;
+
+i = 1;
+paramsmini(j).hemi = 'right';
 % paramsmini(j).params(i).gamma = 1e-6;
 % paramsmini(j).params(i).order = 5;
 % i = i+1;
 % 
-% paramsmini(j).params(i).gamma = 1e-5;
-% paramsmini(j).params(i).order = 5;
-% i = i+1;
+paramsmini(j).params(i).gamma = 1e-5;
+paramsmini(j).params(i).order = 5;
+i = i+1;
 % 
 % paramsmini(j).params(i).gamma = 1e-4;
 % paramsmini(j).params(i).order = 7;
