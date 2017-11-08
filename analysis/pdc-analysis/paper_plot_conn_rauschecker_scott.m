@@ -25,8 +25,8 @@ connections = {...
 
 
 data = [];
-data.pdc = zeros(1,nchannels,nchannels,1);
-data.nfreqs = 1;
+data.pdc = zeros(1,nchannels,nchannels,2);
+data.nfreqs = 2;
 for i=1:length(connections)
     % convert connections to indices
     pair = connections{i};
@@ -34,7 +34,7 @@ for i=1:length(connections)
     idx_to = find(lumberjack.strfindlisti(labels,pair{2}),1,'first');
     
     % set pdc
-    data.pdc(1,idx_to,idx_from,1) = 1;
+    data.pdc(1,idx_to,idx_from,1:2) = 1;
 end
 
 % create pdc file

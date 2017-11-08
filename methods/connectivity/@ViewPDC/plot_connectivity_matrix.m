@@ -40,7 +40,7 @@ labels = obj.info.label;
 %     coord(i,:) = [cos(2*pi*(i - 1)./nchannels), sin(2*pi*(i - 1)./nchannels)];
 % end
 
-figure;
+figure('Position',[200 200 800 700]);
 % threshold = 0.2;
 conn_mat = obj.pdc(sample_idx,:,:,freq_idx);
 dims = size(conn_mat);
@@ -100,8 +100,9 @@ max_ylabel = max(ext(:,4));
 outpos = get(gca,'Position');
 % outpos_orig = outpos;
 outpos(2) = outpos(2) + max_ylabel;
-margin = 1 - outpos(4);
-outpos(4) = 1 - margin - max_ylabel; %outpos(4) - max_ylabel/2;
+% margin = 1 - outpos(4);
+% outpos(4) = 1 - margin - max_ylabel; %outpos(4) - max_ylabel/2;
+outpos(4) = outpos(4) - max_ylabel; %outpos(4) - max_ylabel/2;
 set(gca,'Position',outpos);
 
 % Get the Extent of each text object.  This loop is unavoidable.
