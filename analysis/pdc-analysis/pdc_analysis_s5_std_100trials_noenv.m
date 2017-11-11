@@ -1,4 +1,4 @@
-%% pdc_analysis_s3_std_noenv
+%% pdc_analysis_s5_std_100trials_noenv
 % run pdc analysis variations for a few gammas
 
 flag_tune = false;
@@ -8,25 +8,29 @@ j = 1;
 i = 1;
 % paramsmini(j).hemi = 'both';
 % paramsmini(j).params(i).gamma = 1e-5;
-% paramsmini(j).params(i).order = 0;
+% paramsmini(j).params(i).order = 3;
 % i = i+1;
 % 
 % paramsmini(j).params(i).gamma = 1e-4;
-% paramsmini(j).params(i).order = 0;
+% paramsmini(j).params(i).order = 5;
 % i = i+1;
 % 
 % paramsmini(j).params(i).gamma = 1e-3;
-% paramsmini(j).params(i).order = 0;
+% paramsmini(j).params(i).order = 5;
 % j = j+1;
 
 i = 1;
 paramsmini(j).hemi = 'left';
+paramsmini(j).params(i).gamma = 1e-6;
+paramsmini(j).params(i).order = 6;
+i = i+1;
+
 paramsmini(j).params(i).gamma = 1e-5;
 paramsmini(j).params(i).order = 6;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-4;
-paramsmini(j).params(i).order = 5;
+paramsmini(j).params(i).order = 7;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-3;
@@ -35,8 +39,12 @@ j = j+1;
 
 i = 1;
 paramsmini(j).hemi = 'right';
+paramsmini(j).params(i).gamma = 1e-6;
+paramsmini(j).params(i).order = 8;
+i = i+1;
+
 paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 6;
+paramsmini(j).params(i).order = 8;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-4;
@@ -44,7 +52,7 @@ paramsmini(j).params(i).order = 5;
 i = i+1;
 
 paramsmini(j).params(i).gamma = 1e-3;
-paramsmini(j).params(i).order = 4;
+paramsmini(j).params(i).order = 3;
 
 nhemis = length(paramsmini);
 for j=1:nhemis
@@ -56,12 +64,12 @@ for j=1:nhemis
         
         %% envelope
         params(k).downsample = 4;
-        params(k).nfreqs = 1024*2; % 0.5Hz bins
+        params(k).nfreqs = 1024*2;
         % fs = 2048, fs/2 = 1024 -> 1Hz bins
-        params(k).nfreqscompute = 40*2+1; % 40Hz + 0Hz
-        % want 0-5Hz, 5*2+1, 
+        params(k).nfreqscompute = 40*2+1; 
+        % want 0-5Hz, 5*2+1,
         params(k).metrics = {'diag'};%,'info'};
-        params(k).ntrials = 20;
+        params(k).ntrials = 100;
         if flag_tune
             params(k).order = 3:14; % for tuning
         else
@@ -72,7 +80,7 @@ for j=1:nhemis
         params(k).normalization = 'eachchannel';
         params(k).envelope = false;
         params(k).prepend_data = 'flipdata';
-        params(k).permutations = false;
+        params(k).permutations = false;%true;
         params(k).npermutations = 10;% 20;
         params(k).tune_criteria_samples = [0.05 0.95];
         params(k).nresamples = 100;
@@ -95,7 +103,7 @@ for j=1:nhemis
     %% set up eeg
     
     stimulus = 'std';
-    subject = 3;
+    subject = 5;
     deviant_percent = 10;
     patch_options = {...
         'patchmodel','aal-coarse-19',...
