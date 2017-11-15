@@ -252,6 +252,17 @@ images(k).file = fullfile('output','img',...
 images(k).file_out = 'surrogate-hist-sample257-row2-col4.eps';
 k = k+1;
 
+%% surrogate thresholds
+images(k).file = fullfile('output','img',...
+    '2017-11-15-pdc-distr-with-surrogate-thresh-trials20-in1-out6-sample656.eps');
+images(k).file_out = 'gpdc-distr-with-surrogate-thresh-trials20.eps';
+k = k+1;
+
+images(k).file = fullfile('output','img',...
+    '2017-11-15-pdc-distr-with-surrogate-thresh-trials100-in1-out6-sample656.eps');
+images(k).file_out = 'gpdc-distr-with-surrogate-thresh-trials100.eps';
+k = k+1;
+
 
 %% copy images
 for i=1:length(images)

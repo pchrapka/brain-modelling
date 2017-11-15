@@ -304,10 +304,10 @@ parfor i=1:nresamples
     data_surrogate_file = fullfile(workingdir, resampledir, sprintf('resample%d.mat',i));
     
     % check lf freshness
-    %fresh = isfresh(data_surrogate_file, lf_file);
+    fresh = isfresh(data_surrogate_file, lf_file);
     % freshness is taking too on network data
     
-    if ~exist(data_surrogate_file,'file')
+    if fresh || ~exist(data_surrogate_file,'file')
         % use all trials to generate one surrogateped data set
         data_surrogate = zeros(nchannels,nsamples,ntrials);
         data_bs_prepend = zeros(nchannels,nsamples,ntrials);
@@ -450,6 +450,7 @@ pdc_tag = result{1}{1};
 % TODO handle case if i'm adding more resamples
 pdc_file_sample = cell(size(files_pdc,1),nsamples_data);
 parfor i=1:nresamples
+% for i=1:nresamples
     fprintf('%s: splitting pdc %d/%d\n',mfilename,i,length(files_pdc));
     result = [];
     
@@ -461,10 +462,10 @@ parfor i=1:nresamples
         pdc_file_sample{i,j} = fullfile(file_path, pdc_tag, file_name_new);
         
         % check freshness
-        %fresh = isfresh(pdc_file_sample{i,j},files_pdc{i});
+        fresh = isfresh(pdc_file_sample{i,j},files_pdc{i});
         % freshness is taking too on network data
         
-        if ~exist(pdc_file_sample{i,j},'file')
+        if fresh || ~exist(pdc_file_sample{i,j},'file')
             % split up pdc by sample
             fprintf('%s: resample %d, splitting pdc sample %d/%d\n',mfilename,i,j,nsamples_data);
             if isempty(result)
@@ -490,22 +491,23 @@ outfilename = sprintf('%s-sig-n%d-alpha%0.2f.mat',...
 file_pdc_sig = fullfile(workingdir, outfilename);
 
 % fresh = isfresh(file_pdc_sig, lf_file);
-% fresh = cellfun(@(x) isfresh(file_pdc_sig, x), files_pdc, 'UniformOutput', true);
+fresh = cellfun(@(x) isfresh(file_pdc_sig, x), pdc_file_sample(:), 'UniformOutput', true);
 % freshness is taking too on network data
-if ~exist(file_pdc_sig,'file')
+if any(fresh) || ~exist(file_pdc_sig,'file')
     
     % collect pdc results for each sample
     % otherwise the data set gets too big
     pdc_sig = nan(pdc_dims);
     pdc_file_sampleT = pdc_file_sample';
     parfor j=1:nsamples_data
+    %for j=1:nsamples_data
         fprintf('%s: computing percentile for sample %d/%d\n',...
             mfilename,j,nsamples_data);
         
         outfile = fullfile(workingdir, 'surrogate-by-samples', pdc_tag,...
             sprintf('sample%d-n%d.mat',j,nresamples));
-        %fresh = cellfun(@(x) isfresh(outfile, x), pdc_file_sampleT(j,:), 'UniformOutput', true);
-        if ~exist(outfile,'file')
+        fresh = cellfun(@(x) isfresh(outfile, x), pdc_file_sampleT(j,:), 'UniformOutput', true);
+        if any(fresh) || ~exist(outfile,'file')
         
             fprintf('%s: reorganizing resamples\n',mfilename);
             pdc_all = nan([nresamples, pdc_dims(2:end)]);
