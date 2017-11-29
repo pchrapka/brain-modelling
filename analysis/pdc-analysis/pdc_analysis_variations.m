@@ -60,6 +60,8 @@ for i=1:length(params)
     pdc_view = pdc_analysis_create_view(...
         file_sources_info,...
         'downsample',params(i).downsample);
+    % select time range to display
+    pdc_view.set_t([-0.25 0.998]);
     
     if lf_obj.envelope
         view_switch(pdc_view,'10');

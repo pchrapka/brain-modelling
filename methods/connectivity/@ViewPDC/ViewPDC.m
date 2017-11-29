@@ -8,8 +8,9 @@ classdef ViewPDC < handle
     end
     
     properties (SetAccess = protected)
-        w;
-        f;
+        w; % selected freq range in radians
+        f; % selected freq range
+        t; % selected time range
         
         pdc = [];
         pdc_nfreqs = [];
@@ -65,6 +66,20 @@ classdef ViewPDC < handle
             else
                 obj.outdir_type = 'custom';
                 obj.outdir = p.Results.outdir;
+            end
+        end
+        
+        function set_t(obj,value)
+            p = inputParser();
+            addRequired(p,'t',@(x) isvector(x) && (length(x) == 2));
+            parse(p,value);
+            
+            if any(value < obj.time(1)) || any(value > obj.time(end))
+                fprintf('specified min: %0.4f, max: %0.4f\n',value(1), value(2));
+                fprintf('min: %0.4f, max: %0.4f\n',obj.time(1), obj.time(end));
+                error('time selection out of range');
+            else
+                obj.t = value;
             end
         end
         
@@ -549,6 +564,11 @@ classdef ViewPDC < handle
             end
         end
         
+        function time_eff = get_time_effective(obj)
+            time_idx = (obj.time >= obj.t(1)) & (obj.time <= obj.t(2));
+            time_eff = obj.time(time_idx);
+        end
+        
         function add_time_ticks(obj,axis)
             % add time ticks to the selected x or y axis
             
@@ -557,26 +577,38 @@ classdef ViewPDC < handle
                 return;
             end
             
+            time_eff = obj.get_time_effective();
+            
             % find zero index
-            temp = obj.time >= 0;
+            temp = time_eff >= 0;
             zero_idx = find(temp,1,'first');
             if isempty(zero_idx)
                 zero_idx = 1;
             end
             ticks = zero_idx;
             
-            nticks = 5;
+            period = time_eff(2) - time_eff(1);
+            f = 1/period;
+            nticks_test = 5:10;
+            mods = zeros(size(nticks_test));
+            for i=1:length(nticks_test)
+                mods(i) = mod(f,nticks_test(i));
+            end
+            [~,idx] = min(mods);
+            nticks = nticks_test(idx);
+            %nticks = 5;
+                
             % compute increment
-            range = max(obj.time) - min(obj.time);
+            range = max(time_eff) - min(time_eff);
             order = floor(log10(range));
             increment = 10^order/nticks;
             % get number of points per increment
-            npointspertick = ceil(increment/(obj.time(2) - obj.time(1)));
+            npointspertick = ceil(increment/period);
             % create the ticks
             extra_idx = -nticks:1:nticks;
             extra_idx = extra_idx*npointspertick + zero_idx;
             % remove ticks outside of range
-            extra_idx = extra_idx(extra_idx > 0 & extra_idx < length(obj.time));
+            extra_idx = extra_idx(extra_idx > 0 & extra_idx < length(time_eff));
             % add zero tick
             ticks = [ticks extra_idx];
             % get unique and sort
@@ -586,7 +618,7 @@ classdef ViewPDC < handle
             ticklabels = cell(length(ticks),1);
             for i=1:length(ticks)
                 % get time for each tick and convert to seconds
-                ticklabels{i} = sprintf('%0.0fms',obj.time(ticks(i))*1000);
+                ticklabels{i} = sprintf('%0.0fms',time_eff(ticks(i))*1000);
             end
             
             switch axis
@@ -603,11 +635,14 @@ classdef ViewPDC < handle
                 return;
             end
             
-            if time < obj.time(1) || time > obj.time(end)
-                error('time is out of range');
+            time_eff = obj.get_time_effective();
+            
+            if time < time_eff(1) || time > time_eff(end)
+                warning('time is out of effective time range');
+                return;
             end
             
-            [~,idx] = min(abs(time - obj.time));
+            [~,idx] = min(abs(time - time_eff));
             x(1) = idx;
             x(2) = idx;
             yl = ylim;

@@ -8,7 +8,7 @@ switch comp_name
         rootdir = get_root_dir(comp_name);
         data_dir = fullfile(rootdir,'projects','data-andrew-beta');
     case {sprintf('Valentina\n')}
-        rootdir = '/media/phil/p.eanut';
+        rootdir = '/media/phil/Seagate Backup Plus Drive';
         data_dir = fullfile(rootdir,'projects','data-andrew-beta');
     otherwise
         error([mfilename ':MissingConfig'],['new computer, where is the data?\n'...

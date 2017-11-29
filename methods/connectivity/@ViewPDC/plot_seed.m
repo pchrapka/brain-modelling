@@ -91,6 +91,13 @@ f = w(w_idx)*obj.fs;
 freq_idx = 1:nfreqs;
 freq_idx = freq_idx(w_idx);
 
+if ~isempty(obj.time)
+    time_idx = (obj.time >= obj.t(1)) & (obj.time <= obj.t(2));
+    nsamples = sum(time_idx);
+else
+    time_idx = true(nsamples,1);
+end
+
 nfreqs_sel = length(freq_idx);
 data_plot = zeros(nsamples,nfreqs_sel,nchannels);
 data_alpha = zeros(nsamples,nfreqs_sel,nchannels);
@@ -103,14 +110,14 @@ for i=1:nchannels
     
     switch p.Results.direction
         case 'outgoing'
-            data_temp = squeeze(obj.pdc(:,i,p.Results.chseed,freq_idx));
+            data_temp = squeeze(obj.pdc(time_idx,i,p.Results.chseed,freq_idx));
             if ~isempty(obj.pdc_sig)
-                data_alpha_temp = squeeze(obj.pdc_sig(:,i,p.Results.chseed,freq_idx));
+                data_alpha_temp = squeeze(obj.pdc_sig(time_idx,i,p.Results.chseed,freq_idx));
             end
         case 'incoming'
-            data_temp = squeeze(obj.pdc(:,p.Results.chseed,i,freq_idx));
+            data_temp = squeeze(obj.pdc(time_idx,p.Results.chseed,i,freq_idx));
             if ~isempty(obj.pdc_sig)
-                data_alpha_temp = squeeze(obj.pdc_sig(:,p.Results.chseed,i,freq_idx));
+                data_alpha_temp = squeeze(obj.pdc_sig(time_idx,p.Results.chseed,i,freq_idx));
             end
     end
     

@@ -1,21 +1,60 @@
 %% paper_plot_surrogate_hist
 
-dir_root = fullfile('/home.old','chrapkpk','Documents','projects','brain-modelling',...
-    'analysis','pdc-analysis','output','std-s03-10',...
-    'aal-coarse-19-outer-nocer-hemileft-audr2-v1r2');
-dir_data = fullfile(dir_root,...
-    'lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata',...
-    'MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-surrogate-estimate_ind_channels',...
-    'surrogate-by-samples','pdc-dynamic-diag-f2048-41-ds4');
-file_data = 'sample257-n100.mat'; % use time = 0
+params = data_beta_config();
+dir_root = params.data_dir;
+dir_data = fullfile(dir_root,'output','std-s03-10',...
+    'aal-coarse-19-outer-nocer-hemileft-audr2-v1r2',...
+    'lf-data-trialsall-samplesall-normeachchannel-envyes-prependflipdata');
+% dir_surrogate = fullfile(dir_data,...
+%     'MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-surrogate-estimate_ind_channels');
+slug_filter = 'MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3';
 
-file_name = fullfile(dir_data,file_data);
+% surrogate_type = 'ind';
+surrogate_type = 'ns';
+
+switch surrogate_type
+    case 'ind'
+        dir_surrogate = fullfile(dir_data,...
+            [slug_filter '-removed-surrogate-estimate_ind_channels']);
+    case 'ns'
+        dir_surrogate = fullfile(dir_data,...
+            [slug_filter '-removed-surrogate-estimate_stationary_ns']);
+    otherwise
+        error('unknown surrogate type')
+end
+file_name_surrogate = fullfile(dir_surrogate,...
+    'pdc-dynamic-diag-f2048-41-ds4-sig-n100-alpha0.05.mat');
+
+% get sample,row,col idx with largest gPDC threshold
+data = loadfile(file_name_surrogate);
+data_temp = data.pdc;
+samples_remove = 256;
+data_temp(1:samples_remove,:,:,:) = [];
+% max over freqs
+data_temp = max(data_temp, [], 4);
+% max over samples
+[data_temp, idx_samples] = max(data_temp);
+idx_samples = squeeze(idx_samples);
+data_temp = squeeze(data_temp);
+% remove diagonals
+n = size(data_temp,1);
+data_temp(logical(true(n).*eye(n))) = 0;
+% get max in matrix
+[~,idx] = max(data_temp(:));
+[idx_row, idx_col] = ind2sub(size(data_temp), idx);
+idx_sample = idx_samples(idx_row, idx_col);
+
+%%
+file_data = sprintf('sample%d-n100.mat',idx_sample+samples_remove); % use time = 0
+dir_samples = fullfile(dir_surrogate,...
+    'surrogate-by-samples','pdc-dynamic-diag-f2048-41-ds4');
+file_name = fullfile(dir_samples,file_data);
 
 data = loadfile(file_name);
 [nresample,nchannels,~,nfreqs] = size(data);
 
-dir_root2 = strrep(dir_root,'home.old','home-new');
-file_info = fullfile(dir_root2,'sources-info.mat');
+file_info = fullfile(dir_data,'..',...
+    'sources-info.mat');
 info = loadfile(file_info);
 
 % plot_type = 'tiled';
@@ -34,13 +73,14 @@ data = data(:,idx_sorted,idx_sorted,:);
 
 f = (0:nfreqs-1)/(2*nfreqs);
 f = f*info.fsample;
-idx_freq = f <= 5;
+freq_max = 10;
+idx_freq = f <= freq_max;
 % idx_freq(1) = false;
 data = data(:,:,:,idx_freq);
 
 %%
 % nbins = 20;
-nbins = 500;
+nbins = 100;
 bins = 1:nbins-1;
 bins = bins/nbins;
 
@@ -49,17 +89,17 @@ font_size = 14;
 
 switch plot_type
     case 'single'
-        row = 2;
-        col = 4;
+        %row = 2;
+        %col = 4;
         set(gca,'FontSize',font_size);
-        data_temp = squeeze(data(:,row,col,:));
+        data_temp = squeeze(data(:,idx_row,idx_col,:));
         hist(data_temp(:),bins);
-        title(sprintf('%s to %s',labels{col}, labels{row}));
+        title(sprintf('%s to %s',labels{idx_col}, labels{idx_row}));
         ylabel('Number of gPDC values');
         xlabel('gPDC value');
         
-        outfile = ['surrogate-hist-' strrep(file_data,'.mat','')...
-            sprintf('-row%d-col%d',row,col)];
+        outfile = ['surrogate-hist-' surrogate_type '-' strrep(file_data,'.mat','')...
+            sprintf('-row%d-col%d',idx_row,idx_col)];
         
     case 'tiled'
         for row_idx=1:nchannels+2
@@ -112,7 +152,7 @@ switch plot_type
             end
         end
         
-        outfile = ['surrogate-hist-' strrep(file_data,'.mat','')];
+        outfile = ['surrogate-hist-' surrogate_type '-' strrep(file_data,'.mat','')];
     otherwise
         error('unknown plot_type %s',plot_type);
 end
