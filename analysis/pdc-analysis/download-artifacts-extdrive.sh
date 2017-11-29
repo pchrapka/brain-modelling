@@ -8,5 +8,5 @@ DEST=/home/phil/
 mkdir -p $DEST/$DIR
 
 # to import from peanut
-SRCDIR=/media/phil/p.eanut/projects/data-andrew-beta/output/
-rsync -rvzt --progress --exclude='*.mat' $SRCDIR $DEST/$DIR
+SRCDIR='/media/phil/Seagate Backup Plus Drive/projects/data-andrew-beta/output/'
+rsync -rvzt --progress --exclude='*.mat' "$SRCDIR" $DEST/$DIR
