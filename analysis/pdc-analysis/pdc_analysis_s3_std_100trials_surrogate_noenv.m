@@ -5,11 +5,11 @@ paramsmini = [];
 j = 1;
 i = 1;
 
-paramsmini(j).hemi = 'left';
-paramsmini(j).params(i).gamma = 1e-5;
-paramsmini(j).params(i).order = 6;
-paramsmini(j).params(i).null_mode = 'estimate_stationary_ns';
-i = i+1;
+% paramsmini(j).hemi = 'left';
+% paramsmini(j).params(i).gamma = 1e-5;
+% paramsmini(j).params(i).order = 6;
+% paramsmini(j).params(i).null_mode = 'estimate_stationary_ns';
+% i = i+1;
 
 paramsmini(j).hemi = 'left';
 paramsmini(j).params(i).gamma = 1e-5;
@@ -29,7 +29,7 @@ for j=1:nhemis
         params(k).downsample = 4;
         params(k).nfreqs = 1024*2;
         % fs = 2048, fs/2 = 1024 -> 1Hz bins
-        params(k).nfreqscompute = 20*2+1; 
+        params(k).nfreqscompute = 40*2+1; 
         % want 0-5Hz, 5*2+1, 
         params(k).metrics = {'diag'};%,'info'};
         params(k).ntrials = 100;

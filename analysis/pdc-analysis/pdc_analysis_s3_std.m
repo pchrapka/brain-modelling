@@ -23,6 +23,7 @@ i = 1;
 paramsmini(j).hemi = 'left';
 paramsmini(j).params(i).gamma = 1e-5;
 paramsmini(j).params(i).order = 4;
+paramsmini(j).params(i).permutation_idx = 3;
 i = i+1;
 
 % paramsmini(j).params(i).gamma = 1e-4;
@@ -37,6 +38,7 @@ i = 1;
 paramsmini(j).hemi = 'right';
 paramsmini(j).params(i).gamma = 1e-5;
 paramsmini(j).params(i).order = 5;
+paramsmini(j).params(i).permutation_idx = 3;
 i = i+1;
 
 % paramsmini(j).params(i).gamma = 1e-4;
@@ -72,8 +74,11 @@ for j=1:nhemis
         params(k).normalization = 'eachchannel';
         params(k).envelope = true;
         params(k).prepend_data = 'flipdata';
-        params(k).permutations = false;
-        params(k).npermutations = 10;% 20;
+        params(k).permutations = true;
+        params(k).npermutations = 3;
+        if isfield(paramsmini(j).params(i),'permutation_idx')
+            params(k).permutation_idx = paramsmini(j).params(i).permutation_idx;
+        end
         params(k).tune_criteria_samples = [0.05 0.95];
         params(k).nresamples = 100;
         params(k).alpha = 0.05;
