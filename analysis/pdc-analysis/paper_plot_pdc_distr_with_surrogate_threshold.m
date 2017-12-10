@@ -26,8 +26,13 @@ plot_params(k).stub_filter = 'MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-
 plot_params(k).perm_stat = '-p1';
 plot_params(k).perm_surrogate = '-p3';
 plot_params(k).slug_name = 'trials20';
-
 k = k+1;
+
+% plot_params(k).stub_filter = 'MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04';
+% plot_params(k).perm_stat = '-p1';
+% plot_params(k).perm_surrogate = '-p1';
+% plot_params(k).slug_name = 'trials20-1e-4';
+% k = k+1;
 
 plot_params(k).stub_filter = 'MCMTLOCCD_TWL4-T100-C7-P5-lambda0.9900-gamma1.000e-05';
 plot_params(k).perm_stat = '-p1';
