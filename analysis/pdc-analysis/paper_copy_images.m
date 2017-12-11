@@ -69,46 +69,52 @@ k = k+1;
 
 %% gPDC, beta only, surrogate thresholds
 images(k).file = fullfile('output','img',...
-    '2017-12-01-pdc-distr-with-surrogate-thresh-noenv-trials20-in6-out1-sample656.eps');
+    '2017-12-06-pdc-distr-with-surrogate-thresh-noenv-trials20-in6-out1-sample656.eps');
 images(k).file_out = 'gpdc-distr-with-surrogate-thresh-noenv-trials20.eps';
 k = k+1;
 
 images(k).file = fullfile('output','img',...
-    '2017-12-01-pdc-distr-with-surrogate-thresh-noenv-trials100-in6-out1-sample656.eps');
+    '2017-12-06-pdc-distr-with-surrogate-thresh-noenv-trials100-in6-out1-sample656.eps');
 images(k).file_out = 'gpdc-distr-with-surrogate-thresh-noenv-trials100.eps';
 k = k+1;
 
 %% gPDC
 images(k).file = fullfile(data_dir_s3_left,...
-    '2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i6-opnone-thresh0.00-0.0000-0.0049.eps');
+    '2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i6-opnone-thresh0.00-0.0000-0.0049.eps');
+    %'2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i6-opnone-thresh0.00-0.0000-0.0049.eps');
     %'2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i6-opnone-thresh0.00-0.0000-0.0049.eps');
     %'2017-06-20-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f512-ds4-seed-in-i5-opnone-thresh0.00-0.0000-0.0098.eps');
 images(k).file_out = 'hemileft-to-auditory-left-paper.eps';
 k = k+1;
 
 images(k).file = fullfile(data_dir_s3_left,...
-    '2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-thresh0.00-0.0000-0.0049.eps');
+    '2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-thresh0.00-0.0000-0.0049.eps');
+    %'2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-thresh0.00-0.0000-0.0049.eps');
+    %'2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-thresh0.00-0.0000-0.0049.eps');
     %'2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-thresh0.00-0.0000-0.0049.eps');
     %'2017-06-20-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f512-ds4-seed-in-i1-opnone-thresh0.00-0.0000-0.0098.eps');
 images(k).file_out = 'hemileft-to-temporal-left-paper.eps';
 k = k+1;
 
 images(k).file = fullfile(data_dir_s3_left,...
-    '2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-thresh0.00-0.0000-0.0049.eps');
+    '2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-thresh0.00-0.0000-0.0049.eps');
+    %'2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-thresh0.00-0.0000-0.0049.eps');
     %'2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-thresh0.00-0.0000-0.0049.eps');
 images(k).file_out = 'hemileft-to-motor-left-paper.eps';
 k = k+1;
 
 %% gPDC surrogate - coupling
 images(k).file = fullfile(data_dir_s3_left,...
-    '2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i6-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
+    '2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i6-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
+    %'2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i6-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
     %'2017-08-02-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i6-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
     %'2017-06-22-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f512-ds4-seed-in-i5-opnone-threshsig-estimate_ind_channels-0.0000-0.0098.eps');
 images(k).file_out = 'hemileft-to-auditory-left-surrogate-coupling-paper.eps';
 k = k+1;
 
 images(k).file = fullfile(data_dir_s3_left,...
-    '2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
+    '2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
+    %'2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
     %'2017-08-02-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
     %'2017-06-22-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f512-ds4-seed-in-i1-opnone-threshsig-estimate_ind_channels-0.0000-0.0098.eps');
 images(k).file_out = 'hemileft-to-temporal-left-surrogate-coupling-paper.eps';
@@ -116,25 +122,29 @@ k = k+1;
 
 
 images(k).file = fullfile(data_dir_s3_left,...
-    '2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
+    '2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
+    %'2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
     %'2017-08-02-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
 images(k).file_out = 'hemileft-to-motor-left-surrogate-coupling-paper.eps';
 k = k+1;
 
 %% gPDC surrogate - non-stationary
 images(k).file = fullfile(data_dir_s3_left,...
-    '2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i6-opnone-threshsig-estimate_stationary_ns-0.0000-0.0049.eps');
+    '2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i6-opnone-threshsig-estimate_stationary_ns-0.0000-0.0049.eps');
+    %'2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i6-opnone-threshsig-estimate_stationary_ns-0.0000-0.0049.eps');
 images(k).file_out = 'hemileft-to-auditory-left-surrogate-ns-paper.eps';
 k = k+1;
 
 images(k).file = fullfile(data_dir_s3_left,...
-    '2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-threshsig-estimate_stationary_ns-0.0000-0.0049.eps');
+    '2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-threshsig-estimate_stationary_ns-0.0000-0.0049.eps');
+    %'2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-threshsig-estimate_stationary_ns-0.0000-0.0049.eps');
 images(k).file_out = 'hemileft-to-temporal-left-surrogate-ns-paper.eps';
 k = k+1;
 
 
 images(k).file = fullfile(data_dir_s3_left,...
-    '2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-threshsig-estimate_stationary_ns-0.0000-0.0049.eps');
+    '2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-threshsig-estimate_stationary_ns-0.0000-0.0049.eps');
+    %'2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i7-opnone-threshsig-estimate_stationary_ns-0.0000-0.0049.eps');
 images(k).file_out = 'hemileft-to-motor-left-surrogate-ns-paper.eps';
 k = k+1;
 
@@ -152,7 +162,8 @@ k = k+1;
 % k = k+1;
 
 images(k).file = fullfile(data_dir_s3_left,...
-    '2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-std-seed-in-i1-opnone-0.0000-0.0049.eps');
+    '2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-std-seed-in-i1-opnone-0.0000-0.0049.eps');
+    %'2017-11-30-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-std-seed-in-i1-opnone-0.0000-0.0049.eps');
 images(k).file_out = 'hemileft-to-temporal-left-std-paper.eps';
 k = k+1;
 
@@ -228,14 +239,16 @@ k = k+1;
 
 %% connectivity matrices
 images(k).file = fullfile(data_dir_s3_left,...
-    '2017-11-08-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.eps');
+    '2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.eps');
+    %'2017-11-08-MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.eps');
     %'2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.eps');
     %'2017-06-20-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f512-ds4-adjacency-idx192-768-0.0000-0.0098.eps');
 images(k).file_out = 'hemileft-adjacency-summary.eps';
 k = k+1;
 
 images(k).file = fullfile(data_dir_s3_right,...
-    '2017-11-08-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.eps');
+    '2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.eps');
+    %'2017-11-08-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.eps');
     %'2017-07-14-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.eps');
     %'2017-06-20-MCMTLOCCD_TWL4-T20-C7-P3-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f512-ds4-adjacency-idx192-768-0.0000-0.0098.eps');
 images(k).file_out = 'hemiright-adjacency-summary.eps';
@@ -317,7 +330,8 @@ k = k+1;
 
 %% surrogate thresholds
 images(k).file = fullfile('output','img',...
-    '2017-11-15-pdc-distr-with-surrogate-thresh-trials20-in1-out6-sample656.eps');
+    '2017-12-11-pdc-distr-with-surrogate-thresh-trials20-1e-4-in1-out6-sample656.eps');
+    %'2017-11-15-pdc-distr-with-surrogate-thresh-trials20-in1-out6-sample656.eps');
 images(k).file_out = 'gpdc-distr-with-surrogate-thresh-trials20.eps';
 k = k+1;
 
