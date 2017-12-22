@@ -1,4 +1,4 @@
-function [ARF,RCF,RCB,PE] = nuttall_strand(Y, Pmax)
+function [RCF,RCB,FE] = nuttall_strand_rc(Y, Pmax)
 % NUTTALLSTRAND estimates parameters of the Multi-Variate AutoRegressive model 
 %   Mode 13 from tsa.mvar
 %
@@ -17,11 +17,10 @@ function [ARF,RCF,RCB,PE] = nuttall_strand(Y, Pmax)
 %  Mode	 determines estimation algorithm 
 %
 % OUTPUT:
-%  AR    multivariate autoregressive model parameter
 %  RCF   forward reflection coefficients (= -PARCOR coefficients)
 %  RCB   backward reflection coefficients (= -PARCOR coefficients)
-%  PE    remaining error variances for increasing model order
-%	   PE(:,p*M+[1:M]) is the residual variance for model order p
+%  FE    remaining forward error variances for increasing model order
+%	   FE(:,p*M+[1:M]) is the residual variance for model order p
 %
 
 % this is equivalent to Mode==11 but can deal with missing values
@@ -69,6 +68,8 @@ b = Y;
 
 debug = false;
 debug_plot = false;
+% debug = true;
+% debug_plot = true;
 
 %the recursive algorithm
 for i = 1:Pmax,
@@ -131,48 +132,13 @@ for i = 1:Pmax,
             plot(x');
             title(sprintf('order %d',i));
         end
+        disp(K(:,:,i+1));
     end
 end %for i = 1:Pmax,
-R0 = PE(:,1:M);
 
-%% [rcf,rcb,Pf,Pb] = pc2rcv(pc,R0);
-rcf  = zeros(sz); rcf(:,:,1)  = I;
-Pf   = zeros(sz); Pf(:,:,1)   = R0;
-rcb  = zeros(sz); rcb(:,:,1) = I;
-Pb   = zeros(sz); Pb(:,:,1)  = R0;
-
-for p = 1:Pmax,
-    TsqrtPf = chol( Pf(:,:,p))'; %square root M defined by: M=Tsqrt(M)*Tsqrt(M)'
-    TsqrtPb= chol(Pb(:,:,p))';
-    %reflection coefficients
-    %rcf(:,:,p+1) = -TsqrtPf *pc(:,:,p+1) *inv(TsqrtPb);
-    rcf(:,:,p+1) = -TsqrtPf *pc(:,:,p+1)/TsqrtPb;
-    %rcb(:,:,p+1)= -TsqrtPb*pc(:,:,p+1)'*inv(TsqrtPf );
-    rcb(:,:,p+1)= -TsqrtPb*pc(:,:,p+1)' /TsqrtPf;
-    %residual matrices
-    %Pf(:,:,p+1) = (I-TsqrtPf *pc(:,:,p+1) *pc(:,:,p+1)'*inv(TsqrtPf ))*Pf(:,:,p);
-    Pf(:,:,p+1) = (I-TsqrtPf *pc(:,:,p+1) *pc(:,:,p+1)'/TsqrtPf)*Pf(:,:,p);
-    %Pb(:,:,p+1) = (I-TsqrtPb*pc(:,:,p+1)' *pc(:,:,p+1) *inv(TsqrtPb))*Pb(:,:,p);
-    Pb(:,:,p+1) = (I-TsqrtPb*pc(:,:,p+1)' *pc(:,:,p+1) /TsqrtPb)*Pb(:,:,p);
-end %for p = 2:order,
-%%%%%%%%%%%%%% end %%%%%%
-
-
-%%%%% Convert reflection coefficients RC to autoregressive parameters
-ARF = zeros(M,M*Pmax);
-ARB = zeros(M,M*Pmax);
-for K = 1:Pmax,
-    ARF(:,K*M+(1-M:0)) = -rcf(:,:,K+1);
-    ARB(:,K*M+(1-M:0)) = -rcb(:,:,K+1);
-    for L = 1:K-1,
-        tmp                    = ARF(:,L*M+(1-M:0)) - ARF(:,K*M+(1-M:0))*ARB(:,(K-L)*M+(1-M:0));
-        ARB(:,(K-L)*M+(1-M:0)) = ARB(:,(K-L)*M+(1-M:0)) - ARB(:,K*M+(1-M:0))*ARF(:,L*M+(1-M:0));
-        ARF(:,L*M+(1-M:0))     = tmp;
-    end;
-end;
-RCF = -reshape(rcf(:,:,2:end),[M,M*Pmax]);
+RCF = reshape(K(:,:,2:end),[M,M*Pmax]);
 % % transpose the matrix for each order of RCB coefs
 % rcb_tran = permute(rcb,[2 1 3]);
-RCB = -reshape(rcb(:,:,2:end),[M,M*Pmax]);
-PE  = reshape(Pf,[M,M*(Pmax+1)]);
+RCB = reshape(Kb(:,:,2:end),[M,M*Pmax]);
+FE  = reshape(P,[M,M*(Pmax+1)]);
 end

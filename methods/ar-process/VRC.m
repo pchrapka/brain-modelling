@@ -40,9 +40,9 @@ classdef VRC < VARProcess
             %   Input
             %   -----
             %   Kf (matrix)
-            %       forward reflection coefficients of size [K K P]
+            %       forward reflection coefficients of size [P K K]
             %   Kb (matrix)
-            %       backward reflection coefficients of size [K K P]
+            %       backward reflection coefficients of size [P K K]
             
             % Kf
             if isequal(size(Kf),size(obj.Kf))

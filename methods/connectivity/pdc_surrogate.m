@@ -107,6 +107,9 @@ switch p.Results.null_mode
         % null distribution - no coupling
         % set off diagonal elements to zero
         
+        noise_mode = 'ferror';
+        noise_model = 'estimate';
+        
         datalf_null = [];
         datalf_null.Kf = datalf.estimate.Kf;
         datalf_null.Kb = datalf.estimate.Kb;
@@ -127,6 +130,9 @@ switch p.Results.null_mode
         % null distribution - no coupling
         % estimate each channel separately, keeps spectral content but not
         % coupling between channels
+        
+        noise_mode = 'ferror';
+        noise_model = 'estimate';
         
         datalf_null = [];
         datalf_null.Kf = zeros(size(datalf.estimate.Kf));
@@ -257,6 +263,12 @@ switch p.Results.null_mode
         datalf_null = [];
         datalf_null.Kf = repmat(din.estimate.Kf(1,:,:,:),[nsamples 1 1 1]);
         datalf_null.Kb = repmat(din.estimate.Kb(1,:,:,:),[nsamples 1 1 1]);
+        % limit K's to [-1,1]
+        %datalf_null.Kf = clamp(datalf_null.Kf,-1,1);
+        %datalf_null.Kb = clamp(datalf_null.Kb,-1,1);
+        datalf_null.Rf = squeeze(din.estimate.Rf(1,:,:,:));
+        noise_mode = 'Rf';
+        noise_model = 'null';
         clear din;
         
     otherwise
@@ -269,34 +281,66 @@ process.coefs_set(datalf_null.Kf,datalf_null.Kb);
 
 %% surrogate data and lattice filter
 res_sigma_mat = [];
-if isfield(datalf.estimate,'ferror')
-    resf = datalf.estimate.ferror(:,:,:,norder); % samples channels trials order
-    % use the middle part to avoid edge effects
-    nsamples_ends = ceil(0.05*nsamples);
-    resf((end-nsamples_ends+1):end,:,:) = [];
-    resf(1:nsamples_ends*2,:,:) = [];
-    
-    rc_gen_noise = true;
-    % generate white noise instead of using model residual
-    if rc_gen_noise
-        res_sigma = squeeze(var(resf)); % [channels trials]
-        
-        % add dummy vars for parfor
-        resf = [];
-        nsamples_effective = [];
-    else
-        res_sigma = [];
-        nsamples_effective = size(resf,1);
-    end
+res_sigma = [];
+nsamples_effective = [];
+resf = [];
+switch noise_mode
+    case 'ferror'
+        switch noise_model
+            case 'null'
+                error('add mode here');
+            case 'estimate'
+                resf = datalf.estimate.ferror(:,:,:,norder); % samples channels trials order
+            otherwise
+                error('unknown noise model');
+        end
+
+        % use the middle part to avoid edge effects
+        nsamples_ends = ceil(0.05*nsamples);
+        resf((end-nsamples_ends+1):end,:,:) = [];
+        resf(1:nsamples_ends*2,:,:) = [];
+
+        rc_gen_noise = true;
+        % generate white noise instead of using model residual
+        if rc_gen_noise
+            res_sigma = squeeze(var(resf)); % [channels trials]
+
+            % add dummy vars for parfor
+            resf = [];
+            nsamples_effective = [];
+        else
+            res_sigma = [];
+            nsamples_effective = size(resf,1);
+        end
     % resb = datalf.estimate.berrord(:,:,:,norder);
-else
-    rc_gen_noise = true;
-    res_sigma_mat = squeeze(datalf.estimate.Rf(norder+1,:,:));
+    
+    case 'Rf'
+        rc_gen_noise = true;
+        switch noise_model
+            case 'null'
+                res_sigma_mat = squeeze(datalf_null.Rf(norder+1,:,:));
+            case 'estimate'
+                res_sigma_mat = squeeze(datalf.estimate.Rf(norder+1,:,:));
+            otherwise
+                error('unknown noise model');
+        end
+        % make sure Sigma is symmetric
+        R = chol(res_sigma_mat);
+        res_sigma_mat = R'*R;
+    otherwise
+        error('unknown noise mode');
 end
 
 % copy vars
 nresamples = p.Results.nresamples;
 lf_btstrp = cell(p.Results.nresamples,1);
+
+% flag to debug simulated data
+check_data = false;
+% check_data = true;
+if check_data
+    figure;
+end
 
 parfor i=1:nresamples
 % for i=1:nresamples
@@ -336,7 +380,6 @@ parfor i=1:nresamples
                     'type_noise','input','noise_input',res');
                 
                 % check stability
-                check_data = false;
                 if check_data
                     hold off;
                     plot(data_surrogate(:,:,j)');

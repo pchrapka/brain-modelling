@@ -106,7 +106,7 @@ classdef NuttallStrandMT
             end
             
             % compute parcor coefficients using Nuttall Strand method
-            [~,rcf,rcb,rc_error] = nuttall_strand(permute(x,[3,1,2]),obj.order);
+            [rcf,rcb,rc_error] = nuttall_strand_rc(permute(x,[3,1,2]),obj.order);
             
             % save the rc coefficient, drop the first one            
             obj.Kf = rcarrayformat(reshape(rcf,[obj.nchannels obj.nchannels obj.order]),'format',1);
