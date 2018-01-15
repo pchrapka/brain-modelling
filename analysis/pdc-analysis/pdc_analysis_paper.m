@@ -52,15 +52,15 @@ exp_template_section.flag_surrogate = false;
 % experiments{k}.flag_surrogate = true;
 % k = k+1;
 
-% left, surrogate ns
-experiments{k} = exp_template_section;
-experiments{k}.mode = 'run';
-experiments{k}.params.null_mode = 'estimate_stationary_ns';
-experiments{k}.flag_plot_seed = true;
-experiments{k}.flag_plot_conn = true;
-experiments{k}.flag_surrogate = true;
-k = k+1;
-% 
+% % left, surrogate ns
+% experiments{k} = exp_template_section;
+% experiments{k}.mode = 'run';
+% experiments{k}.params.null_mode = 'estimate_stationary_ns';
+% experiments{k}.flag_plot_seed = true;
+% experiments{k}.flag_plot_conn = true;
+% experiments{k}.flag_surrogate = true;
+% k = k+1;
+ 
 % % left, perms, plot std
 % experiments{k} = exp_template_section;
 % experiments{k}.mode = 'run';
@@ -71,7 +71,7 @@ k = k+1;
 % experiments{k}.flag_plot_conn = false;
 % experiments{k}.flag_surrogate = false;
 % k = k+1;
-% 
+ 
 % % right, plot tf, plot conn
 % experiments{k} = exp_template_section;
 % experiments{k}.mode = 'run';
@@ -103,15 +103,15 @@ exp_template_section.flag_surrogate = false;
 % experiments{k}.flag_surrogate = true;
 % k = k+1;
 
-% left, surrogate ns
-experiments{k} = exp_template_section;
-experiments{k}.mode = 'run';
-experiments{k}.params.null_mode = 'estimate_stationary_ns';
-experiments{k}.flag_plot_seed = true;
-experiments{k}.flag_plot_conn = true;
-experiments{k}.flag_surrogate = true;
-k = k+1;
-% 
+% % left, surrogate ns
+% experiments{k} = exp_template_section;
+% experiments{k}.mode = 'run';
+% experiments{k}.params.null_mode = 'estimate_stationary_ns';
+% experiments{k}.flag_plot_seed = true;
+% experiments{k}.flag_plot_conn = true;
+% experiments{k}.flag_surrogate = true;
+% k = k+1;
+ 
 % % left, perms, plot std
 % experiments{k} = exp_template_section;
 % experiments{k}.mode = 'run';
@@ -122,7 +122,84 @@ k = k+1;
 % experiments{k}.flag_plot_conn = false;
 % experiments{k}.flag_surrogate = false;
 % k = k+1;
-% 
+ 
+% % right, plot tf, plot conn
+% experiments{k} = exp_template_section;
+% experiments{k}.mode = 'run';
+% experiments{k}.hemi = 'right';
+% experiments{k}.params.gamma = 1e-5;
+% experiments{k}.params.order = 5;
+% k = k+1;
+
+%% envelope, H=195
+
+exp_template_section = exp_template;
+exp_template_section.hemi = 'left';
+exp_template_section.params.ntrials = 195;
+exp_template_section.params.gamma = 1e-5;
+exp_template_section.params.order = 5;
+exp_template_section.flag_plot_seed = false;
+exp_template_section.flag_plot_conn = false;
+exp_template_section.flag_surrogate = false;
+
+% % tuning
+% gammas = [1e-3 1e-4 1e-5 1e-6];
+% for i=1:length(gammas)
+%     experiments{k} = exp_template_section;
+%     experiments{k}.mode = 'tune';
+%     experiments{k}.params.gamma = gammas(i);
+%     experiments{k}.flag_plot_seed = false;
+%     experiments{k}.flag_plot_conn = false;
+%     experiments{k}.flag_surrogate = false;
+%     k = k+1;
+% end
+
+gammas = [1e-3 1e-4 1e-5 1e-6];
+orders_tuned = [5 14 5 5];
+if length(gammas) ~= length(orders_tuned)
+    error('gammas and orders not equal length')
+end
+% left, plot tf, plot conn
+for i=1:length(gammas)
+    experiments{k} = exp_template_section;
+    experiments{k}.mode = 'run';
+    experiments{k}.params.gamma = gammas(i);
+    experiments{k}.params.order = orders_tuned(i);
+    experiments{k}.flag_plot_seed = true;
+    experiments{k}.flag_plot_conn = true;
+    experiments{k}.flag_surrogate = false;
+    k = k+1;
+end
+
+% % left, surrogate ind, plot tf, plot conn
+% experiments{k} = exp_template_section;
+% experiments{k}.mode = 'run';
+% experiments{k}.params.null_mode = 'estimate_ind_channels';
+% experiments{k}.flag_plot_seed = true;
+% experiments{k}.flag_plot_conn = true;
+% experiments{k}.flag_surrogate = true;
+% k = k+1;
+
+% % left, surrogate ns
+% experiments{k} = exp_template_section;
+% experiments{k}.mode = 'run';
+% experiments{k}.params.null_mode = 'estimate_stationary_ns';
+% experiments{k}.flag_plot_seed = true;
+% experiments{k}.flag_plot_conn = true;
+% experiments{k}.flag_surrogate = true;
+% k = k+1;
+ 
+% % left, perms, plot std
+% experiments{k} = exp_template_section;
+% experiments{k}.mode = 'run';
+% experiments{k}.params.permutations = true;
+% experiments{k}.params.npermutations = 100;
+% experiments{k}.flag_plot_seed = false;
+% experiments{k}.flag_plot_seed_std = true;
+% experiments{k}.flag_plot_conn = false;
+% experiments{k}.flag_surrogate = false;
+% k = k+1;
+ 
 % % right, plot tf, plot conn
 % experiments{k} = exp_template_section;
 % experiments{k}.mode = 'run';
@@ -184,14 +261,14 @@ exp_template_section.flag_surrogate = false;
 % experiments{k}.flag_surrogate = true;
 % k = k+1;
 
-% left, surrogate ns
-experiments{k} = exp_template_section;
-experiments{k}.mode = 'run';
-experiments{k}.params.null_mode = 'estimate_stationary_ns';
-experiments{k}.flag_plot_seed = true;
-experiments{k}.flag_plot_conn = true;
-experiments{k}.flag_surrogate = true;
-k = k+1;
+% % left, surrogate ns
+% experiments{k} = exp_template_section;
+% experiments{k}.mode = 'run';
+% experiments{k}.params.null_mode = 'estimate_stationary_ns';
+% experiments{k}.flag_plot_seed = true;
+% experiments{k}.flag_plot_conn = true;
+% experiments{k}.flag_surrogate = true;
+% k = k+1;
 
 % % left, perms, plot std
 % experiments{k} = exp_template_section;
@@ -230,14 +307,14 @@ exp_template_section.flag_surrogate = false;
 % experiments{k}.flag_surrogate = true;
 % k = k+1;
 
-% left, surrogate ns
-experiments{k} = exp_template_section;
-experiments{k}.mode = 'run';
-experiments{k}.params.null_mode = 'estimate_stationary_ns';
-experiments{k}.flag_plot_seed = true;
-experiments{k}.flag_plot_conn = true;
-experiments{k}.flag_surrogate = true;
-k = k+1;
+% % left, surrogate ns
+% experiments{k} = exp_template_section;
+% experiments{k}.mode = 'run';
+% experiments{k}.params.null_mode = 'estimate_stationary_ns';
+% experiments{k}.flag_plot_seed = true;
+% experiments{k}.flag_plot_conn = true;
+% experiments{k}.flag_surrogate = true;
+% k = k+1;
 % 
 % % left, perms, plot std
 % experiments{k} = exp_template_section;
