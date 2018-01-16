@@ -154,22 +154,23 @@ exp_template_section.flag_surrogate = false;
 %     k = k+1;
 % end
 
-gammas = [1e-3 1e-4 1e-5 1e-6];
-orders_tuned = [5 14 5 5];
-if length(gammas) ~= length(orders_tuned)
-    error('gammas and orders not equal length')
-end
-% left, plot tf, plot conn
-for i=1:length(gammas)
-    experiments{k} = exp_template_section;
-    experiments{k}.mode = 'run';
-    experiments{k}.params.gamma = gammas(i);
-    experiments{k}.params.order = orders_tuned(i);
-    experiments{k}.flag_plot_seed = true;
-    experiments{k}.flag_plot_conn = true;
-    experiments{k}.flag_surrogate = false;
-    k = k+1;
-end
+% % all gammas
+% gammas = [1e-3 1e-4 1e-5 1e-6];
+% orders_tuned = [5 14 5 5];
+% if length(gammas) ~= length(orders_tuned)
+%     error('gammas and orders not equal length')
+% end
+% % left, plot tf, plot conn
+% for i=1:length(gammas)
+%     experiments{k} = exp_template_section;
+%     experiments{k}.mode = 'run';
+%     experiments{k}.params.gamma = gammas(i);
+%     experiments{k}.params.order = orders_tuned(i);
+%     experiments{k}.flag_plot_seed = true;
+%     experiments{k}.flag_plot_conn = true;
+%     experiments{k}.flag_surrogate = false;
+%     k = k+1;
+% end
 
 % % left, surrogate ind, plot tf, plot conn
 % experiments{k} = exp_template_section;
@@ -199,13 +200,23 @@ end
 % experiments{k}.flag_plot_conn = false;
 % experiments{k}.flag_surrogate = false;
 % k = k+1;
+
+% tuning
+experiments{k} = exp_template_section;
+experiments{k}.mode = 'tune';
+experiments{k}.hemi = 'right';
+experiments{k}.params.gamma = 1e-5;
+experiments{k}.flag_plot_seed = false;
+experiments{k}.flag_plot_conn = false;
+experiments{k}.flag_surrogate = false;
+k = k+1;
  
 % % right, plot tf, plot conn
 % experiments{k} = exp_template_section;
 % experiments{k}.mode = 'run';
 % experiments{k}.hemi = 'right';
 % experiments{k}.params.gamma = 1e-5;
-% experiments{k}.params.order = 5;
+% experiments{k}.params.order = 0;
 % k = k+1;
 
 %% envelope, subject 5, H=100
@@ -231,6 +242,54 @@ exp_template_section.subject = 5;
 % experiments{k}.params.ntrials = 100;
 % experiments{k}.params.gamma = 1e-5;
 % experiments{k}.params.order = 5;
+% experiments{k}.flag_plot_seed = true;
+% experiments{k}.flag_plot_conn = true;
+% experiments{k}.flag_surrogate = false;
+% k = k+1;
+
+%% envelope, subject 5, H=195
+exp_template_section = exp_template;
+exp_template_section.subject = 5;
+
+% tuning
+experiments{k} = exp_template_section;
+experiments{k}.mode = 'tune';
+experiments{k}.hemi = 'left';
+experiments{k}.params.gamma = 1e-5;
+experiments{k}.flag_plot_seed = false;
+experiments{k}.flag_plot_conn = false;
+experiments{k}.flag_surrogate = false;
+k = k+1;
+
+% % left, plot tf, plot conn
+% experiments{k} = exp_template_section;
+% experiments{k}.mode = 'run';
+% experiments{k}.hemi = 'left';
+% experiments{k}.params.ntrials = 195;
+% experiments{k}.params.gamma = 1e-5;
+% experiments{k}.params.order = 0;
+% experiments{k}.flag_plot_seed = true;
+% experiments{k}.flag_plot_conn = true;
+% experiments{k}.flag_surrogate = false;
+% k = k+1;
+
+% tuning
+experiments{k} = exp_template_section;
+experiments{k}.mode = 'tune';
+experiments{k}.hemi = 'right';
+experiments{k}.params.gamma = 1e-5;
+experiments{k}.flag_plot_seed = false;
+experiments{k}.flag_plot_conn = false;
+experiments{k}.flag_surrogate = false;
+k = k+1;
+
+% % right, plot tf, plot conn
+% experiments{k} = exp_template_section;
+% experiments{k}.mode = 'run';
+% experiments{k}.hemi = 'right';
+% experiments{k}.params.ntrials = 195;
+% experiments{k}.params.gamma = 1e-5;
+% experiments{k}.params.order = 0;
 % experiments{k}.flag_plot_seed = true;
 % experiments{k}.flag_plot_conn = true;
 % experiments{k}.flag_surrogate = false;

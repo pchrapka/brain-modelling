@@ -9,8 +9,8 @@ dir_data = fullfile(dir_root,'output','std-s03-10',...
 %     'MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-05-p3-removed-surrogate-estimate_ind_channels');
 slug_filter = 'MCMTLOCCD_TWL4-T20-C7-P4-lambda0.9900-gamma1.000e-05-p3';
 
-% surrogate_type = 'ind';
-surrogate_type = 'ns';
+surrogate_type = 'ind';
+% surrogate_type = 'ns';
 
 switch surrogate_type
     case 'ind'
@@ -51,14 +51,15 @@ dir_samples = fullfile(dir_surrogate,...
 file_name = fullfile(dir_samples,file_data);
 
 data = loadfile(file_name);
-[nresample,nchannels,~,nfreqs] = size(data);
+[nresample,nchannels,~,nfreqs_compute] = size(data);
 
 file_info = fullfile(dir_data,'..',...
     'sources-info.mat');
 info = loadfile(file_info);
 
 % plot_type = 'tiled';
-plot_type = 'single';
+% plot_type = 'single';
+plot_type = 'colormap';
 
 %% sort channels
 patch_info = ChannelInfo(info.labels);
@@ -71,7 +72,8 @@ data = data(:,idx_sorted,idx_sorted,:);
 
 %% select freqs
 
-f = (0:nfreqs-1)/(2*nfreqs);
+nfreqs = 2048;
+f = (0:nfreqs)/(2*nfreqs);
 f = f*info.fsample;
 freq_max = 10;
 idx_freq = f <= freq_max;
@@ -97,6 +99,57 @@ switch plot_type
         title(sprintf('%s to %s',labels{idx_col}, labels{idx_row}));
         ylabel('Number of gPDC values');
         xlabel('gPDC value');
+        
+        outfile = ['surrogate-hist-' surrogate_type '-' strrep(file_data,'.mat','')...
+            sprintf('-row%d-col%d',idx_row,idx_col)];
+        
+    case 'colormap'
+        alpha = 0.05;
+        flag_log = true;
+        
+        set(gca,'FontSize',font_size);
+        data_temp = squeeze(data(:,idx_row,idx_col,:));
+        [n,centers] = hist(data_temp,bins);
+        centers = flipdim(centers,1);
+        n = flipdim(n,1);
+        if flag_log
+            n = log(n);
+        end
+        imagesc(n);
+        cmap = colormap(hot);
+        %cmap = colormap(jet);
+        cmap = flipdim(cmap,1);
+        %cmap(1,:) = [1 1 1];
+        colormap(cmap);
+        h_cbar = colorbar();
+        ticks_cbar = 0:10:100;
+        if flag_log
+            set(h_cbar,'ticks',log(ticks_cbar));
+            set(h_cbar,'ticklabels',ticks_cbar);
+        end
+        
+        freqs = f(idx_freq);
+        step = 5;
+        xticks = 1:step:length(freqs);
+        set(gca,'xtick',xticks);
+        set(gca,'xticklabel',f(xticks));
+        xlabel('Frequency (Hz)');
+        
+        yticks = get(gca,'ytick');
+        set(gca,'yticklabel', centers(yticks));
+        ylabel('gPDC value');
+        
+        pct = (1-alpha)*100;
+        threshold = prctile(data_temp,pct,1);
+        
+        x_center = 1:length(freqs);
+        %loc_x = [x_center - 0.5; x_center + 0.5];
+        loc_x = repmat(x_center,2,1);
+        loc_y = repmat(1-threshold,2,1) * length(bins);
+        h_line = line(loc_x,loc_y,'color','black','marker','x','linestyle','none');%,'linewidth',4);
+        legend(h_line(1),'threshold, \alpha=0.05');
+        
+        title(sprintf('%s to %s',labels{idx_col}, labels{idx_row}));
         
         outfile = ['surrogate-hist-' surrogate_type '-' strrep(file_data,'.mat','')...
             sprintf('-row%d-col%d',idx_row,idx_col)];

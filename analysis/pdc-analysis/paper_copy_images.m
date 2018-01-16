@@ -182,6 +182,19 @@ images(k).file = fullfile(data_dir_s3_left,...
 images(k).file_out = 'hemileft-to-temporal-left-h100-surrogate-threshold-coupling-paper.eps';
 k = k+1;
 
+%% gPDC H=195
+images(k).file = fullfile(data_dir_s3_left,...
+    '2018-01-14-MCMTLOCCD_TWL4-T195-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-thresh0.00-0.0000-0.0049.eps');
+images(k).file_out = 'hemileft-to-temporal-left-h195-paper.eps';
+k = k+1;
+
+% % coupling
+% images(k).file = fullfile(data_dir_s3_left,...
+%     '2018-01-14-MCMTLOCCD_TWL4-T195-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
+% images(k).file_out = 'hemileft-to-temporal-left-h195-surrogate-coupling-paper.eps';
+% k = k+1;
+
+
 %% connectivity matrices
 images(k).file = fullfile(data_dir_s3_left,...
     '2017-12-10-MCMTLOCCD_TWL4-T20-C7-P5-lambda0.9900-gamma1.000e-04-p1-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.eps');
@@ -210,6 +223,17 @@ images(k).file = fullfile(data_dir_s3_right,...
     '2017-11-08-MCMTLOCCD_TWL4-T100-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.eps');
     %'2017-07-14-MCMTLOCCD_TWL4-T100-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.eps');
 images(k).file_out = 'hemiright-adjacency-summary-h100.eps';
+k = k+1;
+
+%% connectivity matrices H=195
+images(k).file = fullfile(data_dir_s3_left,...
+    '2018-01-14-MCMTLOCCD_TWL4-T195-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.eps');
+images(k).file_out = 'hemileft-adjacency-summary-h195.eps';
+k = k+1;
+
+images(k).file = fullfile(data_dir_s3_right,...
+    '2018-01-14-MCMTLOCCD_TWL4-T195-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-adjacency-idx192-768-0.0000-0.0024.eps');
+images(k).file_out = 'hemiright-adjacency-summary-h195.eps';
 k = k+1;
 
 %% connectivity matrices H=100, other subjects
@@ -264,7 +288,8 @@ k = k+1;
 % k = k+1;
 
 images(k).file = fullfile('output','img',...
-    '2017-11-28-surrogate-hist-ind-sample444-n100-row3-col5.eps');
+    '2018-01-15-surrogate-hist-ind-sample444-n100-row3-col5.eps');
+    %'2017-11-28-surrogate-hist-ind-sample444-n100-row3-col5.eps');
 images(k).file_out = 'surrogate-hist-ind-sample444-n100-row3-col5.eps';
 k = k+1;
 
