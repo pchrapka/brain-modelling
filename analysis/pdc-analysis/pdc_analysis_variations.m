@@ -208,8 +208,8 @@ for i=1:length(params)
                     pdc_obj.view.load('pdc','file_idx',k);
                     
                     if lf_obj.envelope
-                        view_switch(pdc_view,'5');
-                        % following views at 0-5 Hz
+                        view_switch(pdc_view,'10');
+                        % following views at 0-10 Hz
                     else
                         view_switch(pdc_view,'beta');
                         % following views at 15-25 Hz
