@@ -188,11 +188,11 @@ images(k).file = fullfile(data_dir_s3_left,...
 images(k).file_out = 'hemileft-to-temporal-left-h195-paper.eps';
 k = k+1;
 
-% % coupling
-% images(k).file = fullfile(data_dir_s3_left,...
-%     '2018-01-14-MCMTLOCCD_TWL4-T195-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
-% images(k).file_out = 'hemileft-to-temporal-left-h195-surrogate-coupling-paper.eps';
-% k = k+1;
+% coupling
+images(k).file = fullfile(data_dir_s3_left,...
+    '2018-01-17-MCMTLOCCD_TWL4-T195-C7-P5-lambda0.9900-gamma1.000e-05-p1-removed-pdc-dynamic-diag-f2048-41-ds4-seed-in-i1-opnone-threshsig-estimate_ind_channels-0.0000-0.0049.eps');
+images(k).file_out = 'hemileft-to-temporal-left-h195-surrogate-coupling-paper.eps';
+k = k+1;
 
 
 %% connectivity matrices
