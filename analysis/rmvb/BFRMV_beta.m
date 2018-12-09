@@ -21,11 +21,11 @@ badchannel_list = cellfun(@(x) ['-' x], meta_data.elecbad_channels, 'UniformOutp
 cfg.ft_sourceanalysis.channel = ['EEG', badchannel_list(:)'];
 
 cfg.name = sprintf('%s-%s-%s',...
-    strrep(sprintf('%0.6g',cfg.BeamformerRVB.epsilon),'.','-'),...
+    strrep(sprintf('eps%0.6g',cfg.BeamformerRMV.epsilon),'.','-'),...
     cfg.ft_sourceanalysis.method,...
     meta_data.data_name(1:3));
 
-[srcdir,~,~] = fileparts(mfilename('fullpath'));
-save(fullfile(srcdir, [strrep(mfilename,'_','-') '.mat']),'cfg');
+% [srcdir,~,~] = fileparts(mfilename('fullpath'));
+% save(fullfile(srcdir, [strrep(mfilename,'_','-') '.mat']),'cfg');
 
 end

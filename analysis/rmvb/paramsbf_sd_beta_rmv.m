@@ -1,8 +1,8 @@
 function params = paramsbf_sd_beta_rmv(subject_num,deviant_percent,stimulus,varargin)
 % params for subject from Andrew's beta study
 
-p = inputParser();
-parse(p,varargin{:});
+% p = inputParser();
+% parse(p,varargin{:});
 
 meta_data = DataBeta(subject_num,deviant_percent);
 
@@ -19,7 +19,7 @@ params_elec = Eandrew_cm(meta_data);
 % use a parameter here instead
 params_eeg = EEGandrew_stddev_precomputed(meta_data, stimulus);
 
-params_bf = BFRMV_beta(meta_data,varargin);
+params_bf = BFRMV_beta(meta_data,varargin{:});
 
 %% assign configs for analysis
 params = [];
