@@ -31,4 +31,6 @@ params_subject = paramsbf_sd_beta_rmv(...
 % set up pipeline folder
 pipedir = fullfile(analysis_dir,'output','ftb');
 pipeline = build_pipeline_beamformer_rmv(params_subject,pipedir); 
+parfor_setup();
 pipeline.process();
+parfor_close();

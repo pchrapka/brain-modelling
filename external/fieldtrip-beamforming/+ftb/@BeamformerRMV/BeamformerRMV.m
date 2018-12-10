@@ -28,11 +28,11 @@ classdef BeamformerRMV < ftb.Beamformer
     methods (Access = protected)
         source = compute_rmv_filters(...
             obj, data, leadfield, varargin);
+        out = compute_rmv_filters_inner(obj, R, H);
     end
     
-    methods (Access = protected)
-        obj = process_beamformer_patch(obj);
-        
+    methods (Static, Access = protected)
+        out = compute_rmv_filter(cfg);
     end
     
     methods
@@ -109,11 +109,14 @@ classdef BeamformerRMV < ftb.Beamformer
                     'only compatible with lcmv');
             end
             
-            fields = {'verbosity'};
+            fields = fieldnames(obj.config.BeamformerRMV);
             for i=1:length(fields)
                 field = fields{i};
                 if isfield(obj.config.BeamformerRMV, field)
                     obj.(field) = obj.config.BeamformerRMV.(field);
+                else
+                    error(['ftb:' mfilename],...
+                        'unknown field %s', field);
                 end
             end
             
@@ -214,7 +217,7 @@ classdef BeamformerRMV < ftb.Beamformer
                 end
                     
                 % compute filters
-                data_filters = ftb.BeamformerRMV.compute_rmv_filters(...
+                data_filters = obj.compute_rmv_filters(...
                     timelock, leadfield, obj.config.compute_rmv_filters{:});
                 
                 % save filters

@@ -94,7 +94,44 @@ cd(curdir);
 %     cd(curdir);
 % end
 
+%% cvx
+cvx_path = fullfile(pwd, 'external', 'cvx');
+% Save the current directory
+cur_dir = pwd;
+% Switch to the cvx dir
+cd(cvx_path)
+% Check if there is a license file
+% And run cvx_setup
+if exist('cvx_license.dat','file') ~= 0
+    cvx_startup
+    cvx_setup 'cvx_license.dat'
+else
+    cvx_startup
+    cvx_setup
+end
+% Switch back to the directory
+cd(cur_dir)
 
+%% Add SDPT3 package to Matlab path
+SDPT3_path = fullfile(pwd, 'external','SDPT3-4.0');
+addpath(SDPT3_path);
+cur_dir = pwd;
+cd(SDPT3_path);
+startup
+cd(cur_dir);
+
+%% Add yalmip package to Matlab path
+yalmip_path = fullfile(pwd, 'external', 'yalmip');
+addpath(yalmip_path);
+addpath(fullfile(yalmip_path, 'extras'));
+addpath(fullfile(yalmip_path, 'demos'));
+addpath(fullfile(yalmip_path, 'solvers'));
+addpath(fullfile(yalmip_path, 'modules'));
+addpath(fullfile(yalmip_path, 'modules/parametric'));
+addpath(fullfile(yalmip_path, 'modules/moment'));
+addpath(fullfile(yalmip_path, 'modules/global'));
+addpath(fullfile(yalmip_path, 'modules/sos'));
+addpath(fullfile(yalmip_path, 'operators'));
 
 %% add project directories
 addpath(fullfile(pwd,'methods'));

@@ -48,9 +48,7 @@ addParameter(p,'mode','all',@(x) any(validatestring(x,{'all','single'})));
 parse(p,data,leadfield,varargin{:});
 
 % allocate mem
-source = [];
-source.filters = cell(size(leadfield.leadfield));
-source.inside = leadfield.inside;
+filters = cell(size(leadfield.leadfield));
 
 % NOTE when supplying ft_sourceanalysis with filters, i can only specify
 % one per grid point, not per trial, so this function can only operate on a
@@ -69,51 +67,28 @@ if ntrials > 1
 end
 
 fprintf('computing filters...\n');
-% computer filter for each inside point
-% TODO is inside boolean or an index
-for i=1:length(leadfield.leadfield)
-    if ~leadfield.inside(i)
-        source.filters{i} = [];
+% compute filter for each inside point
+R = data.cov;
+idx_inside = leadfield.inside;
+H_all = leadfield.leadfield;
+
+npoints = length(leadfield.leadfield);
+progbar = ProgressBar(npoints);
+parfor i=1:npoints
+% for i=1:npoints
+    progbar.progress();
+    if idx_inside(i)
+        filters{i} = obj.compute_rmv_filters_inner(R, H_all{i});
     else
-        % Set up cfg
-        cfg_rmv = [];
-        % TODO check type of leadfield
-        cfg_rmv.H = leadfield.leadfield(leadfield.inside(i));
-        cfg_rmv.R = data.cov;
-        cfg_rmv.verbosity = obj.verbosity;
-        cfg_rmv.solver = obj.solver;
-        cfg_rmv.eigenspace = obj.eig_type;
-        cfg_rmv.n_interfering_sources = obj.n_interfering_sources;
-
-        if obj.aniso
-            % Copy/compute the uncertainty matrix
-            % TODO set up uncertainty
-            error('user defined uncertainty matrices not implemented');
-        else
-            if obj.epsilon > 0
-                % Set up A for isotropic
-                nchannels = size(data.cov,1);
-                ndims = 3;
-                
-                epsilon_vec = ones(ndims,1)*sqrt(obj.epsilon^2/ndims);
-                A = cell(ndims,1);
-                for i=1:ndims
-                    A{i} = epsilon_vec(i,1)*eye(nchannels);
-                end
-                
-                % Copy the uncertainty matrix
-                cfg_rmv.A = A;
-            else
-                error('epsilon not set');
-            end
-        end
-
-        % Run beamformer
-        data_out = aet_analysis_rmv(cfg_rmv);
-        % TODO double check that it 3xN
-        source.filter{i} = data_out.W;
+        filters{i} = [];
     end
-    
 end
+progbar.stop();
+
+% allocate mem
+source = [];
+source.filters = filters;
+source.inside = leadfield.inside;
 
 end
+
