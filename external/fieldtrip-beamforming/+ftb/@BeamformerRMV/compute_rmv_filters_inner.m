@@ -33,6 +33,6 @@ end
 
 % Run beamformer
 data_out = ftb.BeamformerRMV.compute_rmv_filter(cfg_rmv);
-% TODO double check that it 3xN
-filter = data_out.W;
+% Filter dims: 3xN
+filter = data_out.W';
 end
