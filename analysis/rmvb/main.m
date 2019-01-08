@@ -23,7 +23,7 @@ eeg_preprocessing_beta(subject,deviant_percent,stimulus,...
     'outdir',outdir);
 
 %% beamform sources
-epsilon = 50;
+epsilon = 0.08;
 
 params_subject = paramsbf_sd_beta_rmv(...
     subject,deviant_percent,stimulus,'epsilon',epsilon);

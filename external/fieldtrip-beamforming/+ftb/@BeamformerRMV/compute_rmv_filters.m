@@ -78,7 +78,12 @@ parfor i=1:npoints
 % for i=1:npoints
     progbar.progress();
     if idx_inside(i)
-        filters{i} = obj.compute_rmv_filters_inner(R, H_all{i});
+        data_out = obj.compute_rmv_filters_inner(R, H_all{i});
+        if ~isequal(data_out.status,'Solved')
+            fprintf('RMV Error: index %d - %s%s',i,data_out.info.info,repmat(' ',1,90));
+        end
+        % Filter dims: 3xN
+        filters{i} = data_out.W';
     else
         filters{i} = [];
     end

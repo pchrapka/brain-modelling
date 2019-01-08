@@ -1,4 +1,4 @@
-function filter = compute_rmv_filters_inner(obj, R, H)
+function out = compute_rmv_filters_inner(obj, R, H)
 % Set up cfg
 cfg_rmv = [];
 cfg_rmv.H = H;
@@ -32,7 +32,5 @@ else
 end
 
 % Run beamformer
-data_out = ftb.BeamformerRMV.compute_rmv_filter(cfg_rmv);
-% Filter dims: 3xN
-filter = data_out.W';
+out = ftb.BeamformerRMV.compute_rmv_filter(cfg_rmv);
 end
