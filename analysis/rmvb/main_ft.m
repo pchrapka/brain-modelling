@@ -23,15 +23,12 @@ eeg_preprocessing_beta(subject,deviant_percent,stimulus,...
     'outdir',outdir);
 
 %% beamform sources
-% epsilon = 0.08; % one strong source top of the head
-epsilon = 0.02;
-
-params_subject = paramsbf_sd_beta_rmv(...
-    subject,deviant_percent,stimulus,'epsilon',epsilon);
+params_subject = paramsbf_sd_beta_lcmv(...
+    subject,deviant_percent,stimulus);
 
 % set up pipeline folder
 pipedir = fullfile(analysis_dir,'output','ftb');
-pipeline = build_pipeline_beamformer_rmv(params_subject,pipedir); 
+pipeline = build_pipeline_beamformer_ft(params_subject,pipedir); 
 parfor_setup();
 pipeline.process();
 parfor_close();

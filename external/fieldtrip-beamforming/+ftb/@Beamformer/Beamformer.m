@@ -197,6 +197,8 @@ classdef Beamformer < ftb.AnalysisStep
             %   thresh (default = 0.5)
             %       threshold for mask = 'thresh', calculated as a factor
             %       of the maximum power
+            %   log (default = false)
+            %       plot the log of the data
             
             % parse inputs
             p = inputParser;
@@ -205,6 +207,7 @@ classdef Beamformer < ftb.AnalysisStep
             addParameter(p,'options',[]);
             addParameter(p,'mask','none',@(x)any(validatestring(x,{'thresh','none'})));
             addParameter(p,'thresh',0.5,@isnumeric);
+            addParameter(p,'log',false,@islogical);
             parse(p,varargin{:});
             
             % reslice
@@ -222,8 +225,7 @@ classdef Beamformer < ftb.AnalysisStep
             interp = ft_sourceinterpolate(cfgin, source, resliced);
             
             % data transformation
-            plot_log = false;
-            if plot_log
+            if p.Results.log
                 interp.pow = db(interp.pow,'power');
             end
             

@@ -198,10 +198,11 @@ cfg_pp.detrend = 'no';
 cfg_pp.demean = 'no';       % filter should handle this
 cfg_pp.channel = ['EEG', badchannel_list(:)'];
 cfg_pp.bpfilter = 'yes';
-cfg_pp.bpfreq = [15 25];
+% cfg_pp.bpfreq = [15 25];
+cfg_pp.bpfreq = [1 60];
 cfg_pp.bpfilttype = 'but';
-cfg_pp.bpfiltord = 4; % use default
-%use default for other bp filter params
+cfg_pp.bpfiltord = 3; % use default
+% %use default for other bp filter params
 
 file_pp = fthelpers.run_ft_function('ft_preprocessing',cfg_pp,params{:});
 
@@ -262,7 +263,7 @@ clear cfg_ra;
 cfg_tl = [];
 cfg_tl.covariance = 'yes';
 cfg_tl.covariancewindow = 'all'; % should be default
-cfg_tl.keeptrials = 'yes'; % should be default
+cfg_tl.keeptrials = 'no'; % should be default
 cfg_tl.removemean = 'yes';
 
 file_tl = fthelpers.run_ft_function('ft_timelockanalysis',cfg_tl,'datain',file_ra,params{:});

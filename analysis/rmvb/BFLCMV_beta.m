@@ -1,21 +1,16 @@
-function cfg = BFRMV_beta(meta_data,varargin)
+function cfg = BFLCMV_beta(meta_data,varargin)
 
 p = inputParser();
-addParameter(p,'epsilon',0,@isnumeric);
 parse(p,varargin{:});
 
 cfg = [];
 
-cfg.cov_avg = 'yes';
-% cfg.cov_avg = 'no';
-cfg.compute_rmv_filters = {};
-cfg.BeamformerRMV.aniso = false;
-cfg.BeamformerRMV.epsilon = p.Results.epsilon;
 % cfg.ft_sourceanalysis.rawtrial = 'yes';
 cfg.ft_sourceanalysis.rawtrial = 'no';
 cfg.ft_sourceanalysis.keeptrials = 'no';
 cfg.ft_sourceanalysis.method = 'lcmv';
 cfg.ft_sourceanalysis.lcmv.keepmom = 'yes';
+cfg.ft_sourceanalysis.lcmv.lambda = '1%';
 
 meta_data.load_bad_channels();
 % add minus signs in front of each channel
@@ -23,8 +18,7 @@ badchannel_list = cellfun(@(x) ['-' x], meta_data.elecbad_channels, 'UniformOutp
 % add bad channels
 cfg.ft_sourceanalysis.channel = ['EEG', badchannel_list(:)'];
 
-cfg.name = sprintf('%s-%s-%s',...
-    strrep(sprintf('eps%0.6g',cfg.BeamformerRMV.epsilon),'.','-'),...
+cfg.name = sprintf('%s-%s',...
     cfg.ft_sourceanalysis.method,...
     meta_data.data_name(1:3));
 
