@@ -134,6 +134,7 @@ classdef Beamformer < ftb.AnalysisStep
         end
         
         plot_anatomical(obj,varargin);
+        plot_source_time(obj,mode,varargin);
         plot_scatter(obj,cfg);
         plot_moment(obj,varargin);
     end
@@ -203,17 +204,39 @@ classdef Beamformer < ftb.AnalysisStep
             % parse inputs
             p = inputParser;
             p.StructExpand = false;
+            addParameter(p,'mri_resliced',[],@isstruct);
             addParameter(p,'method','slice',@(x)any(validatestring(x,{'slice','ortho'})));
+            addParameter(p,'funparameter','pow',@(x) any(validatestring(x,{'pow','mom'})));
             addParameter(p,'options',[]);
             addParameter(p,'mask','none',@(x)any(validatestring(x,{'thresh','none'})));
             addParameter(p,'thresh',0.5,@isnumeric);
             addParameter(p,'log',false,@islogical);
+            addParameter(p,'ft_selectdata',[],@isstruct);
             parse(p,varargin{:});
+            
+            funparameter = p.Results.funparameter;
             
             % reslice
             % TODO save instead of redoing
-            cfgin = [];
-            resliced = ft_volumereslice(cfgin, mri);
+            if isempty(p.Results.mri_resliced)
+                cfgin = [];
+                resliced = ft_volumereslice(cfgin, mri);
+            else
+                resliced = p.Results.mri_resliced;
+            end
+            
+            % select data
+            if ~isempty(p.Results.ft_selectdata)
+                source = ft_selectdata(p.Results.ft_selectdata, source);
+                if strcmp(funparameter,'pow')
+                    % recompute pow from current latency selection
+                    for i=1:length(source.inside)
+                        if source.inside(i)
+                            source.avg.pow(i) = sqrt(sum(source.avg.mom{i}.^2));
+                        end
+                    end
+                end
+            end
             
             if isfield(source,'time')
                 source = rmfield(source,'time');
@@ -221,12 +244,12 @@ classdef Beamformer < ftb.AnalysisStep
             
             % interpolate
             cfgin = [];
-            cfgin.parameter = 'pow';
+            cfgin.parameter = funparameter;
             interp = ft_sourceinterpolate(cfgin, source, resliced);
             
             % data transformation
             if p.Results.log
-                interp.pow = db(interp.pow,'power');
+                interp.(funparameter) = db(interp.(funparameter),'power');
             end
             
             % source plot
@@ -249,7 +272,7 @@ classdef Beamformer < ftb.AnalysisStep
             end
             
             cfgplot.method = p.Results.method;
-            cfgplot.funparameter = 'pow';
+            cfgplot.funparameter = funparameter;
             ft_sourceplot(cfgplot, interp);
         end
     end

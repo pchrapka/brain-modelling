@@ -55,6 +55,16 @@ leadfield = ft_convert_units(leadfield, 'mm');
 
 % load bf data
 source = ftb.util.loadvar(obj.sourceanalysis);
+% select data
+if ~isempty(cfg.ft_selectdata)
+    source = ft_selectdata(cfg.ft_selectdata, source);
+    % recompute pow from current latency selection
+    for i=1:length(source.inside)
+        if source.inside(i)
+            source.avg.pow(i) = sqrt(sum(source.avg.mom{i}.^2));
+        end
+    end
+end
 
 % if isfield(cfg, 'contrast')
 %     % Load noise source

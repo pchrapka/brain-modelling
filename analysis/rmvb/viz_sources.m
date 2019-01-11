@@ -1,11 +1,24 @@
 % viz_sources
 
+figure;
+cfgplot_scatter = [];
+cfgplot_scatter.method = 'all';
+pipeline.steps{end}.plot_source_time('scatter', cfgplot_scatter);
+
+%%
+
+figure;
+pipeline.steps{end}.plot_anatomical_time('funparameter','pow');
+
 %%
 figure;
 pipeline.steps{end}.plot_anatomical();
 
 %%
-pipeline.steps{end}.plot_anatomical('log', true);
+cfgplot = [];
+cfgplot.nslices = 20;
+cfgplot.slicerange = [160 256]; % has 256 slices to choose from
+pipeline.steps{end}.plot_anatomical('log', false, 'options', cfgplot);
 
 %%
 figure;

@@ -19,7 +19,7 @@ function params_eeg = EEGandrew_stddev_precomputed(meta_data, stimulus)
 
 p = inputParser;
 addRequired(p,'meta_data',@(x) isa(x,'DataBeta'));
-addRequired(p,'stimulus',@(x) any(validatestring(x,{'std','odd'})));
+addRequired(p,'stimulus',@(x) any(validatestring(x,{'std','odd','std-triplet'})));
 parse(p,meta_data,stimulus);
 
 dataset_name = [stimulus '-' meta_data.data_name];

@@ -1,3 +1,4 @@
+% stimulus = 'std-triplet';
 stimulus = 'std';
 subject = 3;
 deviant_percent = 10;

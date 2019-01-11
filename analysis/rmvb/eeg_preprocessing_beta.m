@@ -20,7 +20,7 @@ function eeg_preprocessing_beta(subject, deviant_percent, stimulus, varargin)
 p = inputParser();
 addRequired(p,'subject',@isnumeric);
 addRequired(p,'deviant_percent',@(x) isequal(x,10) || isequal(x,20));
-addRequired(p,'stimulus',@(x) any(validatestring(x,{'std','odd','std-prestim1'})));
+addRequired(p,'stimulus',@(x) any(validatestring(x,{'std-triplet','std','odd','std-prestim1'})));
 addParameter(p,'outdir','',@ischar);
 parse(p,subject, deviant_percent, stimulus, varargin{:});
 
@@ -85,6 +85,14 @@ cfg_dt.dataset = params_data.data_file;
 % use default function
 switch stimulus
     case 'std'
+        cfg_dt.trialdef.eventtype = 'STATUS';
+        cfg_dt.trialdef.eventvalue = {1}; % std
+        cfg_dt.trialdef.prestim = 0.25; % in seconds
+        cfg_dt.trialdef.poststim = 0.5; % in seconds
+        
+        threshold = 60;
+        nsections = 1;
+    case 'std-triplet'
         % NOTE ft_reject_artifact operates on sample indices so if multiple
         % trials are grouped into a trial, it will reject a trial if a
         % portion of another trial has an artifact, because of the overlap
@@ -212,6 +220,11 @@ cfg_dt.dataset = params_data.data_file;
 % use default function
 switch stimulus
     case 'std'
+        cfg_dt.trialdef.eventtype = 'STATUS';
+        cfg_dt.trialdef.eventvalue = {1}; % std
+        cfg_dt.trialdef.prestim = 0.25; % in seconds
+        cfg_dt.trialdef.poststim = 0.5; % in seconds
+    case 'std-triplet'
         cfg_dt.trialfun= 'fthelpers.ft_trialfun_triplet';
         cfg_dt.trialmid.eventtype = 'STATUS';
         cfg_dt.trialmid.eventvalue = 1; % standard
